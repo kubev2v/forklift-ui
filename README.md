@@ -2,23 +2,15 @@
 
 OpenShift VM Migration UI
 
-## TODO: replace patternfly-react-seed readme contents with a real readme
+## TODO: replace patternfly-react-seed readme contents with project-specific readme
 
 ---
-
-# Patternfly Seed
-
-Patternfly Seed is an open source build scaffolding utility for web apps. The primary purpose of this project is to give developers a jump start when creating new projects that will use patternfly. A secondary purpose of this project is to serve as a reference for how to configure various aspects of an application that uses patternfly, webpack, react, typescript, etc.
-
-Out of the box you'll get an app layout with chrome (header/sidebar), routing, build pipeline, test suite, and some code quality tools. Basically, all the essentials.
-
-<img width="1058" alt="Out of box dashboard view of patternfly seed" src="https://user-images.githubusercontent.com/5942899/82119580-b4cf9380-974d-11ea-9f13-fa10471c5c73.png">
 
 ## Quick-start
 
 ```bash
-git clone https://github.com/patternfly/patternfly-react-seed
-cd patternfly-react-seed
+git clone https://github.com/mturley/virt-ui
+cd virt-ui
 yarn install && yarn start:dev
 ```
 
@@ -110,3 +102,7 @@ ENV_2=http://2.myendpoint.com
 ```
 
 With that in place, you can use the values in your code like `console.log(process.env.ENV_1);`
+
+---
+
+The basic structure of this repository is based on [patternfly-react-seed](https://github.com/patternfly/patternfly-react-seed/). See that project's README for more information.

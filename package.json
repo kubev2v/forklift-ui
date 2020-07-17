@@ -1,10 +1,10 @@
 {
-  "name": "patternfly-seed",
+  "name": "virt-ui",
   "version": "0.0.1",
-  "description": "An open source build scaffolding utility for web apps.",
+  "description": "OpenShift VM Migration UI",
   "main": "server.js",
-  "repository": "https://github.com/patternfly/patternfly-react-seed.git",
-  "license": "MIT",
+  "repository": "https://github.com/mturley/virt-ui.git",
+  "license": "Apache",
   "private": true,
   "scripts": {
     "prebuild": "yarn clean",
