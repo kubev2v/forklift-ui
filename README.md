@@ -19,14 +19,14 @@ Out of the box you'll get an app layout with chrome (header/sidebar), routing, b
 ```bash
 git clone https://github.com/patternfly/patternfly-react-seed
 cd patternfly-react-seed
-npm install && yarn start:dev
+yarn install && yarn start:dev
 ```
 
 ## Development Scripts
 
 ```sh
 # Install development/build dependencies
-npm install
+yarn install
 
 # Start the development server
 yarn start:dev
