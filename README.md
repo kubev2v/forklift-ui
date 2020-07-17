@@ -48,12 +48,6 @@ yarn bundle-profile:analyze
 
 # Start the express server (run a production build first)
 yarn start
-
-# Start storybook component explorer
-yarn storybook
-
-# Build storybook component explorer as standalone app (outputs to "storybook-static" dir)
-yarn build:storybook
 ```
 
 ## Configurations
@@ -105,7 +99,6 @@ body {
 - To keep our code formatting in check, we use [prettier](https://github.com/prettier/prettier)
 - To keep our code logic and test coverage in check, we use [jest](https://github.com/facebook/jest)
 - To ensure code styles remain consistent, we use [eslint](https://eslint.org/)
-- To provide a place to showcase custom components, we integrate with [storybook](https://storybook.js.org/)
 
 ## Multi environment configuration
 
