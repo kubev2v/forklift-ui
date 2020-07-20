@@ -10,7 +10,8 @@ import { LastLocationProvider, useLastLocation } from 'react-router-last-locatio
 
 let routeFocusTimer: number;
 
-const getSupportModuleAsync = () => () => import(/* webpackChunkName: 'support' */ '@app/Support/Support');
+const getSupportModuleAsync = () => () =>
+  import(/* webpackChunkName: 'support' */ '@app/Support/Support');
 
 const Support = (routeProps: RouteComponentProps): React.ReactElement => {
   const lastNavigation = useLastLocation();
@@ -81,7 +82,12 @@ const useA11yRouteChange = (isAsync: boolean) => {
   }, [isAsync, lastNavigation]);
 };
 
-const RouteWithTitleUpdates = ({ component: Component, isAsync = false, title, ...rest }: IAppRoute) => {
+const RouteWithTitleUpdates = ({
+  component: Component,
+  isAsync = false,
+  title,
+  ...rest
+}: IAppRoute) => {
   useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 

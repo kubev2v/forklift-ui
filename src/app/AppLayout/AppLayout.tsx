@@ -7,7 +7,7 @@ import {
   Page,
   PageHeader,
   PageSidebar,
-  SkipToContent
+  SkipToContent,
 } from '@patternfly/react-core';
 import { routes } from '@app/routes';
 
@@ -15,10 +15,10 @@ interface IAppLayout {
   children: React.ReactNode;
 }
 
-const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
+const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const logoProps = {
     href: '/',
-    target: '_blank'
+    target: '_blank',
   };
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
@@ -28,7 +28,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
   const onNavToggle = () => {
     setIsNavOpen(!isNavOpen);
-  }
+  };
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
     setIsMobileView(props.mobileView);
   };
@@ -45,11 +45,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const Navigation = (
     <Nav id="nav-primary-simple" theme="dark">
       <NavList id="nav-list-simple">
-        {routes.map((route, idx) => route.label && (
-            <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`}>
-              <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
-            </NavItem>
-          ))}
+        {routes.map(
+          (route, idx) =>
+            route.label && (
+              <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`}>
+                <NavLink exact to={route.path} activeClassName="pf-m-current">
+                  {route.label}
+                </NavLink>
+              </NavItem>
+            )
+        )}
       </NavList>
     </Nav>
   );
@@ -57,12 +62,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <PageSidebar
       theme="dark"
       nav={Navigation}
-      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />
+      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+    />
   );
   const PageSkipToContent = (
-    <SkipToContent href="#primary-app-container">
-      Skip to Content
-    </SkipToContent>
+    <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>
   );
   return (
     <Page
@@ -70,10 +74,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       header={Header}
       sidebar={Sidebar}
       onPageResize={onPageResize}
-      skipToContent={PageSkipToContent}>
+      skipToContent={PageSkipToContent}
+    >
       {children}
     </Page>
   );
-}
+};
 
 export { AppLayout };
