@@ -3,6 +3,7 @@ import { App } from '@app/index';
 import { mount, shallow } from 'enzyme';
 import { Button } from '@patternfly/react-core';
 
+// TODO replace enzyme with react-testing-library?
 describe('App tests', () => {
   test('should render default App component', () => {
     const view = shallow(<App />);
