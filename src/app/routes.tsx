@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotFound } from '@app/NotFound/NotFound';
@@ -10,7 +10,7 @@ import { WelcomePage } from '@app/WelcomePage/WelcomePage';
 let routeFocusTimer: number;
 
 export interface IAppRoute {
-  label?: string;
+  label?: string; // Excluding the label will exclude the route from the nav sidebar in AppLayout
   /* eslint-disable @typescript-eslint/no-explicit-any */
   component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
   /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -26,14 +26,14 @@ const routes: IAppRoute[] = [
     exact: true,
     label: 'Dashboard',
     path: '/',
-    title: 'PatternFly Seed | Main Dashboard',
+    title: 'Migration Toolkit for Virtualization | Main Dashboard',
   },
   {
     component: WelcomePage,
     exact: true,
     label: 'Welcome',
     path: '/welcome',
-    title: 'PatternFly Seed | Welcome',
+    title: 'Migration Toolkit for Virtualization | Welcome',
   },
 ];
 
@@ -68,11 +68,6 @@ const RouteWithTitleUpdates = ({
   return <Route render={routeWithTitle} />;
 };
 
-const PageNotFound = ({ title }: { title: string }) => {
-  useDocumentTitle(title);
-  return <Route component={NotFound} />;
-};
-
 const AppRoutes = (): React.ReactElement => (
   <LastLocationProvider>
     <Switch>
@@ -86,7 +81,7 @@ const AppRoutes = (): React.ReactElement => (
           isAsync={isAsync}
         />
       ))}
-      <PageNotFound title="404 Page Not Found" />
+      <Redirect to="/" />
     </Switch>
   </LastLocationProvider>
 );
