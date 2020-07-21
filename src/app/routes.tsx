@@ -5,6 +5,7 @@ import { Dashboard } from '@app/Dashboard/Dashboard';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import WelcomePage from '@app/WelcomePage/WelcomePage';
+import { LocalStorageContext } from './common/context/LocalStorageContext';
 
 let routeFocusTimer: number;
 
@@ -19,12 +20,13 @@ export interface IAppRoute {
   isAsync?: boolean;
 }
 
-const routes: IAppRoute[] = [
+export const routes: IAppRoute[] = [
   {
+    // TODO remove this when we have a providers page
     component: Dashboard,
     exact: true,
     label: 'Dashboard',
-    path: '/',
+    path: '/dashboard',
     title: 'Migration Toolkit for Virtualization | Main Dashboard',
   },
   {
@@ -66,25 +68,30 @@ const RouteWithTitleUpdates = ({
   return <Route render={routeWithTitle} />;
 };
 
-const AppRoutes = (): React.ReactElement => (
-  <LastLocationProvider>
-    <Switch>
-      <Route exact path="/">
-        <Redirect to="/welcome" />
-      </Route>
-      {routes.map(({ path, exact, component, title, isAsync }, idx) => (
-        <RouteWithTitleUpdates
-          path={path}
-          exact={exact}
-          component={component}
-          key={idx}
-          title={title}
-          isAsync={isAsync}
-        />
-      ))}
-      <Redirect to="/" />
-    </Switch>
-  </LastLocationProvider>
-);
-
-export { AppRoutes, routes };
+export const AppRoutes = (): React.ReactElement => {
+  const { storageValues } = React.useContext(LocalStorageContext);
+  return (
+    <LastLocationProvider>
+      <Switch>
+        <Route exact path="/">
+          {storageValues.isWelcomePageHidden ? (
+            <Redirect to="/dashboard" /> // TODO replace this with /providers
+          ) : (
+            <Redirect to="/welcome" />
+          )}
+        </Route>
+        {routes.map(({ path, exact, component, title, isAsync }, idx) => (
+          <RouteWithTitleUpdates
+            path={path}
+            exact={exact}
+            component={component}
+            key={idx}
+            title={title}
+            isAsync={isAsync}
+          />
+        ))}
+        <Redirect to="/" />
+      </Switch>
+    </LastLocationProvider>
+  );
+};
