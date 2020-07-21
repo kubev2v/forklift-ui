@@ -16,6 +16,7 @@
     "eslint": "eslint --ext .tsx,.js ./src/",
     "lint": "yarn eslint",
     "format": "prettier --check --write ./src/**/*.{tsx,ts}",
+    "type-check": "yarn tsc --noEmit",
     "build:bundle-profile": "webpack --config webpack.prod.js --profile --json > stats.json",
     "bundle-profile:analyze": "yarn build:bundle-profile && webpack-bundle-analyzer ./stats.json",
     "clean": "rimraf dist"
