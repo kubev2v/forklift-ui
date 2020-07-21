@@ -34,7 +34,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   };
   const Header = (
     <PageHeader
-      logo="Patternfly"
+      logo="Red Hat Migration Toolkit for Virtualization"
       logoProps={logoProps}
       showNavToggle
       isNavOpen={isNavOpen}

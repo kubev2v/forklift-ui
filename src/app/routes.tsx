@@ -5,6 +5,7 @@ import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotFound } from '@app/NotFound/NotFound';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { WelcomePage } from '@app/WelcomePage/WelcomePage';
 
 let routeFocusTimer: number;
 
@@ -26,6 +27,13 @@ const routes: IAppRoute[] = [
     label: 'Dashboard',
     path: '/',
     title: 'PatternFly Seed | Main Dashboard',
+  },
+  {
+    component: WelcomePage,
+    exact: true,
+    label: 'Welcome',
+    path: '/welcome',
+    title: 'PatternFly Seed | Welcome',
   },
 ];
 
