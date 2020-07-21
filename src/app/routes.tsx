@@ -2,10 +2,9 @@ import * as React from 'react';
 import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Dashboard } from '@app/Dashboard/Dashboard';
-import { NotFound } from '@app/NotFound/NotFound';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { WelcomePage } from '@app/WelcomePage/WelcomePage';
+import WelcomePage from '@app/WelcomePage/WelcomePage';
 
 let routeFocusTimer: number;
 
@@ -31,7 +30,6 @@ const routes: IAppRoute[] = [
   {
     component: WelcomePage,
     exact: true,
-    label: 'Welcome',
     path: '/welcome',
     title: 'Migration Toolkit for Virtualization | Welcome',
   },
@@ -71,6 +69,9 @@ const RouteWithTitleUpdates = ({
 const AppRoutes = (): React.ReactElement => (
   <LastLocationProvider>
     <Switch>
+      <Route exact path="/">
+        <Redirect to="/welcome" />
+      </Route>
       {routes.map(({ path, exact, component, title, isAsync }, idx) => (
         <RouteWithTitleUpdates
           path={path}
