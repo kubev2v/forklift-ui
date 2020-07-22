@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { Dashboard } from '@app/Dashboard/Dashboard';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import WelcomePage from '@app/WelcomePage/WelcomePage';
+import ProvidersPage from '@app/ProvidersPage/ProvidersPage';
 import { LocalStorageContext } from './common/context/LocalStorageContext';
 
 let routeFocusTimer: number;
@@ -22,12 +22,11 @@ export interface IAppRoute {
 
 export const routes: IAppRoute[] = [
   {
-    // TODO remove this when we have a providers page
-    component: Dashboard,
+    component: ProvidersPage,
     exact: true,
-    label: 'Dashboard',
-    path: '/dashboard',
-    title: 'Migration Toolkit for Virtualization | Main Dashboard',
+    label: 'Providers',
+    path: '/providers',
+    title: 'Migration Toolkit for Virtualization | Providers',
   },
   {
     component: WelcomePage,
@@ -75,7 +74,7 @@ export const AppRoutes = (): React.ReactElement => {
       <Switch>
         <Route exact path="/">
           {storageValues.isWelcomePageHidden ? (
-            <Redirect to="/dashboard" /> // TODO replace this with /providers
+            <Redirect to="/providers" />
           ) : (
             <Redirect to="/welcome" />
           )}

@@ -59,7 +59,7 @@ const WelcomePage: React.FunctionComponent = () => {
             <Button
               variant="primary"
               onClick={() => {
-                history.push('/dashboard'); // TODO this should go to /providers once that exists
+                history.push('/providers');
               }}
             >
               Get started
