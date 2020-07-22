@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useRouteMatch } from 'react-router-dom';
 import {
   Nav,
   NavList,
@@ -32,12 +32,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
     setIsMobileView(props.mobileView);
   };
+
+  const welcomePageMatch = useRouteMatch('/welcome');
+  const isNavEnabled = !welcomePageMatch;
+
   const Header = (
     <PageHeader
       logo="Red Hat Migration Toolkit for Virtualization"
       logoProps={logoProps}
-      showNavToggle
-      isNavOpen={isNavOpen}
+      showNavToggle={isNavEnabled}
+      isNavOpen={isNavEnabled && isNavOpen}
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
     />
   );
@@ -72,7 +76,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <Page
       mainContainerId="primary-app-container"
       header={Header}
-      sidebar={Sidebar}
+      sidebar={isNavEnabled ? Sidebar : null}
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}
     >
