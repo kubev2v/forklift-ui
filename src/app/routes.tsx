@@ -3,10 +3,14 @@ import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import WelcomePage from '@app/WelcomePage/WelcomePage';
-import ProvidersPage from '@app/ProvidersPage/ProvidersPage';
-import PlansPage from '@app/PlansPage/PlansPage';
 import { LocalStorageContext } from './common/context/LocalStorageContext';
+import { APP_TITLE } from '@app/common/constants';
+import WelcomePage from '@app/Welcome/WelcomePage';
+import ProvidersPage from '@app/Providers/ProvidersPage';
+import PlansPage from '@app/Plans/PlansPage';
+import NetworkMappingsPage from '@app/Mappings/Network/NetworkMappingsPage';
+import StorageMappingsPage from '@app/Mappings/Storage/StorageMappingsPage';
+import HooksPage from '@app/Hooks/HooksPage';
 
 let routeFocusTimer: number;
 
@@ -19,14 +23,22 @@ export interface IAppRoute {
   path: string;
   title: string;
   isAsync?: boolean;
+  routes?: undefined;
 }
 
-export const routes: IAppRoute[] = [
+export interface IAppRouteGroup {
+  label: string;
+  routes: IAppRoute[];
+}
+
+export type AppRouteConfig = IAppRoute | IAppRouteGroup;
+
+export const routes: AppRouteConfig[] = [
   {
     component: WelcomePage,
     exact: true,
     path: '/welcome',
-    title: 'Migration Toolkit for Virtualization | Welcome',
+    title: `${APP_TITLE} | Welcome`,
     // No label property, so it won't be rendered in the nav
   },
   {
@@ -34,14 +46,40 @@ export const routes: IAppRoute[] = [
     exact: true,
     label: 'Providers',
     path: '/providers',
-    title: 'Migration Toolkit for Virtualization | Providers',
+    title: `${APP_TITLE} | Providers`,
   },
   {
     component: PlansPage,
     exact: true,
     label: 'Migration Plans',
     path: '/plans',
-    title: 'Migration Toolkit for Virtualization | Migration Plans',
+    title: `${APP_TITLE} | Migration Plans`,
+  },
+  {
+    label: 'Mappings',
+    routes: [
+      {
+        component: NetworkMappingsPage,
+        exact: true,
+        label: 'Network',
+        path: '/mappings/network',
+        title: `${APP_TITLE} | Network Mappings`,
+      },
+      {
+        component: StorageMappingsPage,
+        exact: true,
+        label: 'Storage',
+        path: '/mappings/storage',
+        title: `${APP_TITLE} | Storage Mappings`,
+      },
+    ],
+  },
+  {
+    component: HooksPage,
+    exact: true,
+    label: 'Hooks',
+    path: '/hooks',
+    title: `${APP_TITLE} | Hooks`,
   },
 ];
 
@@ -76,6 +114,11 @@ const RouteWithTitleUpdates = ({
   return <Route render={routeWithTitle} />;
 };
 
+const flattenedRoutes: IAppRoute[] = routes.reduce(
+  (flattened, route) => [...flattened, ...(route.routes ? route.routes : [route])],
+  [] as IAppRoute[]
+);
+
 export const AppRoutes = (): React.ReactElement => {
   const { storageValues } = React.useContext(LocalStorageContext);
   return (
@@ -88,7 +131,7 @@ export const AppRoutes = (): React.ReactElement => {
             <Redirect to="/welcome" />
           )}
         </Route>
-        {routes.map(({ path, exact, component, title, isAsync }, idx) => (
+        {flattenedRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
           <RouteWithTitleUpdates
             path={path}
             exact={exact}
