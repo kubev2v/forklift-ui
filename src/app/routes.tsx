@@ -5,6 +5,7 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import WelcomePage from '@app/WelcomePage/WelcomePage';
 import ProvidersPage from '@app/ProvidersPage/ProvidersPage';
+import PlansPage from '@app/PlansPage/PlansPage';
 import { LocalStorageContext } from './common/context/LocalStorageContext';
 
 let routeFocusTimer: number;
@@ -22,6 +23,13 @@ export interface IAppRoute {
 
 export const routes: IAppRoute[] = [
   {
+    component: WelcomePage,
+    exact: true,
+    path: '/welcome',
+    title: 'Migration Toolkit for Virtualization | Welcome',
+    // No label property, so it won't be rendered in the nav
+  },
+  {
     component: ProvidersPage,
     exact: true,
     label: 'Providers',
@@ -29,10 +37,11 @@ export const routes: IAppRoute[] = [
     title: 'Migration Toolkit for Virtualization | Providers',
   },
   {
-    component: WelcomePage,
+    component: PlansPage,
     exact: true,
-    path: '/welcome',
-    title: 'Migration Toolkit for Virtualization | Welcome',
+    label: 'Migration Plans',
+    path: '/plans',
+    title: 'Migration Toolkit for Virtualization | Migration Plans',
   },
 ];
 
