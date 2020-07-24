@@ -9,19 +9,18 @@ import {
   PageSidebar,
   SkipToContent,
   NavExpandable,
+  Title,
+  PageHeaderTools,
 } from '@patternfly/react-core';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { APP_TITLE } from '@app/common/constants';
+import logoRedHat from '@app/common/logoRedHat.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
-  const logoProps = {
-    href: '/',
-    target: '_blank',
-  };
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
@@ -41,11 +40,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
 
   const Header = (
     <PageHeader
-      logo={APP_TITLE}
-      logoProps={logoProps}
+      logo={<Title headingLevel="h1">{APP_TITLE}</Title>}
+      logoComponent="span"
       showNavToggle={isNavEnabled}
       isNavOpen={isNavEnabled && isNavOpen}
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+      headerTools={
+        <PageHeaderTools>
+          <span dangerouslySetInnerHTML={{ __html: logoRedHat }} />
+        </PageHeaderTools>
+      }
     />
   );
 
