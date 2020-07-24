@@ -43,7 +43,6 @@ const ProvidersPage: React.FunctionComponent = () => {
             activeKey={activeTabType}
             onSelect={(_event, tabKey) => setActiveTabType(tabKey as string)}
             className={spacing.mtSm}
-            isBox
           >
             {tabs.map((tab) => (
               <Tab
