@@ -46,15 +46,13 @@ const LocalStorageContextProvider: React.FunctionComponent<ILocalStorageContextP
     }
   };
 
-  const initFromStorage = () => {
+  const updateFromStorage = () => {
     setValues(getLocalStorageValues());
   };
-
   React.useEffect(() => {
-    window.addEventListener('storage', initFromStorage);
-    initFromStorage();
+    window.addEventListener('storage', updateFromStorage);
     return () => {
-      window.removeEventListener('storage', initFromStorage);
+      window.removeEventListener('storage', updateFromStorage);
     };
   }, []);
 
