@@ -17,10 +17,12 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import logoMA from '@app/common/logoMA.svg';
-import { LocalStorageContext } from '@app/common/context/LocalStorageContext';
+import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
 
 const WelcomePage: React.FunctionComponent = () => {
-  const { storageValues, setStorageValues } = React.useContext(LocalStorageContext);
+  const [isPageHidden, setIsPageHidden] = useLocalStorageContext(
+    LocalStorageKey.isWelcomePageHidden
+  );
   const history = useHistory();
   return (
     <PageSection>
@@ -69,9 +71,9 @@ const WelcomePage: React.FunctionComponent = () => {
             <Checkbox
               label="Don't show this page again."
               id="show-page-checkbox"
-              isChecked={!!storageValues.isWelcomePageHidden}
+              isChecked={!!isPageHidden}
               onChange={(checked: boolean) => {
-                setStorageValues({ isWelcomePageHidden: checked ? 'true' : '' });
+                setIsPageHidden(checked ? 'true' : '');
               }}
             />
           </FlexItem>

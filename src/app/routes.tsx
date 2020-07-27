@@ -3,7 +3,11 @@ import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { LocalStorageContext } from './common/context/LocalStorageContext';
+import {
+  LocalStorageContext,
+  useLocalStorageContext,
+  LocalStorageKey,
+} from './common/context/LocalStorageContext';
 import { APP_TITLE } from '@app/common/constants';
 import WelcomePage from '@app/Welcome/WelcomePage';
 import ProvidersPage from '@app/Providers/ProvidersPage';
@@ -120,16 +124,12 @@ const flattenedRoutes: IAppRoute[] = routes.reduce(
 );
 
 export const AppRoutes = (): React.ReactElement => {
-  const { storageValues } = React.useContext(LocalStorageContext);
+  const [isWelcomePageHidden] = useLocalStorageContext(LocalStorageKey.isWelcomePageHidden);
   return (
     <LastLocationProvider>
       <Switch>
         <Route exact path="/">
-          {storageValues.isWelcomePageHidden ? (
-            <Redirect to="/providers" />
-          ) : (
-            <Redirect to="/welcome" />
-          )}
+          {isWelcomePageHidden ? <Redirect to="/providers" /> : <Redirect to="/welcome" />}
         </Route>
         {flattenedRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
           <RouteWithTitleUpdates

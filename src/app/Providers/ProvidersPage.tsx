@@ -13,9 +13,12 @@ import {
   Tabs,
   Tab,
   TabTitleText,
+  Level,
+  LevelItem,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 
 // TODO replace these flags with real state e.g. from redux
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
@@ -37,7 +40,17 @@ const ProvidersPage: React.FunctionComponent = () => {
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
-        <Title headingLevel="h1">Providers</Title>
+        <Level>
+          <LevelItem>
+            <Title headingLevel="h1">Providers</Title>
+          </LevelItem>
+          <LevelItem>
+            <Button variant="secondary" onClick={() => alert('TODO')}>
+              Add provider
+            </Button>
+          </LevelItem>
+        </Level>
+        <CloudAnalyticsInfoAlert />
         {areTabsVisible && (
           <Tabs
             activeKey={activeTabType}
