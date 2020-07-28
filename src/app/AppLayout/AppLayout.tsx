@@ -11,12 +11,12 @@ import {
   NavExpandable,
   Title,
   PageHeaderTools,
-  Divider,
 } from '@patternfly/react-core';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
 import logoRedHat from '@app/common/logoRedHat.svg';
-import './AppLayout.css';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -81,9 +81,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           (route, idx) =>
             route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
         )}
-        <Divider component="li" />
-        <NavItem to={CLOUD_MA_LINK.href} className="cloudMANavItem">
-          {CLOUD_MA_LINK.label}
+        <NavItem to={CLOUD_MA_LINK.href}>
+          {CLOUD_MA_LINK.label}{' '}
+          <ExternalLinkAltIcon className={spacing.mlSm} height="0.8em" width="0.8em" />
         </NavItem>
       </NavList>
     </Nav>
