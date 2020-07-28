@@ -17,6 +17,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
 import logoRedHat from '@app/common/logoRedHat.svg';
+import logoKonveyor from '@app/common/logoKonveyor.svg';
+import { APP_BRAND, BrandType } from 'src/global-flags';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -49,7 +51,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={
         <PageHeaderTools>
-          <span dangerouslySetInnerHTML={{ __html: logoRedHat }} />
+          <span
+            style={{ marginTop: '4px' }}
+            dangerouslySetInnerHTML={{
+              __html: APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor,
+            }}
+          />
         </PageHeaderTools>
       }
     />
