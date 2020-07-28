@@ -1,0 +1,5 @@
+.cloudMANavItem a::before {
+  border-bottom: none;
+}
+
+/* TODO do we want to add scss support? */

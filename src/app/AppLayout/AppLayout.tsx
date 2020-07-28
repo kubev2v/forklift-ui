@@ -11,10 +11,12 @@ import {
   NavExpandable,
   Title,
   PageHeaderTools,
+  Divider,
 } from '@patternfly/react-core';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
-import { APP_TITLE } from '@app/common/constants';
+import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
 import logoRedHat from '@app/common/logoRedHat.svg';
+import './AppLayout.css';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -79,6 +81,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           (route, idx) =>
             route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
         )}
+        <Divider component="li" />
+        <NavItem to={CLOUD_MA_LINK.href} className="cloudMANavItem">
+          {CLOUD_MA_LINK.label}
+        </NavItem>
       </NavList>
     </Nav>
   );
