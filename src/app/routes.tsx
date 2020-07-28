@@ -3,11 +3,7 @@ import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import {
-  LocalStorageContext,
-  useLocalStorageContext,
-  LocalStorageKey,
-} from './common/context/LocalStorageContext';
+import { useLocalStorageContext, LocalStorageKey } from './common/context/LocalStorageContext';
 import { APP_TITLE } from '@app/common/constants';
 import WelcomePage from '@app/Welcome/WelcomePage';
 import ProvidersPage from '@app/Providers/ProvidersPage';
