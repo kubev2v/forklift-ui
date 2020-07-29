@@ -19,6 +19,7 @@ import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
 import logoRedHat from '@app/common/logoRedHat.svg';
 import logoKonveyor from '@app/common/logoKonveyor.svg';
 import { APP_BRAND, BrandType } from 'src/global-flags';
+import './AppLayout.css';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -52,7 +53,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       headerTools={
         <PageHeaderTools>
           <span
-            style={{ marginTop: '4px' }}
+            className="headerBrandLogo"
             dangerouslySetInnerHTML={{
               __html: APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor,
             }}
