@@ -19,24 +19,19 @@ import {
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
+import ProvidersTable from './components/ProvidersTable';
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 // TODO replace these flags with real state e.g. from redux
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
 const providers = [{ mock: 'provider' }]; // TODO make a real mock here and move it somewhere common for now
 
-interface ITab {
-  type: string;
-  title: string;
-}
-
 const ProvidersPage: React.FunctionComponent = () => {
   const areTabsVisible = !isFetchingInitialProviders && providers.length > 0;
-  // TODO generate/filter this list of tabs from the available provider types, and use real constants
-  const tabs: ITab[] = [
-    { type: 'vmware', title: 'VMWare' },
-    { type: 'cnv', title: 'OpenShift virtualization' },
-  ];
-  const [activeTabType, setActiveTabType] = React.useState(tabs[0].type);
+  const availableProviderTypes: ProviderType[] = Object.values(ProviderType).filter(
+    (providerType) => true // TODO filter this list from the available providers in the API
+  );
+  const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
@@ -53,15 +48,15 @@ const ProvidersPage: React.FunctionComponent = () => {
         <CloudAnalyticsInfoAlert />
         {areTabsVisible && (
           <Tabs
-            activeKey={activeTabType}
-            onSelect={(_event, tabKey) => setActiveTabType(tabKey as string)}
+            activeKey={activeProviderType}
+            onSelect={(_event, tabKey) => setActiveProviderType(tabKey as ProviderType)}
             className={spacing.mtSm}
           >
-            {tabs.map((tab) => (
+            {availableProviderTypes.map((providerType) => (
               <Tab
-                key={tab.type}
-                eventKey={tab.type}
-                title={<TabTitleText>{tab.title}</TabTitleText>}
+                key={providerType}
+                eventKey={providerType}
+                title={<TabTitleText>{PROVIDER_TYPE_NAMES[providerType]}</TabTitleText>}
               />
             ))}
           </Tabs>
@@ -97,8 +92,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                // TODO make a ProvidersTable component here and pass the active tab as a prop
-                <div>Tab content here! {tabs.find((tab) => tab.type === activeTabType)?.title}</div>
+                <ProvidersTable activeProviderType={activeProviderType} />
               )}
             </CardBody>
           </Card>
