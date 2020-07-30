@@ -16,7 +16,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
-import logoMA from '@app/common/logoMA.svg';
+import logoMA from './logoMA.svg';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
 
 const WelcomePage: React.FunctionComponent = () => {

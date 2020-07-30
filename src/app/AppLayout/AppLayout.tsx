@@ -16,8 +16,8 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
-import logoRedHat from '@app/common/logoRedHat.svg';
-import logoKonveyor from '@app/common/logoKonveyor.svg';
+import logoRedHat from './logoRedHat.svg';
+import logoKonveyor from './logoKonveyor.svg';
 import { APP_BRAND, BrandType } from 'src/global-flags';
 import './AppLayout.css';
 
