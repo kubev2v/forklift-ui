@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import {
-  DataToolbarFilter,
+  ToolbarFilter,
   InputGroup,
   TextInput,
   Button,
@@ -21,9 +21,9 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
   showToolbarItem,
 }: ISearchFilterControlProps) => {
   // Keep internal copy of value until submitted by user
-  const [inputValue, setInputValue] = useState((filterValue && filterValue[0]) || '');
+  const [inputValue, setInputValue] = React.useState((filterValue && filterValue[0]) || '');
   // Update it if it changes externally
-  useEffect(() => {
+  React.useEffect(() => {
     setInputValue((filterValue && filterValue[0]) || '');
   }, [filterValue]);
 
@@ -31,15 +31,13 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
 
   const id = `${category.key}-input`;
   return (
-    <DataToolbarFilter
+    <ToolbarFilter
       chips={filterValue || []}
       deleteChip={() => setFilterValue([])}
       categoryName={category.title}
       showToolbarItem={showToolbarItem}
     >
       <InputGroup>
-        {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           name={id}
           id={id}
@@ -61,7 +59,7 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
           <SearchIcon />
         </Button>
       </InputGroup>
-    </DataToolbarFilter>
+    </ToolbarFilter>
   );
 };
 

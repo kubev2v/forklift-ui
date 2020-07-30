@@ -1,10 +1,5 @@
-import React, { useState } from 'react';
-import {
-  DataToolbarFilter,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-} from '@patternfly/react-core';
+import * as React from 'react';
+import { ToolbarFilter, Select, SelectOption, SelectOptionObject } from '@patternfly/react-core';
 import { IFilterControlProps } from './FilterControl';
 import { ISelectFilterCategory } from './FilterToolbar';
 
@@ -18,23 +13,23 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
   setFilterValue,
   showToolbarItem,
 }: ISelectFilterControlProps) => {
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
 
   const getOptionKeyFromOptionValue = (optionValue: string | SelectOptionObject) =>
-    category.selectOptions.find((optionProps) => optionProps.value === optionValue).key;
-  const getChipFromOptionValue = (optionValue: string | SelectOptionObject) =>
-    optionValue.toString();
+    category.selectOptions.find((optionProps) => optionProps.value === optionValue)?.key;
+  const getChipFromOptionValue = (optionValue: string | SelectOptionObject | undefined) =>
+    optionValue ? optionValue.toString() : '';
   const getOptionKeyFromChip = (chip: string) =>
-    category.selectOptions.find((optionProps) => optionProps.value.toString() === chip).key;
+    category.selectOptions.find((optionProps) => optionProps.value.toString() === chip)?.key;
   const getOptionValueFromOptionKey = (optionKey: string) =>
-    category.selectOptions.find((optionProps) => optionProps.key === optionKey).value;
+    category.selectOptions.find((optionProps) => optionProps.key === optionKey)?.value;
 
   const onFilterSelect = (value: string | SelectOptionObject) => {
     const optionKey = getOptionKeyFromOptionValue(value);
     // Currently this implements single-select, multiple-select is also a design option.
     // If we need multi-select filters in the future we can add that support here.
     // https://www.patternfly.org/v4/design-guidelines/usage-and-behavior/filters#attribute-value-textbox-filters
-    setFilterValue([optionKey]);
+    setFilterValue(optionKey ? [optionKey] : null);
     setIsFilterDropdownOpen(false);
   };
   const onFilterClear = (chip: string) => {
@@ -48,7 +43,7 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
   const chips = selections ? selections.map(getChipFromOptionValue) : [];
 
   return (
-    <DataToolbarFilter
+    <ToolbarFilter
       chips={chips}
       deleteChip={(_, chip) => onFilterClear(chip as string)}
       categoryName={category.title}
@@ -57,16 +52,16 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
       <Select
         aria-label={category.title}
         onToggle={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-        selections={selections}
+        selections={selections || []}
         onSelect={(_, value) => onFilterSelect(value)}
-        isExpanded={isFilterDropdownOpen}
+        isOpen={isFilterDropdownOpen}
         placeholderText="Any"
       >
         {category.selectOptions.map((optionProps) => (
-          <SelectOption {...optionProps} />
+          <SelectOption {...optionProps} key={optionProps.key} />
         ))}
       </Select>
-    </DataToolbarFilter>
+    </ToolbarFilter>
   );
 };
 

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   SelectOptionProps,
-  DataToolbar,
-  DataToolbarContent,
-  DataToolbarToggleGroup,
-  DataToolbarItem,
+  Toolbar,
+  ToolbarContent,
+  ToolbarToggleGroup,
+  ToolbarItem,
   Dropdown,
   DropdownToggle,
   DropdownItem,
@@ -18,7 +18,7 @@ export enum FilterType {
   search = 'search',
 }
 
-export type FilterValue = string[];
+export type FilterValue = string[] | undefined | null;
 
 export interface OptionPropsWithKey extends SelectOptionProps {
   key: string;
@@ -56,8 +56,8 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   filterValues,
   setFilterValues,
 }: IFilterToolbarProps) => {
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [currentCategoryKey, setCurrentCategoryKey] = useState(filterCategories[0].key);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
+  const [currentCategoryKey, setCurrentCategoryKey] = React.useState(filterCategories[0].key);
 
   const onCategorySelect = (category) => {
     setCurrentCategoryKey(category.key);
@@ -72,14 +72,14 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   );
 
   return (
-    <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
-      <DataToolbarContent>
-        <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
-          <DataToolbarItem>
+    <Toolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
+      <ToolbarContent>
+        <ToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
+          <ToolbarItem>
             <Dropdown
               toggle={
                 <DropdownToggle onToggle={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}>
-                  <FilterIcon /> {currentFilterCategory.title}
+                  <FilterIcon /> {currentFilterCategory?.title}
                 </DropdownToggle>
               }
               isOpen={isCategoryDropdownOpen}
@@ -89,18 +89,18 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
                 </DropdownItem>
               ))}
             />
-          </DataToolbarItem>
+          </ToolbarItem>
           {filterCategories.map((category) => (
             <FilterControl
               key={category.key}
               category={category}
               filterValue={filterValues[category.key]}
               setFilterValue={(newValue) => setFilterValue(category, newValue)}
-              showToolbarItem={currentFilterCategory.key === category.key}
+              showToolbarItem={currentFilterCategory?.key === category.key}
             />
           ))}
-        </DataToolbarToggleGroup>
-      </DataToolbarContent>
-    </DataToolbar>
+        </ToolbarToggleGroup>
+      </ToolbarContent>
+    </Toolbar>
   );
 };
