@@ -21,6 +21,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import AddProviderModal from './components/AddProviderModal';
 
 // TODO replace these flags with real state e.g. from redux
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
@@ -32,6 +33,7 @@ const ProvidersPage: React.FunctionComponent = () => {
     (providerType) => true // TODO filter this list from the available providers in the API
   );
   const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
@@ -40,7 +42,7 @@ const ProvidersPage: React.FunctionComponent = () => {
             <Title headingLevel="h1">Providers</Title>
           </LevelItem>
           <LevelItem>
-            <Button variant="secondary" onClick={() => alert('TODO')}>
+            <Button variant="secondary" onClick={() => setIsAddModalOpen(true)}>
               Add provider
             </Button>
           </LevelItem>
@@ -98,6 +100,7 @@ const ProvidersPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
+      {isAddModalOpen ? <AddProviderModal onClose={() => setIsAddModalOpen(false)} /> : null}
     </>
   );
 };
