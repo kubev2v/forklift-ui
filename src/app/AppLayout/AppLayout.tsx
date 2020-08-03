@@ -18,7 +18,7 @@ import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
 import logoRedHat from './logoRedHat.svg';
 import logoKonveyor from './logoKonveyor.svg';
-import { APP_BRAND, BrandType } from 'src/global-flags';
+import { APP_BRAND, BrandType } from '@app/global-flags';
 import './AppLayout.css';
 
 interface IAppLayout {
