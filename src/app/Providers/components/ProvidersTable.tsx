@@ -37,6 +37,7 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
 
   // TODO we're probably going to run into this same issue:
   // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const onSelect = (event, isSelected, rowIndex, rowData) => {};
 
   return (
