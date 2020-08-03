@@ -1,6 +1,8 @@
 # virt-ui
 
-OpenShift VM Migration UI
+Migration Toolkit for Virtualization
+
+[![Build Status](https://travis-ci.com/mturley/virt-ui.svg?branch=master)](https://travis-ci.com/mturley/virt-ui)
 
 ## TODO: replace patternfly-react-seed readme contents with project-specific readme
 
