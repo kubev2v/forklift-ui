@@ -1,21 +1,55 @@
 import * as React from 'react';
-import { usePaginationState } from '@app/common/hooks';
 import { Pagination } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import { ProviderType } from '@app/common/constants';
-
-// TODO replace this with real data from e.g. redux
-const providers = [];
+import { useSortState, usePaginationState } from '@app/common/hooks';
 
 interface IProvidersTableProps {
+  providers: any[]; // TODO
   activeProviderType: ProviderType;
 }
 
-const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({ activeProviderType }) => {
-  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(providers, 10);
+const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
+  providers,
+  activeProviderType,
+}) => {
+  const columns = [
+    { title: 'Name', transforms: [sortable] },
+    { title: 'Endpoint', transforms: [sortable] },
+    { title: 'Clusters', transforms: [sortable] },
+    { title: 'Hosts', transforms: [sortable] },
+    { title: 'VMs', transforms: [sortable] },
+    { title: 'Networks', transforms: [sortable] },
+    { title: 'Datastores', transforms: [sortable] },
+    { title: 'Status', transforms: [sortable] },
+  ];
+
+  const getSortValues = () => ['', '', '', '', '', '', '', ''];
+
+  const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  React.useEffect(() => setPageNumber(1), [sortBy]); // TODO does it break if I add exhaustive deps here?
+
+  const rows = currentPageItems.map((provider) => ({
+    // TODO formatting from real data
+    cells: ['VCenter1', 'vdaddy', 2, '* 15', 41, 8, 3, '* Ready'],
+  }));
+
+  // TODO selectable, actions
+
   return (
     <>
       <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
-      TODO: table for {activeProviderType}
+      <Table
+        aria-label="Providers table"
+        cells={columns}
+        rows={rows}
+        sortBy={sortBy}
+        onSort={onSort}
+      >
+        <TableHeader />
+        <TableBody />
+      </Table>
       <Pagination
         {...paginationProps}
         widgetId="providers-table-pagination-bottom"

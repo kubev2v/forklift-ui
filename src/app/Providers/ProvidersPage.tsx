@@ -25,7 +25,7 @@ import AddProviderModal from './components/AddProviderModal';
 
 // TODO replace these flags with real state e.g. from redux
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
-const providers = [{ mock: 'provider' }]; // TODO make a real mock here and move it somewhere common for now
+const providers = [{}, {}, {}, {}, {}]; // TODO make a real mock here and move it somewhere common for now
 
 const ProvidersPage: React.FunctionComponent = () => {
   const areTabsVisible = !isFetchingInitialProviders && providers.length > 0;
@@ -94,7 +94,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <ProvidersTable activeProviderType={activeProviderType} />
+                <ProvidersTable providers={providers} activeProviderType={activeProviderType} />
               )}
             </CardBody>
           </Card>
