@@ -1,14 +1,14 @@
 const path = require('path');
-const merge = require("webpack-merge");
-const common = require("./webpack.common.js");
-const HOST = process.env.HOST || "0.0.0.0";
-const PORT = process.env.PORT || "9000";
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
+const HOST = process.env.HOST || '0.0.0.0';
+const PORT = process.env.PORT || '9000';
 
 module.exports = merge(common('development'), {
-  mode: "development",
-  devtool: "eval-source-map",
+  mode: 'development',
+  devtool: 'eval-source-map',
   devServer: {
-    contentBase: "./dist",
+    contentBase: './dist',
     host: HOST,
     port: PORT,
     compress: true,
@@ -16,7 +16,7 @@ module.exports = merge(common('development'), {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: true
+    open: true,
   },
   module: {
     rules: [
@@ -28,13 +28,25 @@ module.exports = merge(common('development'), {
           path.resolve(__dirname, 'node_modules/@patternfly/patternfly'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/base.css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+          path.resolve(
+            __dirname,
+            'node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+          ),
+          path.resolve(
+            __dirname,
+            'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+          ),
         ],
-        use: ["style-loader", "css-loader"]
-      }
-    ]
-  }
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
 });
