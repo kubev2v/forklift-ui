@@ -35,7 +35,9 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
     cells: ['VCenter1', 'vdaddy', 2, '* 15', 41, 8, 3, '* Ready'],
   }));
 
-  // TODO selectable, actions
+  // TODO we're probably going to run into this same issue:
+  // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75
+  const onSelect = (event, isSelected, rowIndex, rowData) => {};
 
   return (
     <>
@@ -46,6 +48,8 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
+        onSelect={onSelect}
+        actions={[{ title: 'Some action', onClick: () => alert('TODO') }]}
       >
         <TableHeader />
         <TableBody />
