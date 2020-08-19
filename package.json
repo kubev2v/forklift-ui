@@ -70,6 +70,7 @@
     "@patternfly/react-icons": "^4.5.0",
     "@patternfly/react-styles": "^4.5.0",
     "@patternfly/react-table": "^4.12.1",
+    "classnames": "^2.2.6",
     "express": "^4.17.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

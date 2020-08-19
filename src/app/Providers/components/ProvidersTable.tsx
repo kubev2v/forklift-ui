@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Pagination } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { OutlinedHddIcon } from '@patternfly/react-icons';
 import { ProviderType } from '@app/common/constants';
 import { useSortState, usePaginationState } from '@app/common/hooks';
+import StatusIcon, { StatusType } from '@app/common/components/StatusIcon';
 
 interface IProvidersTableProps {
   providers: any[]; // TODO
@@ -32,7 +34,28 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
 
   const rows = currentPageItems.map((provider) => ({
     // TODO formatting from real data
-    cells: ['VCenter1', 'vdaddy', 2, '* 15', 41, 8, 3, '* Ready'],
+    cells: [
+      'VCenter1',
+      'vdaddy',
+      2,
+      {
+        title: (
+          <>
+            <OutlinedHddIcon /> 15
+          </>
+        ),
+      },
+      41,
+      8,
+      3,
+      {
+        title: (
+          <>
+            <StatusIcon status={StatusType.Ok} /> Ready
+          </>
+        ),
+      },
+    ],
   }));
 
   // TODO we're probably going to run into this same issue:
