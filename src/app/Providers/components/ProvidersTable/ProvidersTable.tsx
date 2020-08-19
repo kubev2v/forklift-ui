@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination } from '@patternfly/react-core';
+import { Pagination, Button } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -11,6 +11,7 @@ import {
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { ProviderType } from '@app/common/constants';
 import { useSortState, usePaginationState } from '@app/common/hooks';
@@ -39,7 +40,7 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
-  const getSortValues = () => ['', '', '', '', '', '', '', ''];
+  const getSortValues = () => ['', '', '', '', '', '', '', '']; // TODO
 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
@@ -81,8 +82,20 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       compoundExpand: 3,
       cells: [
         {
-          title: <ProviderHostsTable id="provider-0-hosts-expanded" />,
-          props: { colSpan: columns.length, className: spacing['p_0'] },
+          title: (
+            <div className={`${spacing.myMd}`}>
+              <div className={`${alignment.textAlignRight} ${spacing.mrSm}`}>
+                <Button variant="secondary" onClick={() => alert('TODO')}>
+                  Select migration network
+                </Button>
+              </div>
+              <ProviderHostsTable
+                id="provider-0-hosts-expanded"
+                hosts={[{}, {}]} // TODO use real data from the provider object
+              />
+            </div>
+          ),
+          props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
         },
       ],
     },
