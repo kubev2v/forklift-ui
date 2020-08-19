@@ -82,6 +82,11 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       compoundExpand: 3,
       cells: [
         {
+          // TODO WTF do we do about the first cell in this row.
+          //   It's added automatically because of the `onSelect`, as a checkbox row, but it's empty?
+          //   It screws up the spacing of the inner table. There doesn't seem to be a way to remove it.
+          //   I think we'll have to remove the onSelect prop of Table and implement our own checkbox row...
+          //   TODO: open an issue on patternfly for this
           title: (
             <div className={`${spacing.myMd}`}>
               <div className={`${alignment.textAlignRight} ${spacing.mrSm}`}>
