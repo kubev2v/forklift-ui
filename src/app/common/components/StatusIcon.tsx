@@ -17,17 +17,17 @@ export enum StatusType {
   Error = 'Error',
 }
 
-interface IProps {
+interface IStatusIconProps {
   status: StatusType;
   isDisabled?: boolean;
   className?: string;
 }
 
-const StatusIcon: React.FunctionComponent<IProps> = ({
+const StatusIcon: React.FunctionComponent<IStatusIconProps> = ({
   status,
   isDisabled,
   className = '',
-}: IProps) => {
+}: IStatusIconProps) => {
   if (status === StatusType.Ok) {
     return (
       <CheckCircleIcon

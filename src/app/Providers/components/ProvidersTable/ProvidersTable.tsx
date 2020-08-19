@@ -16,6 +16,7 @@ import { ProviderType } from '@app/common/constants';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import StatusIcon, { StatusType } from '@app/common/components/StatusIcon';
 import ProviderActionsDropdown from './ProviderActionsDropdown';
+import ProviderHostsTable from './ProviderHostsTable';
 
 interface IProvidersTableProps {
   providers: any[]; // TODO
@@ -80,7 +81,7 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       compoundExpand: 3,
       cells: [
         {
-          title: <div id="provider-0-hosts-expanded">TODO: inline table</div>,
+          title: <ProviderHostsTable id="provider-0-hosts-expanded" />,
           props: { colSpan: columns.length, className: spacing['p_0'] },
         },
       ],
