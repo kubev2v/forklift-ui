@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { Checkbox } from '@patternfly/react-core';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  sortable,
+  classNames as classNamesTransform,
+} from '@patternfly/react-table';
+import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState } from '@app/common/hooks';
 
 interface IProviderHostsTableProps {
@@ -12,6 +20,19 @@ const ProviderHostsTable: React.FunctionComponent<IProviderHostsTableProps> = ({
   hosts,
 }: IProviderHostsTableProps) => {
   const columns = [
+    {
+      // TODO maybe onSelect was fine here?
+      // Using a custom column instead of Table's onSelect prop due to issues
+      title: (
+        <Checkbox
+          id="select-all-checkbox"
+          aria-label="Select all providers"
+          isChecked={false} // TODO
+          onChange={(checked) => alert('TODO')}
+        />
+      ),
+      columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
+    },
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
     { title: 'Bandwidth', transforms: [sortable] },
@@ -23,13 +44,23 @@ const ProviderHostsTable: React.FunctionComponent<IProviderHostsTableProps> = ({
 
   const rows = sortedItems.map((host) => ({
     // TODO formatting from real data
-    cells: ['host1', 'management network - 192.168.0.0/24 (default)', '1 GB / s', '1499'],
+    cells: [
+      {
+        title: (
+          <Checkbox
+            id="select-provider-NAME" // TODO
+            aria-label="Select provider NAME" // TODO
+            isChecked={false} // TODO
+            onChange={(checked) => alert('TODO')}
+          />
+        ),
+      },
+      'host1',
+      'management network - 192.168.0.0/24 (default)',
+      '1 GB / s',
+      '1499',
+    ],
   }));
-
-  // TODO we're probably going to run into this same issue:
-  // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onSelect = (event, isSelected, rowIndex, rowData) => {};
 
   return (
     <Table
@@ -39,7 +70,6 @@ const ProviderHostsTable: React.FunctionComponent<IProviderHostsTableProps> = ({
       rows={rows}
       sortBy={sortBy}
       onSort={onSort}
-      onSelect={onSelect}
     >
       <TableHeader />
       <TableBody />

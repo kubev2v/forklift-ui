@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, Button } from '@patternfly/react-core';
+import { Pagination, Button, Checkbox } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -29,6 +29,18 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   activeProviderType,
 }) => {
   const columns = [
+    {
+      // Using a custom column instead of Table's onSelect prop due to issues
+      title: (
+        <Checkbox
+          id="select-all-checkbox"
+          aria-label="Select all providers"
+          isChecked={false} // TODO
+          onChange={(checked) => alert('TODO')}
+        />
+      ),
+      columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
+    },
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
     { title: 'Clusters', transforms: [sortable] },
@@ -51,6 +63,17 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       // TODO formatting from real data
       isOpen: true,
       cells: [
+        {
+          // TODO need to just use <input> directly here? wrapper div is screwing up tableCheck padding
+          title: (
+            <Checkbox
+              id="select-provider-NAME" // TODO
+              aria-label="Select provider NAME" // TODO
+              isChecked={false} // TODO
+              onChange={(checked) => alert('TODO')}
+            />
+          ),
+        },
         'VCenter1',
         'fooendpoint',
         2,
@@ -82,11 +105,6 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       compoundExpand: 3,
       cells: [
         {
-          // TODO WTF do we do about the first cell in this row.
-          //   It's added automatically because of the `onSelect`, as a checkbox row, but it's empty?
-          //   It screws up the spacing of the inner table. There doesn't seem to be a way to remove it.
-          //   I think we'll have to remove the onSelect prop of Table and implement our own checkbox row...
-          //   TODO: open an issue on patternfly for this
           title: (
             <div className={`${spacing.myMd}`}>
               <div className={`${alignment.textAlignRight} ${spacing.mrSm}`}>
@@ -100,16 +118,11 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
               />
             </div>
           ),
-          props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
+          props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
         },
       ],
     },
   ]);
-
-  // TODO we're probably going to run into this same issue:
-  // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onSelect = (event, isSelected, rowIndex, rowData) => {};
 
   return (
     <>
@@ -120,7 +133,6 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onSelect={onSelect}
       >
         <TableHeader />
         <TableBody />
