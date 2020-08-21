@@ -23,15 +23,16 @@ import ProvidersTable from './components/ProvidersTable';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
 
-// TODO replace these flags with real state e.g. from redux
+// TODO replace these with real state e.g. from redux
+import { MOCK_PROVIDERS } from './mocks/providers.mock';
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
-const providers = [{}, {}, {}, {}, {}]; // TODO make a real mock here and move it somewhere common for now
+const providers = MOCK_PROVIDERS;
 
 const ProvidersPage: React.FunctionComponent = () => {
   const areTabsVisible = !isFetchingInitialProviders && providers.length > 0;
-  const availableProviderTypes: ProviderType[] = Object.values(ProviderType).filter(
-    (providerType) => true // TODO filter this list from the available providers in the API
-  );
+  const availableProviderTypes: ProviderType[] = Object.values(
+    ProviderType
+  ).filter((providerType) => providers.some((provider) => provider.spec.type === providerType));
   const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   return (

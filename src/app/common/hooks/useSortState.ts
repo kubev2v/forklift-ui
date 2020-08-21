@@ -18,14 +18,17 @@ export const useSortState = (
     setSortBy({ index, direction });
   };
 
-  const sortedItems = [...items].sort((a: any, b: any) => {
-    const { index, direction } = sortBy;
-    const aValue = getSortValues(a)[index || 0];
-    const bValue = getSortValues(b)[index || 0];
-    if (aValue < bValue) return direction === SortByDirection.asc ? -1 : 1;
-    if (aValue > bValue) return direction === SortByDirection.asc ? 1 : -1;
-    return 0;
-  });
+  let sortedItems = items;
+  if (sortBy.index !== undefined && sortBy.direction !== undefined) {
+    sortedItems = [...items].sort((a: any, b: any) => {
+      const { index, direction } = sortBy;
+      const aValue = getSortValues(a)[index || 0];
+      const bValue = getSortValues(b)[index || 0];
+      if (aValue < bValue) return direction === SortByDirection.asc ? -1 : 1;
+      if (aValue > bValue) return direction === SortByDirection.asc ? 1 : -1;
+      return 0;
+    });
+  }
 
   return { sortBy, onSort, sortedItems };
 };

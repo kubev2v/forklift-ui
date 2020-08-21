@@ -63,7 +63,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             placeholderText="Select a provider type..."
           />
         </FormGroup>
-        {providerType === ProviderType.vmware ? (
+        {providerType === ProviderType.vsphere ? (
           <>
             <FormGroup label="Name" isRequired fieldId="vmware-name">
               <TextInput id="vmware-name" value={vmwareName} type="text" onChange={setVmwareName} />

@@ -8,15 +8,17 @@ import {
   compoundExpand,
   classNames as classNamesTransform,
   ICell,
+  IRow,
 } from '@patternfly/react-table';
 import { DatabaseIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import CNVProviderActionsDropdown from './CNVProviderActionsDropdown';
-import StatusIcon, { StatusType } from '@app/common/components/StatusIcon';
+import { ICNVProvider } from '@app/Providers/types';
+import ProviderStatus from '../ProviderStatus';
 
 interface ICNVProvidersTableProps {
-  providers: any[]; // TODO
+  providers: ICNVProvider[];
 }
 
 const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
@@ -33,57 +35,68 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
-  const getSortValues = () => ['', '', '', '', '', '', '', '']; // TODO
+  const getSortValues = (provider: ICNVProvider) => {
+    const { numNamespaces, numVMs, numNetworks } = provider.resourceCounts;
+    return [
+      provider.metadata.name,
+      provider.spec.url,
+      numNamespaces,
+      numVMs,
+      numNetworks,
+      provider.metadata.storageClasses.length,
+      provider.status.conditions[0].type, // TODO maybe surface the most serious status condition?,
+      '',
+    ];
+  };
 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
-  React.useEffect(() => setPageNumber(1), [sortBy]); // TODO does it break if I add exhaustive deps here?
+  React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const rows = currentPageItems.flatMap((provider) => [
-    {
-      // TODO formatting from real data
-      cells: [
-        'my_OCPv_cluster1',
-        'https://my_OCPv_url',
-        '41',
-        '26',
-        '8',
-        {
-          title: (
-            <>
-              <DatabaseIcon key="storage-classes-icon" /> 3
-            </>
-          ),
-          props: { isOpen: true, ariaControls: 'provider-0-storage-classes-expanded' },
-        },
-        {
-          title: (
-            <>
-              <StatusIcon status={StatusType.Ok} /> Ready
-            </>
-          ),
-        },
-        { title: <CNVProviderActionsDropdown /> },
-      ],
-    },
-    {
-      // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
-      parent: 0,
-      compoundExpand: 5,
-      cells: [
-        {
-          title: (
-            <List>
-              <ListItem>gold</ListItem>
-              <ListItem>silver</ListItem>
-              <ListItem>bronze</ListItem>
-            </List>
-          ),
-          props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
-        },
-      ],
-    },
-  ]);
+  const rows: IRow[] = currentPageItems.flatMap((provider: ICNVProvider) => {
+    const { numNamespaces, numVMs, numNetworks } = provider.resourceCounts;
+    return [
+      {
+        cells: [
+          provider.metadata.name,
+          provider.spec.url,
+          numNamespaces,
+          numVMs,
+          numNetworks,
+          {
+            title: (
+              <>
+                <DatabaseIcon key="storage-classes-icon" />{' '}
+                {provider.metadata.storageClasses.length}
+              </>
+            ),
+            props: { isOpen: true, ariaControls: 'provider-0-storage-classes-expanded' }, // TODO ?
+          },
+          {
+            title: <ProviderStatus provider={provider} />,
+          },
+          { title: <CNVProviderActionsDropdown /> },
+        ],
+      },
+      {
+        // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
+        parent: 0,
+        compoundExpand: 5,
+        cells: [
+          {
+            title: (
+              <List>
+                {provider.metadata.storageClasses.map((storageClass) => (
+                  <ListItem key={storageClass}>{storageClass}</ListItem>
+                ))}
+              </List>
+            ),
+            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+          },
+        ],
+      },
+    ];
+  });
 
   return (
     <>

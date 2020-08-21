@@ -1,16 +1,24 @@
 import * as React from 'react';
-import { Table, TableHeader, TableBody, sortable, ICell } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
 import { useSortState } from '@app/common/hooks';
+import { IVMWareProvider, IHost } from '@app/Providers/types';
+import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
+import { formatHostNetwork } from './helpers';
 
 interface IVMWareProviderHostsTableProps {
   id: string;
-  hosts: any[]; // TODO
+  provider: IVMWareProvider;
 }
+
+// TODO use real data instead of mocks
+const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 
 const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTableProps> = ({
   id,
-  hosts,
+  provider,
 }: IVMWareProviderHostsTableProps) => {
+  const hosts: IHost[] = hostsByProvider[provider.metadata.name];
+
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
@@ -18,13 +26,19 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
     { title: 'MTU', transforms: [sortable] },
   ];
 
-  const getSortValues = () => ['', '', '', '']; // TODO
+  const getSortValues = (host: IHost) => {
+    const { name, bandwidth, mtu } = host.metadata;
+    // First cell is the generated checkbox from using onSelect.
+    return ['', name, formatHostNetwork(host), bandwidth, mtu];
+  };
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
 
-  const rows = sortedItems.map((host) => ({
-    // TODO formatting from real data
-    cells: ['host1', 'management network - 192.168.0.0/24 (default)', '1 GB / s', '1499'],
-  }));
+  const rows: IRow[] = sortedItems.map((host: IHost) => {
+    const { name, bandwidth, mtu } = host.metadata;
+    return {
+      cells: [name, formatHostNetwork(host), bandwidth, mtu],
+    };
+  });
 
   // TODO we're probably going to run into this same issue:
   // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75

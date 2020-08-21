@@ -8,6 +8,7 @@ import {
   compoundExpand,
   classNames as classNamesTransform,
   ICell,
+  IRow,
 } from '@patternfly/react-table';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
@@ -15,14 +16,15 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import StatusIcon, { StatusType } from '@app/common/components/StatusIcon';
 import VMWareProviderActionsDropdown from './VMWareProviderActionsDropdown';
 import VMWareProviderHostsTable from './VMWareProviderHostsTable';
 
 import './VMWareProvidersTable.css';
+import { IVMWareProvider } from '@app/Providers/types';
+import ProviderStatus from '../ProviderStatus';
 
 interface IVMWareProvidersTableProps {
-  providers: any[]; // TODO
+  providers: IVMWareProvider[];
 }
 
 const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> = ({
@@ -54,79 +56,92 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
-  const getSortValues = () => ['', '', '', '', '', '', '', '', '', '']; // TODO
+  const getSortValues = (provider: IVMWareProvider) => {
+    const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
+    return [
+      '',
+      provider.metadata.name,
+      provider.spec.url,
+      numClusters,
+      numHosts,
+      numVMs,
+      numNetworks,
+      numDatastores,
+      provider.status.conditions[0].type, // TODO maybe surface the most serious status condition?
+      '',
+    ];
+  };
 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
-  React.useEffect(() => setPageNumber(1), [sortBy]); // TODO does it break if I add exhaustive deps here?
+  React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const rows = currentPageItems.flatMap((provider) => [
-    {
-      // TODO formatting from real data
-      isOpen: true,
-      cells: [
-        {
-          title: (
-            <input
-              type="checkbox"
-              aria-label="Select provider NAME" // TODO
-              onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                alert(event.currentTarget.checked); // TODO
-              }}
-              checked={false} // TODO
-            />
-          ),
-        },
-        'VCenter1',
-        'fooendpoint',
-        2,
-        {
-          title: (
-            <>
-              <OutlinedHddIcon key="hosts-icon" /> 15
-            </>
-          ),
-          props: { isOpen: true, ariaControls: 'provider-0-hosts-expanded' },
-        },
-        41,
-        8,
-        3,
-        {
-          title: (
-            <>
-              <StatusIcon status={StatusType.Ok} /> Ready
-            </>
-          ),
-        },
-        {
-          title: <VMWareProviderActionsDropdown />,
-        },
-      ],
-    },
-    {
-      // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
-      parent: 0,
-      compoundExpand: 4,
-      cells: [
-        {
-          title: (
-            <>
-              <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
-                <Button variant="secondary" onClick={() => alert('TODO')} isDisabled>
-                  Select migration network
-                </Button>
-              </div>
-              <VMWareProviderHostsTable
-                id="provider-0-hosts-expanded"
-                hosts={[{}, {}]} // TODO use real data from the provider object
+  const rows: IRow[] = currentPageItems.flatMap((provider: IVMWareProvider) => {
+    const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
+    return [
+      {
+        isOpen: true,
+        cells: [
+          {
+            title: (
+              <input
+                type="checkbox"
+                aria-label={`Select provider ${provider.metadata.name}`}
+                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                  alert(event.currentTarget.checked); // TODO
+                }}
+                checked={false} // TODO
               />
-            </>
-          ),
-          props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
-        },
-      ],
-    },
-  ]);
+            ),
+          },
+          provider.metadata.name,
+          provider.spec.url,
+          numClusters,
+          {
+            title: (
+              <>
+                <OutlinedHddIcon key="hosts-icon" /> {numHosts}
+              </>
+            ),
+            props: { isOpen: true, ariaControls: 'provider-0-hosts-expanded' },
+          },
+          numVMs,
+          numNetworks,
+          numDatastores,
+          {
+            title: <ProviderStatus provider={provider} />,
+          },
+          {
+            title: <VMWareProviderActionsDropdown />,
+          },
+        ],
+      },
+      {
+        // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
+        parent: 0,
+        compoundExpand: 4,
+        cells: [
+          {
+            title: (
+              <>
+                <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => alert('TODO')}
+                    isDisabled /* TODO enable when hosts are selected */
+                  >
+                    Select migration network
+                  </Button>
+                </div>
+                <VMWareProviderHostsTable id="provider-0-hosts-expanded" provider={provider} />
+              </>
+            ),
+            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+          },
+        ],
+      },
+    ];
+  });
 
   return (
     <>

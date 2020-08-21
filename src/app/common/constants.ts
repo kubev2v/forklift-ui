@@ -6,11 +6,11 @@ export const CLOUD_MA_LINK = {
 };
 
 export enum ProviderType {
-  vmware = 'vmware',
+  vsphere = 'vsphere',
   cnv = 'cnv',
 }
 
 export const PROVIDER_TYPE_NAMES = {
-  [ProviderType.vmware]: 'VMWare',
+  [ProviderType.vsphere]: 'VMWare',
   [ProviderType.cnv]: 'OpenShift virtualization',
 };
