@@ -19,6 +19,8 @@ import StatusIcon, { StatusType } from '@app/common/components/StatusIcon';
 import ProviderActionsDropdown from './ProviderActionsDropdown';
 import ProviderHostsTable from './ProviderHostsTable';
 
+import './ProvidersTable.css';
+
 interface IProvidersTableProps {
   providers: any[]; // TODO
   activeProviderType: ProviderType;
@@ -32,11 +34,13 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
     {
       // Using a custom column instead of Table's onSelect prop due to issues
       title: (
-        <Checkbox
-          id="select-all-checkbox"
+        <input
+          type="checkbox"
           aria-label="Select all providers"
-          isChecked={false} // TODO
-          onChange={(checked) => alert('TODO')}
+          onChange={(event: React.FormEvent<HTMLInputElement>) => {
+            alert(event.currentTarget.checked); // TODO
+          }}
+          checked={false} // TODO
         />
       ),
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
@@ -64,13 +68,14 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       isOpen: true,
       cells: [
         {
-          // TODO need to just use <input> directly here? wrapper div is screwing up tableCheck padding
           title: (
-            <Checkbox
-              id="select-provider-NAME" // TODO
+            <input
+              type="checkbox"
               aria-label="Select provider NAME" // TODO
-              isChecked={false} // TODO
-              onChange={(checked) => alert('TODO')}
+              onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                alert(event.currentTarget.checked); // TODO
+              }}
+              checked={false} // TODO
             />
           ),
         },
@@ -106,8 +111,8 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
       cells: [
         {
           title: (
-            <div className={`${spacing.myMd}`}>
-              <div className={`${alignment.textAlignRight} ${spacing.mrSm}`}>
+            <>
+              <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
                 <Button variant="secondary" onClick={() => alert('TODO')}>
                   Select migration network
                 </Button>
@@ -116,7 +121,7 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
                 id="provider-0-hosts-expanded"
                 hosts={[{}, {}]} // TODO use real data from the provider object
               />
-            </div>
+            </>
           ),
           props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
         },

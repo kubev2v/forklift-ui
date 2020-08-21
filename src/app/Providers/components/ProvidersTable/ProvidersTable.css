@@ -1,0 +1,3 @@
+.provider-inner-hosts-table tbody tr:last-child {
+  border-bottom: none;
+}
