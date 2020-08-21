@@ -84,12 +84,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                     No providers
                   </Title>
                   <EmptyStateBody>Add source and target providers for migrations.</EmptyStateBody>
-                  <Button
-                    onClick={() => {
-                      /* eslint-ignore */
-                    }}
-                    variant="primary"
-                  >
+                  <Button onClick={() => alert('TODO')} variant="primary">
                     Add provider
                   </Button>
                 </EmptyState>

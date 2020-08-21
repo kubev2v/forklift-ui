@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, sortable, ICell } from '@patternfly/react-table';
 import { useSortState } from '@app/common/hooks';
 
-interface IProviderHostsTableProps {
+interface IVMWareProviderHostsTableProps {
   id: string;
   hosts: any[]; // TODO
 }
 
-const ProviderHostsTable: React.FunctionComponent<IProviderHostsTableProps> = ({
+const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTableProps> = ({
   id,
   hosts,
-}: IProviderHostsTableProps) => {
-  const columns = [
+}: IVMWareProviderHostsTableProps) => {
+  const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
     { title: 'Bandwidth', transforms: [sortable] },
@@ -48,4 +48,4 @@ const ProviderHostsTable: React.FunctionComponent<IProviderHostsTableProps> = ({
   );
 };
 
-export default ProviderHostsTable;
+export default VMWareProviderHostsTable;
