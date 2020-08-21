@@ -8,6 +8,11 @@ interface IProvidersTableProps {
   activeProviderType: ProviderType;
 }
 
+// TODO use mock data to implement actual dynamic rows
+// TODO implement selection state
+// TODO implement compound expand state
+// TODO implement "Select migration network" modal in VMWare table
+
 const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   providers,
   activeProviderType,
