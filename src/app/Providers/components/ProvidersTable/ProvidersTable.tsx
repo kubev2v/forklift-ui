@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, Button, Checkbox } from '@patternfly/react-core';
+import { Pagination, Button, Level, LevelItem } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -113,7 +113,7 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
           title: (
             <>
               <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
-                <Button variant="secondary" onClick={() => alert('TODO')}>
+                <Button variant="secondary" onClick={() => alert('TODO')} isDisabled>
                   Select migration network
                 </Button>
               </div>
@@ -131,7 +131,16 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
 
   return (
     <>
-      <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+      <Level>
+        <LevelItem>
+          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled>
+            Download data
+          </Button>
+        </LevelItem>
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+        </LevelItem>
+      </Level>
       <Table
         aria-label="Providers table"
         cells={columns}
