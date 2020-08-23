@@ -3,6 +3,7 @@ import * as React from 'react';
 export interface ISelectionStateHook<T> {
   selectedItems: T[];
   toggleItemSelected: (item: T, isSelecting?: boolean) => void;
+  areAllSelected: boolean;
   selectAll: (isSelecting?: boolean) => void;
 }
 
@@ -19,9 +20,15 @@ export const useSelectionState = <T>(
     }
   };
   const selectAll = (isSelecting = true) => setSelectedItems(isSelecting ? items : []);
+  const areAllSelected = selectedItems.length === items.length;
 
   // Preserve original order of items
-  const selectedItemsInOrder = items.filter((i) => selectedItems.includes(i));
+  let selectedItemsInOrder: T[] = [];
+  if (areAllSelected) {
+    selectedItemsInOrder = items;
+  } else if (selectedItems.length > 0) {
+    selectedItemsInOrder = items.filter((i) => selectedItems.includes(i));
+  }
 
-  return { selectedItems: selectedItemsInOrder, toggleItemSelected, selectAll };
+  return { selectedItems: selectedItemsInOrder, toggleItemSelected, areAllSelected, selectAll };
 };

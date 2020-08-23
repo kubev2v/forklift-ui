@@ -30,32 +30,6 @@ interface IVMWareProvidersTableProps {
 const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> = ({
   providers,
 }: IVMWareProvidersTableProps) => {
-  const columns: ICell[] = [
-    {
-      // Using a custom column instead of Table's onSelect prop due to issues
-      title: (
-        <input
-          type="checkbox"
-          aria-label="Select all providers"
-          onChange={(event: React.FormEvent<HTMLInputElement>) => {
-            alert(event.currentTarget.checked); // TODO
-          }}
-          checked={false} // TODO
-        />
-      ),
-      columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
-    },
-    { title: 'Name', transforms: [sortable] },
-    { title: 'Endpoint', transforms: [sortable] },
-    { title: 'Clusters', transforms: [sortable] },
-    { title: 'Hosts', transforms: [sortable], cellTransforms: [compoundExpand] },
-    { title: 'VMs', transforms: [sortable] },
-    { title: 'Networks', transforms: [sortable] },
-    { title: 'Datastores', transforms: [sortable] },
-    { title: 'Status', transforms: [sortable] },
-    { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
-  ];
-
   const getSortValues = (provider: IVMWareProvider) => {
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
     return [
@@ -75,14 +49,45 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
+
+  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
+    IVMWareProvider
+  >(sortedItems);
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
   } = useSelectionState<IVMWareProvider>(sortedItems);
 
+  const columns: ICell[] = [
+    {
+      // Using a custom column instead of Table's onSelect prop due to issues
+      title: (
+        <input
+          type="checkbox"
+          aria-label="Select all providers"
+          onChange={(event: React.FormEvent<HTMLInputElement>) => {
+            selectAll(event.currentTarget.checked);
+          }}
+          checked={areAllSelected}
+        />
+      ),
+      columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
+    },
+    { title: 'Name', transforms: [sortable] },
+    { title: 'Endpoint', transforms: [sortable] },
+    { title: 'Clusters', transforms: [sortable] },
+    { title: 'Hosts', transforms: [sortable], cellTransforms: [compoundExpand] },
+    { title: 'VMs', transforms: [sortable] },
+    { title: 'Networks', transforms: [sortable] },
+    { title: 'Datastores', transforms: [sortable] },
+    { title: 'Status', transforms: [sortable] },
+    { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
+  ];
+
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IVMWareProvider) => {
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
+    const isSelected = selectedItems.includes(provider);
     const isExpanded = expandedProviders.includes(provider);
     rows.push({
       meta: { provider },
@@ -94,9 +99,9 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
               type="checkbox"
               aria-label={`Select provider ${provider.metadata.name}`}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                alert(event.currentTarget.checked); // TODO
+                toggleItemSelected(provider, event.currentTarget.checked);
               }}
-              checked={false} // TODO
+              checked={isSelected}
             />
           ),
         },
@@ -158,7 +163,11 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
     <>
       <Level>
         <LevelItem>
-          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled>
+          <Button
+            variant="secondary"
+            onClick={() => alert('TODO')}
+            isDisabled={selectedItems.length === 0}
+          >
             Download data
           </Button>
         </LevelItem>
