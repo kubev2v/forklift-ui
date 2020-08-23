@@ -2,7 +2,7 @@
 
 Migration Toolkit for Virtualization UI
 
-[![Build Status](https://travis-ci.com/mturley/virt-ui.svg?branch=master)](https://travis-ci.com/mturley/virt-ui)
+[![Build Status](https://travis-ci.com/konveyor/virt-ui.svg?branch=master)](https://travis-ci.com/konveyor/virt-ui)
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Migration Toolkit for Virtualization UI
 Clone and install dependencies:
 
 ```bash
-git clone https://github.com/mturley/virt-ui
+git clone https://github.com/konveyor/virt-ui
 cd virt-ui
 yarn install
 ```

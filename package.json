@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "OpenShift VM Migration UI",
   "main": "server.js",
-  "repository": "https://github.com/mturley/virt-ui.git",
+  "repository": "https://github.com/konveyor/virt-ui.git",
   "license": "Apache",
   "private": true,
   "scripts": {
