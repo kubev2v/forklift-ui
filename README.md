@@ -58,7 +58,7 @@ To launch a tool for inspecting the bundle size:
 yarn bundle-profile:analyze
 ```
 
-# Running in production mode (run a `yarn build` first)
+## Running in production mode (run a `yarn build` first)
 
 ```sh
 yarn start
@@ -73,7 +73,7 @@ yarn start
 
 ### Import paths
 
-TypeScript is configured to allow importing modules by their absolute path. The prefix `@app` is an alias for the main src/app directory.
+TypeScript is configured to allow importing modules by their absolute path. The prefix `@app/` is an alias for the main `src/app/` directory.
 
 For example:
 
