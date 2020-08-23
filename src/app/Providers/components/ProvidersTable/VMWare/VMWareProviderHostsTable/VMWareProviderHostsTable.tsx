@@ -7,6 +7,7 @@ import { useSortState, useSelectionState } from '@app/common/hooks';
 import { IVMWareProvider, IHost } from '@app/Providers/types';
 import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
+import SelectNetworkModal from './SelectNetworkModal';
 
 interface IVMWareProviderHostsTableProps {
   provider: IVMWareProvider;
@@ -28,9 +29,9 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
   ];
 
   const getSortValues = (host: IHost) => {
-    const { name, bandwidth, mtu } = host.metadata;
+    const { name, network, bandwidth, mtu } = host.metadata;
     // First cell is the generated checkbox from using onSelect.
-    return ['', name, formatHostNetwork(host), bandwidth, mtu];
+    return ['', name, formatHostNetwork(network), bandwidth, mtu];
   };
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
 
@@ -41,16 +42,18 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
     return {
       meta: { host },
       selected: selectedItems.includes(host),
-      cells: [name, formatHostNetwork(host), bandwidth, mtu],
+      cells: [name, formatHostNetwork(host.metadata.network), bandwidth, mtu],
     };
   });
+
+  const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
   return (
     <>
       <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
         <Button
           variant="secondary"
-          onClick={() => alert('TODO')}
+          onClick={() => setIsSelectNetworkModalOpen(true)}
           isDisabled={selectedItems.length === 0}
         >
           Select migration network
@@ -74,6 +77,12 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
         <TableHeader />
         <TableBody />
       </Table>
+      {isSelectNetworkModalOpen && (
+        <SelectNetworkModal
+          selectedHosts={selectedItems}
+          onClose={() => setIsSelectNetworkModalOpen(false)}
+        />
+      )}
     </>
   );
 };

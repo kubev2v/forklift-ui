@@ -12,8 +12,6 @@ import {
 } from '@patternfly/react-table';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import { IVMWareProvider } from '@app/Providers/types';

@@ -64,14 +64,17 @@ export interface ICNVProvider extends ICommonProvider {
 export type Provider = IVMWareProvider | ICNVProvider;
 
 // TODO this structure is speculative. Check with Jeff.
+export interface IHostNetwork {
+  name: string;
+  address: string;
+  isDefault?: boolean;
+}
+
+// TODO this structure is speculative. Check with Jeff.
 export interface IHost {
   metadata: {
     name: string;
-    network: {
-      name: string;
-      address: string;
-      isDefault: boolean;
-    };
+    network: IHostNetwork;
     bandwidth: string;
     mtu: number;
   };

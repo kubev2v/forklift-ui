@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Modal, Button, Form, FormGroup, TextInput, Flex } from '@patternfly/react-core';
+import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
@@ -31,6 +31,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   const [cnvSaToken, setCnvSaToken] = React.useState<string>('');
   return (
     <Modal
+      className="addProviderModal"
       variant="small"
       title="Add provider"
       isOpen
@@ -118,11 +119,11 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           </>
         ) : null}
         {providerType ? (
-          <Flex>
+          <div>
             <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
               Check connection
             </Button>
-          </Flex>
+          </div>
         ) : null}
       </Form>
     </Modal>
