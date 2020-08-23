@@ -1,20 +1,12 @@
 import * as React from 'react';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  sortable,
-  ICell,
-  IRow,
-  TableProps,
-} from '@patternfly/react-table';
+import { Button } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { useSortState, useSelectionState } from '@app/common/hooks';
 import { IVMWareProvider, IHost } from '@app/Providers/types';
 import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
-import { Button } from '@patternfly/react-core';
 
 interface IVMWareProviderHostsTableProps {
   provider: IVMWareProvider;
@@ -53,16 +45,6 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
     };
   });
 
-  // TODO we're probably going to run into this same issue:
-  // https://github.com/konveyor/mig-ui/blob/master/src/app/home/pages/PlansPage/components/Wizard/NamespacesTable.tsx#L71-L75
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onSelect: TableProps['onSelect'] = (_event, isSelected, rowIndex, rowData) => {
-    if (rowIndex === -1) {
-      selectAll(isSelected);
-    }
-    toggleItemSelected(rowData.meta.host, isSelected);
-  };
-
   return (
     <>
       <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
@@ -77,12 +59,17 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
       <Table
         className="provider-inner-hosts-table"
         variant="compact"
-        aria-label="Hosts table for provider NAME" // TODO
+        aria-label={`Hosts table for provider ${provider.metadata.name}`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onSelect={onSelect}
+        onSelect={(_event, isSelected, rowIndex, rowData) => {
+          if (rowIndex === -1) {
+            selectAll(isSelected);
+          }
+          toggleItemSelected(rowData.meta.host, isSelected);
+        }}
       >
         <TableHeader />
         <TableBody />
