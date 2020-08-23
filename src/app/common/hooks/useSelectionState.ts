@@ -5,6 +5,7 @@ export interface ISelectionStateHook<T> {
   toggleItemSelected: (item: T, isSelecting?: boolean) => void;
   areAllSelected: boolean;
   selectAll: (isSelecting?: boolean) => void;
+  setSelectedItems: (items: T[]) => void;
 }
 
 export const useSelectionState = <T>(
@@ -30,5 +31,11 @@ export const useSelectionState = <T>(
     selectedItemsInOrder = items.filter((i) => selectedItems.includes(i));
   }
 
-  return { selectedItems: selectedItemsInOrder, toggleItemSelected, areAllSelected, selectAll };
+  return {
+    selectedItems: selectedItemsInOrder,
+    toggleItemSelected,
+    areAllSelected,
+    selectAll,
+    setSelectedItems,
+  };
 };

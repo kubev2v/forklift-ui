@@ -54,6 +54,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
+
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,

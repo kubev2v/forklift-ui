@@ -16,12 +16,12 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { IVMWareProvider } from '@app/Providers/types';
 import VMWareProviderActionsDropdown from './VMWareProviderActionsDropdown';
 import VMWareProviderHostsTable from './VMWareProviderHostsTable';
+import ProviderStatus from '../ProviderStatus';
 
 import './VMWareProvidersTable.css';
-import { IVMWareProvider } from '@app/Providers/types';
-import ProviderStatus from '../ProviderStatus';
 
 interface IVMWareProvidersTableProps {
   providers: IVMWareProvider[];
@@ -135,23 +135,7 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
         compoundExpand: 4,
         cells: [
           {
-            title: (
-              <>
-                <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
-                  <Button
-                    variant="secondary"
-                    onClick={() => alert('TODO')}
-                    isDisabled /* TODO enable when hosts are selected */
-                  >
-                    Select migration network
-                  </Button>
-                </div>
-                <VMWareProviderHostsTable
-                  id={`provider-${provider.metadata.name}-hosts-expanded`}
-                  provider={provider}
-                />
-              </>
-            ),
+            title: <VMWareProviderHostsTable provider={provider} />,
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
           },
         ],
