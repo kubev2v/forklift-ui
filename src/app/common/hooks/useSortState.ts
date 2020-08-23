@@ -3,7 +3,7 @@ import { ISortBy, SortByDirection } from '@patternfly/react-table';
 
 // TODO these could be given generic types to avoid using `any` (https://www.typescriptlang.org/docs/handbook/generics.html)
 
-interface SortStateHook {
+export interface ISortStateHook {
   sortBy: ISortBy;
   onSort: (event: React.SyntheticEvent, index: number, direction: SortByDirection) => void;
   sortedItems: any[];
@@ -12,7 +12,7 @@ interface SortStateHook {
 export const useSortState = (
   items: any[],
   getSortValues: (item: any) => (string | number | boolean)[]
-): SortStateHook => {
+): ISortStateHook => {
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) => {
     setSortBy({ index, direction });

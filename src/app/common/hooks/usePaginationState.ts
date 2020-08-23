@@ -3,12 +3,12 @@ import { PaginationProps } from '@patternfly/react-core';
 
 // TODO these could be given generic types to avoid using `any` (https://www.typescriptlang.org/docs/handbook/generics.html)
 
-type PaginationStateProps = Pick<
+export type PaginationStateProps = Pick<
   PaginationProps,
   'itemCount' | 'perPage' | 'page' | 'onSetPage' | 'onPerPageSelect'
 >;
 
-interface PaginationStateHook {
+export interface IPaginationStateHook {
   currentPageItems: any[];
   setPageNumber: (pageNumber: number) => void;
   paginationProps: PaginationStateProps;
@@ -17,7 +17,7 @@ interface PaginationStateHook {
 export const usePaginationState = (
   items: any[],
   initialItemsPerPage: number
-): PaginationStateHook => {
+): IPaginationStateHook => {
   const [pageNumber, setPageNumber] = React.useState(1);
   const [itemsPerPage, setItemsPerPage] = React.useState(initialItemsPerPage);
 

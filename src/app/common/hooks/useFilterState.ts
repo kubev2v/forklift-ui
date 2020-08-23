@@ -3,7 +3,7 @@ import { IFilterValues, FilterCategory } from '../components/FilterToolbar';
 
 // TODO these could be given generic types to avoid using `any` (https://www.typescriptlang.org/docs/handbook/generics.html)
 
-interface FilterStateHook {
+export interface IFilterStateHook {
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
   filteredItems: any[];
@@ -12,7 +12,7 @@ interface FilterStateHook {
 export const useFilterState = (
   items: any[],
   filterCategories: FilterCategory[]
-): FilterStateHook => {
+): IFilterStateHook => {
   const [filterValues, setFilterValues] = React.useState<IFilterValues>({});
 
   const filteredItems = items.filter((item) =>

@@ -15,7 +15,7 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
-import { useSortState, usePaginationState } from '@app/common/hooks';
+import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import VMWareProviderActionsDropdown from './VMWareProviderActionsDropdown';
 import VMWareProviderHostsTable from './VMWareProviderHostsTable';
 
@@ -76,19 +76,10 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  // TODO abstract this into a hook -- useSelectionList?
-  // TODO does order matter? maybe take the full list and filter by it
-  const [expandedProviders, setExpandedProviders] = React.useState<IVMWareProvider[]>([]);
-  const toggleProviderExpanded = (
-    provider: IVMWareProvider,
-    shouldInclude = !expandedProviders.includes(provider)
-  ) => {
-    if (shouldInclude) {
-      setExpandedProviders([...expandedProviders, provider]);
-    } else {
-      setExpandedProviders(expandedProviders.filter((p) => p !== provider));
-    }
-  };
+  const {
+    selectedItems: expandedProviders,
+    toggleItemSelected: toggleProviderExpanded,
+  } = useSelectionState<IVMWareProvider>(sortedItems);
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IVMWareProvider) => {
