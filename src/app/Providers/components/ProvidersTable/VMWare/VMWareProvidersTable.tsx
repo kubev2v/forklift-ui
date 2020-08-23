@@ -76,49 +76,68 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const rows: IRow[] = currentPageItems.flatMap((provider: IVMWareProvider) => {
+  // TODO abstract this into a hook -- useSelectionList?
+  // TODO does order matter? maybe take the full list and filter by it
+  const [expandedProviders, setExpandedProviders] = React.useState<IVMWareProvider[]>([]);
+  const toggleProviderExpanded = (
+    provider: IVMWareProvider,
+    shouldInclude = !expandedProviders.includes(provider)
+  ) => {
+    if (shouldInclude) {
+      setExpandedProviders([...expandedProviders, provider]);
+    } else {
+      setExpandedProviders(expandedProviders.filter((p) => p !== provider));
+    }
+  };
+
+  const rows: IRow[] = [];
+  currentPageItems.forEach((provider: IVMWareProvider) => {
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
-    return [
-      {
-        isOpen: true,
-        cells: [
-          {
-            title: (
-              <input
-                type="checkbox"
-                aria-label={`Select provider ${provider.metadata.name}`}
-                onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                  alert(event.currentTarget.checked); // TODO
-                }}
-                checked={false} // TODO
-              />
-            ),
+    const isExpanded = expandedProviders.includes(provider);
+    rows.push({
+      isOpen: isExpanded,
+      meta: { provider },
+      cells: [
+        {
+          title: (
+            <input
+              type="checkbox"
+              aria-label={`Select provider ${provider.metadata.name}`}
+              onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                alert(event.currentTarget.checked); // TODO
+              }}
+              checked={false} // TODO
+            />
+          ),
+        },
+        provider.metadata.name,
+        provider.spec.url,
+        numClusters,
+        {
+          title: (
+            <>
+              <OutlinedHddIcon key="hosts-icon" /> {numHosts}
+            </>
+          ),
+          props: {
+            isOpen: isExpanded,
+            ariaControls: `provider-${provider.metadata.name}-hosts-expanded`,
           },
-          provider.metadata.name,
-          provider.spec.url,
-          numClusters,
-          {
-            title: (
-              <>
-                <OutlinedHddIcon key="hosts-icon" /> {numHosts}
-              </>
-            ),
-            props: { isOpen: true, ariaControls: 'provider-0-hosts-expanded' },
-          },
-          numVMs,
-          numNetworks,
-          numDatastores,
-          {
-            title: <ProviderStatus provider={provider} />,
-          },
-          {
-            title: <VMWareProviderActionsDropdown />,
-          },
-        ],
-      },
-      {
-        // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
-        parent: 0,
+        },
+        numVMs,
+        numNetworks,
+        numDatastores,
+        {
+          title: <ProviderStatus provider={provider} />,
+        },
+        {
+          title: <VMWareProviderActionsDropdown />,
+        },
+      ],
+    });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
         compoundExpand: 4,
         cells: [
           {
@@ -139,8 +158,8 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
           },
         ],
-      },
-    ];
+      });
+    }
   });
 
   return (
@@ -161,6 +180,9 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
+        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
+          toggleProviderExpanded(rowData.meta.provider);
+        }}
       >
         <TableHeader />
         <TableBody />
