@@ -81,7 +81,7 @@ For example:
 import StatusIcon from '@app/common/components/StatusIcon';
 ```
 
-In general, we should use relative paths `../` when they make sense for co-located files, but absolute paths for things we share widely, to avoid long and hard to read relative paths.
+In general, we should use relative paths `../` when they make sense for co-located files, and absolute paths for things located near the root. The goal is to avoid long and hard-to-read relative paths.
 
 ## More Information
 
