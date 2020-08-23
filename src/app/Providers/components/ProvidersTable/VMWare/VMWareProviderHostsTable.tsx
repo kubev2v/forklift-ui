@@ -14,7 +14,6 @@ interface IVMWareProviderHostsTableProps {
 const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 
 const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTableProps> = ({
-  id,
   provider,
 }: IVMWareProviderHostsTableProps) => {
   const hosts: IHost[] = hostsByProvider[provider.metadata.name];

@@ -12,10 +12,12 @@ import {
 } from '@patternfly/react-table';
 import { DatabaseIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { useSortState, usePaginationState } from '@app/common/hooks';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import CNVProviderActionsDropdown from './CNVProviderActionsDropdown';
 import { ICNVProvider } from '@app/Providers/types';
 import ProviderStatus from '../ProviderStatus';
+import './CNVProvidersTable.css';
 
 interface ICNVProvidersTableProps {
   providers: ICNVProvider[];
@@ -52,40 +54,48 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
+  const {
+    selectedItems: expandedProviders,
+    toggleItemSelected: toggleProviderExpanded,
+  } = useSelectionState<ICNVProvider>(sortedItems);
 
-  const rows: IRow[] = currentPageItems.flatMap((provider: ICNVProvider) => {
+  const rows: IRow[] = [];
+  currentPageItems.forEach((provider: ICNVProvider) => {
     const { numNamespaces, numVMs, numNetworks } = provider.resourceCounts;
-    return [
-      {
-        cells: [
-          provider.metadata.name,
-          provider.spec.url,
-          numNamespaces,
-          numVMs,
-          numNetworks,
-          {
-            title: (
-              <>
-                <DatabaseIcon key="storage-classes-icon" />{' '}
-                {provider.metadata.storageClasses.length}
-              </>
-            ),
-            props: { isOpen: true, ariaControls: 'provider-0-storage-classes-expanded' }, // TODO ?
+    const isExpanded = expandedProviders.includes(provider);
+    rows.push({
+      meta: { provider },
+      isOpen: isExpanded,
+      cells: [
+        provider.metadata.name,
+        provider.spec.url,
+        numNamespaces,
+        numVMs,
+        numNetworks,
+        {
+          title: (
+            <>
+              <DatabaseIcon key="storage-classes-icon" /> {provider.metadata.storageClasses.length}
+            </>
+          ),
+          props: {
+            isOpen: isExpanded,
           },
-          {
-            title: <ProviderStatus provider={provider} />,
-          },
-          { title: <CNVProviderActionsDropdown /> },
-        ],
-      },
-      {
-        // TODO actually handle expand state, maybe don't render these rows at all when collapsed?
-        parent: 0,
+        },
+        {
+          title: <ProviderStatus provider={provider} />,
+        },
+        { title: <CNVProviderActionsDropdown /> },
+      ],
+    });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
         compoundExpand: 5,
         cells: [
           {
             title: (
-              <List>
+              <List className={`provider-storage-classes-list ${spacing.mMd}`}>
                 {provider.metadata.storageClasses.map((storageClass) => (
                   <ListItem key={storageClass}>{storageClass}</ListItem>
                 ))}
@@ -94,8 +104,8 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
           },
         ],
-      },
-    ];
+      });
+    }
   });
 
   return (
@@ -107,6 +117,9 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
+        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
+          toggleProviderExpanded(rowData.meta.provider);
+        }}
       >
         <TableHeader />
         <TableBody />

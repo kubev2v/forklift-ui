@@ -75,7 +75,6 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
-
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
@@ -86,8 +85,8 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
     const isExpanded = expandedProviders.includes(provider);
     rows.push({
-      isOpen: isExpanded,
       meta: { provider },
+      isOpen: isExpanded,
       cells: [
         {
           title: (
@@ -112,7 +111,6 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
           ),
           props: {
             isOpen: isExpanded,
-            ariaControls: `provider-${provider.metadata.name}-hosts-expanded`,
           },
         },
         numVMs,
@@ -143,7 +141,10 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
                     Select migration network
                   </Button>
                 </div>
-                <VMWareProviderHostsTable id="provider-0-hosts-expanded" provider={provider} />
+                <VMWareProviderHostsTable
+                  id={`provider-${provider.metadata.name}-hosts-expanded`}
+                  provider={provider}
+                />
               </>
             ),
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
