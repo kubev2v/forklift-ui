@@ -4,8 +4,6 @@ Migration Toolkit for Virtualization UI
 
 [![Build Status](https://travis-ci.com/mturley/virt-ui.svg?branch=master)](https://travis-ci.com/mturley/virt-ui)
 
----
-
 ## Prerequisites
 
 - [NodeJS](https://nodejs.org/en/) >= 12.x
