@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PageSection, Title } from '@patternfly/react-core';
-import { TestComponent } from '@konveyor/common-ui';
+import { TestComponent } from '@konveyor/lib-ui';
 
 const PlansPage: React.FunctionComponent = () => (
   <>
