@@ -102,3 +102,4 @@ The configuration of this repository is based on [patternfly-react-seed](https:/
 - Choose a solution for API stuff (redux-saga? share k8s client with mig-ui?)
   - Do we want to consider redux alternatives?
 - Figure out API integration and deployment details
+- ???

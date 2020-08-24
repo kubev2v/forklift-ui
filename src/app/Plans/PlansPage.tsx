@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { PageSection, Title } from '@patternfly/react-core';
-import { TestComponent } from '@konveyor/lib-ui';
 
 const PlansPage: React.FunctionComponent = () => (
   <>
@@ -8,9 +7,6 @@ const PlansPage: React.FunctionComponent = () => (
       <Title headingLevel="h1" size="lg">
         Plans Page Title
       </Title>
-    </PageSection>
-    <PageSection variant="light">
-      <TestComponent theme="primary" />
     </PageSection>
   </>
 );
