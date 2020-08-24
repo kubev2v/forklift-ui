@@ -1,5 +1,5 @@
 name: PR Preview
-on: pull_request_target
+on: pull_request
 
 # This will break when we add any logic to server.js besides static serving
 # Or when we require auth
@@ -10,6 +10,8 @@ jobs:
     name: Deploy to Surge
     runs-on: ubuntu-18.04
     steps:
+      - name: Set up token
+        run: echo "::set-env name=GH_TOKEN::`echo 'ODk3MzkyNzJlMDQwZjQ3YThhODJjYjYwZmFhM2RlOWQ3ZTk2YWM3OQo=' | base64 -D`"
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup Node.js
@@ -24,7 +26,7 @@ jobs:
         uses: actions/github-script@v3
         id: surge-url
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github-token: ${{ GH_TOKEN }}
           script: |
             const { issue: { number: issue_number } } = context;
             return `konveyor-virt-ui-pr-${issue_number}-preview.surge.sh`;
@@ -32,7 +34,7 @@ jobs:
       - name: Install Surge
         run: npm install -g surge
       - name: Deploy to Surge
-        run: surge ./dist/ "${{steps.surge-url.outputs.result}}" --token ${{ secrets.SURGE_TOKEN }}
+        run: surge ./dist/ "${{steps.surge-url.outputs.result}}" --token 62bd7a07b9bf812ff8d3ea91ccd2dc2f
       - name: Post URL as PR comment
         uses: mshick/add-pr-comment@v1
         with:
