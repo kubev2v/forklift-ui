@@ -40,4 +40,4 @@ jobs:
         uses: mshick/add-pr-comment@v1
         with:
           message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨"
-          repo-token: ${{ secrets.GH_TOKEN }}
+          repo-token: ${{ steps.token.outputs.GH_TOKEN }}
