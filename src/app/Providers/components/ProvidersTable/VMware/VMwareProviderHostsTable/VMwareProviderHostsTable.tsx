@@ -4,21 +4,21 @@ import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfl
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { useSortState, useSelectionState } from '@app/common/hooks';
-import { IVMWareProvider, IHost } from '@app/Providers/types';
+import { IVMwareProvider, IHost } from '@app/Providers/types';
 import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 
-interface IVMWareProviderHostsTableProps {
-  provider: IVMWareProvider;
+interface IVMwareProviderHostsTableProps {
+  provider: IVMwareProvider;
 }
 
 // TODO use real data instead of mocks
 const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 
-const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTableProps> = ({
+const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
   provider,
-}: IVMWareProviderHostsTableProps) => {
+}: IVMwareProviderHostsTableProps) => {
   const hosts: IHost[] = hostsByProvider[provider.metadata.name];
 
   const columns: ICell[] = [
@@ -87,4 +87,4 @@ const VMWareProviderHostsTable: React.FunctionComponent<IVMWareProviderHostsTabl
   );
 };
 
-export default VMWareProviderHostsTable;
+export default VMwareProviderHostsTable;

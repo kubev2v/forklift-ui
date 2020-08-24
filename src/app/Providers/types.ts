@@ -42,7 +42,7 @@ export interface ICommonProvider {
 // TODO these resourceCounts interfaces are speculative
 // need to look at the real structure once Jeff implements this part
 
-export interface IVMWareProvider extends ICommonProvider {
+export interface IVMwareProvider extends ICommonProvider {
   resourceCounts: {
     numClusters: number;
     numHosts: number;
@@ -61,7 +61,7 @@ export interface ICNVProvider extends ICommonProvider {
   };
 }
 
-export type Provider = IVMWareProvider | ICNVProvider;
+export type Provider = IVMwareProvider | ICNVProvider;
 
 // TODO this structure is speculative. Check with Jeff.
 export interface IHostNetwork {

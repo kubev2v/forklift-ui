@@ -113,7 +113,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
     <>
       <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
       <Table
-        aria-label="OpenShift virtualization providers table"
+        aria-label="OpenShift Virtualization providers table"
         cells={columns}
         rows={rows}
         sortBy={sortBy}

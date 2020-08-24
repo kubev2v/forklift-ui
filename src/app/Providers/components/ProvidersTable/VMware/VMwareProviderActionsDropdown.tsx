@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 
-const VMWareProviderActionsDropdown: React.FunctionComponent = () => {
+const VMwareProviderActionsDropdown: React.FunctionComponent = () => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   return (
     <Dropdown
@@ -25,4 +25,4 @@ const VMWareProviderActionsDropdown: React.FunctionComponent = () => {
   );
 };
 
-export default VMWareProviderActionsDropdown;
+export default VMwareProviderActionsDropdown;
