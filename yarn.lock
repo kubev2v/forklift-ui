@@ -470,10 +470,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@konveyor/common-ui@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@konveyor/common-ui/-/common-ui-1.0.1.tgz#0e9e72b3ffae31c7c8ec6efc474e1772fdef35b9"
-  integrity sha512-J5A8PK8Iq9EEnCpxgNuXbNh9rffGp0+N4mo2C49emcznAW4r3qH45b4p/OoCWD7uW5RHUcZwFxlJtiSV4KGhjQ==
+"@konveyor/common-ui@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@konveyor/common-ui/-/common-ui-1.1.0.tgz#e25fb0aaae6b8ff23646b40f2059f776a772f2fe"
+  integrity sha512-Ausog0gjhdO9A/UuxW2UMxxPVmXs/wK7q8pSP+qysX3JOvYy1SxCC/RcPgbG2PV5qZ9q5A5Y4IgcBPPPqOBJSg==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
