@@ -12,5 +12,5 @@ export enum ProviderType {
 
 export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
-  [ProviderType.cnv]: 'OpenShift virtualization',
+  [ProviderType.cnv]: 'OpenShift Virtualization',
 };
