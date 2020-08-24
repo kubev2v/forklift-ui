@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Set up token
-        run: echo "::set-env name=GH_TOKEN::`echo 'ODk3MzkyNzJlMDQwZjQ3YThhODJjYjYwZmFhM2RlOWQ3ZTk2YWM3OQo=' | base64 -D`"
+        id: token
+        run: echo "::set-output name=GH_TOKEN::`echo 'ODk3MzkyNzJlMDQwZjQ3YThhODJjYjYwZmFhM2RlOWQ3ZTk2YWM3OQo=' | base64 -D`"
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup Node.js
@@ -26,7 +27,7 @@ jobs:
         uses: actions/github-script@v3
         id: surge-url
         with:
-          github-token: ${{ GH_TOKEN }}
+          github-token: ${{ steps.token.outputs.GH_TOKEN }}
           script: |
             const { issue: { number: issue_number } } = context;
             return `konveyor-virt-ui-pr-${issue_number}-preview.surge.sh`;
