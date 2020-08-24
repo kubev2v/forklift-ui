@@ -17,7 +17,7 @@ const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
       className={spacing.mtMd}
     >
       You can upload your VMware provider data to Red Hat&apos;s Migration Analytics service to see
-      a complete inventory of your VMWare environment and get recommendations for which VMs are
+      a complete inventory of your VMware environment and get recommendations for which VMs are
       suitable to migrate. Start by downloading a provider data file. Then log in to{' '}
       <Button variant="link" href={CLOUD_MA_LINK.href} isInline>
         {CLOUD_MA_LINK.label}

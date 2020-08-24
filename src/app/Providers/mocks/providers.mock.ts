@@ -1,6 +1,6 @@
-import { IVMWareProvider, ICNVProvider, Provider } from '../types';
+import { IVMwareProvider, ICNVProvider, Provider } from '../types';
 
-const vmwareProvider1: IVMWareProvider = {
+const vmwareProvider1: IVMwareProvider = {
   metadata: {
     name: 'VCenter1',
     namespace: 'openshift-migration',
@@ -41,7 +41,7 @@ const vmwareProvider1: IVMWareProvider = {
   },
 };
 
-const vmwareProvider2: IVMWareProvider = {
+const vmwareProvider2: IVMwareProvider = {
   ...vmwareProvider1,
   metadata: {
     ...vmwareProvider1.metadata,
@@ -49,7 +49,7 @@ const vmwareProvider2: IVMWareProvider = {
   },
 };
 
-const vmwareProvider3: IVMWareProvider = {
+const vmwareProvider3: IVMwareProvider = {
   ...vmwareProvider1,
   metadata: {
     ...vmwareProvider1.metadata,

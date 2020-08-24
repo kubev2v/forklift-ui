@@ -14,21 +14,21 @@ import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
-import { IVMWareProvider } from '@app/Providers/types';
-import VMWareProviderActionsDropdown from './VMWareProviderActionsDropdown';
-import VMWareProviderHostsTable from './VMWareProviderHostsTable';
+import { IVMwareProvider } from '@app/Providers/types';
+import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
+import VMwareProviderHostsTable from './VMwareProviderHostsTable';
 import ProviderStatus from '../ProviderStatus';
 
-import './VMWareProvidersTable.css';
+import './VMwareProvidersTable.css';
 
-interface IVMWareProvidersTableProps {
-  providers: IVMWareProvider[];
+interface IVMwareProvidersTableProps {
+  providers: IVMwareProvider[];
 }
 
-const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> = ({
+const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> = ({
   providers,
-}: IVMWareProvidersTableProps) => {
-  const getSortValues = (provider: IVMWareProvider) => {
+}: IVMwareProvidersTableProps) => {
+  const getSortValues = (provider: IVMwareProvider) => {
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
     return [
       '',
@@ -49,12 +49,12 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
-    IVMWareProvider
+    IVMwareProvider
   >(sortedItems);
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
-  } = useSelectionState<IVMWareProvider>(sortedItems);
+  } = useSelectionState<IVMwareProvider>(sortedItems);
 
   const columns: ICell[] = [
     {
@@ -83,7 +83,7 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   ];
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: IVMWareProvider) => {
+  currentPageItems.forEach((provider: IVMwareProvider) => {
     const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
     const isSelected = selectedItems.includes(provider);
     const isExpanded = expandedProviders.includes(provider);
@@ -123,7 +123,7 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
           title: <ProviderStatus provider={provider} />,
         },
         {
-          title: <VMWareProviderActionsDropdown />,
+          title: <VMwareProviderActionsDropdown />,
         },
       ],
     });
@@ -133,7 +133,7 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
         compoundExpand: 4,
         cells: [
           {
-            title: <VMWareProviderHostsTable provider={provider} />,
+            title: <VMwareProviderHostsTable provider={provider} />,
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
           },
         ],
@@ -158,7 +158,7 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
         </LevelItem>
       </Level>
       <Table
-        aria-label="VMWare providers table"
+        aria-label="VMware providers table"
         cells={columns}
         rows={rows}
         sortBy={sortBy}
@@ -179,4 +179,4 @@ const VMWareProvidersTable: React.FunctionComponent<IVMWareProvidersTableProps> 
   );
 };
 
-export default VMWareProvidersTable;
+export default VMwareProvidersTable;
