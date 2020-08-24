@@ -1,0 +1,40 @@
+name: PR Preview
+on: pull_request_target
+
+# This will break when we add any logic to server.js besides static serving
+# Or when we require auth
+# Would be really nice to keep it around via some kind of `build:preview` mode
+
+jobs:
+  deploy-pr-preview:
+    name: Deploy to Surge
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
+      - name: Generate Surge URL
+        uses: actions/github-script@v3
+        id: surge-url
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const { issue: { number: issue_number } } = context;
+            return `konveyor-virt-ui-pr-${issue_number}-preview.surge.sh`;
+          result-encoding: string
+      - name: Install Surge
+        run: npm install -g surge
+      - name: Deploy to Surge
+        run: surge ./dist/ "${{steps.surge-url.outputs.result}}" --token ${{ secrets.SURGE_TOKEN }}
+      - name: Post URL as PR comment
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨"
+          repo-token: ${{ secrets.GH_TOKEN }}
