@@ -15,9 +15,18 @@ const VMwareProviderActionsDropdown: React.FunctionComponent = () => {
             setKebabIsOpen(false);
             alert('TODO');
           }}
-          key="TODO"
+          key="edit"
         >
-          Some action
+          Edit
+        </DropdownItem>,
+        <DropdownItem
+          onClick={() => {
+            setKebabIsOpen(false);
+            alert('TODO');
+          }}
+          key="remove"
+        >
+          Remove
         </DropdownItem>,
       ]}
       position={DropdownPosition.right}
