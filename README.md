@@ -6,7 +6,7 @@ Migration Toolkit for Virtualization UI
 
 ## Prerequisites
 
-- [NodeJS](https://nodejs.org/en/) >= 12.x
+- [NodeJS](https://nodejs.org/en/) >= 10.x
 - [Yarn "Classic"](https://classic.yarnpkg.com/lang/en/) (1.x)
 
 ## Quick-start
