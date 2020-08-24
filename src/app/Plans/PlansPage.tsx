@@ -10,7 +10,7 @@ const PlansPage: React.FunctionComponent = () => (
       </Title>
     </PageSection>
     <PageSection variant="light">
-      <TestComponent theme="secondary" />
+      <TestComponent theme="primary" />
     </PageSection>
   </>
 );
