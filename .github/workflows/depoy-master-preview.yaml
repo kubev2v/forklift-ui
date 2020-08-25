@@ -1,0 +1,29 @@
+name: Deploy master preview
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test-and-release:
+    name: Deploy preview to GitHub Pages
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install dependencies
+        run: yarn install
+      - name: Run tests
+        run: yarn ci
+      - name: Bundle
+        run: yarn build
+      - name: Deploy preview to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.5.9
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
