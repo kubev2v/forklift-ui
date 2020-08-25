@@ -4,6 +4,8 @@ Migration Toolkit for Virtualization UI
 
 [![Build Status](https://travis-ci.com/konveyor/virt-ui.svg?branch=master)](https://travis-ci.com/konveyor/virt-ui)
 
+A preview deployment is available at http://konveyor-virt-ui-preview.surge.sh/.
+
 ## Prerequisites
 
 - [NodeJS](https://nodejs.org/en/) >= 10.x
