@@ -6,7 +6,7 @@ on:
 
 jobs:
   test-and-release:
-    name: Deploy preview to GitHub Pages
+    name: Deploy preview to Surge
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -21,9 +21,7 @@ jobs:
         run: yarn ci
       - name: Bundle
         run: yarn build
-      - name: Deploy preview to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@3.5.9
-        with:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: dist
+      - name: Install Surge
+        run: npm install -g surge
+      - name: Deploy to Surge
+        run: surge ./dist/ konveyor-virt-ui-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
