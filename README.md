@@ -78,7 +78,7 @@ TypeScript is configured to allow importing modules by their absolute path. The 
 For example:
 
 ```ts
-import StatusIcon from '@app/common/components/StatusIcon';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 ```
 
 In general, we should use relative paths `../` when they make sense for co-located files, and absolute paths for things located near the root. The goal is to avoid long and hard-to-read relative paths.
