@@ -37,7 +37,7 @@ const WelcomePage: React.FunctionComponent = () => {
               size="4xl"
               className={`${alignment.textAlignCenter} ${spacing.myXl}`}
             >
-              Welcome to Migration Toolkit for Virtualization
+              Welcome to the Migration Toolkit for Virtualization
             </Title>
           </FlexItem>
           <FlexItem>
