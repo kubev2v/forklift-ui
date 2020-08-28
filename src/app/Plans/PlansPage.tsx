@@ -27,7 +27,7 @@ const PlansPage: React.FunctionComponent = () => {
   const vmwareList = providers.map((x) => x.spec.type === ProviderType.vsphere);
   const cnvList = providers.map((x) => x.spec.type === ProviderType.cnv);
 
-  const [isWizardOpen, toggleWizard] = React.useReducer(() => !isWizardOpen, false);
+  const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
   let addPlanDisabledObj: IAddPlanDisabledObjModel = {
     isAddPlanDisabled: false,
