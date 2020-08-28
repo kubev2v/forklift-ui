@@ -12,9 +12,9 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { AddCircleOIcon } from '@patternfly/react-icons';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PlansTable from './components/PlansTable';
 import { IAddPlanDisabledObjModel } from './types';
+import { ProviderType } from '@app/common/constants';
 
 // TODO replace these with real state e.g. from redux
 import { MOCK_PLANS } from './mocks/plans.mock';
@@ -24,38 +24,29 @@ const migplans = MOCK_PLANS;
 const providers = MOCK_PROVIDERS;
 
 const PlansPage: React.FunctionComponent = () => {
-  const VMWareList = providers.map((x) => x.spec.type === 'vsphere');
-  const CNVList = providers.map((x) => x.spec.type === 'cnv');
+  const vmwareList = providers.map((x) => x.spec.type === ProviderType.vsphere);
+  const cnvList = providers.map((x) => x.spec.type === ProviderType.cnv);
 
   const [isWizardOpen, toggleWizard] = React.useReducer(() => !isWizardOpen, false);
 
-  const [addPlanDisabledObj, setAddPlanDisabledObj] = React.useState<IAddPlanDisabledObjModel>({
-    isAddPlanDisabled: true,
-    disabledText: '',
-  });
+  let addPlanDisabledObj: IAddPlanDisabledObjModel = {
+    isAddPlanDisabled: false,
+    disabledText: 'Create a migration plan to select VMs to migrate to OpenShift virtualization.',
+  };
 
-  React.useEffect(() => {
-    if (VMWareList.length < 1) {
-      setAddPlanDisabledObj({
-        isAddPlanDisabled: true,
-        disabledText: 'At least 1 VMWare provider is required to create a plan.',
-      });
-      return;
-    }
+  if (vmwareList.length < 1) {
+    addPlanDisabledObj = {
+      isAddPlanDisabled: true,
+      disabledText: 'At least 1 VMware provider is required to create a plan.',
+    };
+  }
 
-    if (CNVList.length < 1) {
-      setAddPlanDisabledObj({
-        isAddPlanDisabled: true,
-        disabledText: 'At least 1 OpenShift provider is required to create a plan.',
-      });
-      return;
-    }
-
-    setAddPlanDisabledObj({
-      isAddPlanDisabled: false,
-      disabledText: 'Create a migration plan to select VMs to migrate to OpenShift virtualization.',
-    });
-  }, [VMWareList, CNVList]);
+  if (cnvList.length < 1) {
+    addPlanDisabledObj = {
+      isAddPlanDisabled: true,
+      disabledText: 'At least 1 OpenShift provider is required to create a plan.',
+    };
+  }
 
   return (
     <>
@@ -82,8 +73,7 @@ const PlansPage: React.FunctionComponent = () => {
               {!migplans ? null : migplans.length === 0 ? (
                 <EmptyState variant="full">
                   <EmptyStateIcon icon={AddCircleOIcon} />
-                  {/* TODO: fix className issue */}
-                  <Title size="lg" headingLevel="h2" /* className={spacing.mbLg}> */>
+                  <Title size="lg" headingLevel="h2">
                     No migration plans
                   </Title>
                   <Tooltip position="top" content={<div>{addPlanDisabledObj.disabledText}</div>}>
@@ -105,15 +95,6 @@ const PlansPage: React.FunctionComponent = () => {
                   toggleAddWizardOpen={toggleWizard}
                 />
               )}
-              {/* TODO: Placeholder for Plan wizard
-              <WizardContainer
-                planList={planList}
-                VMWareList={VMWareList}
-                CNVList={CNVList}
-                isEdit={false}
-                isOpen={isWizardOpen}
-                onHandleWizardModalClose={toggleWizard}
-              /> */}
             </CardBody>
           </Card>
         )}
