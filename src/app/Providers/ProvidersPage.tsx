@@ -34,7 +34,7 @@ const ProvidersPage: React.FunctionComponent = () => {
     ProviderType
   ).filter((providerType) => providers.some((provider) => provider.spec.type === providerType));
   const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
-  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
@@ -43,7 +43,7 @@ const ProvidersPage: React.FunctionComponent = () => {
             <Title headingLevel="h1">Providers</Title>
           </LevelItem>
           <LevelItem>
-            <Button variant="secondary" onClick={() => setIsAddModalOpen(true)}>
+            <Button variant="secondary" onClick={toggleAddModal}>
               Add provider
             </Button>
           </LevelItem>
@@ -85,7 +85,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                     No providers
                   </Title>
                   <EmptyStateBody>Add source and target providers for migrations.</EmptyStateBody>
-                  <Button onClick={() => alert('TODO')} variant="primary">
+                  <Button onClick={toggleAddModal} variant="primary">
                     Add provider
                   </Button>
                 </EmptyState>
@@ -96,7 +96,7 @@ const ProvidersPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      {isAddModalOpen ? <AddProviderModal onClose={() => setIsAddModalOpen(false)} /> : null}
+      {isAddModalOpen ? <AddProviderModal onClose={toggleAddModal} /> : null}
     </>
   );
 };
