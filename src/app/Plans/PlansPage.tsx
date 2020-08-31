@@ -16,6 +16,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import PlansTable from './components/PlansTable';
 import { IAddPlanDisabledObjModel } from './types';
+import { Provider } from '@app/Providers/types';
 import { ProviderType } from '@app/common/constants';
 
 // TODO replace these with real state e.g. from redux
@@ -26,8 +27,8 @@ const migplans = MOCK_PLANS;
 const providers = MOCK_PROVIDERS;
 
 const PlansPage: React.FunctionComponent = () => {
-  const vmwareList = providers.map((x) => x.spec.type === ProviderType.vsphere);
-  const cnvList = providers.map((x) => x.spec.type === ProviderType.cnv);
+  const vmwareList: Provider[] = providers.filter((x) => x.spec.type === ProviderType.vsphere);
+  const cnvList: Provider[] = providers.filter((x) => x.spec.type === ProviderType.cnv);
 
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
