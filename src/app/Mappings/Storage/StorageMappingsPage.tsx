@@ -12,7 +12,7 @@ import {
   Button,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IStorageMapping } from '../types';
+import { IStorageMapping, MappingType } from '../types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
@@ -64,7 +64,11 @@ const StorageMappingsPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       {isAddEditModalOpen ? (
-        <AddEditMappingModal title="Add storage mapping" onClose={toggleAddEditModal} />
+        <AddEditMappingModal
+          title="Add storage mapping"
+          onClose={toggleAddEditModal}
+          mappingType={MappingType.Storage}
+        />
       ) : null}
     </>
   );
