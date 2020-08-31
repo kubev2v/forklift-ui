@@ -18,6 +18,7 @@ import PlansTable from './components/PlansTable';
 import { IAddPlanDisabledObjModel } from './types';
 import { Provider } from '@app/Providers/types';
 import { ProviderType } from '@app/common/constants';
+import WizardComponent from './components/Wizard/WizardComponent';
 
 // TODO replace these with real state e.g. from redux
 import { MOCK_PLANS } from './mocks/plans.mock';
@@ -99,7 +100,7 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      {isWizardOpen ? <Button>TODO: Plan Migration Wizard</Button> : null}
+      <WizardComponent isOpen={isWizardOpen} onHandleWizardClose={toggleWizard} />
     </>
   );
 };
