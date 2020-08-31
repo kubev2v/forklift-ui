@@ -5,13 +5,15 @@ import {
   CardBody,
   EmptyState,
   EmptyStateIcon,
+  EmptyStateBody,
   Title,
   Button,
   Bullseye,
   Spinner,
   Tooltip,
 } from '@patternfly/react-core';
-import { AddCircleOIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 import PlansTable from './components/PlansTable';
 import { IAddPlanDisabledObjModel } from './types';
 import { ProviderType } from '@app/common/constants';
@@ -31,7 +33,7 @@ const PlansPage: React.FunctionComponent = () => {
 
   let addPlanDisabledObj: IAddPlanDisabledObjModel = {
     isAddPlanDisabled: false,
-    disabledText: 'Create a migration plan to select VMs to migrate to OpenShift virtualization.',
+    disabledText: 'Click to create a new migration plan',
   };
 
   if (vmwareList.length < 1) {
@@ -50,42 +52,41 @@ const PlansPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <PageSection>
+      <PageSection variant="light">
         <Title headingLevel="h1" size="lg">
           Migration Plans
         </Title>
       </PageSection>
-      <PageSection variant="light">
+      <PageSection>
         {IsFetchingInitialPlans ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
                 <Spinner size="xl" />
               </div>
-              <Title headingLevel="h2" size="xl">
-                Loading...
-              </Title>
+              <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
         ) : (
           <Card>
             <CardBody>
               {!migplans ? null : migplans.length === 0 ? (
-                <EmptyState variant="full">
-                  <EmptyStateIcon icon={AddCircleOIcon} />
+                <EmptyState className={spacing.my_2xl}>
+                  <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title size="lg" headingLevel="h2">
                     No migration plans
                   </Title>
+                  <EmptyStateBody>
+                    Create a migration plan to select VMs to migrate to OpenShift virtualization.
+                  </EmptyStateBody>
                   <Tooltip position="top" content={<div>{addPlanDisabledObj.disabledText}</div>}>
-                    <div>
-                      <Button
-                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                        onClick={toggleWizard}
-                        variant="primary"
-                      >
-                        Create migration plan
-                      </Button>
-                    </div>
+                    <Button
+                      isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                      onClick={toggleWizard}
+                      variant="primary"
+                    >
+                      Create migration plan
+                    </Button>
                   </Tooltip>
                 </EmptyState>
               ) : (
@@ -99,6 +100,7 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
+      {isWizardOpen ? <Button>TODO: Plan Migration Wizard</Button> : null}
     </>
   );
 };
