@@ -77,7 +77,7 @@ const PlansPage: React.FunctionComponent = () => {
                     No migration plans
                   </Title>
                   <EmptyStateBody>
-                    Create a migration plan to select VMs to migrate to OpenShift virtualization.
+                    Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
                   <Tooltip position="top" content={<div>{addPlanDisabledObj.disabledText}</div>}>
                     <Button
