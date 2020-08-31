@@ -2,15 +2,22 @@ import * as React from 'react';
 import WizardStepContainer from './WizardStepContainer';
 import { Wizard } from '@patternfly/react-core';
 import Review from './Review';
+import GeneralForm from './GeneralForm';
+
+import { Provider } from '@app/Providers/types';
 
 interface IWizardComponent {
   isOpen: boolean;
   onHandleWizardClose: () => void;
+  srcProviders: Provider[];
+  tgtProviders: Provider[];
 }
 
 const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
   isOpen,
   onHandleWizardClose,
+  srcProviders,
+  tgtProviders,
 }: IWizardComponent) => {
   enum stepId {
     General = 1,
@@ -28,8 +35,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <div>General</div>
-          {/* <GeneralForm vmware={vwmareList} vncList={vncList} isEdit={isEdit} /> */}
+          <GeneralForm srcProviders={srcProviders} tgtProviders={tgtProviders} />
         </WizardStepContainer>
       ),
       enableNext: true,

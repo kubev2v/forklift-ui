@@ -100,7 +100,12 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      <WizardComponent isOpen={isWizardOpen} onHandleWizardClose={toggleWizard} />
+      <WizardComponent
+        isOpen={isWizardOpen}
+        onHandleWizardClose={toggleWizard}
+        srcProviders={vmwareList}
+        tgtProviders={cnvList}
+      />
     </>
   );
 };
