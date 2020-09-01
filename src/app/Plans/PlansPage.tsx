@@ -103,8 +103,8 @@ const PlansPage: React.FunctionComponent = () => {
       <WizardComponent
         isOpen={isWizardOpen}
         onHandleWizardClose={toggleWizard}
-        srcProviders={vmwareList}
-        tgtProviders={cnvList}
+        sourceProviders={vmwareList}
+        targetProviders={cnvList}
       />
     </>
   );

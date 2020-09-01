@@ -3,21 +3,20 @@ import WizardStepContainer from './WizardStepContainer';
 import { Wizard } from '@patternfly/react-core';
 import Review from './Review';
 import GeneralForm from './GeneralForm';
-
 import { Provider } from '@app/Providers/types';
 
 interface IWizardComponent {
   isOpen: boolean;
   onHandleWizardClose: () => void;
-  srcProviders: Provider[];
-  tgtProviders: Provider[];
+  sourceProviders: Provider[];
+  targetProviders: Provider[];
 }
 
 const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
   isOpen,
   onHandleWizardClose,
-  srcProviders,
-  tgtProviders,
+  sourceProviders,
+  targetProviders,
 }: IWizardComponent) => {
   enum stepId {
     General = 1,
@@ -35,7 +34,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm srcProviders={srcProviders} tgtProviders={tgtProviders} />
+          <GeneralForm sourceProviders={sourceProviders} targetProviders={targetProviders} />
         </WizardStepContainer>
       ),
       enableNext: true,

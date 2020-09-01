@@ -4,25 +4,25 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { Provider } from '@app/Providers/types';
 
 interface IGeneralFormComponent {
-  srcProviders: Provider[];
-  tgtProviders: Provider[];
+  sourceProviders: Provider[];
+  targetProviders: Provider[];
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
-  srcProviders,
-  tgtProviders,
+  sourceProviders,
+  targetProviders,
 }: IGeneralFormComponent) => {
   const [planName, setPlanName] = React.useState<string>('');
   const [planDesc, setPlanDesc] = React.useState<string>('');
   const [srcProvider, setSrcProvider] = React.useState<Provider | null>(null);
   const [tgtProvider, setTgtProvider] = React.useState<Provider | null>(null);
 
-  const srcProvidersOptions = Object.values(srcProviders).map((provider) => ({
+  const sourceProvidersOptions = Object.values(sourceProviders).map((provider) => ({
     toString: () => provider.metadata.name,
     value: provider,
   })) as OptionWithValue<Provider>[];
 
-  const tgtProvidersOptions = Object.values(tgtProviders).map((provider) => ({
+  const targetProvidersOptions = Object.values(targetProviders).map((provider) => ({
     toString: () => provider.metadata.name,
     value: provider,
   })) as OptionWithValue<Provider>[];
@@ -63,8 +63,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
       >
         <SimpleSelect
           id="sourceProvider"
-          options={srcProvidersOptions}
-          value={[srcProvidersOptions.find((option) => option.value === srcProvider)]}
+          options={sourceProvidersOptions}
+          value={[sourceProvidersOptions.find((option) => option.value === srcProvider)]}
           onChange={(selection) => setSrcProvider((selection as OptionWithValue<Provider>).value)}
           placeholderText="Select a provider"
         />
@@ -79,8 +79,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
       >
         <SimpleSelect
           id="tgtProvider"
-          options={tgtProvidersOptions}
-          value={[tgtProvidersOptions.find((option) => option.value === tgtProvider)]}
+          options={targetProvidersOptions}
+          value={[targetProvidersOptions.find((option) => option.value === tgtProvider)]}
           onChange={(selection) => setTgtProvider((selection as OptionWithValue<Provider>).value)}
           placeholderText="Select a provider"
         />
