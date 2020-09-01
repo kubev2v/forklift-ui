@@ -1,8 +1,9 @@
 import * as React from 'react';
-import WizardStepContainer from './WizardStepContainer';
 import { Wizard } from '@patternfly/react-core';
-import Review from './Review';
+import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
+import FilterVMs from './FilterVMs';
+import Review from './Review';
 import { Provider } from '@app/Providers/types';
 
 interface IPlanWizardProps {
@@ -47,7 +48,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <div>TODO: Filter VMs</div>
+              <FilterVMs Inventory={[]} />
             </WizardStepContainer>
           ),
           enableNext: true,
