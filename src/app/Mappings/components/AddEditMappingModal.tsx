@@ -12,6 +12,7 @@ import {
   IVMwareDatastore,
   ICNVProvider,
   IVMwareProvider,
+  ICNVStorageClass,
 } from '@app/Providers/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
@@ -63,8 +64,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   }, [mappingType, targetProvider]);
 
   // TODO use the right thing from redux here instead of mock data
-  let availableSources: IVMwareNetwork[] | IVMwareDatastore[] = [];
-  let availableTargets: ICNVNetwork[] | string[] = []; // strings = storage classes
+  let availableSources: (IVMwareNetwork | IVMwareDatastore)[] = [];
+  let availableTargets: (ICNVNetwork | ICNVStorageClass)[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = sourceProvider
       ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.metadata.name]
@@ -77,13 +78,15 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     availableSources = sourceProvider
       ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.metadata.name]
       : [];
-    availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
+    availableTargets = targetProvider
+      ? targetProvider.metadata.storageClasses.map((storageClass) => ({ storageClass }))
+      : [];
   }
 
   return (
     <Modal
       className="addEditMappingModal"
-      width="80%"
+      variant="medium"
       title={title}
       isOpen
       onClose={onClose}
@@ -96,7 +99,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         </Button>,
       ]}
     >
-      <Form className={!sourceProvider || !targetProvider ? 'extraSelectMargin' : ''}>
+      <Form className="extraSelectMargin">
         <Grid sm={12} md={6} hasGutter>
           <FormGroup label="Name" isRequired fieldId="mapping-name">
             <TextInput

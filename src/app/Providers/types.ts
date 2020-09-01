@@ -116,6 +116,10 @@ export interface IVMwareDatastore {
   name: string;
 }
 
+export interface ICNVStorageClass {
+  storageClass: string;
+}
+
 // TODO do these need to be indexed by provider id instead of name?
 export interface IVMwareDatastoresByProvider {
   [providerName: string]: IVMwareDatastore[];

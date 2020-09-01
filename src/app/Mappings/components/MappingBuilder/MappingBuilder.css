@@ -1,0 +1,7 @@
+.mapping-viewer-box {
+  border: 1px solid #000000;
+}
+
+.mapping-source-select .pf-c-chip-group .pf-c-chip__text {
+  max-width: none;
+}
