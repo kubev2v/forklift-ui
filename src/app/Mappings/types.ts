@@ -8,6 +8,8 @@ export enum MappingType {
   Network = 'Network',
   Storage = 'Storage',
 }
+
+// TODO maybe remove the | null from these if we're not using them directly for state
 export interface INetworkMappingItem {
   src: {
     id: string;
