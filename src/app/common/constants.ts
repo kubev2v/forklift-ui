@@ -14,3 +14,6 @@ export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
   [ProviderType.cnv]: 'OpenShift Virtualization',
 };
+
+export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
+export const TARGET_PROVIDER_TYPES = [ProviderType.cnv];
