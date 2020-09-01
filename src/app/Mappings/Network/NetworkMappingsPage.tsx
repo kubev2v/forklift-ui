@@ -13,7 +13,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { INetworkMapping } from '../types';
+import { INetworkMapping, MappingType } from '../types';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 
@@ -64,7 +64,11 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       {isAddEditModalOpen ? (
-        <AddEditMappingModal title="Add network mapping" onClose={toggleAddEditModal} />
+        <AddEditMappingModal
+          title="Add network mapping"
+          onClose={toggleAddEditModal}
+          mappingType={MappingType.Network}
+        />
       ) : null}
     </>
   );
