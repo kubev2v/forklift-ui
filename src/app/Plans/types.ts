@@ -1,4 +1,5 @@
 import { Hook } from '@app/Hooks/types';
+import { CR } from '@app/common/types';
 import { Mapping } from '@app/Mappings/types';
 import { IVMwareProvider, ICNVProvider, IHost } from '@app/Providers/types';
 
@@ -15,14 +16,23 @@ export interface PlanVM {
   };
   Host: IHost;
 }
-export interface Plan {
-  Provider: {
-    sourceProvider: IVMwareProvider;
-    destinationProvider: ICNVProvider;
+
+export interface PlanStatus {
+  Conditions: boolean;
+  ObservedGeneration: number;
+}
+
+export interface Plan extends CR {
+  Spec: {
+    Provider: {
+      sourceProvider: IVMwareProvider;
+      destinationProvider: ICNVProvider;
+    };
+    Map: Mapping;
+    Warm: boolean;
+    VMs: PlanVM[];
   };
-  Map: Mapping;
-  Warm: boolean;
-  VMs: PlanVM[];
+  Status: PlanStatus;
 }
 
 export interface Migration {
