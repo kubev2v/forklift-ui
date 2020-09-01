@@ -1,0 +1,21 @@
+.line-arrow {
+  width: 100%;
+  margin: 0;
+}
+
+.line-arrow .line-arrow__line {
+  margin-top: 10px;
+  width: calc(100% - 18px);
+  background: #000000;
+  height: 4px;
+  float: left;
+}
+
+.line-arrow .line-arrow__point {
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 18px solid #000000;
+  float: right;
+}
