@@ -21,7 +21,7 @@ import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import './MappingBuilder.css';
 import { getMappingTargets } from './helpers';
 import MappingSourceSelect from './MappingSourceSelect';
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import MappingTargetSelect from './MappingTargetSelect';
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
@@ -31,6 +31,11 @@ interface IMappingBuilderProps {
   availableTargets: (ICNVNetwork | ICNVStorageClass)[];
 }
 
+interface MappingBuilderGroup {
+  sources: { id: string }[];
+  target: MappingItemTarget | null;
+}
+
 const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   mappingType,
   sourceProvider,
@@ -38,7 +43,15 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   availableSources,
   availableTargets,
 }: IMappingBuilderProps) => {
-  console.log({ mappingType, sourceProvider, targetProvider, availableSources, availableTargets });
+  // TODO we need to keep an "un-flattened" version of the mapping items in state
+  // instead of the current structure of [{ source, target }, { source, target }],
+  // use [{ sources: [], target }], mappingGroups?
+  // then have helpers to unflatten from initialMappingItems (for editing)
+  // and to flatten into mappingItems (for saving)
+
+  const [mappingGroups, setMappingGroups] = React.useState<MappingBuilderGroup[]>([]);
+  /////// TODO convert all the flat mappingItems stuff to use this, to fix weird state issues
+
   const [mappingItems, setMappingItems] = React.useState<
     (INetworkMappingItem | IStorageMappingItem)[]
   >([]);
@@ -117,25 +130,6 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           key = t ? t.storageClass : 'empty';
         }
 
-        // Don't allow selection of targets already selected
-        const filteredTargets = availableTargets.filter(
-          (t) => !mappingItems.some((item) => item.target !== target && item.target === t)
-        );
-        const targetOptions: OptionWithValue<
-          ICNVNetwork | ICNVStorageClass
-        >[] = filteredTargets.map((target) => ({
-          value: target,
-          toString: () => {
-            if (mappingType === MappingType.Network) {
-              return `${targetProvider.metadata.name} / ${(target as ICNVNetwork).name}`;
-            }
-            if (mappingType === MappingType.Storage) {
-              return (target as ICNVStorageClass).storageClass;
-            }
-            return '';
-          },
-        }));
-
         return (
           <Grid key={key}>
             {targetIndex === 0 ? (
@@ -170,22 +164,14 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
               <LineArrow />
             </GridItem>
             <GridItem span={5} className={`mapping-viewer-box ${spacing.pMd}`}>
-              <SimpleSelect
+              <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
-                isPlain
-                options={targetOptions}
-                value={[
-                  targetOptions.find(
-                    (option: OptionWithValue<ICNVNetwork | ICNVStorageClass>) =>
-                      option.value === target
-                  ),
-                ]}
-                onChange={(selection) => {
-                  updateMappingTarget(
-                    target,
-                    (selection as OptionWithValue<ICNVNetwork | ICNVStorageClass>).value
-                  );
-                }}
+                mappingType={mappingType}
+                targetProvider={targetProvider}
+                mappingItems={mappingItems}
+                availableTargets={availableTargets}
+                target={target}
+                updateMappingTarget={updateMappingTarget}
                 placeholderText={selectTargetPlaceholder}
               />
             </GridItem>
