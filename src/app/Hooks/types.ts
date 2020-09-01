@@ -1,6 +1,4 @@
-// TODO This is speculative until details are avail.
-
-export interface IHook {
+export interface Hook {
   type: string;
   image: string;
   envVars: string;

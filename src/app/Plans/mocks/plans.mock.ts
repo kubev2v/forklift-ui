@@ -1,3 +1,3 @@
-import { IPlan } from '../types';
+import { Plan } from '../types';
 
-export const MOCK_PLANS: IPlan[] = [];
+export const MOCK_PLANS: Plan[] = [];

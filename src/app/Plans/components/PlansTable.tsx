@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { IPlan, IAddPlanDisabledObjModel } from '../types';
+import { Plan, IAddPlanDisabledObjModel } from '../types';
 
 interface IPlansTableProps {
-  planList: IPlan[];
+  planList: Plan[];
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
 }
