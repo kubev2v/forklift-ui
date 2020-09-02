@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ICNVProvider, ICNVNetwork, ICNVStorageClass } from '@app/Providers/types';
+import { ICNVProvider, ICNVNetwork } from '@app/Providers/types';
 import { MappingTarget, MappingType } from '@app/Mappings/types';
 import { IMappingBuilderGroup } from './MappingBuilder';
 
@@ -43,7 +43,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
         return `${targetProvider.metadata.name} / ${(target as ICNVNetwork).name}`;
       }
       if (mappingType === MappingType.Storage) {
-        return `${targetProvider.metadata.name} / ${(target as ICNVStorageClass).storageClass}`;
+        return `${targetProvider.metadata.name} / ${target as string}`;
       }
       return '';
     },

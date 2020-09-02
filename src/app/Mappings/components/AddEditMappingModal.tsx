@@ -72,9 +72,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     availableSources = sourceProvider
       ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.metadata.name]
       : [];
-    availableTargets = targetProvider
-      ? targetProvider.metadata.storageClasses.map((storageClass) => ({ storageClass }))
-      : [];
+    availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
   }
 
   // TODO add support for prefilling mappingGroups for editing an API mapping

@@ -2,7 +2,7 @@ import * as React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
-import { ICNVNetwork, IVMwareProvider, ICNVProvider, ICNVStorageClass } from '@app/Providers/types';
+import { ICNVNetwork, IVMwareProvider, ICNVProvider } from '@app/Providers/types';
 import { Button, TextContent, Text, Grid, GridItem, Title, Flex } from '@patternfly/react-core';
 import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
@@ -81,8 +81,8 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           key = t ? `${t.namespace}-${t.name}` : `empty-${groupIndex}`;
         }
         if (mappingType === MappingType.Storage) {
-          const t = group.target as ICNVStorageClass | null;
-          key = t ? t.storageClass : `empty-${groupIndex}`;
+          const t = group.target as string | null;
+          key = t ? t : `empty-${groupIndex}`;
         }
         return (
           <Grid key={key}>

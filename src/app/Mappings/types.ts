@@ -2,12 +2,7 @@
 // These types should probably be restructured to match API data later.
 
 import { ProviderType } from '@app/common/constants';
-import {
-  ICNVNetwork,
-  ICNVStorageClass,
-  IVMwareDatastore,
-  IVMwareNetwork,
-} from '@app/Providers/types';
+import { ICNVNetwork, IVMwareDatastore, IVMwareNetwork } from '@app/Providers/types';
 
 export enum MappingType {
   Network = 'Network',
@@ -25,7 +20,7 @@ export interface IStorageMappingItem {
   source: {
     id: string;
   };
-  target: ICNVStorageClass;
+  target: string; // storage class
 }
 
 export type MappingItem = INetworkMappingItem | IStorageMappingItem;
@@ -60,4 +55,4 @@ export interface IStorageMapping extends ICommonMapping {
 export type Mapping = INetworkMapping | IStorageMapping;
 
 export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = ICNVNetwork | ICNVStorageClass;
+export type MappingTarget = ICNVNetwork | string; // string = storage class
