@@ -88,7 +88,25 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        <Button
+          key="confirm"
+          variant="primary"
+          onClick={() => {
+            const mappingsKey = localStorage.getItem('mappingsObject' || '{}');
+            const currentMappings = mappingsKey !== null ? JSON.parse(mappingsKey) : {};
+            const mockMappings = {
+              mappings: [
+                {
+                  name: mappingName,
+                  sourceProvider: sourceProvider,
+                  targetProvider: targetProvider,
+                },
+                ...currentMappings.mappings,
+              ],
+            };
+            localStorage.setItem('mappingsObject', JSON.stringify(mockMappings));
+          }}
+        >
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>

@@ -28,7 +28,12 @@ export interface IStorageMappingItem {
 export interface ICommonMapping {
   type: MappingType;
   name: string;
-  provider: {
+  sourceProvider: {
+    // TODO Should this instead use a unique provider id? what if we rename providers?
+    type: ProviderType;
+    name: string;
+  };
+  targetProvider: {
     // TODO Should this instead use a unique provider id? what if we rename providers?
     type: ProviderType;
     name: string;
