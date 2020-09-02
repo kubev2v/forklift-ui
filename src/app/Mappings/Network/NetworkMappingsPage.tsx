@@ -67,7 +67,11 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <MappingsTable mappings={networkMappings} mappingType={MappingType.Network} />
+                <MappingsTable
+                  mappings={networkMappings}
+                  mappingType={MappingType.Network}
+                  toggleAddEditModal={toggleAddEditModal}
+                />
               )}
             </CardBody>
           </Card>

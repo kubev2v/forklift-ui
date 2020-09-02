@@ -18,6 +18,7 @@ import {
   MOCK_CNV_NETWORKS_BY_PROVIDER,
 } from '@app/Providers/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+import { updateMockStorage } from '../mocks/helpers';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -92,23 +93,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           key="confirm"
           variant="primary"
           onClick={() => {
-            const mappingsKey = localStorage.getItem('mappingsObject' || '{}');
-            const currentMappings = mappingsKey !== null ? JSON.parse(mappingsKey) : {};
-            const mockMappings = {
-              mappings: [
-                {
-                  name: mappingName ? mappingName : 'name1',
-                  sourceProvider: {
-                    name: sourceProvider ? sourceProvider.metadata.name : 'test1',
-                  },
-                  targetProvider: {
-                    name: targetProvider ? targetProvider.metadata.name : 'test2',
-                  },
-                },
-                ...(currentMappings?.mappings ? currentMappings.mappings : []),
-              ],
-            };
-            localStorage.setItem('mappingsObject', JSON.stringify(mockMappings));
+            //TODO: Replace with a real redux call for adding a mapping
+            updateMockStorage({ mappingName, sourceProvider, targetProvider });
             onClose();
           }}
         >
