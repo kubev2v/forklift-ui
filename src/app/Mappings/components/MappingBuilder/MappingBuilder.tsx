@@ -115,7 +115,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 />
               </div>
             </GridItem>
-            <GridItem span={1} className={spacing.ptMd}>
+            <GridItem span={1} className={spacing.ptLg}>
               <LineArrow />
             </GridItem>
             <GridItem span={5}>
