@@ -94,7 +94,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           variant="primary"
           onClick={() => {
             //TODO: Replace with a real redux call for adding a mapping
-            updateMockStorage({ mappingName, sourceProvider, targetProvider });
+            updateMockStorage({ mappingName, sourceProvider, targetProvider, mappingType });
             onClose();
           }}
         >
