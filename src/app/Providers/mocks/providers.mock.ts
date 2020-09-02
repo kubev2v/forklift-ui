@@ -1,4 +1,5 @@
 import { IVMwareProvider, ICNVProvider, Provider } from '../types';
+import { ProviderType } from '@app/common/constants';
 
 const vmwareProvider1: IVMwareProvider = {
   metadata: {
@@ -20,7 +21,7 @@ const vmwareProvider1: IVMwareProvider = {
     numDatastores: 3,
   },
   spec: {
-    type: 'vsphere',
+    type: ProviderType.vsphere,
     url: 'vcenter.v2v.bos.redhat.com',
     secret: {
       namespace: 'openshift-migration',
@@ -71,7 +72,7 @@ const cnvProvider1: ICNVProvider = {
   },
   spec: {
     ...vmwareProvider1.spec,
-    type: 'cnv', // TODO ???
+    type: ProviderType.cnv, // TODO ???
     url: 'https://my_OCPv_url',
   },
 };
