@@ -1,10 +1,12 @@
 import { MappingType, INetworkMappingItem, IStorageMappingItem } from '@app/Mappings/types';
-import { MappingItemTarget } from '../../types';
+import { MappingTarget } from '../../types';
 
+// TODO this will be useful for converting/flattening
+/*
 export const getMappingTargets = (
   mappingType: MappingType,
   mappingItems: (INetworkMappingItem | IStorageMappingItem)[]
-): MappingItemTarget[] => {
+): MappingTarget[] => {
   if (mappingType === MappingType.Network) {
     return Array.from(new Set((mappingItems as INetworkMappingItem[]).map((item) => item.target)));
   }
@@ -13,3 +15,4 @@ export const getMappingTargets = (
   }
   return [];
 };
+*/
