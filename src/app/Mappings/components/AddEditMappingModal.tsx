@@ -97,14 +97,19 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             const mockMappings = {
               mappings: [
                 {
-                  name: mappingName,
-                  sourceProvider: sourceProvider,
-                  targetProvider: targetProvider,
+                  name: mappingName ? mappingName : 'name1',
+                  sourceProvider: {
+                    name: sourceProvider ? sourceProvider.metadata.name : 'test1',
+                  },
+                  targetProvider: {
+                    name: targetProvider ? targetProvider.metadata.name : 'test2',
+                  },
                 },
-                ...currentMappings.mappings,
+                ...(currentMappings?.mappings ? currentMappings.mappings : []),
               ],
             };
             localStorage.setItem('mappingsObject', JSON.stringify(mockMappings));
+            onClose();
           }}
         >
           Add

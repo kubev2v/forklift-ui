@@ -35,6 +35,7 @@ interface IMappingsTableProps {
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
+  mappingType,
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: ICommonMapping) => {
     const { name, sourceProvider, targetProvider } = mapping;
@@ -72,7 +73,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         {
           title: (
             <>
-              <OutlinedHddIcon key="hosts-icon" /> {items.length}
+              <OutlinedHddIcon key="hosts-icon" /> {items ? items.length : 0}
             </>
           ),
           props: {
