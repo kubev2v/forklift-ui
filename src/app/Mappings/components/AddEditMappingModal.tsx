@@ -3,8 +3,8 @@ import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patt
 import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
 import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import './AddEditMappingModal.css';
-import MappingBuilder from './MappingBuilder';
+import { MappingBuilder, IMappingBuilderGroup } from './MappingBuilder';
+import { getMappingFromBuilderGroups } from './MappingBuilder/helpers';
 import { MappingType, MappingSource, MappingTarget } from '../types';
 import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
 import {
@@ -12,6 +12,7 @@ import {
   MOCK_CNV_NETWORKS_BY_PROVIDER,
 } from '@app/Providers/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+import './AddEditMappingModal.css';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -49,11 +50,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider}`);
+    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.metadata.name}`);
   }, [mappingType, sourceProvider]);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider}`);
+    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.metadata.name}`);
   }, [mappingType, targetProvider]);
 
   // TODO use the right thing from redux here instead of mock data
@@ -76,6 +77,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       : [];
   }
 
+  // TODO add support for prefilling mappingGroups for editing an API mapping
+  // (use getBuilderGroupsFromMapping helper to get initial value)
+  const [mappingGroups, setMappingGroups] = React.useState<IMappingBuilderGroup[]>([
+    { sources: [], target: null },
+  ]);
+
   return (
     <Modal
       className="addEditMappingModal"
@@ -84,7 +91,23 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        <Button
+          key="confirm"
+          variant="primary"
+          onClick={() => {
+            if (sourceProvider && targetProvider) {
+              const generatedMapping = getMappingFromBuilderGroups({
+                mappingType,
+                mappingName,
+                sourceProvider,
+                targetProvider,
+                mappingGroups,
+              });
+              alert('TODO');
+              console.log('TODO: API call with generated mapping: ', generatedMapping);
+            }
+          }}
+        >
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
@@ -133,6 +156,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             targetProvider={targetProvider}
             availableSources={availableSources}
             availableTargets={availableTargets}
+            mappingGroups={mappingGroups}
+            setMappingGroups={setMappingGroups}
           />
         ) : null}
       </Form>

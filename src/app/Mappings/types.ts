@@ -15,31 +15,36 @@ export enum MappingType {
 }
 
 export interface INetworkMappingItem {
-  src: {
+  source: {
     id: string;
   };
-  target: ICNVNetwork | null;
+  target: ICNVNetwork;
 }
 
 export interface IStorageMappingItem {
-  src: {
+  source: {
     id: string;
   };
-  target: ICNVStorageClass | null;
+  target: ICNVStorageClass;
 }
 
-export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = ICNVNetwork | ICNVStorageClass;
+export type MappingItem = INetworkMappingItem | IStorageMappingItem;
 
 export interface ICommonMapping {
   type: MappingType;
   name: string;
   provider: {
-    // TODO Should this instead use a unique provider id? what if we rename providers?
-    type: ProviderType;
-    name: string;
+    // TODO Should this instead use unique provider ids? what if we rename providers?
+    source: {
+      type: ProviderType;
+      name: string;
+    };
+    target: {
+      type: ProviderType;
+      name: string;
+    };
   };
-  items: INetworkMappingItem[] | IStorageMappingItem[];
+  items: MappingItem[];
 }
 
 export interface INetworkMapping extends ICommonMapping {
@@ -53,3 +58,6 @@ export interface IStorageMapping extends ICommonMapping {
 }
 
 export type Mapping = INetworkMapping | IStorageMapping;
+
+export type MappingSource = IVMwareDatastore | IVMwareNetwork;
+export type MappingTarget = ICNVNetwork | ICNVStorageClass;
