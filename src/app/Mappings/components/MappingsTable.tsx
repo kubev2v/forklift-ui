@@ -22,7 +22,7 @@ import {
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { OutlinedHddIcon } from '@patternfly/react-icons';
+import { OutlinedHddIcon, NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
 import ProviderStatus from '@app/Providers/components/ProvidersTable/ProviderStatus';
 import VMwareProviderActionsDropdown from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderActionsDropdown';
 import VMwareProviderHostsTable from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderHostsTable';
@@ -57,7 +57,11 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     { title: 'Name', transforms: [sortable] },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
-    { title: 'Network mappings', transforms: [sortable] },
+    {
+      title: <>{mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings'}</>,
+      transforms: [sortable],
+      cellTransforms: [compoundExpand],
+    },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
@@ -75,7 +79,12 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         {
           title: (
             <>
-              <OutlinedHddIcon key="hosts-icon" /> {items ? items.length : 0}
+              {mappingType === MappingType.Network ? (
+                <NetworkIcon key="hosts-icon" />
+              ) : (
+                <DatabaseIcon key="storage-icon" />
+              )}{' '}
+              {items ? items.length : 0}
             </>
           ),
           props: {
@@ -95,8 +104,8 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
           {
             title: (
               <div>
-                mapping details table
-                {/* <MappingDetailsTable provider={provider} /> */}
+                TODO: mapping details table
+                {/* <MappingDetailsTable {...props} /> */}
               </div>
             ),
             props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
@@ -148,13 +157,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         </LevelItem>
       </Level>
       <Table
-        aria-label="VMware providers table"
+        aria-label="Mappings table"
         cells={columns}
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
         onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
-          toggleMappingExpanded(rowData.meta.provider);
+          toggleMappingExpanded(rowData.meta.mapping);
         }}
       >
         <TableHeader />

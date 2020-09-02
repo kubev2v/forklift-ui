@@ -113,7 +113,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             }
 =======
             //TODO: Replace with a real redux call for adding a mapping
-            updateMockStorage({ mappingName, sourceProvider, targetProvider });
+            updateMockStorage({ mappingName, sourceProvider, targetProvider, mappingType });
             onClose();
 >>>>>>> move mock function to its own file
           }}
