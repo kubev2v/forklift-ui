@@ -3,21 +3,17 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
 import { ICNVNetwork, IVMwareProvider, ICNVProvider, ICNVStorageClass } from '@app/Providers/types';
-import {
-  Button,
-  TextContent,
-  Text,
-  Grid,
-  GridItem,
-  Title,
-  Bullseye,
-  Flex,
-} from '@patternfly/react-core';
+import { Button, TextContent, Text, Grid, GridItem, Title, Flex } from '@patternfly/react-core';
 import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import './MappingBuilder.css';
 import { TrashIcon } from '@patternfly/react-icons';
+
+export interface IMappingBuilderGroup {
+  sources: MappingSource[];
+  target: MappingTarget | null;
+}
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
@@ -25,32 +21,23 @@ interface IMappingBuilderProps {
   targetProvider: ICNVProvider;
   availableSources: MappingSource[];
   availableTargets: MappingTarget[];
+  mappingGroups: IMappingBuilderGroup[];
+  setMappingGroups: (groups: IMappingBuilderGroup[]) => void;
 }
 
-export interface IMappingBuilderGroup {
-  sources: MappingSource[];
-  target: MappingTarget | null;
-}
-
-const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
+export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   mappingType,
   sourceProvider,
   targetProvider,
   availableSources,
   availableTargets,
+  mappingGroups,
+  setMappingGroups,
 }: IMappingBuilderProps) => {
-  // TODO have helpers to unflatten from initialMappingItems (for editing)
-  // and to flatten into mappingItems (for saving)
-
-  const emptyGroup: IMappingBuilderGroup = { sources: [], target: null };
-  const [mappingGroups, setMappingGroups] = React.useState<IMappingBuilderGroup[]>([
-    { ...emptyGroup },
-  ]);
-
-  const resetGroups = () => setMappingGroups([{ ...emptyGroup }]);
+  const resetGroups = () => setMappingGroups([{ sources: [], target: null }]);
   const isReset =
     mappingGroups.length === 1 && mappingGroups[0].sources.length === 0 && !mappingGroups[0].target;
-  const addEmptyGroup = () => setMappingGroups([...mappingGroups, { ...emptyGroup }]);
+  const addEmptyGroup = () => setMappingGroups([...mappingGroups, { sources: [], target: null }]);
   const removeGroup = (groupIndex: number) => {
     if (mappingGroups.length > 1) {
       setMappingGroups(mappingGroups.filter((_group, index) => index !== groupIndex));
@@ -172,5 +159,3 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     </>
   );
 };
-
-export default MappingBuilder;
