@@ -57,7 +57,11 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <MappingsTable mappings={storageMappings} mappingType={MappingType.Storage} />
+                <MappingsTable
+                  mappings={storageMappings}
+                  mappingType={MappingType.Storage}
+                  toggleAddEditModal={toggleAddEditModal}
+                />
               )}
             </CardBody>
           </Card>

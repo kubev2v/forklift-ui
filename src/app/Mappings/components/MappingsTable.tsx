@@ -31,11 +31,13 @@ import MappingsActionsDropdown from './MappingsActionsDropdown';
 interface IMappingsTableProps {
   mappings: Mapping[];
   mappingType: string;
+  toggleAddEditModal: () => void;
 }
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,
+  toggleAddEditModal,
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: ICommonMapping) => {
     const { name, sourceProvider, targetProvider } = mapping;
@@ -130,14 +132,16 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          {/* <Button
-            variant="secondary"
-            onClick={() => alert('TODO')}
-            isDisabled={selectedItems.length === 0}
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={() => {
+              //TODO: Replace with a real redux call for adding a mapping
+              toggleAddEditModal();
+            }}
           >
-            Download data
-          </Button> */}
-          level item
+            Add mapping
+          </Button>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />

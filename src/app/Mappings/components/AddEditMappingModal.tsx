@@ -13,7 +13,11 @@ import {
   MOCK_CNV_NETWORKS_BY_PROVIDER,
 } from '@app/Providers/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+<<<<<<< HEAD
 import './AddEditMappingModal.css';
+=======
+import { updateMockStorage } from '../mocks/helpers';
+>>>>>>> move mock function to its own file
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -95,6 +99,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           key="confirm"
           variant="primary"
           onClick={() => {
+<<<<<<< HEAD
             if (sourceProvider && targetProvider) {
               const generatedMapping = getMappingFromBuilderItems({
                 mappingType,
@@ -106,6 +111,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               alert('TODO');
               console.log('TODO: API call with generated mapping: ', generatedMapping);
             }
+=======
+            //TODO: Replace with a real redux call for adding a mapping
+            updateMockStorage({ mappingName, sourceProvider, targetProvider });
+            onClose();
+>>>>>>> move mock function to its own file
           }}
         >
           Create
