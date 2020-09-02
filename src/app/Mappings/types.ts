@@ -2,14 +2,18 @@
 // These types should probably be restructured to match API data later.
 
 import { ProviderType } from '@app/common/constants';
-import { ICNVNetwork, ICNVStorageClass } from '@app/Providers/types';
+import {
+  ICNVNetwork,
+  ICNVStorageClass,
+  IVMwareDatastore,
+  IVMwareNetwork,
+} from '@app/Providers/types';
 
 export enum MappingType {
   Network = 'Network',
   Storage = 'Storage',
 }
 
-// TODO maybe remove the | null from these if we're not using them directly for state
 export interface INetworkMappingItem {
   src: {
     id: string;
@@ -24,7 +28,8 @@ export interface IStorageMappingItem {
   target: ICNVStorageClass | null;
 }
 
-export type MappingItemTarget = ICNVNetwork | ICNVStorageClass | null;
+export type MappingSource = IVMwareDatastore | IVMwareNetwork;
+export type MappingTarget = ICNVNetwork | ICNVStorageClass;
 
 export interface ICommonMapping {
   type: MappingType;

@@ -5,15 +5,8 @@ import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/consta
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import './AddEditMappingModal.css';
 import MappingBuilder from './MappingBuilder';
-import { MappingType } from '../types';
-import {
-  IVMwareNetwork,
-  ICNVNetwork,
-  IVMwareDatastore,
-  ICNVProvider,
-  IVMwareProvider,
-  ICNVStorageClass,
-} from '@app/Providers/types';
+import { MappingType, MappingSource, MappingTarget } from '../types';
+import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
   MOCK_CNV_NETWORKS_BY_PROVIDER,
@@ -64,8 +57,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   }, [mappingType, targetProvider]);
 
   // TODO use the right thing from redux here instead of mock data
-  let availableSources: (IVMwareNetwork | IVMwareDatastore)[] = [];
-  let availableTargets: (ICNVNetwork | ICNVStorageClass)[] = [];
+  let availableSources: MappingSource[] = [];
+  let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = sourceProvider
       ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.metadata.name]
