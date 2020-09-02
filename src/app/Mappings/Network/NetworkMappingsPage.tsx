@@ -19,9 +19,19 @@ import AddEditMappingModal from '../components/AddEditMappingModal';
 
 // TODO replace these with real state e.g. from redux
 const isFetchingInitialNetworkMappings = false; // Fetching for the first time, not polling
-const networkMappings: INetworkMapping[] = [];
+// const networkMappings: INetworkMapping[] = [];
 
 const NetworkMappingsPage: React.FunctionComponent = () => {
+  const mockMapObj = localStorage.getItem('mappingsObject');
+  const [networkMappings, setNetworkMappings] = React.useState([]);
+
+  React.useEffect(() => {
+    console.log(`TODO: fetch network mapping items`);
+    const mappingsKey = localStorage.getItem('mappingsObject' || '{}');
+    const currentMappings = mappingsKey !== null ? JSON.parse(mappingsKey).mappings : [];
+    setNetworkMappings(currentMappings || []);
+  }, [mockMapObj]);
+
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   return (
     <>
