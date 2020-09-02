@@ -3,11 +3,21 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
 import { ICNVNetwork, IVMwareProvider, ICNVProvider, ICNVStorageClass } from '@app/Providers/types';
-import { Button, TextContent, Text, Grid, GridItem, Title } from '@patternfly/react-core';
+import {
+  Button,
+  TextContent,
+  Text,
+  Grid,
+  GridItem,
+  Title,
+  Bullseye,
+  Flex,
+} from '@patternfly/react-core';
 import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import './MappingBuilder.css';
+import { TrashIcon } from '@patternfly/react-icons';
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
@@ -37,9 +47,16 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     { ...emptyGroup },
   ]);
 
+  const resetGroups = () => setMappingGroups([{ ...emptyGroup }]);
+  const isReset =
+    mappingGroups.length === 1 && mappingGroups[0].sources.length === 0 && !mappingGroups[0].target;
   const addEmptyGroup = () => setMappingGroups([...mappingGroups, { ...emptyGroup }]);
   const removeGroup = (groupIndex: number) => {
-    setMappingGroups(mappingGroups.filter((_group, index) => index !== groupIndex));
+    if (mappingGroups.length > 1) {
+      setMappingGroups(mappingGroups.filter((_group, index) => index !== groupIndex));
+    } else {
+      resetGroups();
+    }
   };
 
   let instructionText = '';
@@ -89,12 +106,13 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                     {sourceHeadingText}
                   </Title>
                 </GridItem>
-                <GridItem span={2} />
+                <GridItem span={1} />
                 <GridItem span={5} className={spacing.pbMd}>
                   <Title headingLevel="h2" size="md">
                     {targetHeadingText}
                   </Title>
                 </GridItem>
+                <GridItem span={1} />
               </>
             ) : null}
             <GridItem span={5}>
@@ -110,7 +128,7 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 />
               </div>
             </GridItem>
-            <GridItem span={2} className={spacing.ptMd}>
+            <GridItem span={1} className={spacing.ptMd}>
               <LineArrow />
             </GridItem>
             <GridItem span={5}>
@@ -127,12 +145,30 @@ const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 />
               </div>
             </GridItem>
+            <GridItem span={1} className={`${spacing.ptMd} ${alignment.textAlignCenter}`}>
+              <Button
+                variant="plain"
+                aria-label="Remove mapping"
+                onClick={() => removeGroup(groupIndex)}
+                isDisabled={isReset}
+              >
+                <TrashIcon />
+              </Button>
+            </GridItem>
           </Grid>
         );
       })}
-      <div className={alignment.textAlignCenter}>
-        <Button onClick={addEmptyGroup}>{addButtonText}</Button>
-      </div>
+      <Flex
+        justifyContent={{ default: 'justifyContentCenter' }}
+        spaceItems={{ default: 'spaceItemsMd' }}
+      >
+        <Button variant="secondary" onClick={addEmptyGroup}>
+          {addButtonText}
+        </Button>
+        <Button variant="secondary" onClick={resetGroups} isDisabled={isReset}>
+          Remove all
+        </Button>
+      </Flex>
     </>
   );
 };
