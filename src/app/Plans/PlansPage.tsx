@@ -54,9 +54,7 @@ const PlansPage: React.FunctionComponent = () => {
   return (
     <>
       <PageSection variant="light">
-        <Title headingLevel="h1" size="lg">
-          Migration Plans
-        </Title>
+        <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
         {IsFetchingInitialPlans ? (
