@@ -83,6 +83,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     { sources: [], target: null },
   ]);
 
+  React.useEffect(() => {
+    // If you change providers, reset the mapping selections.
+    setMappingGroups([{ sources: [], target: null }]);
+  }, [sourceProvider, targetProvider]);
+
   return (
     <Modal
       className="addEditMappingModal"
