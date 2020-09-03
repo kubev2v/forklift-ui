@@ -46,3 +46,13 @@ export interface IMigration {
     StorageReady: boolean;
   };
 }
+
+export interface IVMs {
+  Name: string;
+  MigrationAnalysis: string;
+  Datacenter: string;
+  Cluster: string;
+  Host: string;
+  FolderPath: string;
+  MAStory: string;
+}

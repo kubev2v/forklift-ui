@@ -1,3 +1,5 @@
+import { IVMs } from '../../../types';
+
 export const VMsOptions = [
   {
     name: 'All datacenters',
@@ -119,5 +121,26 @@ export const VMsOptions = [
       },
     ],
     defaultExpanded: true,
+  },
+];
+
+export const MOCK_VMS: IVMs[] = [
+  {
+    Name: 'vm1',
+    Datacenter: 'Prod center 1',
+    Cluster: 'Cluster 1',
+    Host: 'host test1',
+    FolderPath: 'folder1/folderb',
+    MigrationAnalysis: 'Ok',
+    MAStory: '',
+  },
+  {
+    Name: 'vm2',
+    Datacenter: 'Prod center 1',
+    Cluster: 'Cluster 1',
+    Host: 'host test1',
+    FolderPath: 'folder2/foldera',
+    MigrationAnalysis: 'Warning',
+    MAStory: 'There is a risk because...',
   },
 ];
