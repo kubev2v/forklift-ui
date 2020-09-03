@@ -1,14 +1,14 @@
 import * as React from 'react';
+import { Button, TextContent, Text, Grid, GridItem, Flex } from '@patternfly/react-core';
+import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
-import { ICNVNetwork, IVMwareProvider, ICNVProvider } from '@app/Providers/types';
-import { Button, TextContent, Text, Grid, GridItem, Title, Flex } from '@patternfly/react-core';
+import { ICNVNetwork } from '@app/Providers/types';
 import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import './MappingBuilder.css';
-import { TrashIcon } from '@patternfly/react-icons';
 
 export interface IMappingBuilderGroup {
   sources: MappingSource[];
@@ -17,8 +17,6 @@ export interface IMappingBuilderGroup {
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
-  sourceProvider: IVMwareProvider;
-  targetProvider: ICNVProvider;
   availableSources: MappingSource[];
   availableTargets: MappingTarget[];
   mappingGroups: IMappingBuilderGroup[];
@@ -27,8 +25,6 @@ interface IMappingBuilderProps {
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   mappingType,
-  sourceProvider,
-  targetProvider,
   availableSources,
   availableTargets,
   mappingGroups,
@@ -51,22 +47,19 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   let targetHeadingText = '';
   let selectSourcePlaceholder = '';
   let selectTargetPlaceholder = '';
-  let addButtonText = '';
   if (mappingType === MappingType.Network) {
     instructionText = 'Select one or more source networks for each target network.';
-    sourceHeadingText = 'Provider / Network';
-    targetHeadingText = 'Provider / Network';
-    selectSourcePlaceholder = 'Select source network(s)...';
-    selectTargetPlaceholder = 'Select target network...';
-    addButtonText = 'Add target network';
+    sourceHeadingText = 'Source networks';
+    targetHeadingText = 'Target networks';
+    selectSourcePlaceholder = 'Select source...';
+    selectTargetPlaceholder = 'Select target...';
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Select one or more source datastores for each target storage class.';
-    sourceHeadingText = 'Provider / Datastore';
-    targetHeadingText = 'Provider / Storage class';
-    selectSourcePlaceholder = 'Select source datastore(s)...';
-    selectTargetPlaceholder = 'Select target storage class...';
-    addButtonText = 'Add target storage class';
+    sourceHeadingText = 'Source datastores';
+    targetHeadingText = 'Target storage classes';
+    selectSourcePlaceholder = 'Select source...';
+    selectTargetPlaceholder = 'Select target...';
   }
 
   return (
@@ -88,25 +81,24 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           <Grid key={key}>
             {groupIndex === 0 ? (
               <>
-                <GridItem span={5} className={spacing.pbMd}>
-                  <Title headingLevel="h2" size="md">
-                    {sourceHeadingText}
-                  </Title>
+                <GridItem span={5} className={spacing.pbSm}>
+                  <label className="pf-c-form__label">
+                    <span className="pf-c-form__label-text">{sourceHeadingText}</span>
+                  </label>
                 </GridItem>
                 <GridItem span={1} />
-                <GridItem span={5} className={spacing.pbMd}>
-                  <Title headingLevel="h2" size="md">
-                    {targetHeadingText}
-                  </Title>
+                <GridItem span={5} className={spacing.pbSm}>
+                  <label className="pf-c-form__label">
+                    <span className="pf-c-form__label-text">{targetHeadingText}</span>
+                  </label>
                 </GridItem>
                 <GridItem span={1} />
               </>
             ) : null}
             <GridItem span={5}>
-              <div className={`mapping-viewer-box ${spacing.pMd}`}>
+              <div className={`mapping-viewer-box ${spacing.pSm}`}>
                 <MappingSourceSelect
                   id={`mapping-sources-for-${key}`}
-                  sourceProvider={sourceProvider}
                   mappingGroups={mappingGroups}
                   groupIndex={groupIndex}
                   setMappingGroups={setMappingGroups}
@@ -115,15 +107,14 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 />
               </div>
             </GridItem>
-            <GridItem span={1} className={spacing.ptLg}>
+            <GridItem span={1} style={{ paddingTop: 18 }}>
               <LineArrow />
             </GridItem>
             <GridItem span={5}>
-              <div className={`mapping-viewer-box ${spacing.pMd}`}>
+              <div className={`mapping-viewer-box ${spacing.pSm}`}>
                 <MappingTargetSelect
                   id={`mapping-target-for-${key}`}
                   mappingType={mappingType}
-                  targetProvider={targetProvider}
                   mappingGroups={mappingGroups}
                   groupIndex={groupIndex}
                   setMappingGroups={setMappingGroups}
@@ -132,7 +123,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 />
               </div>
             </GridItem>
-            <GridItem span={1} className={`${spacing.ptMd} ${alignment.textAlignCenter}`}>
+            <GridItem span={1} className={`${spacing.ptSm} ${alignment.textAlignCenter}`}>
               <Button
                 variant="plain"
                 aria-label="Remove mapping"
@@ -149,8 +140,8 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         justifyContent={{ default: 'justifyContentCenter' }}
         spaceItems={{ default: 'spaceItemsMd' }}
       >
-        <Button variant="secondary" onClick={addEmptyGroup}>
-          {addButtonText}
+        <Button variant="secondary" icon={<PlusCircleIcon />} onClick={addEmptyGroup}>
+          Add
         </Button>
         <Button variant="secondary" onClick={resetGroups} isDisabled={isReset}>
           Remove all

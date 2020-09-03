@@ -1,13 +1,12 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ICNVProvider, ICNVNetwork } from '@app/Providers/types';
+import { ICNVNetwork } from '@app/Providers/types';
 import { MappingTarget, MappingType } from '@app/Mappings/types';
 import { IMappingBuilderGroup } from './MappingBuilder';
 
 interface IMappingTargetSelectProps {
   id: string;
   mappingType: MappingType;
-  targetProvider: ICNVProvider;
   mappingGroups: IMappingBuilderGroup[];
   groupIndex: number;
   setMappingGroups: (groups: IMappingBuilderGroup[]) => void;
@@ -18,7 +17,6 @@ interface IMappingTargetSelectProps {
 const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
   id,
   mappingType,
-  targetProvider,
   mappingGroups,
   groupIndex,
   setMappingGroups,
@@ -40,10 +38,10 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     value: target,
     toString: () => {
       if (mappingType === MappingType.Network) {
-        return `${targetProvider.metadata.name} / ${(target as ICNVNetwork).name}`;
+        return (target as ICNVNetwork).name;
       }
       if (mappingType === MappingType.Storage) {
-        return `${targetProvider.metadata.name} / ${target as string}`;
+        return target as string;
       }
       return '';
     },

@@ -65,7 +65,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title="Add storage mapping"
+          title="Create storage mapping"
           onClose={toggleAddEditModal}
           mappingType={MappingType.Storage}
         />

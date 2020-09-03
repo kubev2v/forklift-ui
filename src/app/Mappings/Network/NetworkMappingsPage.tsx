@@ -65,7 +65,7 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title="Add network mapping"
+          title="Create network mapping"
           onClose={toggleAddEditModal}
           mappingType={MappingType.Network}
         />
