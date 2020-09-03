@@ -1,66 +1,54 @@
 import * as React from 'react';
 import { MappingSource } from '../../types';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IMappingBuilderGroup } from './MappingBuilder';
+import { IMappingBuilderItem } from './MappingBuilder';
 
 interface IMappingSourceSelectProps {
   id: string;
-  mappingGroups: IMappingBuilderGroup[];
-  groupIndex: number;
-  setMappingGroups: (groups: IMappingBuilderGroup[]) => void;
+  builderItems: IMappingBuilderItem[];
+  itemIndex: number;
+  setBuilderItems: (items: IMappingBuilderItem[]) => void;
   availableSources: MappingSource[];
   placeholderText: string;
 }
 
 const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
   id,
-  mappingGroups,
-  groupIndex,
-  setMappingGroups,
+  builderItems,
+  itemIndex,
+  setBuilderItems,
   availableSources,
   placeholderText,
 }: IMappingSourceSelectProps) => {
-  const setSources = (sources: MappingSource[]) => {
-    const newGroups = [...mappingGroups];
-    newGroups[groupIndex] = { ...mappingGroups[groupIndex], sources };
-    setMappingGroups(newGroups);
+  const setSource = (source: MappingSource) => {
+    const newItems = [...builderItems];
+    newItems[itemIndex] = { ...builderItems[itemIndex], source };
+    setBuilderItems(newItems);
   };
-  const addSource = (source: MappingSource) =>
-    setSources([...mappingGroups[groupIndex].sources, source]);
-  const removeSource = (source: MappingSource) =>
-    setSources(mappingGroups[groupIndex].sources.filter((s) => s !== source));
-  const clearSources = () => setSources([]);
 
   // Don't allow selection of sources already selected in other groups
   const filteredSources = availableSources.filter(
-    (source) =>
-      !mappingGroups.some((group, index) => group.sources.includes(source) && index !== groupIndex)
+    (source) => !builderItems.some((item, index) => item.source === source && index !== itemIndex)
   );
   const options: OptionWithValue<MappingSource>[] = filteredSources.map((source) => ({
     value: source,
     toString: () => source.name,
   }));
-  const selectedOptions = options.filter((option) =>
-    mappingGroups[groupIndex].sources.includes(option.value)
+  const selectedOption = options.filter(
+    (option) => builderItems[itemIndex].source === option.value
   );
 
   return (
     <SimpleSelect
       id={id}
-      className="mapping-source-select"
-      variant="typeaheadmulti"
+      className="mapping-item-select"
+      variant="typeahead"
       isPlain
       options={options}
-      value={selectedOptions}
+      value={[selectedOption]}
       onChange={(selection) => {
-        const option = selection as OptionWithValue<MappingSource>;
-        if (!selectedOptions.includes(option)) {
-          addSource(option.value);
-        } else {
-          removeSource(option.value);
-        }
+        setSource((selection as OptionWithValue<MappingSource>).value);
       }}
-      onClear={clearSources}
       typeAheadAriaLabel={placeholderText}
       placeholderText={placeholderText}
     />

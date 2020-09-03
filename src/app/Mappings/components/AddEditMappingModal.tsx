@@ -4,8 +4,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
 import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingBuilder, IMappingBuilderGroup } from './MappingBuilder';
-import { getMappingFromBuilderGroups } from './MappingBuilder/helpers';
+import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
+import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, MappingSource, MappingTarget } from '../types';
 import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
 import {
@@ -73,15 +73,14 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
   }
 
-  // TODO add support for prefilling mappingGroups for editing an API mapping
-  // (use getBuilderGroupsFromMapping helper to get initial value)
-  const [mappingGroups, setMappingGroups] = React.useState<IMappingBuilderGroup[]>([
-    { sources: [], target: null },
+  // TODO add support for prefilling builderItems for editing an API mapping
+  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
+    { source: null, target: null },
   ]);
 
   React.useEffect(() => {
     // If you change providers, reset the mapping selections.
-    setMappingGroups([{ sources: [], target: null }]);
+    setBuilderItems([{ source: null, target: null }]);
   }, [sourceProvider, targetProvider]);
 
   return (
@@ -97,12 +96,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           variant="primary"
           onClick={() => {
             if (sourceProvider && targetProvider) {
-              const generatedMapping = getMappingFromBuilderGroups({
+              const generatedMapping = getMappingFromBuilderItems({
                 mappingType,
                 mappingName,
                 sourceProvider,
                 targetProvider,
-                mappingGroups,
+                builderItems,
               });
               alert('TODO');
               console.log('TODO: API call with generated mapping: ', generatedMapping);
@@ -163,8 +162,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             mappingType={mappingType}
             availableSources={availableSources}
             availableTargets={availableTargets}
-            mappingGroups={mappingGroups}
-            setMappingGroups={setMappingGroups}
+            builderItems={builderItems}
+            setBuilderItems={setBuilderItems}
           />
         ) : null}
       </Form>

@@ -1,53 +1,58 @@
-import { MappingSource, Mapping, MappingItem, MappingType, MappingTarget } from '../../types';
-import { IMappingBuilderGroup } from './MappingBuilder';
+import {
+  MappingSource,
+  Mapping,
+  MappingItem,
+  MappingType,
+  MappingTarget,
+  INetworkMappingItem,
+  IStorageMappingItem,
+} from '../../types';
+import { IMappingBuilderItem } from './MappingBuilder';
 import { IVMwareProvider, ICNVProvider } from '@app/Providers/types';
 
 export const getSourceById = (sources: MappingSource[], id: string): MappingSource | undefined =>
   sources.find((source) => source.id === id);
 
-export const getBuilderGroupsFromMapping = (
+export const getBuilderItemsFromMapping = (
   mapping: Mapping,
   allSources: MappingSource[]
-): IMappingBuilderGroup[] => {
-  const groups: IMappingBuilderGroup[] = [];
-  mapping.items.forEach((item: MappingItem) => {
-    const group = groups.find((g) => g.target === item.target);
-    const source = getSourceById(allSources, item.source.id);
-    if (group) {
-      if (source) group.sources.push(source);
-    } else {
-      groups.push({ sources: source ? [source] : [], target: item.target });
-    }
-  });
-  return groups;
-};
+): IMappingBuilderItem[] =>
+  (mapping.items as (INetworkMappingItem | IStorageMappingItem)[])
+    .map((item: MappingItem) => {
+      const source = getSourceById(allSources, item.source.id);
+      if (source) {
+        return { source, target: item.target } as IMappingBuilderItem;
+      }
+      return null;
+    })
+    .filter((builderItem) => !!builderItem) as IMappingBuilderItem[];
 
 interface IGetMappingParams {
   mappingType: MappingType;
   mappingName: string;
   sourceProvider: IVMwareProvider;
   targetProvider: ICNVProvider;
-  mappingGroups: IMappingBuilderGroup[];
+  builderItems: IMappingBuilderItem[];
 }
 
-export const getMappingFromBuilderGroups = ({
+export const getMappingFromBuilderItems = ({
   mappingType,
   mappingName,
   sourceProvider,
   targetProvider,
-  mappingGroups,
+  builderItems,
 }: IGetMappingParams): Mapping => {
-  const items: MappingItem[] = [];
-  mappingGroups.forEach((group) => {
-    if (group.target) {
-      group.sources.forEach((source) =>
-        items.push({
-          source: { id: source.id },
-          target: group.target as MappingTarget,
-        } as MappingItem)
-      );
-    }
-  });
+  const items: MappingItem[] = builderItems
+    .map((item) => {
+      if (item.source && item.target) {
+        return {
+          source: { id: item.source.id },
+          target: item.target as MappingTarget,
+        };
+      }
+      return null;
+    })
+    .filter((item) => !!item) as MappingItem[];
   return {
     type: mappingType,
     name: mappingName,

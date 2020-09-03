@@ -2,14 +2,14 @@ import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ICNVNetwork } from '@app/Providers/types';
 import { MappingTarget, MappingType } from '@app/Mappings/types';
-import { IMappingBuilderGroup } from './MappingBuilder';
+import { IMappingBuilderItem } from './MappingBuilder';
 
 interface IMappingTargetSelectProps {
   id: string;
   mappingType: MappingType;
-  mappingGroups: IMappingBuilderGroup[];
-  groupIndex: number;
-  setMappingGroups: (groups: IMappingBuilderGroup[]) => void;
+  builderItems: IMappingBuilderItem[];
+  itemIndex: number;
+  setBuilderItems: (items: IMappingBuilderItem[]) => void;
   availableTargets: MappingTarget[];
   placeholderText: string;
 }
@@ -17,24 +17,19 @@ interface IMappingTargetSelectProps {
 const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
   id,
   mappingType,
-  mappingGroups,
-  groupIndex,
-  setMappingGroups,
+  builderItems,
+  itemIndex,
+  setBuilderItems,
   availableTargets,
   placeholderText,
 }: IMappingTargetSelectProps) => {
   const setTarget = (target: MappingTarget) => {
-    const newGroups = [...mappingGroups];
-    newGroups[groupIndex] = { ...mappingGroups[groupIndex], target };
-    setMappingGroups(newGroups);
+    const newItems = [...builderItems];
+    newItems[itemIndex] = { ...builderItems[itemIndex], target };
+    setBuilderItems(newItems);
   };
 
-  // Don't allow selection of targets already selected in other groups
-  const filteredTargets = availableTargets.filter(
-    (target) =>
-      !mappingGroups.some((group, index) => group.target === target && index !== groupIndex)
-  );
-  const targetOptions: OptionWithValue<MappingTarget>[] = filteredTargets.map((target) => ({
+  const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => ({
     value: target,
     toString: () => {
       if (mappingType === MappingType.Network) {
@@ -47,12 +42,14 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     },
   }));
   const selectedOption = targetOptions.find(
-    (option: OptionWithValue<MappingTarget>) => option.value === mappingGroups[groupIndex].target
+    (option: OptionWithValue<MappingTarget>) => option.value === builderItems[itemIndex].target
   );
 
   return (
     <SimpleSelect
       id={id}
+      className="mapping-item-select"
+      variant="typeahead"
       isPlain
       options={targetOptions}
       value={[selectedOption]}

@@ -2,10 +2,6 @@
   border: 1px solid #000000;
 }
 
-.mapping-source-select .pf-c-chip-group .pf-c-chip__text {
-  max-width: none;
-}
-
-.mapping-source-select .pf-c-select__toggle .pf-c-select__toggle-clear {
+.mapping-item-select .pf-c-select__toggle .pf-c-select__toggle-clear {
   display: none;
 }
