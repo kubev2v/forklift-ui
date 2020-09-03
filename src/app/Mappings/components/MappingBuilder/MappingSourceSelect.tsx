@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { MappingSource } from '../../types';
-import { IVMwareProvider } from '@app/Providers/types';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IMappingBuilderGroup } from './MappingBuilder';
 
 interface IMappingSourceSelectProps {
   id: string;
-  sourceProvider: IVMwareProvider;
   mappingGroups: IMappingBuilderGroup[];
   groupIndex: number;
   setMappingGroups: (groups: IMappingBuilderGroup[]) => void;
@@ -16,7 +14,6 @@ interface IMappingSourceSelectProps {
 
 const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
   id,
-  sourceProvider,
   mappingGroups,
   groupIndex,
   setMappingGroups,
@@ -41,7 +38,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   );
   const options: OptionWithValue<MappingSource>[] = filteredSources.map((source) => ({
     value: source,
-    toString: () => `${sourceProvider.metadata.name} / ${source.name}`,
+    toString: () => source.name,
   }));
   const selectedOptions = options.filter((option) =>
     mappingGroups[groupIndex].sources.includes(option.value)

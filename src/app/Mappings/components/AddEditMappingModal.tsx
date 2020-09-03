@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
 import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
@@ -19,9 +20,6 @@ interface IAddEditMappingModalProps {
   onClose: () => void;
   mappingType: MappingType;
 }
-
-// TODO paramaterize similarly to MappingsTable so it can be used for both network and storage mappings?
-// Split it into AddEditNetworkMappingModal and AddEditStorageMappingModal if necessary
 
 // TODO replace these with real state e.g. from redux
 const providers = MOCK_PROVIDERS;
@@ -111,7 +109,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             }
           }}
         >
-          Add
+          Create
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
           Cancel
@@ -119,44 +117,50 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       ]}
     >
       <Form className="extraSelectMargin">
-        <Grid sm={12} md={6} hasGutter>
-          <FormGroup label="Name" isRequired fieldId="mapping-name">
-            <TextInput
-              id="mapping-name"
-              value={mappingName}
-              type="text"
-              onChange={setMappingName}
-            />
-          </FormGroup>
+        <Grid className={spacing.mbMd}>
+          <GridItem sm={12} md={5} className={spacing.mbMd}>
+            <FormGroup label="Name" isRequired fieldId="mapping-name">
+              <TextInput
+                id="mapping-name"
+                value={mappingName}
+                type="text"
+                onChange={setMappingName}
+              />
+            </FormGroup>
+          </GridItem>
           <GridItem />
-          <FormGroup label="Source provider" isRequired fieldId="source-provider">
-            <SimpleSelect
-              id="source-provider"
-              options={sourceProviderOptions}
-              value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
-              onChange={(selection) =>
-                setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
-              }
-              placeholderText="Select a source provider..."
-            />
-          </FormGroup>
-          <FormGroup label="Target provider" isRequired fieldId="target-provider">
-            <SimpleSelect
-              id="target-provider"
-              options={targetProviderOptions}
-              value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
-              onChange={(selection) =>
-                setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
-              }
-              placeholderText="Select a target provider..."
-            />
-          </FormGroup>
+          <GridItem sm={12} md={5}>
+            <FormGroup label="Source provider" isRequired fieldId="source-provider">
+              <SimpleSelect
+                id="source-provider"
+                options={sourceProviderOptions}
+                value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
+                onChange={(selection) =>
+                  setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
+                }
+                placeholderText="Select a source provider..."
+              />
+            </FormGroup>
+          </GridItem>
+          <GridItem sm={1} />
+          <GridItem sm={12} md={5}>
+            <FormGroup label="Target provider" isRequired fieldId="target-provider">
+              <SimpleSelect
+                id="target-provider"
+                options={targetProviderOptions}
+                value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
+                onChange={(selection) =>
+                  setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
+                }
+                placeholderText="Select a target provider..."
+              />
+            </FormGroup>
+          </GridItem>
+          <GridItem sm={1} />
         </Grid>
         {sourceProvider && targetProvider ? (
           <MappingBuilder
             mappingType={mappingType}
-            sourceProvider={sourceProvider}
-            targetProvider={targetProvider}
             availableSources={availableSources}
             availableTargets={availableTargets}
             mappingGroups={mappingGroups}
