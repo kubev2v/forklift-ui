@@ -1,5 +1,5 @@
-import { Hook } from '@app/Hooks/types';
-import { CR } from '@app/common/types';
+import { IHook } from '@app/Hooks/types';
+import { ICR } from '@app/common/types';
 import { Mapping } from '@app/Mappings/types';
 import { IVMwareProvider, ICNVProvider, IHost } from '@app/Providers/types';
 
@@ -8,21 +8,21 @@ export interface IAddPlanDisabledObjModel {
   disabledText: string;
 }
 
-export interface PlanVM {
+export interface IPlanVM {
   ID: string;
   Hooks: {
-    Before: Hook;
-    After: Hook;
+    Before: IHook;
+    After: IHook;
   };
   Host: IHost;
 }
 
-export interface PlanStatus {
+export interface IPlanStatus {
   Conditions: boolean;
   ObservedGeneration: number;
 }
 
-export interface Plan extends CR {
+export interface IPlan extends ICR {
   Spec: {
     Provider: {
       sourceProvider: IVMwareProvider;
@@ -30,13 +30,13 @@ export interface Plan extends CR {
     };
     Map: Mapping;
     Warm: boolean;
-    VMs: PlanVM[];
+    VMs: IPlanVM[];
   };
-  Status: PlanStatus;
+  Status: IPlanStatus;
 }
 
-export interface Migration {
-  Plan: Plan;
+export interface IMigration {
+  Plan: IPlan;
   Schedule: {
     Begin: Date;
     End: Date;

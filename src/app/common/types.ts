@@ -1,11 +1,11 @@
 // TODO: lib-ui candidate
-export interface MetaTypeMeta {
+export interface IMetaTypeMeta {
   apiVersion: string;
   kind: string;
 }
 
 // TODO: lib-ui candidate
-export interface MetaObjectMeta {
+export interface IMetaObjectMeta {
   name: string;
   namespace: string;
   selfLink: string;
@@ -18,6 +18,6 @@ export interface MetaObjectMeta {
   };
 }
 
-export interface CR extends MetaTypeMeta {
-  metadata: MetaObjectMeta;
+export interface ICR extends IMetaTypeMeta {
+  metadata: IMetaObjectMeta;
 }

@@ -1,4 +1,4 @@
-export interface Hook {
+export interface IHook {
   type: string;
   image: string;
   envVars: string;
