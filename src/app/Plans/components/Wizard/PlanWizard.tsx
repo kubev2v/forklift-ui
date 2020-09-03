@@ -5,19 +5,19 @@ import Review from './Review';
 import GeneralForm from './GeneralForm';
 import { Provider } from '@app/Providers/types';
 
-interface IWizardComponent {
+interface IPlanWizardProps {
   isOpen: boolean;
-  onHandleWizardClose: () => void;
+  onClose: () => void;
   sourceProviders: Provider[];
   targetProviders: Provider[];
 }
 
-const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
+const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
   isOpen,
-  onHandleWizardClose,
+  onClose,
   sourceProviders,
   targetProviders,
-}: IWizardComponent) => {
+}: IPlanWizardProps) => {
   enum stepId {
     General = 1,
     FilterVMs,
@@ -47,7 +47,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <div>Filter VMs</div>
+              <div>TODO: Filter VMs</div>
             </WizardStepContainer>
           ),
           enableNext: true,
@@ -57,7 +57,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
-              <div>Select VMs</div>
+              <div>TODO: Select VMs</div>
             </WizardStepContainer>
           ),
           enableNext: true,
@@ -69,7 +69,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       name: 'Storage Mapping',
       component: (
         <WizardStepContainer title="Storage Mapping">
-          <div>Storage mapping</div>
+          <div>TODO: Storage mapping</div>
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -79,7 +79,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       name: 'Network Mapping',
       component: (
         <WizardStepContainer title="Network Mapping">
-          <div>Network mapping</div>
+          <div>TODO: Network mapping</div>
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -89,7 +89,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       name: 'Hooks',
       component: (
         <WizardStepContainer title="Hooks">
-          <div>Hooks</div>
+          <div>TODO: Hooks</div>
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -102,10 +102,6 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
     },
   ];
 
-  const handleClose = () => {
-    onHandleWizardClose();
-  };
-
   const onMove = () => {
     return;
   };
@@ -115,7 +111,7 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
       title="Create a Migration Plan"
       steps={steps}
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       onNext={onMove}
       onBack={onMove}
       onSubmit={(event) => event.preventDefault()}
@@ -123,4 +119,4 @@ const WizardComponent: React.FunctionComponent<IWizardComponent> = ({
   );
 };
 
-export default WizardComponent;
+export default PlanWizard;
