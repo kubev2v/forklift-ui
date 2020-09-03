@@ -3,19 +3,19 @@ import { Form, FormGroup, TextArea, TextInput, Title } from '@patternfly/react-c
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { Provider } from '@app/Providers/types';
 
-interface IGeneralFormComponent {
+interface IGeneralFormComponentProps {
   sourceProviders: Provider[];
   targetProviders: Provider[];
 }
 
-const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
+const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
   sourceProviders,
   targetProviders,
-}: IGeneralFormComponent) => {
+}: IGeneralFormComponentProps) => {
   const [planName, setPlanName] = React.useState<string>('');
-  const [planDesc, setPlanDesc] = React.useState<string>('');
-  const [srcProvider, setSrcProvider] = React.useState<Provider | null>(null);
-  const [tgtProvider, setTgtProvider] = React.useState<Provider | null>(null);
+  const [planDescription, setPlanDescription] = React.useState<string>('');
+  const [sourceProvider, setSourceProvider] = React.useState<Provider | null>(null);
+  const [targetProvider, setTargetProvider] = React.useState<Provider | null>(null);
 
   const sourceProvidersOptions = Object.values(sourceProviders).map((provider) => ({
     toString: () => provider.metadata.name,
@@ -44,11 +44,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
 
       <FormGroup
         label="Plan description"
-        fieldId="planDesc"
+        fieldId="planDescription"
         helperTextInvalid="TODO"
         validated="default" // TODO add state/validation/errors to this and other FormGroups
       >
-        <TextArea id="planDesc" type="text" value={planDesc} onChange={setPlanDesc} />
+        <TextArea
+          id="planDescription"
+          type="text"
+          value={planDescription}
+          onChange={setPlanDescription}
+        />
       </FormGroup>
 
       <Title headingLevel="h3" size="md" /* className={styles.fieldGridTitle} */>
@@ -64,8 +69,10 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
         <SimpleSelect
           id="sourceProvider"
           options={sourceProvidersOptions}
-          value={[sourceProvidersOptions.find((option) => option.value === srcProvider)]}
-          onChange={(selection) => setSrcProvider((selection as OptionWithValue<Provider>).value)}
+          value={[sourceProvidersOptions.find((option) => option.value === sourceProvider)]}
+          onChange={(selection) =>
+            setSourceProvider((selection as OptionWithValue<Provider>).value)
+          }
           placeholderText="Select a provider"
         />
       </FormGroup>
@@ -73,15 +80,17 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponent> = ({
       <FormGroup
         label="Target provider"
         isRequired
-        fieldId="tgtProvider"
+        fieldId="targetProvider"
         helperTextInvalid="TODO"
         validated="default" // TODO add state/validation/errors to this and other FormGroups
       >
         <SimpleSelect
-          id="tgtProvider"
+          id="targetProvider"
           options={targetProvidersOptions}
-          value={[targetProvidersOptions.find((option) => option.value === tgtProvider)]}
-          onChange={(selection) => setTgtProvider((selection as OptionWithValue<Provider>).value)}
+          value={[targetProvidersOptions.find((option) => option.value === targetProvider)]}
+          onChange={(selection) =>
+            setTargetProvider((selection as OptionWithValue<Provider>).value)
+          }
           placeholderText="Select a provider"
         />
       </FormGroup>
