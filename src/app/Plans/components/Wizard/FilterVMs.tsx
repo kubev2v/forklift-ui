@@ -4,13 +4,22 @@ import { Form, FormGroup, TreeView, Title } from '@patternfly/react-core';
 // TODO replace with redux or equiv.
 import { VMsOptions } from './mocks/VMs.mock';
 
-interface IFilterVMs {
+interface IFilterVMsProps {
   Inventory: [];
 }
 
-const FilterVMs: React.FunctionComponent<IFilterVMs> = ({ Inventory }: IFilterVMs) => {
+const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFilterVMsProps) => {
   const [activeItems, setItems] = React.useState(VMsOptions);
   const [checkedItems, setCheckedItems] = React.useState([]);
+
+  const onSelect = (event, treeViewItem, parentItem) => {
+    return;
+  };
+
+  const onCheck = (event, treeViewItem) => {
+    const checked = event.target.checked;
+    treeViewItem.checkProps.checked = checked;
+  };
 
   return (
     <Form>
@@ -30,6 +39,8 @@ const FilterVMs: React.FunctionComponent<IFilterVMs> = ({ Inventory }: IFilterVM
           onSearch={() => {
             return;
           }}
+          onSelect={onSelect}
+          onCheck={onCheck}
           searchProps={{
             id: 'inventory-search',
             name: 'search-inventory',
