@@ -18,6 +18,7 @@ import PlansTable from './components/PlansTable';
 import { IAddPlanDisabledObjModel } from './types';
 import { Provider } from '@app/Providers/types';
 import { ProviderType } from '@app/common/constants';
+import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real state e.g. from redux
 import { MOCK_PLANS } from './mocks/plans.mock';
@@ -54,9 +55,7 @@ const PlansPage: React.FunctionComponent = () => {
   return (
     <>
       <PageSection variant="light">
-        <Title headingLevel="h1" size="lg">
-          Migration Plans
-        </Title>
+        <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
         {IsFetchingInitialPlans ? (
@@ -78,7 +77,7 @@ const PlansPage: React.FunctionComponent = () => {
                     No migration plans
                   </Title>
                   <EmptyStateBody>
-                    Create a migration plan to select VMs to migrate to OpenShift virtualization.
+                    Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
                   <Tooltip position="top" content={<div>{addPlanDisabledObj.disabledText}</div>}>
                     <Button
@@ -101,7 +100,12 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      {isWizardOpen ? <Button>TODO: Plan Migration Wizard</Button> : null}
+      <PlanWizard
+        isOpen={isWizardOpen}
+        onClose={toggleWizard}
+        sourceProviders={vmwareList}
+        targetProviders={cnvList}
+      />
     </>
   );
 };
