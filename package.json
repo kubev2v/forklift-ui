@@ -72,9 +72,11 @@
     "@patternfly/react-styles": "^4.7.3",
     "@patternfly/react-table": "^4.16.7",
     "@patternfly/react-tokens": "^4.9.6",
+    "@types/react-redux": "^7.1.9",
     "express": "^4.17.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
     "react-router-last-location": "^2.0.1"
   }
 }
