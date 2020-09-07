@@ -2,11 +2,12 @@ import * as React from 'react';
 import {
   Checkbox,
   Radio,
-  TextContent,
-  Text,
   TextInput,
-  TextVariants,
+  Title,
+  Form,
   FormGroup,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -51,71 +52,75 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
 
   return (
     <>
-      <TextContent className={spacing.mbMd}>
-        <Text component={TextVariants.h4}>
+      <Form>
+        <Title headingLevel="h3" size="md">
           Select an existing storage mapping between your source and target providers, or create a
           new one.
-        </Text>
-      </TextContent>
-      <Radio
-        id="existing-mapping"
-        label="Use an existing storage mapping"
-        name="radio-existing"
-        onChange={onChange}
-        isChecked={isUseExistingMappingChecked}
-      />
-      {isUseExistingMappingChecked && (
-        <FormGroup
-          isRequired
-          fieldId="sourceProvider"
-          helperTextInvalid="TODO"
-          validated="default" // TODO add state/validation/errors to this and other FormGroups
-        >
-          <SimpleSelect
-            id="storageMapping"
-            options={storageMappingOptions}
-            value={[storageMappingOptions.find((option) => option.value === storageMapping)]}
-            onChange={(selection) =>
-              setStorageMapping((selection as OptionWithValue<IStorageMapping>).value)
-            }
-            placeholderText="Select a storage mapping"
+        </Title>
+        <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
+          <Radio
+            id="existing-mapping"
+            label="Use an existing storage mapping"
+            name="radio-existing"
+            onChange={onChange}
+            isChecked={isUseExistingMappingChecked}
           />
-        </FormGroup>
-      )}
-      <Radio
-        id="create-mapping"
-        label="Create a new storage mapping"
-        name="radio-new"
-        onChange={onChange}
-        isChecked={isUseNewMappingChecked}
-      />
-      {isUseNewMappingChecked && (
-        <>
-          <AddEditStorageMapping isEdit={false}></AddEditStorageMapping>
-          <Checkbox
-            label="Save mapping to use again"
-            aria-label="save mapping checkbox"
-            id="save-mapping-check"
-            isChecked={isSaveNewStorageMapping}
-            onChange={toggleSaveNewStorageMapping}
-          />
-          {isSaveNewStorageMapping && (
-            <FormGroup
-              isRequired
-              fieldId="planName"
-              helperTextInvalid="TODO"
-              validated="default" // TODO add state/validation/errors to this and other FormGroups
-            >
-              <TextInput
-                id="addStorageMappingName"
-                value={addStorageMappingName}
-                type="text"
-                onChange={setAddStorageMappingName}
-              />
-            </FormGroup>
+          {isUseExistingMappingChecked && (
+            <FlexItem>
+              <FormGroup
+                isRequired
+                fieldId="sourceProvider"
+                helperTextInvalid="TODO"
+                validated="default" // TODO add state/validation/errors to this and other FormGroups
+              >
+                <SimpleSelect
+                  id="storageMapping"
+                  options={storageMappingOptions}
+                  value={[storageMappingOptions.find((option) => option.value === storageMapping)]}
+                  onChange={(selection) =>
+                    setStorageMapping((selection as OptionWithValue<IStorageMapping>).value)
+                  }
+                  placeholderText="Select a storage mapping"
+                />
+              </FormGroup>
+            </FlexItem>
           )}
-        </>
-      )}
+          <Radio
+            id="create-mapping"
+            label="Create a new storage mapping"
+            name="radio-new"
+            onChange={onChange}
+            isChecked={isUseNewMappingChecked}
+          />
+          {isUseNewMappingChecked && (
+            <>
+              <AddEditStorageMapping isEdit={false}></AddEditStorageMapping>
+              <Checkbox
+                label="Save mapping to use again"
+                aria-label="save mapping checkbox"
+                id="save-mapping-check"
+                isChecked={isSaveNewStorageMapping}
+                onChange={toggleSaveNewStorageMapping}
+              />
+              {isSaveNewStorageMapping && (
+                <FormGroup
+                  isRequired
+                  fieldId="planName"
+                  helperTextInvalid="TODO"
+                  validated="default" // TODO add state/validation/errors to this and other FormGroups
+                >
+                  <TextInput
+                    id="addStorageMappingName"
+                    value={addStorageMappingName}
+                    type="text"
+                    onChange={setAddStorageMappingName}
+                  />
+                </FormGroup>
+              )}
+            </>
+          )}
+        </Flex>
+      </Form>
     </>
   );
 };
