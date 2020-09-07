@@ -1,9 +1,12 @@
 import * as React from 'react';
 import WizardStepContainer from './WizardStepContainer';
 import { Wizard } from '@patternfly/react-core';
+
 import Review from './Review';
 import GeneralForm from './GeneralForm';
 import { Provider } from '@app/Providers/types';
+import NetworkMapping from './NetworkMapping';
+import { MOCK_NETWORK_MAPPINGS } from '@app/Mappings/Network/mocks/network_mappings.mock.ts';
 
 interface IPlanWizardProps {
   isOpen: boolean;
@@ -79,7 +82,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       name: 'Network Mapping',
       component: (
         <WizardStepContainer title="Network Mapping">
-          <div>TODO: Network mapping</div>
+          <NetworkMapping networkMappingList={MOCK_NETWORK_MAPPINGS} />
         </WizardStepContainer>
       ),
       enableNext: true,
