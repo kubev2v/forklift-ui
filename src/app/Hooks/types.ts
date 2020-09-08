@@ -1,5 +1,3 @@
-// TODO This is speculative until details are avail.
-
 export interface IHook {
   type: string;
   image: string;
