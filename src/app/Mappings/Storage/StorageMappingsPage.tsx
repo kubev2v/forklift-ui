@@ -23,10 +23,11 @@ const isFetchingInitialStorageMappings = false; // Fetching for the first time, 
 // const storageMappings: IStorageMapping[] = [];
 
 const StorageMappingsPage: React.FunctionComponent = () => {
+  //TODO: replace with real state from redux
   const [storageMappings, setStorageMappings] = React.useState([]);
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  //TODO replace with real state from redux
+  //TODO: replace with real state from redux
   const mockMapObj = localStorage.getItem('storageMappingsObject');
   React.useEffect(() => {
     console.log(`TODO: fetch storage mapping items`);

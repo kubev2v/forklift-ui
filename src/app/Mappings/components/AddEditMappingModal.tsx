@@ -104,9 +104,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 targetProvider,
                 builderItems,
               });
-              // alert('TODO');
-              console.log('TODO: API call with generated mapping: ', generatedMapping);
-              //TODO: Remove when real api call is implemented
+              //TODO: Update when real api call & validation is implemented
               updateMockStorage(generatedMapping);
               onClose();
             }
