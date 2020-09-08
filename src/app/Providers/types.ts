@@ -1,3 +1,5 @@
+import { ProviderType } from '@app/common/constants';
+
 export interface IStatusCondition {
   type: string;
   status: string;
@@ -26,7 +28,7 @@ export interface ICNVProviderMetadata extends ICommonProviderMetadata {
 export interface ICommonProvider {
   metadata: ICommonProviderMetadata;
   spec: {
-    type: string;
+    type: ProviderType;
     url: string; // TODO is this the "Endpoint" column?
     secret: {
       namespace: string;

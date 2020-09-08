@@ -1,0 +1,11 @@
+.mapping-viewer-box {
+  border: 1px solid #000000;
+}
+
+.mapping-item-select .pf-c-select__toggle .pf-c-select__toggle-typeahead {
+  border: none;
+}
+
+.mapping-item-select .pf-c-select__toggle .pf-c-select__toggle-clear {
+  display: none;
+}

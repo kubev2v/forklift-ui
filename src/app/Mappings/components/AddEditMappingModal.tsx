@@ -1,32 +1,25 @@
 import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
 import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import './AddEditMappingModal.css';
-import MappingBuilder from './MappingBuilder';
-import { MappingType } from '../types';
-import {
-  IVMwareNetwork,
-  ICNVNetwork,
-  IVMwareDatastore,
-  ICNVProvider,
-  IVMwareProvider,
-} from '@app/Providers/types';
+import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
+import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
+import { MappingType, MappingSource, MappingTarget } from '../types';
+import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
   MOCK_CNV_NETWORKS_BY_PROVIDER,
 } from '@app/Providers/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+import './AddEditMappingModal.css';
 
 interface IAddEditMappingModalProps {
   title: string;
   onClose: () => void;
   mappingType: MappingType;
 }
-
-// TODO paramaterize similarly to MappingsTable so it can be used for both network and storage mappings?
-// Split it into AddEditNetworkMappingModal and AddEditStorageMappingModal if necessary
 
 // TODO replace these with real state e.g. from redux
 const providers = MOCK_PROVIDERS;
@@ -55,16 +48,16 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider}`);
+    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.metadata.name}`);
   }, [mappingType, sourceProvider]);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider}`);
+    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.metadata.name}`);
   }, [mappingType, targetProvider]);
 
   // TODO use the right thing from redux here instead of mock data
-  let availableSources: IVMwareNetwork[] | IVMwareDatastore[] = [];
-  let availableTargets: ICNVNetwork[] | string[] = []; // strings = storage classes
+  let availableSources: MappingSource[] = [];
+  let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = sourceProvider
       ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.metadata.name]
@@ -80,63 +73,97 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
   }
 
+  // TODO add support for prefilling builderItems for editing an API mapping
+  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
+    { source: null, target: null },
+  ]);
+
+  React.useEffect(() => {
+    // If you change providers, reset the mapping selections.
+    setBuilderItems([{ source: null, target: null }]);
+  }, [sourceProvider, targetProvider]);
+
   return (
     <Modal
       className="addEditMappingModal"
-      width="80%"
+      variant="medium"
       title={title}
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
-          Add
+        <Button
+          key="confirm"
+          variant="primary"
+          onClick={() => {
+            if (sourceProvider && targetProvider) {
+              const generatedMapping = getMappingFromBuilderItems({
+                mappingType,
+                mappingName,
+                sourceProvider,
+                targetProvider,
+                builderItems,
+              });
+              alert('TODO');
+              console.log('TODO: API call with generated mapping: ', generatedMapping);
+            }
+          }}
+        >
+          Create
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
           Cancel
         </Button>,
       ]}
     >
-      <Form className={!sourceProvider || !targetProvider ? 'extraSelectMargin' : ''}>
-        <Grid sm={12} md={6} hasGutter>
-          <FormGroup label="Name" isRequired fieldId="mapping-name">
-            <TextInput
-              id="mapping-name"
-              value={mappingName}
-              type="text"
-              onChange={setMappingName}
-            />
-          </FormGroup>
+      <Form className="extraSelectMargin">
+        <Grid className={spacing.mbMd}>
+          <GridItem sm={12} md={5} className={spacing.mbMd}>
+            <FormGroup label="Name" isRequired fieldId="mapping-name">
+              <TextInput
+                id="mapping-name"
+                value={mappingName}
+                type="text"
+                onChange={setMappingName}
+              />
+            </FormGroup>
+          </GridItem>
           <GridItem />
-          <FormGroup label="Source provider" isRequired fieldId="source-provider">
-            <SimpleSelect
-              id="source-provider"
-              options={sourceProviderOptions}
-              value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
-              onChange={(selection) =>
-                setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
-              }
-              placeholderText="Select a source provider..."
-            />
-          </FormGroup>
-          <FormGroup label="Target provider" isRequired fieldId="target-provider">
-            <SimpleSelect
-              id="target-provider"
-              options={targetProviderOptions}
-              value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
-              onChange={(selection) =>
-                setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
-              }
-              placeholderText="Select a target provider..."
-            />
-          </FormGroup>
+          <GridItem sm={12} md={5}>
+            <FormGroup label="Source provider" isRequired fieldId="source-provider">
+              <SimpleSelect
+                id="source-provider"
+                options={sourceProviderOptions}
+                value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
+                onChange={(selection) =>
+                  setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
+                }
+                placeholderText="Select a source provider..."
+              />
+            </FormGroup>
+          </GridItem>
+          <GridItem sm={1} />
+          <GridItem sm={12} md={5}>
+            <FormGroup label="Target provider" isRequired fieldId="target-provider">
+              <SimpleSelect
+                id="target-provider"
+                options={targetProviderOptions}
+                value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
+                onChange={(selection) =>
+                  setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
+                }
+                placeholderText="Select a target provider..."
+              />
+            </FormGroup>
+          </GridItem>
+          <GridItem sm={1} />
         </Grid>
         {sourceProvider && targetProvider ? (
           <MappingBuilder
             mappingType={mappingType}
-            sourceProvider={sourceProvider}
-            targetProvider={targetProvider}
             availableSources={availableSources}
             availableTargets={availableTargets}
+            builderItems={builderItems}
+            setBuilderItems={setBuilderItems}
           />
         ) : null}
       </Form>
