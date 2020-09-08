@@ -68,12 +68,12 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
       {builderItems.map((item, itemIndex) => {
         let key = '';
         if (mappingType === MappingType.Network) {
-          const t = item.source as IVMwareNetwork | null;
-          key = t ? `${t.id}` : `empty-${itemIndex}`;
+          const src = item.source as IVMwareNetwork | null;
+          key = src ? `${src.id}` : `empty-${itemIndex}`;
         }
         if (mappingType === MappingType.Storage) {
-          const t = item.source as IVMwareDatastore | null;
-          key = t ? `${t.id}` : `empty-${itemIndex}`;
+          const src = item.source as IVMwareDatastore | null;
+          key = src ? `${src.id}` : `empty-${itemIndex}`;
         }
         return (
           <Grid key={key}>
