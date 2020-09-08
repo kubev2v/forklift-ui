@@ -23,6 +23,7 @@ const isFetchingInitialNetworkMappings = false; // Fetching for the first time, 
 // const networkMappings: INetworkMapping[] = [];
 
 const NetworkMappingsPage: React.FunctionComponent = () => {
+  //TODO replace with real state from redux
   const [networkMappings, setNetworkMappings] = React.useState([]);
 
   //TODO replace with real state from redux

@@ -4,7 +4,6 @@ import {
   MappingType,
   INetworkMapping,
   IStorageMapping,
-  ICommonMapping,
   INetworkMappingItem,
   IStorageMappingItem,
 } from '../types';
@@ -15,9 +14,9 @@ import {
   TableBody,
   ICell,
   sortable,
-  compoundExpand,
   classNames as classNamesTransform,
   IRow,
+  expandable,
 } from '@patternfly/react-table';
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
@@ -39,9 +38,9 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappingType,
   toggleAddEditModal,
 }: IMappingsTableProps) => {
-  const getSortValues = (mapping: ICommonMapping) => {
-    const { name, sourceProvider, targetProvider } = mapping;
-    return [name, sourceProvider.name, targetProvider.name, ''];
+  const getSortValues = (mapping: Mapping) => {
+    const { name, provider } = mapping;
+    return [name, provider.source.name, provider.target.name, ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(mappings, getSortValues);
@@ -51,31 +50,32 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const {
     selectedItems: expandedMappings,
     toggleItemSelected: toggleMappingExpanded,
-  } = useSelectionState<ICommonMapping>(sortedItems);
+  } = useSelectionState<Mapping>(sortedItems);
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable] },
+    { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
     {
       title: <>{mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings'}</>,
       transforms: [sortable],
-      cellTransforms: [compoundExpand],
     },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
+    { title: '' },
   ];
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((mapping: ICommonMapping) => {
-    const { name, sourceProvider, targetProvider, items } = mapping;
+  currentPageItems.forEach((mapping: Mapping) => {
+    const { name, provider, items } = mapping;
+    //TODO: update to use isItemSelected from useSelectionState hook when we start using redux
     const isExpanded = expandedMappings.includes(mapping);
     rows.push({
       meta: { mapping },
       isOpen: isExpanded,
       cells: [
         name,
-        sourceProvider.name,
-        targetProvider.name,
+        provider.source?.name,
+        provider.target?.name,
         {
           title: (
             <>
@@ -87,9 +87,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
               {items ? items.length : 0}
             </>
           ),
-          props: {
-            isOpen: isExpanded,
-          },
         },
         {
           title: <MappingsActionsDropdown />,
@@ -99,7 +96,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
-        compoundExpand: 4,
         cells: [
           {
             title: (
@@ -114,12 +110,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       });
     }
   });
-  // TODO: the storage and network mappings tables seem similar enough that we
-  // can probably implement them in one place with props for the different sets
-  // of data. Code specific to networks and storages could be in separate helpers.
-  // If this turns out to be a pain, we could make NetworkMappingsTable
-  // and StorageMappingsTable separately.
-
   // I wonder if we can make use of generics right in the props interface?
   // Might be overkill: https://wanago.io/2020/03/09/functional-react-components-with-generic-props-in-typescript/
 
@@ -145,7 +135,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
             key="confirm"
             variant="primary"
             onClick={() => {
-              //TODO: Replace with a real redux call for adding a mapping
               toggleAddEditModal();
             }}
           >
@@ -162,7 +151,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
+        onCollapse={(event, rowKey, isOpen, rowData) => {
           toggleMappingExpanded(rowData.meta.mapping);
         }}
       >

@@ -1,7 +1,7 @@
-import { MappingType } from '../types';
+import { MappingType, Mapping } from '../types';
 
-export const updateMockStorage = (params: any) => {
-  const { mappingName, sourceProvider, targetProvider, mappingType } = params;
+export const updateMockStorage = (generatedMapping: Mapping) => {
+  const { name: mappingName, provider, type: mappingType, items } = generatedMapping;
   const mappingsKey =
     mappingType === MappingType.Network ? 'networkMappingsObject' : 'storageMappingsObject';
   const mappingsStorageItem = localStorage.getItem(mappingsKey);
@@ -10,11 +10,13 @@ export const updateMockStorage = (params: any) => {
     mappings: [
       {
         name: mappingName ? mappingName : 'name1',
-        sourceProvider: {
-          name: sourceProvider ? sourceProvider.metadata.name : 'test1',
-        },
-        targetProvider: {
-          name: targetProvider ? targetProvider.metadata.name : 'test2',
+        provider: {
+          source: {
+            name: provider.source.name,
+          },
+          target: {
+            name: provider.source.name,
+          },
         },
       },
       ...(currentMappings?.mappings ? currentMappings.mappings : []),

@@ -14,6 +14,7 @@ import {
 } from '@app/Providers/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
 import './AddEditMappingModal.css';
+import { updateMockStorage } from '../mocks/helpers';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -103,8 +104,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 targetProvider,
                 builderItems,
               });
-              alert('TODO');
+              // alert('TODO');
               console.log('TODO: API call with generated mapping: ', generatedMapping);
+              //TODO: Remove when real api call is implemented
+              updateMockStorage(generatedMapping);
+              onClose();
             }
           }}
         >
