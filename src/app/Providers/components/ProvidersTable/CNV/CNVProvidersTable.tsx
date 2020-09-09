@@ -13,11 +13,12 @@ import {
 import { DatabaseIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { useSortState, usePaginationState } from '@app/common/hooks';
 import CNVProviderActionsDropdown from './CNVProviderActionsDropdown';
 import { ICNVProvider } from '@app/Providers/types';
 import ProviderStatus from '../ProviderStatus';
 import './CNVProvidersTable.css';
+import { useSelectionState } from '@konveyor/lib-ui';
 
 interface ICNVProvidersTableProps {
   providers: ICNVProvider[];
@@ -58,7 +59,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
-  } = useSelectionState<ICNVProvider>(sortedItems);
+  } = useSelectionState<ICNVProvider>({ items: sortedItems });
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: ICNVProvider) => {
