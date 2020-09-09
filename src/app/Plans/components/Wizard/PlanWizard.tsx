@@ -60,7 +60,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
-              <SelectVMs VMs={MOCK_VMS} />
+              <SelectVMs vms={MOCK_VMS} />
             </WizardStepContainer>
           ),
           enableNext: true,

@@ -18,15 +18,15 @@ import { useSortState, usePaginationState, useSelectionState } from '@app/common
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 interface ISelectVMsProps {
-  VMs: IVM[];
+  vms: IVM[];
 }
 
-const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ VMs }: ISelectVMsProps) => {
+const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMsProps) => {
   const getSortValues = (vm: IVM) => {
     return ['', vm.Name, vm.Datacenter, vm.Cluster, vm.Host, vm.FolderPath, ''];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(VMs, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(vms, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
