@@ -55,7 +55,11 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
-  } = useSelectionState<IVMwareProvider>({ items: sortedItems });
+    isItemSelected,
+  } = useSelectionState<IVMwareProvider>({
+    items: sortedItems,
+    isEqual: (a, b) => a.metadata.name === b.metadata.name,
+  });
 
   const columns: ICell[] = [
     {
