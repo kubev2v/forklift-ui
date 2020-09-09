@@ -1,5 +1,6 @@
 import { MappingType, Mapping } from '../types';
 
+// TODO: This is a temporary function designed for testing the mappings table. Remove when we wire up Redux & api
 export const updateMockStorage = (generatedMapping: Mapping) => {
   const { name: mappingName, provider, type: mappingType, items } = generatedMapping;
   const mappingsKey =
