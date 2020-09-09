@@ -30,7 +30,7 @@ export interface IPlan extends ICR {
     };
     Map: Mapping;
     Warm: boolean;
-    VMs: IPlanVM[];
+    VMList: IPlanVM[];
   };
   Status: IPlanStatus;
 }
