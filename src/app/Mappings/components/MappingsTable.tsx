@@ -1,19 +1,115 @@
 import * as React from 'react';
-import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '../types';
+import {
+  Mapping,
+  MappingType,
+  INetworkMapping,
+  IStorageMapping,
+  INetworkMappingItem,
+  IStorageMappingItem,
+} from '../types';
+import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  ICell,
+  sortable,
+  classNames as classNamesTransform,
+  IRow,
+  expandable,
+} from '@patternfly/react-table';
+import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { IVMwareProvider } from '@app/Providers/types';
+import tableStyles from '@patternfly/react-styles/css/components/Table/table';
+import { OutlinedHddIcon, NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
+import ProviderStatus from '@app/Providers/components/ProvidersTable/ProviderStatus';
+import VMwareProviderActionsDropdown from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderActionsDropdown';
+import VMwareProviderHostsTable from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderHostsTable';
+import MappingsActionsDropdown from './MappingsActionsDropdown';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
+  mappingType: string;
+  toggleAddEditModal: () => void;
 }
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
+  mappingType,
+  toggleAddEditModal,
 }: IMappingsTableProps) => {
-  // TODO: the storage and network mappings tables seem similar enough that we
-  // can probably implement them in one place with props for the different sets
-  // of data. Code specific to networks and storages could be in separate helpers.
-  // If this turns out to be a pain, we could make NetworkMappingsTable
-  // and StorageMappingsTable separately.
+  const getSortValues = (mapping: Mapping) => {
+    const { name, provider } = mapping;
+    return [name, provider.source.name, provider.target.name, ''];
+  };
 
+  const { sortBy, onSort, sortedItems } = useSortState(mappings, getSortValues);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
+
+  const {
+    selectedItems: expandedMappings,
+    toggleItemSelected: toggleMappingExpanded,
+  } = useSelectionState<Mapping>(sortedItems);
+
+  const columns: ICell[] = [
+    { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
+    { title: 'Source provider', transforms: [sortable] },
+    { title: 'Target provider', transforms: [sortable] },
+    {
+      title: <>{mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings'}</>,
+      transforms: [sortable],
+    },
+    { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
+    { title: '' },
+  ];
+
+  const rows: IRow[] = [];
+  currentPageItems.forEach((mapping: Mapping) => {
+    const { name, provider, items } = mapping;
+    //TODO: update to use isItemSelected from useSelectionState hook when we start using redux
+    const isExpanded = expandedMappings.includes(mapping);
+    rows.push({
+      meta: { mapping },
+      isOpen: isExpanded,
+      cells: [
+        name,
+        provider.source?.name,
+        provider.target?.name,
+        {
+          title: (
+            <>
+              {mappingType === MappingType.Network ? (
+                <NetworkIcon key="hosts-icon" />
+              ) : (
+                <DatabaseIcon key="storage-icon" />
+              )}{' '}
+              {items ? items.length : 0}
+            </>
+          ),
+        },
+        {
+          title: <MappingsActionsDropdown />,
+        },
+      ],
+    });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
+        cells: [
+          {
+            title: (
+              <div>
+                TODO: mapping details table
+                {/* <MappingDetailsTable {...props} /> */}
+              </div>
+            ),
+            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+          },
+        ],
+      });
+    }
+  });
   // I wonder if we can make use of generics right in the props interface?
   // Might be overkill: https://wanago.io/2020/03/09/functional-react-components-with-generic-props-in-typescript/
 
@@ -31,7 +127,44 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     return {};
   });
 
-  return <h1>TODO: table here</h1>;
+  return (
+    <>
+      <Level>
+        <LevelItem>
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={() => {
+              toggleAddEditModal();
+            }}
+          >
+            Add mapping
+          </Button>
+        </LevelItem>
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+        </LevelItem>
+      </Level>
+      <Table
+        aria-label="Mappings table"
+        cells={columns}
+        rows={rows}
+        sortBy={sortBy}
+        onSort={onSort}
+        onCollapse={(event, rowKey, isOpen, rowData) => {
+          toggleMappingExpanded(rowData.meta.mapping);
+        }}
+      >
+        <TableHeader />
+        <TableBody />
+      </Table>
+      <Pagination
+        {...paginationProps}
+        widgetId="providers-table-pagination-bottom"
+        variant="bottom"
+      />
+    </>
+  );
 };
 
 export default MappingsTable;
