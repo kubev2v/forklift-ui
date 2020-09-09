@@ -16,13 +16,23 @@ import { IStorageMapping, MappingType } from '../types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
+import { fetchMockStorage } from '../mocks/helpers';
 
-// TODO replace these with real state e.g. from redux
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
-const storageMappings: IStorageMapping[] = [];
 
 const StorageMappingsPage: React.FunctionComponent = () => {
+  //TODO: replace with real state from redux
+  const [storageMappings, setStorageMappings] = React.useState<IStorageMapping[]>([]);
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
+
+  //TODO: replace with real state from redux
+  const mockMapObj = localStorage.getItem('storageMappingsObject');
+  React.useEffect(() => {
+    console.log(`TODO: fetch storage mapping items`);
+    const currentMappings = fetchMockStorage(MappingType.Storage);
+    setStorageMappings(currentMappings || []);
+  }, [mockMapObj]);
+
   return (
     <>
       <PageSection variant="light">
@@ -57,7 +67,11 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <MappingsTable mappings={storageMappings} />
+                <MappingsTable
+                  mappings={storageMappings}
+                  mappingType={MappingType.Storage}
+                  toggleAddEditModal={toggleAddEditModal}
+                />
               )}
             </CardBody>
           </Card>
