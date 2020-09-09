@@ -13,16 +13,16 @@ import {
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
-import { IVMs } from '../../types';
+import { IVM } from '../../types';
 import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 interface ISelectVMsProps {
-  VMs: IVMs[];
+  VMs: IVM[];
 }
 
 const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ VMs }: ISelectVMsProps) => {
-  const getSortValues = (vm: IVMs) => {
+  const getSortValues = (vm: IVM) => {
     return ['', vm.Name, vm.Datacenter, vm.Cluster, vm.Host, vm.FolderPath, ''];
   };
 
@@ -30,12 +30,12 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ VMs }: ISelectVMs
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVMs>(
+  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>(
     sortedItems
   );
 
   const { selectedItems: expandedVMs, toggleItemSelected: toggleVMExpanded } = useSelectionState<
-    IVMs
+    IVM
   >(sortedItems);
 
   const columns: ICell[] = [
@@ -67,7 +67,7 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ VMs }: ISelectVMs
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((vm: IVMs) => {
+  currentPageItems.forEach((vm: IVM) => {
     const isSelected = selectedItems.includes(vm);
     const isExpanded = expandedVMs.includes(vm);
     rows.push({

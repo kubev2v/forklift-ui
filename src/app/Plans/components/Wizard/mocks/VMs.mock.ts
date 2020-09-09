@@ -1,4 +1,4 @@
-import { IVMs } from '../../../types';
+import { IVM } from '../../../types';
 
 export const VMsOptions = [
   {
@@ -124,7 +124,7 @@ export const VMsOptions = [
   },
 ];
 
-export const MOCK_VMS: IVMs[] = [
+export const MOCK_VMS: IVM[] = [
   {
     Name: 'vm1',
     Datacenter: 'Prod center 1',

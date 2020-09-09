@@ -47,7 +47,7 @@ export interface IMigration {
   };
 }
 
-export interface IVMs {
+export interface IVM {
   Name: string;
   MigrationAnalysis: string;
   Datacenter: string;
