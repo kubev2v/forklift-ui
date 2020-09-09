@@ -3,7 +3,8 @@ import { Button } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
-import { useSortState, useSelectionState } from '@app/common/hooks';
+import { useSortState } from '@app/common/hooks';
+import { useSelectionState } from '@konveyor/lib-ui';
 import { IVMwareProvider, IHost } from '@app/Providers/types';
 import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
@@ -35,7 +36,9 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   };
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
 
-  const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>(sortedItems);
+  const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>({
+    items: sortedItems,
+  });
 
   const rows: IRow[] = sortedItems.map((host: IHost) => {
     const { name, bandwidth, mtu } = host.metadata;

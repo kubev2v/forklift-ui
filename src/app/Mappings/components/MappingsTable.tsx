@@ -18,7 +18,8 @@ import {
   IRow,
   expandable,
 } from '@patternfly/react-table';
-import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { useSelectionState } from '@konveyor/lib-ui';
+import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { OutlinedHddIcon, NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
@@ -50,7 +51,11 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const {
     selectedItems: expandedMappings,
     toggleItemSelected: toggleMappingExpanded,
-  } = useSelectionState<Mapping>(sortedItems);
+    isItemSelected,
+  } = useSelectionState<Mapping>({
+    items: sortedItems,
+    isEqual: (a, b) => a.name === b.name,
+  });
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
@@ -68,7 +73,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   currentPageItems.forEach((mapping: Mapping) => {
     const { name, provider, items } = mapping;
     //TODO: update to use isItemSelected from useSelectionState hook when we start using redux
-    const isExpanded = expandedMappings.includes(mapping);
+    const isExpanded = isItemSelected(mapping);
     rows.push({
       meta: { mapping },
       isOpen: isExpanded,

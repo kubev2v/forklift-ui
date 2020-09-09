@@ -12,8 +12,9 @@ import {
 } from '@patternfly/react-table';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
+import { useSelectionState } from '@konveyor/lib-ui';
 
-import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
 import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
 import VMwareProviderHostsTable from './VMwareProviderHostsTable';
@@ -50,11 +51,15 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
 
   const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
     IVMwareProvider
-  >(sortedItems);
+  >({ items: sortedItems });
   const {
     selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
-  } = useSelectionState<IVMwareProvider>(sortedItems);
+    isItemSelected,
+  } = useSelectionState<IVMwareProvider>({
+    items: sortedItems,
+    isEqual: (a, b) => a.metadata.name === b.metadata.name,
+  });
 
   const columns: ICell[] = [
     {
