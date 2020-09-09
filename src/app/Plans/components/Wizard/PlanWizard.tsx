@@ -72,7 +72,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       name: 'Storage Mapping',
       component: (
         <WizardStepContainer title="Storage Mapping">
-          <div>Storage mapping</div>
+          <div>TODO: Storage mapping</div>
         </WizardStepContainer>
       ),
       enableNext: true,

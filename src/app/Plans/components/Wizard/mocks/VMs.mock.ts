@@ -132,7 +132,7 @@ export const MOCK_VMS: IVM[] = [
     Host: 'host test1',
     FolderPath: 'folder1/folderb',
     MigrationAnalysis: 'Ok',
-    MAStory: '',
+    MAStory: 'No risk assessed',
   },
   {
     Name: 'vm2',

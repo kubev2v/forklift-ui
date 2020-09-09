@@ -4,12 +4,13 @@ import {
   Table,
   TableHeader,
   TableBody,
+  TableVariant,
   sortable,
-  compoundExpand,
   classNames as classNamesTransform,
   ICell,
   IRow,
   wrappable,
+  expandable,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
@@ -34,7 +35,7 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
     sortedItems
   );
 
-  const { selectedItems: expandedVMs, toggleItemSelected: toggleVMExpanded } = useSelectionState<
+  const { selectedItems: expandedVMs, toggleItemSelected: toggleVMsExpanded } = useSelectionState<
     IVM
   >(sortedItems);
 
@@ -52,11 +53,11 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
         />
       ),
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
+      cellFormatters: [expandable],
     },
     {
       title: 'Migration Analysis',
       transforms: [sortable, wrappable],
-      cellTransforms: [compoundExpand],
     },
     { title: 'VM Name', transforms: [sortable, wrappable] },
     { title: 'Datacenter', transforms: [sortable] },
@@ -98,17 +99,11 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
         vm.FolderPath,
       ],
     });
-    if (isExpanded) {
-      rows.push({
-        parent: 1,
-        compoundExpand: 1,
-        cells: [
-          {
-            title: <div>TODO: Migration Analysis response</div>,
-          },
-        ],
-      });
-    }
+    rows.push({
+      parent: rows.length - 1,
+      fullWidth: true,
+      cells: [vm.MAStory],
+    });
   });
 
   return (
@@ -121,13 +116,13 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
       <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
       <Table
         aria-label="VMware VMs table"
-        variant="compact"
+        variant={TableVariant.compact}
         cells={columns}
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
-          toggleVMExpanded(rowData.meta.vm);
+        onCollapse={(event, rowKey, isOpen, rowData) => {
+          toggleVMsExpanded(rowData.meta.vm);
         }}
       >
         <TableHeader />
