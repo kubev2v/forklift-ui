@@ -18,13 +18,11 @@ import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '../mocks/helpers';
 
-// TODO replace these with real state e.g. from redux
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
-// const storageMappings: IStorageMapping[] = [];
 
 const StorageMappingsPage: React.FunctionComponent = () => {
   //TODO: replace with real state from redux
-  const [storageMappings, setStorageMappings] = React.useState([]);
+  const [storageMappings, setStorageMappings] = React.useState<IStorageMapping[]>([]);
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
   //TODO: replace with real state from redux
