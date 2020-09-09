@@ -18,6 +18,7 @@ import {
   IRow,
   expandable,
 } from '@patternfly/react-table';
+import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
@@ -26,7 +27,6 @@ import ProviderStatus from '@app/Providers/components/ProvidersTable/ProviderSta
 import VMwareProviderActionsDropdown from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderActionsDropdown';
 import VMwareProviderHostsTable from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderHostsTable';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
-import { useSelectionState } from '@konveyor/lib-ui';
 
 interface IMappingsTableProps {
   mappings: Mapping[];

@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-table';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
+import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/Providers/types';
@@ -20,7 +21,6 @@ import VMwareProviderHostsTable from './VMwareProviderHostsTable';
 import ProviderStatus from '../ProviderStatus';
 
 import './VMwareProvidersTable.css';
-import { useSelectionState } from '@konveyor/lib-ui';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
