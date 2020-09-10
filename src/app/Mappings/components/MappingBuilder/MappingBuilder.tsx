@@ -8,6 +8,7 @@ import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import './MappingBuilder.css';
+import { debug } from 'webpack';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
@@ -59,7 +60,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
-
   return (
     <>
       <TextContent>

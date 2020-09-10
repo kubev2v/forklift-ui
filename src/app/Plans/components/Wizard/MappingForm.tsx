@@ -12,38 +12,40 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IStorageMapping, MappingType } from '@app/Mappings/types';
+import { IStorageMapping, MappingType, INetworkMapping } from '@app/Mappings/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { MappingSource, MappingTarget } from '@app/Mappings/types';
 
-interface IStorageMappingFormProps {
-  storageMappingList: IStorageMapping[];
+interface IMappingFormProps {
+  mappingType: MappingType;
+  mappingList: IStorageMapping[] | INetworkMapping[];
   availableSources?: MappingSource[];
   availableTargets?: MappingTarget[];
 }
 
-const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
-  storageMappingList,
+const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
+  mappingType,
+  mappingList,
   availableSources = [],
   availableTargets = [],
-}: IStorageMappingFormProps) => {
-  const storageMappingOptions = Object.values(storageMappingList).map((storageMapping) => ({
-    toString: () => storageMapping.name,
-    value: storageMapping,
-  })) as OptionWithValue<IStorageMapping>[];
+}: IMappingFormProps) => {
+  const mappingOptions = Object.values(mappingList).map((mapping) => ({
+    toString: () => mapping.name,
+    value: mapping,
+  })) as OptionWithValue<IStorageMapping | INetworkMapping>[];
 
   const [isCreateMappingChecked, toggleCreateMapping] = React.useReducer(
     (isCreateMappingChecked) => !isCreateMappingChecked,
     false
   );
 
-  const [isSaveNewStorageMapping, toggleSaveNewStorageMapping] = React.useReducer(
-    (isSaveNewStorageMapping) => !isSaveNewStorageMapping,
+  const [isSaveNewMapping, toggleSaveNewMapping] = React.useReducer(
+    (isSaveNewMapping) => !isSaveNewMapping,
     false
   );
 
-  const [storageMapping, setStorageMapping] = React.useState<IStorageMapping | null>(null);
-  const [addStorageMappingName, setAddStorageMappingName] = React.useState<string>('');
+  const [mapping, setMapping] = React.useState<IStorageMapping | INetworkMapping | null>(null);
+  const [addMappingName, setAddMappingName] = React.useState<string>('');
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
@@ -53,13 +55,13 @@ const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
   return (
     <Form>
       <Title headingLevel="h3" size="md">
-        Select an existing storage mapping between your source and target providers, or create a new
-        one.
+        Select an existing {mappingType.toLowerCase} mapping between your source and target
+        providers, or create a new one.
       </Title>
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
         <Radio
           id="existing-mapping"
-          label="Use an existing storage mapping"
+          label={`Use an existing ${mappingType.toLowerCase()} mapping`}
           name="radio-existing"
           onChange={toggleCreateMapping}
           isChecked={!isCreateMappingChecked}
@@ -74,20 +76,20 @@ const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
               validated="default"
             >
               <SimpleSelect
-                id="storageMapping"
-                options={storageMappingOptions}
-                value={[storageMappingOptions.find((option) => option.value === storageMapping)]}
+                id="mappingSelect"
+                options={mappingOptions}
+                value={[mappingOptions.find((option) => option.value === mapping)]}
                 onChange={(selection) =>
-                  setStorageMapping((selection as OptionWithValue<IStorageMapping>).value)
+                  setMapping((selection as OptionWithValue<IStorageMapping>).value)
                 }
-                placeholderText="Select a storage mapping"
+                placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
               />
             </FormGroup>
           </FlexItem>
         )}
         <Radio
           id="create-mapping"
-          label="Create a new storage mapping"
+          label={`Create a new ${mappingType.toLowerCase()} mapping`}
           name="radio-new"
           onChange={toggleCreateMapping}
           isChecked={isCreateMappingChecked}
@@ -95,7 +97,7 @@ const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
         {isCreateMappingChecked && (
           <>
             <MappingBuilder
-              mappingType={MappingType.Storage}
+              mappingType={mappingType}
               availableSources={availableSources}
               availableTargets={availableTargets}
               builderItems={builderItems}
@@ -105,22 +107,22 @@ const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
               label="Save mapping to use again"
               aria-label="save mapping checkbox"
               id="save-mapping-check"
-              isChecked={isSaveNewStorageMapping}
-              onChange={toggleSaveNewStorageMapping}
+              isChecked={isSaveNewMapping}
+              onChange={toggleSaveNewMapping}
             />
-            {isSaveNewStorageMapping && (
+            {isSaveNewMapping && (
               <FormGroup
                 isRequired
-                fieldId="planName"
+                fieldId="mappingName"
                 helperTextInvalid="TODO"
                 // TODO add state/validation/errors to this and other FormGroups
                 validated="default"
               >
                 <TextInput
-                  id="addStorageMappingName"
-                  value={addStorageMappingName}
+                  id="addMappingName"
+                  value={addMappingName}
                   type="text"
-                  onChange={setAddStorageMappingName}
+                  onChange={setAddMappingName}
                 />
               </FormGroup>
             )}
@@ -131,4 +133,4 @@ const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
   );
 };
 
-export default StorageMappingForm;
+export default MappingForm;
