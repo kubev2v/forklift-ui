@@ -26,7 +26,17 @@ interface ISelectVMsProps {
 
 const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMsProps) => {
   const getSortValues = (vm: IVM) => {
-    return ['', vm.Name, vm.Datacenter, vm.Cluster, vm.Host, vm.FolderPath, ''];
+    return [
+      '', // Expand control column
+      '', // Checkbox column
+      vm.MigrationAnalysis,
+      vm.Name,
+      vm.Datacenter,
+      vm.Cluster,
+      vm.Host,
+      vm.FolderPath,
+      '', // Action column
+    ];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(vms, getSortValues);
