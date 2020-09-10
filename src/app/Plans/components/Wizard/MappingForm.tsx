@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
   Checkbox,
+  Grid,
+  GridItem,
   Radio,
   TextInput,
   Title,
@@ -45,7 +47,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   );
 
   const [mapping, setMapping] = React.useState<IStorageMapping | INetworkMapping | null>(null);
-  const [addMappingName, setAddMappingName] = React.useState<string>('');
+  const [mappingName, setMappingName] = React.useState<string>('');
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
@@ -111,20 +113,25 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               onChange={toggleSaveNewMapping}
             />
             {isSaveNewMapping && (
-              <FormGroup
-                isRequired
-                fieldId="mappingName"
-                helperTextInvalid="TODO"
-                // TODO add state/validation/errors to this and other FormGroups
-                validated="default"
-              >
-                <TextInput
-                  id="addMappingName"
-                  value={addMappingName}
-                  type="text"
-                  onChange={setAddMappingName}
-                />
-              </FormGroup>
+              <Grid className={spacing.mbMd}>
+                <GridItem sm={12} md={5} className={spacing.mbMd}>
+                  <FormGroup
+                    isRequired
+                    label="Name"
+                    fieldId="mapping-name"
+                    helperTextInvalid="TODO"
+                    // TODO add state/validation/errors to this and other FormGroups
+                    validated="default"
+                  >
+                    <TextInput
+                      id="mapping-name"
+                      value={mappingName}
+                      type="text"
+                      onChange={setMappingName}
+                    />
+                  </FormGroup>
+                </GridItem>
+              </Grid>
             )}
           </>
         )}
