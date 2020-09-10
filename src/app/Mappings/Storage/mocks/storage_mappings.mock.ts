@@ -1,5 +1,6 @@
 import { IStorageMapping, MappingType } from '../../types';
 import { ProviderType } from '@app/common/constants';
+import { MappingSource, MappingTarget } from '@app/Mappings/types';
 
 const storage1: IStorageMapping = {
   type: MappingType.Storage,
@@ -48,3 +49,10 @@ const storage2: IStorageMapping = {
 };
 
 export const MOCK_STORAGE_MAPPINGS: IStorageMapping[] = [storage1, storage2];
+
+export const MOCK_MAPPING_SOURCES: MappingSource[] = [
+  { id: '1', name: 'vmware-datastore-1' },
+  { id: '2', name: 'vmware-datastore-2' },
+];
+
+export const MOCK_MAPPING_TARGETS: MappingTarget[] = ['gold', 'silver', 'bronze'];

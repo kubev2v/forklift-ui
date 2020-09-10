@@ -8,7 +8,11 @@ import Review from './Review';
 import { Provider } from '@app/Providers/types';
 import { MOCK_VMS } from './mocks/VMs.mock';
 import StorageMappingForm from './StorageMappingForm';
-import { MOCK_STORAGE_MAPPINGS } from '@app/Mappings/Storage/mocks/storage_mappings.mock.ts';
+import {
+  MOCK_STORAGE_MAPPINGS,
+  MOCK_MAPPING_SOURCES,
+  MOCK_MAPPING_TARGETS,
+} from '@app/Mappings/Storage/mocks/storage_mappings.mock.ts';
 
 interface IPlanWizardProps {
   isOpen: boolean;
@@ -74,7 +78,11 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       name: 'Storage Mapping',
       component: (
         <WizardStepContainer title="Map Storage">
-          <StorageMappingForm storageMappingList={MOCK_STORAGE_MAPPINGS} />
+          <StorageMappingForm
+            storageMappingList={MOCK_STORAGE_MAPPINGS}
+            availableSources={MOCK_MAPPING_SOURCES}
+            availableTargets={MOCK_MAPPING_TARGETS}
+          />
         </WizardStepContainer>
       ),
       enableNext: true,
