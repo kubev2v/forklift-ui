@@ -9,50 +9,50 @@ export interface IAddPlanDisabledObjModel {
 }
 
 export interface IPlanVM {
-  ID: string;
-  Hooks: {
-    Before: IHook;
-    After: IHook;
+  uid: string;
+  hooks: {
+    before: IHook;
+    after: IHook;
   };
-  Host: IHost;
+  host: IHost;
 }
 
 export interface IPlanStatus {
-  Conditions: boolean;
-  ObservedGeneration: number;
+  conditions: boolean;
+  bbservedGeneration: number;
 }
 
 export interface IPlan extends ICR {
-  Spec: {
-    Provider: {
+  spec: {
+    provider: {
       sourceProvider: IVMwareProvider;
       destinationProvider: ICNVProvider;
     };
-    Map: Mapping;
-    Warm: boolean;
-    VMList: IPlanVM[];
+    map: Mapping;
+    warm: boolean;
+    vmList: IPlanVM[];
   };
-  Status: IPlanStatus;
+  status: IPlanStatus;
 }
 
 export interface IMigration {
-  Plan: IPlan;
-  Schedule: {
-    Begin: Date;
-    End: Date;
+  plan: IPlan;
+  schedule: {
+    begin: Date;
+    end: Date;
   };
-  Status: {
-    Ready: boolean;
-    StorageReady: boolean;
+  status: {
+    ready: boolean;
+    storageReady: boolean;
   };
 }
 
 export interface IVM {
-  Name: string;
-  MigrationAnalysis: string;
-  Datacenter: string;
-  Cluster: string;
-  Host: string;
-  FolderPath: string;
-  MAStory: string;
+  name: string;
+  migrationAnalysis: string;
+  datacenter: string;
+  cluster: string;
+  host: string;
+  folderPath: string;
+  analysisDescription: string;
 }

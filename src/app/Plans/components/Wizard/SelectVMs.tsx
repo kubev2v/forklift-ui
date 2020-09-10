@@ -29,12 +29,12 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
     return [
       '', // Expand control column
       '', // Checkbox column
-      vm.MigrationAnalysis,
-      vm.Name,
-      vm.Datacenter,
-      vm.Cluster,
-      vm.Host,
-      vm.FolderPath,
+      vm.migrationAnalysis,
+      vm.name,
+      vm.datacenter,
+      vm.cluster,
+      vm.host,
+      vm.folderPath,
       '', // Action column
     ];
   };
@@ -53,7 +53,7 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
     isItemSelected,
   } = useSelectionState<IVM>({
     items: sortedItems,
-    isEqual: (a, b) => a.Name === b.Name,
+    isEqual: (a, b) => a.name === b.name,
   });
 
   const columns: ICell[] = [
@@ -96,7 +96,7 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
           title: (
             <input
               type="checkbox"
-              aria-label={`Select vm ${vm.Name}`}
+              aria-label={`Select vm ${vm.name}`}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
                 toggleItemSelected(vm, event.currentTarget.checked);
               }}
@@ -106,20 +106,20 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
         },
         {
           title: (
-            <StatusIcon status={StatusType[vm.MigrationAnalysis]} label={vm.MigrationAnalysis} />
+            <StatusIcon status={StatusType[vm.migrationAnalysis]} label={vm.migrationAnalysis} />
           ),
         },
-        vm.Name,
-        vm.Datacenter,
-        vm.Cluster,
-        vm.Host,
-        vm.FolderPath,
+        vm.name,
+        vm.datacenter,
+        vm.cluster,
+        vm.host,
+        vm.folderPath,
       ],
     });
     rows.push({
       parent: rows.length - 1,
       fullWidth: true,
-      cells: [vm.MAStory],
+      cells: [vm.analysisDescription],
     });
   });
 
