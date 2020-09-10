@@ -12,28 +12,23 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IStorageMapping } from '@app/Mappings/types';
-import AddEditStorageMapping from '@app/Mappings/Storage/components/AddEditStorageMapping';
+import { IStorageMapping, MappingType } from '@app/Mappings/types';
+import AddEditMappingModal from '@app/Mappings/components/AddEditMappingModal';
 
-interface IStorageMappingProps {
+interface IStorageMappingFormProps {
   storageMappingList: IStorageMapping[];
 }
 
-const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
+const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
   storageMappingList,
-}: IStorageMappingProps) => {
+}: IStorageMappingFormProps) => {
   const storageMappingOptions = Object.values(storageMappingList).map((storageMapping) => ({
     toString: () => storageMapping.name,
     value: storageMapping,
   })) as OptionWithValue<IStorageMapping>[];
 
-  const [isUseExistingMappingChecked, toggleUseExistingMapping] = React.useReducer(
-    (isUseExistingMappingChecked) => !isUseExistingMappingChecked,
-    true
-  );
-
-  const [isUseNewMappingChecked, toggleUseNewMapping] = React.useReducer(
-    (isUseNewMappingChecked) => !isUseNewMappingChecked,
+  const [isCreateMappingChecked, toggleCreateMapping] = React.useReducer(
+    (isCreateMappingChecked) => !isCreateMappingChecked,
     false
   );
 
@@ -46,8 +41,7 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
   const [addStorageMappingName, setAddStorageMappingName] = React.useState<string>('');
 
   const onChange = () => {
-    toggleUseNewMapping();
-    toggleUseExistingMapping();
+    toggleCreateMapping();
   };
 
   return (
@@ -63,15 +57,16 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
             label="Use an existing storage mapping"
             name="radio-existing"
             onChange={onChange}
-            isChecked={isUseExistingMappingChecked}
+            isChecked={!isCreateMappingChecked}
           />
-          {isUseExistingMappingChecked && (
+          {!isCreateMappingChecked && (
             <FlexItem>
               <FormGroup
                 isRequired
                 fieldId="sourceProvider"
                 helperTextInvalid="TODO"
-                validated="default" // TODO add state/validation/errors to this and other FormGroups
+                // TODO add state/validation/errors to this and other FormGroups
+                validated="default"
               >
                 <SimpleSelect
                   id="storageMapping"
@@ -90,11 +85,15 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
             label="Create a new storage mapping"
             name="radio-new"
             onChange={onChange}
-            isChecked={isUseNewMappingChecked}
+            isChecked={isCreateMappingChecked}
           />
-          {isUseNewMappingChecked && (
+          {isCreateMappingChecked && (
             <>
-              <AddEditStorageMapping isEdit={false}></AddEditStorageMapping>
+              <AddEditMappingModal
+                title="Create a storage mapping"
+                mappingType={MappingType.Storage}
+                onClose={toggleCreateMapping}
+              ></AddEditMappingModal>
               <Checkbox
                 label="Save mapping to use again"
                 aria-label="save mapping checkbox"
@@ -107,7 +106,8 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
                   isRequired
                   fieldId="planName"
                   helperTextInvalid="TODO"
-                  validated="default" // TODO add state/validation/errors to this and other FormGroups
+                  // TODO add state/validation/errors to this and other FormGroups
+                  validated="default"
                 >
                   <TextInput
                     id="addStorageMappingName"
@@ -125,4 +125,4 @@ const StorageMapping: React.FunctionComponent<IStorageMappingProps> = ({
   );
 };
 
-export default StorageMapping;
+export default StorageMappingForm;
