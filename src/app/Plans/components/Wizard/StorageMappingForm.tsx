@@ -24,8 +24,8 @@ interface IStorageMappingFormProps {
 
 const StorageMappingForm: React.FunctionComponent<IStorageMappingFormProps> = ({
   storageMappingList,
-  availableSources,
-  availableTargets,
+  availableSources = [],
+  availableTargets = [],
 }: IStorageMappingFormProps) => {
   const storageMappingOptions = Object.values(storageMappingList).map((storageMapping) => ({
     toString: () => storageMapping.name,
