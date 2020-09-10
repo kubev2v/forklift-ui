@@ -15,7 +15,9 @@ import {
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import { IVM } from '../../types';
-import { useSortState, usePaginationState, useSelectionState } from '@app/common/hooks';
+import { useSelectionState } from '@konveyor/lib-ui';
+
+import { useSortState, usePaginationState } from '@app/common/hooks';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 interface ISelectVMsProps {
@@ -31,13 +33,18 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>(
-    sortedItems
-  );
+  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>({
+    items: sortedItems,
+  });
 
-  const { selectedItems: expandedVMs, toggleItemSelected: toggleVMsExpanded } = useSelectionState<
-    IVM
-  >(sortedItems);
+  const {
+    selectedItems: expandedVMs,
+    toggleItemSelected: toggleVMsExpanded,
+    isItemSelected,
+  } = useSelectionState<IVM>({
+    items: sortedItems,
+    isEqual: (a, b) => a.Name === b.Name,
+  });
 
   const columns: ICell[] = [
     {
