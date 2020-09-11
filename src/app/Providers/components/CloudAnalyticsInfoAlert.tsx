@@ -8,21 +8,30 @@ const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
   const [isAlertHidden, setIsAlertHidden] = useLocalStorageContext(
     LocalStorageKey.isProvidersPageMAAlertHidden
   );
-  if (isAlertHidden) return null;
-  return (
+
+  const link = (
+    <Button variant="link" href={CLOUD_MA_LINK.href} isInline>
+      {CLOUD_MA_LINK.label}
+    </Button>
+  );
+
+  const alertMessage = (
+    <>
+      You can analyze your VMware provider data with Migration Analytics. Migration Analytics
+      generates a complete inventory of your VMware environment and VM recommendations for
+      migration. Select your VMware providers and download the data file. Then log in to {link},
+      select Migration Analytics, and create a Migration Analytics report.
+    </>
+  );
+
+  return isAlertHidden ? null : (
     <Alert
       variant="info"
       title="Analyze provider data"
       actionClose={<AlertActionCloseButton onClose={() => setIsAlertHidden('true')} />}
       className={spacing.mtMd}
     >
-      You can upload your VMware provider data to Red Hat&apos;s Migration Analytics service to see
-      a complete inventory of your VMware environment and get recommendations for which VMs are
-      suitable to migrate. Start by downloading a provider data file. Then log in to{' '}
-      <Button variant="link" href={CLOUD_MA_LINK.href} isInline>
-        {CLOUD_MA_LINK.label}
-      </Button>{' '}
-      and select Migration Analytics.
+      {alertMessage}
     </Alert>
   );
 };
