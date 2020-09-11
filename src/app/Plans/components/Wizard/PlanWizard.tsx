@@ -1,9 +1,12 @@
 import * as React from 'react';
+import { Modal, Wizard } from '@patternfly/react-core';
 import WizardStepContainer from './WizardStepContainer';
-import { Wizard } from '@patternfly/react-core';
-import Review from './Review';
 import GeneralForm from './GeneralForm';
+import FilterVMs from './FilterVMsForm';
+import SelectVMs from './SelectVMsForm';
+import Review from './Review';
 import { Provider } from '@app/Providers/types';
+import { MOCK_VMS } from './mocks/VMs.mock';
 
 interface IPlanWizardProps {
   isOpen: boolean;
@@ -47,7 +50,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <div>TODO: Filter VMs</div>
+              <FilterVMs Inventory={[]} />
             </WizardStepContainer>
           ),
           enableNext: true,
@@ -57,7 +60,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
-              <div>TODO: Select VMs</div>
+              <SelectVMs vms={MOCK_VMS} />
             </WizardStepContainer>
           ),
           enableNext: true,
@@ -107,15 +110,16 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
   };
 
   return (
-    <Wizard
-      title="Create a Migration Plan"
-      steps={steps}
-      isOpen={isOpen}
-      onClose={onClose}
-      onNext={onMove}
-      onBack={onMove}
-      onSubmit={(event) => event.preventDefault()}
-    />
+    <Modal isOpen={isOpen} width="95%" showClose={false} hasNoBodyWrapper>
+      <Wizard
+        title="Create a Migration Plan"
+        steps={steps}
+        onClose={onClose}
+        onNext={onMove}
+        onBack={onMove}
+        onSubmit={(event) => event.preventDefault()}
+      />
+    </Modal>
   );
 };
 
