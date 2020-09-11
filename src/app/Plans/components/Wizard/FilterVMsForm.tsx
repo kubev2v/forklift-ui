@@ -17,8 +17,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFil
   };
 
   const onCheck = (event, treeViewItem) => {
-    const checked = event.target.checked;
-    treeViewItem.checkProps.checked = checked;
+    return;
   };
 
   return (
