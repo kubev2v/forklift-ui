@@ -83,6 +83,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       component: (
         <WizardStepContainer title="Map Storage">
           <MappingForm
+            key="mapping-form-storage"
             mappingType={MappingType.Storage}
             mappingList={MOCK_STORAGE_MAPPINGS}
             availableSources={MOCK_STORAGE_MAPPING_SOURCES}
@@ -98,6 +99,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       component: (
         <WizardStepContainer title="Network Mapping">
           <MappingForm
+            key="mapping-form-network"
             mappingType={MappingType.Network}
             mappingList={MOCK_NETWORK_MAPPINGS}
             availableSources={MOCK_NETWORK_MAPPING_SOURCES}
