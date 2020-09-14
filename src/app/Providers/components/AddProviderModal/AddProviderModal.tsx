@@ -5,6 +5,9 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import './AddProviderModal.css';
 
+import * as yup from 'yup';
+import { cnvProviderSchema, vmwareProviderSchema } from '../../ProviderSchema';
+
 interface IAddProviderModalProps {
   onClose: () => void;
 }
@@ -29,6 +32,47 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   const [cnvClusterName, setCnvClusterName] = React.useState<string>('');
   const [cnvUrl, setCnvUrl] = React.useState<string>('');
   const [cnvSaToken, setCnvSaToken] = React.useState<string>('');
+
+  const validForm = (form) => {
+    console.log(form);
+    alert('valid form');
+  };
+
+  const validateForm = () => {
+    if (providerType === ProviderType.vsphere) {
+      const vmwareProvider = {
+        providerType,
+        vmwareName,
+        vmwareHostname,
+        vmwareUsername,
+        vmwarePassword,
+      };
+
+      vmwareProviderSchema
+        .validate(vmwareProvider)
+        .then(() => validForm(vmwareProvider))
+        .catch(function (err) {
+          console.log(err);
+        });
+    }
+
+    if (providerType === ProviderType.cnv) {
+      const cnvProvider = {
+        providerType,
+        cnvClusterName,
+        cnvUrl,
+        cnvSaToken,
+      };
+
+      cnvProviderSchema
+        .validate(cnvProvider)
+        .then(() => validForm(cnvProvider))
+        .catch(function (err) {
+          console.log(err);
+        });
+    }
+  };
+
   return (
     <Modal
       className="addProviderModal"
@@ -37,7 +81,8 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        // <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        <Button key="confirm" variant="primary" onClick={validateForm}>
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
