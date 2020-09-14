@@ -13,19 +13,19 @@ import { groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
 
-interface IMappingViewerProps {
+interface IMappingDetailViewProps {
   mappingType: MappingType;
   mapping: Mapping;
   availableSources: MappingSource[];
   className: string;
 }
 
-const MappingViewer: React.FunctionComponent<IMappingViewerProps> = ({
+const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mappingType,
   mapping,
   availableSources,
   className,
-}: IMappingViewerProps) => {
+}: IMappingDetailViewProps) => {
   const mappingItemGroups = groupMappingItemsByTarget(mapping.items, mappingType);
   return (
     <div className={className}>
@@ -69,4 +69,4 @@ const MappingViewer: React.FunctionComponent<IMappingViewerProps> = ({
   );
 };
 
-export default MappingViewer;
+export default MappingDetailView;
