@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  Mapping,
-  MappingType,
-  INetworkMapping,
-  IStorageMapping,
-  INetworkMappingItem,
-  IStorageMappingItem,
-} from '../types';
+import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '../types';
 import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
 import {
   Table,
@@ -20,12 +13,8 @@ import {
 } from '@patternfly/react-table';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IVMwareProvider } from '@app/Providers/types';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { OutlinedHddIcon, NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
-import ProviderStatus from '@app/Providers/components/ProvidersTable/ProviderStatus';
-import VMwareProviderActionsDropdown from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderActionsDropdown';
-import VMwareProviderHostsTable from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderHostsTable';
+import { NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 
 interface IMappingsTableProps {

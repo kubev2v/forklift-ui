@@ -3,7 +3,6 @@ import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patt
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
-import { IVMwareNetwork, IVMwareDatastore } from '@app/Providers/types';
 import LineArrow from '@app/common/components/LineArrow/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
