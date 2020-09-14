@@ -1,12 +1,4 @@
-import {
-  MappingSource,
-  Mapping,
-  MappingItem,
-  MappingType,
-  MappingTarget,
-  INetworkMappingItem,
-  IStorageMappingItem,
-} from '../../types';
+import { MappingSource, Mapping, MappingItem, MappingType, MappingTarget } from '../../types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { IVMwareProvider, ICNVProvider } from '@app/Providers/types';
 import { getMappingSourceById } from '../helpers';
@@ -15,7 +7,7 @@ export const getBuilderItemsFromMapping = (
   mapping: Mapping,
   allSources: MappingSource[]
 ): IMappingBuilderItem[] =>
-  (mapping.items as (INetworkMappingItem | IStorageMappingItem)[])
+  (mapping.items as MappingItem[])
     .map((item: MappingItem) => {
       const source = getMappingSourceById(allSources, item.source.id);
       if (source) {
