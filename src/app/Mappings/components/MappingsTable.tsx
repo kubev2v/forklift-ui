@@ -15,9 +15,11 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
-import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '../types';
+import { Mapping, MappingType, INetworkMapping, IStorageMapping, MappingSource } from '../types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
+import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+import { MOCK_VMWARE_NETWORKS_BY_PROVIDER } from '@app/Providers/mocks/networks.mock';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
@@ -61,6 +63,15 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
+    // TODO use the right thing from redux here instead of mock data
+    let availableSources: MappingSource[] = [];
+    if (mappingType === MappingType.Network) {
+      availableSources = MOCK_VMWARE_NETWORKS_BY_PROVIDER[mapping.provider.source.name];
+    }
+    if (mappingType === MappingType.Storage) {
+      availableSources = MOCK_VMWARE_DATASTORES_BY_PROVIDER[mapping.provider.source.name];
+    }
+
     const { name, provider, items } = mapping;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
@@ -97,6 +108,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
               <MappingDetailView
                 mappingType={mappingType}
                 mapping={mapping}
+                availableSources={availableSources}
                 className={spacing.mLg}
               />
             ),

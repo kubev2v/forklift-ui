@@ -6,6 +6,8 @@ import { MappingType, MappingSource, MappingTarget } from '../../types';
 import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
+import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
+
 import './MappingBuilder.css';
 
 export interface IMappingBuilderItem {
@@ -40,21 +42,15 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   };
 
   let instructionText = '';
-  let sourceHeadingText = '';
-  let targetHeadingText = '';
   let selectSourcePlaceholder = '';
   let selectTargetPlaceholder = '';
   if (mappingType === MappingType.Network) {
     instructionText = 'Map source and target networks.';
-    sourceHeadingText = 'Source networks';
-    targetHeadingText = 'Target networks';
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
-    sourceHeadingText = 'Source datastores';
-    targetHeadingText = 'Target storage classes';
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
@@ -72,13 +68,17 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
               <>
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
-                    <span className="pf-c-form__label-text">{sourceHeadingText}</span>
+                    <span className="pf-c-form__label-text">
+                      {getMappingSourceTitle(mappingType)}
+                    </span>
                   </label>
                 </GridItem>
                 <GridItem span={1} />
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
-                    <span className="pf-c-form__label-text">{targetHeadingText}</span>
+                    <span className="pf-c-form__label-text">
+                      {getMappingTargetTitle(mappingType)}
+                    </span>
                   </label>
                 </GridItem>
                 <GridItem span={1} />

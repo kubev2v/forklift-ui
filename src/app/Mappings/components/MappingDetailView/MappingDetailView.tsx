@@ -1,55 +1,70 @@
 import * as React from 'react';
-import { Grid, GridItem, TextContent, Text } from '@patternfly/react-core';
+import { Grid, GridItem, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Mapping, MappingType } from '@app/Mappings/types';
+import { Mapping, MappingSource, MappingType } from '@app/Mappings/types';
 import LineArrow from '@app/common/components/LineArrow';
+import {
+  getMappingSourceById,
+  getMappingSourceTitle,
+  getMappingTargetName,
+  getMappingTargetTitle,
+} from '../helpers';
+import { groupMappingItemsByTarget } from './helpers';
+
 import './MappingDetailView.css';
 
 interface IMappingViewerProps {
   mappingType: MappingType;
   mapping: Mapping;
+  availableSources: MappingSource[];
   className: string;
 }
 
 const MappingViewer: React.FunctionComponent<IMappingViewerProps> = ({
   mappingType,
   mapping,
+  availableSources,
   className,
 }: IMappingViewerProps) => {
+  const mappingItemGroups = groupMappingItemsByTarget(mapping.items, mappingType);
   return (
     <div className={className}>
       <Grid>
         <GridItem span={5} className={spacing.pbSm}>
-          <TextContent>
-            <Text component="h2" className="mapping-view-box-heading">
-              TODO: source heading
-            </Text>
-          </TextContent>
+          <Title size="md" headingLevel="h2">
+            {getMappingSourceTitle(mappingType)}
+          </Title>
         </GridItem>
         <GridItem span={2}></GridItem>
         <GridItem span={5} className={spacing.pbSm}>
-          <TextContent>
-            <Text component="h2" className="mapping-view-box-heading">
-              TODO: target heading
-            </Text>
-          </TextContent>
+          <Title size="md" headingLevel="h2">
+            {getMappingTargetTitle(mappingType)}
+          </Title>
         </GridItem>
       </Grid>
-      <Grid>
-        <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-          <ul>
-            <li>TODO: source 1</li>
-            <li>TODO: source 2</li>
-            <li>TODO: source 3</li>
-          </ul>
-        </GridItem>
-        <GridItem span={2} className="mapping-view-arrow-cell">
-          <LineArrow />
-        </GridItem>
-        <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-          TODO: target name
-        </GridItem>
-      </Grid>
+      {mappingItemGroups.map((items, index) => {
+        const targetName = getMappingTargetName(items[0].target, mappingType);
+        const isLastGroup = index === mappingItemGroups.length - 1;
+        return (
+          <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
+            <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
+              <ul>
+                {items.map((item) => {
+                  const source = getMappingSourceById(availableSources, item.source.id);
+                  const sourceName = source ? source.name : '';
+                  return <li key={sourceName}>{sourceName}</li>;
+                })}
+              </ul>
+            </GridItem>
+            <GridItem span={2} className="mapping-view-arrow-cell">
+              <LineArrow />
+            </GridItem>
+            <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
+              {targetName}
+            </GridItem>
+          </Grid>
+        );
+      })}
     </div>
   );
 };

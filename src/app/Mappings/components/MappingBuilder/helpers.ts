@@ -9,9 +9,7 @@ import {
 } from '../../types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { IVMwareProvider, ICNVProvider } from '@app/Providers/types';
-
-export const getSourceById = (sources: MappingSource[], id: string): MappingSource | undefined =>
-  sources.find((source) => source.id === id);
+import { getMappingSourceById } from '../helpers';
 
 export const getBuilderItemsFromMapping = (
   mapping: Mapping,
@@ -19,7 +17,7 @@ export const getBuilderItemsFromMapping = (
 ): IMappingBuilderItem[] =>
   (mapping.items as (INetworkMappingItem | IStorageMappingItem)[])
     .map((item: MappingItem) => {
-      const source = getSourceById(allSources, item.source.id);
+      const source = getMappingSourceById(allSources, item.source.id);
       if (source) {
         return { source, target: item.target } as IMappingBuilderItem;
       }
