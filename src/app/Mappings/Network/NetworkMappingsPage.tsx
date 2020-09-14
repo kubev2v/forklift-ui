@@ -29,7 +29,7 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
   React.useEffect(() => {
     console.log(`TODO: fetch network mapping items`);
     const currentMappings = fetchMockStorage(MappingType.Network);
-    setNetworkMappings(currentMappings || []);
+    setNetworkMappings((currentMappings as INetworkMapping[]) || []);
   }, [mockMapObj]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
