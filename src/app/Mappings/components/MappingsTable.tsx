@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '../types';
 import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
   TableHeader,
@@ -15,11 +15,13 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
+import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '../types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
+import MappingDetailView from './MappingDetailView';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
-  mappingType: string;
+  mappingType: MappingType;
   toggleAddEditModal: () => void;
 }
 
@@ -30,7 +32,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
     const { name, provider } = mapping;
-    return [name, provider.source.name, provider.target.name, ''];
+    return ['', name, provider.source.name, provider.target.name, ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(mappings, getSortValues);
@@ -38,9 +40,8 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const {
-    selectedItems: expandedMappings,
     toggleItemSelected: toggleMappingExpanded,
-    isItemSelected,
+    isItemSelected: isMappingExpanded,
   } = useSelectionState<Mapping>({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
@@ -51,7 +52,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
     {
-      title: <>{mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings'}</>,
+      title: mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings',
       transforms: [sortable],
     },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
@@ -61,8 +62,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
     const { name, provider, items } = mapping;
-    //TODO: update to use isItemSelected from useSelectionState hook when we start using redux
-    const isExpanded = isItemSelected(mapping);
+    const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
       isOpen: isExpanded,
@@ -90,15 +90,17 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
+        fullWidth: true,
         cells: [
           {
             title: (
-              <div>
-                TODO: mapping details table
-                {/* <MappingDetailsTable {...props} /> */}
-              </div>
+              <MappingDetailView
+                mappingType={mappingType}
+                mapping={mapping}
+                className={spacing.mLg}
+              />
             ),
-            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+            props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
         ],
       });

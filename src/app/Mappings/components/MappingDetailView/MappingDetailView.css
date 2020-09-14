@@ -1,0 +1,13 @@
+.pf-c-content h2.mapping-view-box-heading {
+  font-weight: var(--pf-c-form__label-text--FontWeight);
+  font-size: var(--pf-c-form__label--FontSize);
+  line-height: var(--pf-c-form__label--LineHeight);
+}
+
+.mapping-view-box {
+  border: 1px solid #000000;
+}
+
+.mapping-view-arrow-cell {
+  padding-top: 12px;
+}

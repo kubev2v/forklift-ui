@@ -3,7 +3,7 @@ import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patt
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
-import LineArrow from '@app/common/components/LineArrow/LineArrow';
+import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import './MappingBuilder.css';
@@ -84,7 +84,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <GridItem span={1} />
               </>
             ) : null}
-            <GridItem span={5} className={`mapping-viewer-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingSourceSelect
                 id={`mapping-sources-for-${key}`}
                 builderItems={builderItems}
@@ -99,7 +99,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem span={5} className={`mapping-viewer-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 mappingType={mappingType}
