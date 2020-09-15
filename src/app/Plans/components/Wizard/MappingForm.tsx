@@ -14,13 +14,13 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IStorageMapping, MappingType, INetworkMapping } from '@app/Mappings/types';
+import { MappingType, Mapping } from '@app/Mappings/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { MappingSource, MappingTarget } from '@app/Mappings/types';
 
 interface IMappingFormProps {
   mappingType: MappingType;
-  mappingList: IStorageMapping[] | INetworkMapping[];
+  mappingList: Mapping[];
   availableSources?: MappingSource[];
   availableTargets?: MappingTarget[];
 }
@@ -34,7 +34,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   const mappingOptions = Object.values(mappingList).map((mapping) => ({
     toString: () => mapping.name,
     value: mapping,
-  })) as OptionWithValue<IStorageMapping | INetworkMapping>[];
+  })) as OptionWithValue<Mapping>[];
 
   const [isCreateMappingChecked, toggleCreateMapping] = React.useReducer(
     (isCreateMappingChecked) => !isCreateMappingChecked,
@@ -46,7 +46,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     false
   );
 
-  const [mapping, setMapping] = React.useState<IStorageMapping | INetworkMapping | null>(null);
+  const [mapping, setMapping] = React.useState<Mapping | null>(null);
   const [mappingName, setMappingName] = React.useState<string>('');
 
   // TODO add support for prefilling builderItems for editing an API mapping
@@ -81,9 +81,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 id="mappingSelect"
                 options={mappingOptions}
                 value={[mappingOptions.find((option) => option.value === mapping)]}
-                onChange={(selection) =>
-                  setMapping((selection as OptionWithValue<IStorageMapping>).value)
-                }
+                onChange={(selection) => setMapping((selection as OptionWithValue<Mapping>).value)}
                 placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
               />
             </FormGroup>
