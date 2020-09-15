@@ -3,6 +3,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { ICNVNetwork } from '@app/Providers/types';
 import { MappingTarget, MappingType } from '@app/Mappings/types';
 import { IMappingBuilderItem } from './MappingBuilder';
+import { getMappingTargetName } from '../helpers';
 
 interface IMappingTargetSelectProps {
   id: string;
@@ -31,15 +32,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => ({
     value: target,
-    toString: () => {
-      if (mappingType === MappingType.Network) {
-        return (target as ICNVNetwork).name;
-      }
-      if (mappingType === MappingType.Storage) {
-        return target as string;
-      }
-      return '';
-    },
+    toString: () => getMappingTargetName(target, mappingType),
   }));
   const selectedOption = targetOptions.find(
     (option: OptionWithValue<MappingTarget>) => option.value === builderItems[itemIndex].target
