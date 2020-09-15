@@ -1,4 +1,4 @@
-import { IStorageMapping, INetworkMapping, MappingType } from '../../types';
+import { IStorageMapping, INetworkMapping, MappingType } from '../types';
 import { ProviderType } from '@app/common/constants';
 import { MappingSource, MappingTarget } from '@app/Mappings/types';
 import { NetworkType } from '@app/Providers/types';
@@ -111,6 +111,7 @@ const networkMapping2: INetworkMapping = {
     },
   ],
 };
+
 export const MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [networkMapping1, networkMapping2];
 
 export const MOCK_NETWORK_MAPPING_SOURCES: MappingSource[] = [

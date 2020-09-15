@@ -59,6 +59,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
+
   return (
     <>
       <TextContent>

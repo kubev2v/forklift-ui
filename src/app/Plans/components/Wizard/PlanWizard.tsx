@@ -16,7 +16,7 @@ import {
   MOCK_NETWORK_MAPPINGS,
   MOCK_NETWORK_MAPPING_SOURCES,
   MOCK_NETWORK_MAPPING_TARGETS,
-} from '@app/Mappings/Storage/mocks/mappings.mock.ts';
+} from '@app/Mappings/mocks/mappings.mock';
 
 interface IPlanWizardProps {
   isOpen: boolean;
