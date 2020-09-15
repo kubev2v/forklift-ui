@@ -14,7 +14,6 @@ import {
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
 import { Mapping, MappingType, INetworkMapping, IStorageMapping, MappingSource } from '../types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
@@ -34,7 +33,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
     const { name, provider } = mapping;
-    return ['', name, provider.source.name, provider.target.name, ''];
+    return [
+      '', // Expand control column
+      name,
+      provider.source.name,
+      provider.target.name,
+      '', // Action column
+    ];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(mappings, getSortValues);
@@ -53,12 +58,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
-    {
-      title: mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings',
-      transforms: [sortable],
-    },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
-    { title: '' },
   ];
 
   const rows: IRow[] = [];
@@ -72,7 +72,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       availableSources = MOCK_VMWARE_DATASTORES_BY_PROVIDER[mapping.provider.source.name];
     }
 
-    const { name, provider, items } = mapping;
+    const { name, provider } = mapping;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
@@ -81,18 +81,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         name,
         provider.source?.name,
         provider.target?.name,
-        {
-          title: (
-            <>
-              {mappingType === MappingType.Network ? (
-                <NetworkIcon key="hosts-icon" />
-              ) : (
-                <DatabaseIcon key="storage-icon" />
-              )}{' '}
-              {items ? items.length : 0}
-            </>
-          ),
-        },
         {
           title: <MappingsActionsDropdown />,
         },
