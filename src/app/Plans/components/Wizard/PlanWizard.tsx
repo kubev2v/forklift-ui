@@ -7,6 +7,16 @@ import SelectVMs from './SelectVMsForm';
 import Review from './Review';
 import { Provider } from '@app/Providers/types';
 import { MOCK_VMS } from './mocks/VMs.mock';
+import MappingForm from './MappingForm';
+import { MappingType } from '@app/Mappings/types';
+import {
+  MOCK_STORAGE_MAPPINGS,
+  MOCK_STORAGE_MAPPING_SOURCES,
+  MOCK_STORAGE_MAPPING_TARGETS,
+  MOCK_NETWORK_MAPPINGS,
+  MOCK_NETWORK_MAPPING_SOURCES,
+  MOCK_NETWORK_MAPPING_TARGETS,
+} from '@app/Mappings/mocks/mappings.mock';
 
 interface IPlanWizardProps {
   isOpen: boolean;
@@ -71,8 +81,14 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       id: stepId.StorageMapping,
       name: 'Storage Mapping',
       component: (
-        <WizardStepContainer title="Storage Mapping">
-          <div>TODO: Storage mapping</div>
+        <WizardStepContainer title="Map Storage">
+          <MappingForm
+            key="mapping-form-storage"
+            mappingType={MappingType.Storage}
+            mappingList={MOCK_STORAGE_MAPPINGS}
+            availableSources={MOCK_STORAGE_MAPPING_SOURCES}
+            availableTargets={MOCK_STORAGE_MAPPING_TARGETS}
+          />
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -82,7 +98,13 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       name: 'Network Mapping',
       component: (
         <WizardStepContainer title="Network Mapping">
-          <div>TODO: Network mapping</div>
+          <MappingForm
+            key="mapping-form-network"
+            mappingType={MappingType.Network}
+            mappingList={MOCK_NETWORK_MAPPINGS}
+            availableSources={MOCK_NETWORK_MAPPING_SOURCES}
+            availableTargets={MOCK_NETWORK_MAPPING_TARGETS}
+          />
         </WizardStepContainer>
       ),
       enableNext: true,
