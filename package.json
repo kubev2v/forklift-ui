@@ -66,22 +66,13 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@konveyor/lib-ui": "^1.5.0",
     "@patternfly/react-core": "^4.47.0",
     "@patternfly/react-icons": "^4.7.4",
     "@patternfly/react-styles": "^4.7.3",
     "@patternfly/react-table": "^4.16.7",
     "@patternfly/react-tokens": "^4.9.6",
-=======
-    "@konveyor/lib-ui": "^1.4.0",
-    "@patternfly/react-core": "^4.40.4",
-    "@patternfly/react-icons": "^4.7.2",
-    "@patternfly/react-styles": "^4.7.2",
-    "@patternfly/react-table": "^4.15.5",
-    "@patternfly/react-tokens": "^4.9.4",
     "@reduxjs/toolkit": "^1.4.0",
->>>>>>> begin conversion to redux toolkit
     "@types/react-redux": "^7.1.9",
     "express": "^4.17.1",
     "react": "^16.13.1",
