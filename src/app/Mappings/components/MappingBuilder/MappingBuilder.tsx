@@ -3,10 +3,11 @@ import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patt
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType, MappingSource, MappingTarget } from '../../types';
-import { IVMwareNetwork, IVMwareDatastore } from '@app/Providers/types';
-import LineArrow from '@app/common/components/LineArrow/LineArrow';
+import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
+import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
+
 import './MappingBuilder.css';
 
 export interface IMappingBuilderItem {
@@ -41,21 +42,15 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   };
 
   let instructionText = '';
-  let sourceHeadingText = '';
-  let targetHeadingText = '';
   let selectSourcePlaceholder = '';
   let selectTargetPlaceholder = '';
   if (mappingType === MappingType.Network) {
     instructionText = 'Map source and target networks.';
-    sourceHeadingText = 'Source networks';
-    targetHeadingText = 'Target networks';
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
-    sourceHeadingText = 'Source datastores';
-    targetHeadingText = 'Target storage classes';
     selectSourcePlaceholder = 'Select source...';
     selectTargetPlaceholder = 'Select target...';
   }
@@ -73,19 +68,23 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
               <>
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
-                    <span className="pf-c-form__label-text">{sourceHeadingText}</span>
+                    <span className="pf-c-form__label-text">
+                      {getMappingSourceTitle(mappingType)}
+                    </span>
                   </label>
                 </GridItem>
                 <GridItem span={1} />
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
-                    <span className="pf-c-form__label-text">{targetHeadingText}</span>
+                    <span className="pf-c-form__label-text">
+                      {getMappingTargetTitle(mappingType)}
+                    </span>
                   </label>
                 </GridItem>
                 <GridItem span={1} />
               </>
             ) : null}
-            <GridItem span={5} className={`mapping-viewer-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingSourceSelect
                 id={`mapping-sources-for-${key}`}
                 builderItems={builderItems}
@@ -100,7 +99,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem span={5} className={`mapping-viewer-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 mappingType={mappingType}

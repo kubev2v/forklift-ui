@@ -108,7 +108,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             <FormGroup label="URL" isRequired fieldId="cnv-url">
               <TextInput id="cnv-url" value={cnvUrl} type="text" onChange={setCnvUrl} />
             </FormGroup>
-            <FormGroup label="Cluster name" isRequired fieldId="cluster-name">
+            <FormGroup label="Service account token" isRequired fieldId="cnv-sa-token">
               <TextInput
                 id="cnv-sa-token"
                 value={cnvSaToken}

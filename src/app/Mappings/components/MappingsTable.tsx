@@ -1,13 +1,6 @@
 import * as React from 'react';
-import {
-  Mapping,
-  MappingType,
-  INetworkMapping,
-  IStorageMapping,
-  INetworkMappingItem,
-  IStorageMappingItem,
-} from '../types';
 import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
   TableHeader,
@@ -20,17 +13,16 @@ import {
 } from '@patternfly/react-table';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IVMwareProvider } from '@app/Providers/types';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { OutlinedHddIcon, NetworkIcon, DatabaseIcon } from '@patternfly/react-icons';
-import ProviderStatus from '@app/Providers/components/ProvidersTable/ProviderStatus';
-import VMwareProviderActionsDropdown from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderActionsDropdown';
-import VMwareProviderHostsTable from '@app/Providers/components/ProvidersTable/VMware/VMwareProviderHostsTable';
+import { Mapping, MappingType, INetworkMapping, IStorageMapping, MappingSource } from '../types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
+import MappingDetailView from './MappingDetailView';
+import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+import { MOCK_VMWARE_NETWORKS_BY_PROVIDER } from '@app/Providers/mocks/networks.mock';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
-  mappingType: string;
+  mappingType: MappingType;
   toggleAddEditModal: () => void;
 }
 
@@ -41,7 +33,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
     const { name, provider } = mapping;
-    return [name, provider.source.name, provider.target.name, ''];
+    return [
+      '', // Expand control column
+      name,
+      provider.source.name,
+      provider.target.name,
+      '', // Action column
+    ];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(mappings, getSortValues);
@@ -49,9 +47,8 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const {
-    selectedItems: expandedMappings,
     toggleItemSelected: toggleMappingExpanded,
-    isItemSelected,
+    isItemSelected: isMappingExpanded,
   } = useSelectionState<Mapping>({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
@@ -61,19 +58,22 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
-    {
-      title: <>{mappingType === MappingType.Network ? 'Network mappings' : 'Storage mappings'}</>,
-      transforms: [sortable],
-    },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
-    { title: '' },
   ];
 
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
-    const { name, provider, items } = mapping;
-    //TODO: update to use isItemSelected from useSelectionState hook when we start using redux
-    const isExpanded = isItemSelected(mapping);
+    // TODO use the right thing from redux here instead of mock data
+    let availableSources: MappingSource[] = [];
+    if (mappingType === MappingType.Network) {
+      availableSources = MOCK_VMWARE_NETWORKS_BY_PROVIDER[mapping.provider.source.name];
+    }
+    if (mappingType === MappingType.Storage) {
+      availableSources = MOCK_VMWARE_DATASTORES_BY_PROVIDER[mapping.provider.source.name];
+    }
+
+    const { name, provider } = mapping;
+    const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
       isOpen: isExpanded,
@@ -82,18 +82,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         provider.source?.name,
         provider.target?.name,
         {
-          title: (
-            <>
-              {mappingType === MappingType.Network ? (
-                <NetworkIcon key="hosts-icon" />
-              ) : (
-                <DatabaseIcon key="storage-icon" />
-              )}{' '}
-              {items ? items.length : 0}
-            </>
-          ),
-        },
-        {
           title: <MappingsActionsDropdown />,
         },
       ],
@@ -101,15 +89,18 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
+        fullWidth: true,
         cells: [
           {
             title: (
-              <div>
-                TODO: mapping details table
-                {/* <MappingDetailsTable {...props} /> */}
-              </div>
+              <MappingDetailView
+                mappingType={mappingType}
+                mapping={mapping}
+                availableSources={availableSources}
+                className={spacing.mLg}
+              />
             ),
-            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+            props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
         ],
       });

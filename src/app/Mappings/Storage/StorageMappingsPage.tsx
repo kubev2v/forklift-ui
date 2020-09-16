@@ -30,7 +30,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
   React.useEffect(() => {
     console.log(`TODO: fetch storage mapping items`);
     const currentMappings = fetchMockStorage(MappingType.Storage);
-    setStorageMappings(currentMappings || []);
+    setStorageMappings((currentMappings as IStorageMapping[]) || []);
   }, [mockMapObj]);
 
   return (

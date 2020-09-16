@@ -1,7 +1,7 @@
 import { MappingType, Mapping } from '../types';
 
 // TODO: This is a temporary function designed for testing the mappings table. Remove when we wire up Redux & api
-export const updateMockStorage = (generatedMapping: Mapping) => {
+export const updateMockStorage = (generatedMapping: Mapping): void => {
   const { name: mappingName, provider, type: mappingType, items } = generatedMapping;
   const mappingsKey =
     mappingType === MappingType.Network ? 'networkMappingsObject' : 'storageMappingsObject';
@@ -19,6 +19,7 @@ export const updateMockStorage = (generatedMapping: Mapping) => {
             name: provider.source.name,
           },
         },
+        items,
       },
       ...(currentMappings?.mappings ? currentMappings.mappings : []),
     ],
@@ -26,7 +27,7 @@ export const updateMockStorage = (generatedMapping: Mapping) => {
   localStorage.setItem(mappingsKey, JSON.stringify(mockMappings));
 };
 
-export const fetchMockStorage = (mappingType: string) => {
+export const fetchMockStorage = (mappingType: string): Mapping[] => {
   const mappingsKey =
     mappingType === MappingType.Network ? 'networkMappingsObject' : 'storageMappingsObject';
   const mappingsItem = localStorage.getItem(mappingsKey);
