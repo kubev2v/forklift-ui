@@ -5,7 +5,6 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import './AddProviderModal.css';
 
-import * as yup from 'yup';
 import { cnvProviderSchema, vmwareProviderSchema } from '../../ProviderSchema';
 
 interface IAddProviderModalProps {
