@@ -10,12 +10,11 @@ import {
   Button,
   Bullseye,
   Spinner,
-  Tooltip,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import PlansTable from './components/PlansTable';
-import { IAddPlanDisabledObjModel } from './types';
+import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip';
 import { Provider } from '@app/Providers/types';
 import { ProviderType } from '@app/common/constants';
 import PlanWizard from './components/Wizard/PlanWizard';
@@ -23,6 +22,7 @@ import PlanWizard from './components/Wizard/PlanWizard';
 // TODO replace these with real state e.g. from redux
 import { MOCK_PLANS } from './mocks/plans.mock';
 import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
+
 const IsFetchingInitialPlans = false; // Fetching for the first time, not polling
 const migplans = MOCK_PLANS;
 const providers = MOCK_PROVIDERS;
@@ -33,22 +33,15 @@ const PlansPage: React.FunctionComponent = () => {
 
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
-  let addPlanDisabledObj: IAddPlanDisabledObjModel = {
-    isAddPlanDisabled: false,
-    disabledText: 'Click to create a new migration plan',
+  let addPlanDisabledObj: Pick<IAddTooltipProps, 'isEnabled' | 'content'> = {
+    isEnabled: false,
+    content: '',
   };
 
-  if (vmwareList.length < 1) {
+  if (vmwareList.length < 1 || cnvList.length < 1) {
     addPlanDisabledObj = {
-      isAddPlanDisabled: true,
-      disabledText: 'At least 1 VMware provider is required to create a plan.',
-    };
-  }
-
-  if (cnvList.length < 1) {
-    addPlanDisabledObj = {
-      isAddPlanDisabled: true,
-      disabledText: 'At least 1 OpenShift provider is required to create a plan.',
+      isEnabled: true,
+      content: 'At least 1 source and 1 target providers are required to create a plan.',
     };
   }
 
@@ -79,22 +72,23 @@ const PlansPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
-                  <Tooltip position="top" content={<div>{addPlanDisabledObj.disabledText}</div>}>
-                    <Button
-                      isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                      onClick={toggleWizard}
-                      variant="primary"
-                    >
-                      Create migration plan
-                    </Button>
-                  </Tooltip>
+                  <AddTooltip
+                    isEnabled={addPlanDisabledObj.isEnabled}
+                    content={addPlanDisabledObj.content}
+                  >
+                    <div className={`${spacing.mtMd}`}>
+                      <Button
+                        isDisabled={addPlanDisabledObj.isEnabled}
+                        onClick={toggleWizard}
+                        variant="primary"
+                      >
+                        Create migration plan
+                      </Button>
+                    </div>
+                  </AddTooltip>
                 </EmptyState>
               ) : (
-                <PlansTable
-                  planList={migplans}
-                  addPlanDisabledObj={addPlanDisabledObj}
-                  toggleAddWizardOpen={toggleWizard}
-                />
+                <PlansTable planList={migplans} toggleAddWizardOpen={toggleWizard} />
               )}
             </CardBody>
           </Card>

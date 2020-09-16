@@ -3,11 +3,6 @@ import { ICR } from '@app/common/types';
 import { Mapping } from '@app/Mappings/types';
 import { IVMwareProvider, ICNVProvider, IHost } from '@app/Providers/types';
 
-export interface IAddPlanDisabledObjModel {
-  isAddPlanDisabled: boolean;
-  disabledText: string;
-}
-
 export interface IPlanVM {
   uid: string;
   hooks: {
