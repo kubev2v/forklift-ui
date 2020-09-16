@@ -2,22 +2,35 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICommonProvider } from './types';
 
 // interface IProvidersInitialState{}
+// type SliceState = { state: 'loading' } | { state: 'finished'; data: string }
+// const initialState: SliceState = { state: 'loading' }
+
+type IProvidersInitialState = {
+  providers: ICommonProvider[];
+  isFetchingProviders: boolean;
+};
+
+const initialState: IProvidersInitialState = {
+  providers: [],
+  isFetchingProviders: false,
+};
 const providersSlice = createSlice({
   name: 'providers',
-  initialState: [],
+  initialState,
+  //   initialState: [{ isFetchingProviders: false }, { providers: [] }],
   reducers: {
     fetchProvidersRequest(state) {
-      state.push({ isFetchingProviders: true });
+      state.isFetchingProviders = true;
     },
     fetchProvidersSuccess(state, action: PayloadAction<ICommonProvider[]>) {
       // The FSA convention suggests that rather than having data fields
       // with random names directly in the action object,
       // you should always put your data inside a field named payload.
       const providers = action.payload;
-      state.push({ providers: providers });
+      state.providers = providers;
     },
     fetchProvidersFailure(state) {
-      state.push({ isFetchingProviders: false });
+      state.isFetchingProviders = false;
     },
   },
 });

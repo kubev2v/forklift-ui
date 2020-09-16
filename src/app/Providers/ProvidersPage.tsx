@@ -22,6 +22,10 @@ import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
+import { connect } from 'react-redux';
+import { fetchProvidersRequest } from '@app/Providers/providersSlice';
+
+const mapDispatch = { fetchProvidersRequest };
 
 // TODO replace these with real state e.g. from redux
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
@@ -101,4 +105,4 @@ const ProvidersPage: React.FunctionComponent = () => {
   );
 };
 
-export default ProvidersPage;
+export default connect(null, mapDispatch)(ProvidersPage);

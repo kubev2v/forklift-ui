@@ -6,7 +6,7 @@ import { AppRoutes } from '@app/routes';
 import '@app/app.css';
 import { LocalStorageContextProvider } from '@app/common/context/LocalStorageContext';
 import { Provider } from 'react-redux';
-import store from './redux/store';
+import store from './store';
 
 const App: React.FunctionComponent = () => (
   <Router>
