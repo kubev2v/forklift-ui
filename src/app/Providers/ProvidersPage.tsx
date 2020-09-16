@@ -39,6 +39,10 @@ const ProvidersPage: React.FunctionComponent = () => {
   ).filter((providerType) => providers.some((provider) => provider.spec.type === providerType));
   const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
   const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
+
+  React.useEffect(() => {
+    fetchProvidersRequest();
+  }, []);
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
