@@ -41,7 +41,8 @@ const PlansPage: React.FunctionComponent = () => {
   if (vmwareList.length < 1 || cnvList.length < 1) {
     addPlanDisabledObj = {
       isTooltipEnabled: true,
-      content: 'At least 1 source and 1 target providers are required to create a plan.',
+      content:
+        'You must add at least 1 VMWare provider and 1 OpenShift Virtualization provider in order to create a migration plan.',
     };
   }
 
