@@ -33,14 +33,14 @@ const PlansPage: React.FunctionComponent = () => {
 
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
-  let addPlanDisabledObj: Pick<IAddTooltipProps, 'isEnabled' | 'content'> = {
-    isEnabled: false,
+  let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
+    isTooltipEnabled: false,
     content: '',
   };
 
   if (vmwareList.length < 1 || cnvList.length < 1) {
     addPlanDisabledObj = {
-      isEnabled: true,
+      isTooltipEnabled: true,
       content: 'At least 1 source and 1 target providers are required to create a plan.',
     };
   }
@@ -73,12 +73,12 @@ const PlansPage: React.FunctionComponent = () => {
                     Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
                   <AddTooltip
-                    isEnabled={addPlanDisabledObj.isEnabled}
+                    isTooltipEnabled={addPlanDisabledObj.isTooltipEnabled}
                     content={addPlanDisabledObj.content}
                   >
                     <div className={`${spacing.mtMd}`}>
                       <Button
-                        isDisabled={addPlanDisabledObj.isEnabled}
+                        isDisabled={addPlanDisabledObj.isTooltipEnabled}
                         onClick={toggleWizard}
                         variant="primary"
                       >
