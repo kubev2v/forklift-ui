@@ -1,3 +1,4 @@
+import { FormGroupProps, TextInputProps } from '@patternfly/react-core';
 import * as React from 'react';
 import * as yup from 'yup';
 
@@ -93,7 +94,7 @@ export const useFormState = <FormValues>(
     const error = errorsByField ? errorsByField[key] : null;
     const validatedField: IValidatedFormField<FormValues[keyof FormValues]> = {
       ...field,
-      error: error,
+      error,
       isValid: !error || !field.touched,
     };
     return { ...newObj, [key]: validatedField };
@@ -110,3 +111,21 @@ export const useFormState = <FormValues>(
     schema: formSchema,
   };
 };
+
+// PatternFly-specific rendering helpers for FormGroup and TextInput components:
+
+export const getFormGroupProps = <T>(
+  field: IValidatedFormField<T>
+): Pick<FormGroupProps, 'validated' | 'helperTextInvalid'> => ({
+  validated: field.isValid ? 'default' : 'error',
+  helperTextInvalid: field.error?.message,
+});
+
+export const getTextInputProps = (
+  field: IValidatedFormField<string>
+): Pick<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
+  value: field.value,
+  onChange: field.setValue,
+  onBlur: () => field.setTouched(true),
+  validated: field.isValid ? 'default' : 'error',
+});

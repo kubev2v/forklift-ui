@@ -4,7 +4,12 @@ import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-cor
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import { useFormState, useFormField } from '@app/common/hooks/useFormState';
+import {
+  useFormState,
+  useFormField,
+  getFormGroupProps,
+  getTextInputProps,
+} from '@app/common/hooks/useFormState';
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -95,9 +100,8 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           label="Type"
           isRequired
           fieldId="provider-type"
-          helperTextInvalid="TODO"
-          validated="default" // TODO add state/validation/errors to this and other FormGroups
           className={!providerType ? 'extraSelectMargin' : ''}
+          {...getFormGroupProps(vmwareForm.fields.providerType)}
         >
           <SimpleSelect
             id="provider-type"
@@ -116,64 +120,48 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               label="Name"
               isRequired
               fieldId="vmware-name"
-              validated={vmwareForm.fields.name.isValid ? 'default' : 'error'}
-              helperTextInvalid={vmwareForm.fields.name.error?.message}
+              {...getFormGroupProps(vmwareForm.fields.name)}
             >
               <TextInput
                 id="vmware-name"
-                value={vmwareForm.fields.name.value}
                 type="text"
-                onChange={vmwareForm.fields.name.setValue}
-                onBlur={() => vmwareForm.fields.name.setTouched(true)}
-                validated={vmwareForm.fields.name.isValid ? 'default' : 'error'}
+                {...getTextInputProps(vmwareForm.fields.name)}
               />
             </FormGroup>
             <FormGroup
               label="Hostname"
               isRequired
               fieldId="vmware-hostname"
-              validated={vmwareForm.fields.hostname.isValid ? 'default' : 'error'}
-              helperTextInvalid={vmwareForm.fields.hostname.error?.message}
+              {...getFormGroupProps(vmwareForm.fields.hostname)}
             >
               <TextInput
                 id="vmware-hostname"
-                value={vmwareForm.fields.hostname.value}
                 type="text"
-                onChange={vmwareForm.fields.hostname.setValue}
-                onBlur={() => vmwareForm.fields.hostname.setTouched(true)}
-                validated={vmwareForm.fields.hostname.isValid ? 'default' : 'error'}
+                {...getTextInputProps(vmwareForm.fields.hostname)}
               />
             </FormGroup>
             <FormGroup
               label="Username"
               isRequired
               fieldId="vmware-username"
-              validated={vmwareForm.fields.username.isValid ? 'default' : 'error'}
-              helperTextInvalid={vmwareForm.fields.username.error?.message}
+              {...getFormGroupProps(vmwareForm.fields.username)}
             >
               <TextInput
                 id="vmware-username"
-                value={vmwareForm.fields.username.value}
                 type="text"
-                onChange={vmwareForm.fields.username.setValue}
-                onBlur={() => vmwareForm.fields.username.setTouched(true)}
-                validated={vmwareForm.fields.username.isValid ? 'default' : 'error'}
+                {...getTextInputProps(vmwareForm.fields.username)}
               />
             </FormGroup>
             <FormGroup
               label="Password"
               isRequired
               fieldId="vmware-password"
-              validated={vmwareForm.fields.password.isValid ? 'default' : 'error'}
-              helperTextInvalid={vmwareForm.fields.password.error?.message}
+              {...getFormGroupProps(vmwareForm.fields.password)}
             >
               <TextInput
                 id="vmware-password"
-                value={vmwareForm.fields.password.value}
                 type="password"
-                onChange={vmwareForm.fields.password.setValue}
-                onBlur={() => vmwareForm.fields.password.setTouched(true)}
-                validated={vmwareForm.fields.password.isValid ? 'default' : 'error'}
+                {...getTextInputProps(vmwareForm.fields.password)}
               />
             </FormGroup>
           </>
@@ -184,48 +172,32 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               label="Cluster name"
               isRequired
               fieldId="cnv-cluster-name"
-              validated={cnvForm.fields.clusterName.isValid ? 'default' : 'error'}
-              helperTextInvalid={cnvForm.fields.clusterName.error?.message}
+              {...getFormGroupProps(cnvForm.fields.clusterName)}
             >
               <TextInput
                 id="cnv-cluster-name"
-                value={cnvForm.fields.clusterName.value}
                 type="text"
-                onChange={cnvForm.fields.clusterName.setValue}
-                onBlur={() => cnvForm.fields.clusterName.setTouched(true)}
-                validated={cnvForm.fields.clusterName.isValid ? 'default' : 'error'}
+                {...getTextInputProps(cnvForm.fields.clusterName)}
               />
             </FormGroup>
             <FormGroup
               label="URL"
               isRequired
               fieldId="cnv-url"
-              validated={cnvForm.fields.url.isValid ? 'default' : 'error'}
-              helperTextInvalid={cnvForm.fields.url.error?.message}
+              {...getFormGroupProps(cnvForm.fields.url)}
             >
-              <TextInput
-                id="cnv-url"
-                value={cnvForm.fields.url.value}
-                type="text"
-                onChange={cnvForm.fields.url.setValue}
-                onBlur={() => cnvForm.fields.url.setTouched(true)}
-                validated={cnvForm.fields.url.isValid ? 'default' : 'error'}
-              />
+              <TextInput id="cnv-url" type="text" {...getTextInputProps(cnvForm.fields.url)} />
             </FormGroup>
             <FormGroup
               label="Service account token"
               isRequired
               fieldId="cnv-sa-token"
-              validated={cnvForm.fields.saToken.isValid ? 'default' : 'error'}
-              helperTextInvalid={cnvForm.fields.saToken.error?.message}
+              {...getFormGroupProps(cnvForm.fields.saToken)}
             >
               <TextInput
                 id="cnv-sa-token"
-                value={cnvForm.fields.saToken.value}
                 type="password"
-                onChange={cnvForm.fields.saToken.setValue}
-                onBlur={() => cnvForm.fields.saToken.setTouched(true)}
-                validated={cnvForm.fields.saToken.isValid ? 'default' : 'error'}
+                {...getTextInputProps(cnvForm.fields.saToken)}
               />
             </FormGroup>
           </>
