@@ -1,11 +1,11 @@
 import * as React from 'react';
+import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { useFormState, useFormField } from '@app/common/hooks/useFormState';
 import './AddProviderModal.css';
-
-import { cnvProviderSchema, vmwareProviderSchema } from '../../ProviderSchema';
 
 interface IAddProviderModalProps {
   onClose: () => void;
@@ -19,58 +19,52 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
-  // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
-  //   or maybe roll our own simple validation? maybe use Yup?
-  const [providerType, setProviderType] = React.useState<ProviderType | null>(null);
+  const providerTypeField = useFormField<ProviderType | null>({
+    initialValue: null,
+    schema: yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required(),
+  });
 
-  const [vmwareName, setVmwareName] = React.useState<string>('');
-  const [vmwareHostname, setVmwareHostname] = React.useState<string>('');
-  const [vmwareUsername, setVmwareUsername] = React.useState<string>('');
-  const [vmwarePassword, setVmwarePassword] = React.useState<string>('');
+  // TODO determine the actual validation criteria for this form -- these are for testing
 
-  const [cnvClusterName, setCnvClusterName] = React.useState<string>('');
-  const [cnvUrl, setCnvUrl] = React.useState<string>('');
-  const [cnvSaToken, setCnvSaToken] = React.useState<string>('');
+  const vmwareForm = useFormState({
+    providerType: providerTypeField,
+    name: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Name').min(2).max(20).required(),
+    }),
+    hostname: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Hostname').max(40).required(),
+    }),
+    username: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Username').max(20).required(),
+    }),
+    password: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Password').max(20).required(),
+    }),
+  });
 
-  const validForm = (form) => {
-    console.log(form);
-    alert('valid form');
-  };
+  const cnvForm = useFormState({
+    providerType: providerTypeField,
+    clusterName: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Cluster name').max(40).required(),
+    }),
+    url: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('URL').max(40).required(),
+    }),
+    saToken: useFormField<string>({
+      initialValue: '',
+      schema: yup.string().label('Service account token').max(20).required(),
+    }),
+  });
 
-  const validateForm = () => {
-    if (providerType === ProviderType.vsphere) {
-      const vmwareProvider = {
-        providerType,
-        vmwareName,
-        vmwareHostname,
-        vmwareUsername,
-        vmwarePassword,
-      };
-
-      vmwareProviderSchema
-        .validate(vmwareProvider)
-        .then(() => validForm(vmwareProvider))
-        .catch(function (err) {
-          console.log(err);
-        });
-    }
-
-    if (providerType === ProviderType.cnv) {
-      const cnvProvider = {
-        providerType,
-        cnvClusterName,
-        cnvUrl,
-        cnvSaToken,
-      };
-
-      cnvProviderSchema
-        .validate(cnvProvider)
-        .then(() => validForm(cnvProvider))
-        .catch(function (err) {
-          console.log(err);
-        });
-    }
-  };
+  const providerType = providerTypeField.value;
+  const formValues = providerType === ProviderType.vsphere ? vmwareForm.values : cnvForm.values;
+  const isFormValid = providerType === ProviderType.vsphere ? vmwareForm.isValid : cnvForm.isValid;
 
   return (
     <Modal
@@ -80,8 +74,15 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
       isOpen
       onClose={onClose}
       actions={[
-        // <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
-        <Button key="confirm" variant="primary" onClick={validateForm}>
+        <Button
+          key="confirm"
+          variant="primary"
+          isDisabled={!isFormValid}
+          onClick={() => {
+            console.log('TODO: submit form!', formValues);
+            alert('TODO');
+          }}
+        >
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
@@ -102,62 +103,129 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             id="provider-type"
             options={PROVIDER_TYPE_OPTIONS}
             value={[PROVIDER_TYPE_OPTIONS.find((option) => option.value === providerType)]}
-            onChange={(selection) =>
-              setProviderType((selection as OptionWithValue<ProviderType>).value)
-            }
+            onChange={(selection) => {
+              providerTypeField.setValue((selection as OptionWithValue<ProviderType>).value);
+              providerTypeField.setTouched(true);
+            }}
             placeholderText="Select a provider type..."
           />
         </FormGroup>
         {providerType === ProviderType.vsphere ? (
           <>
-            <FormGroup label="Name" isRequired fieldId="vmware-name">
-              <TextInput id="vmware-name" value={vmwareName} type="text" onChange={setVmwareName} />
+            <FormGroup
+              label="Name"
+              isRequired
+              fieldId="vmware-name"
+              validated={vmwareForm.fields.name.isValid ? 'default' : 'error'}
+              helperTextInvalid={vmwareForm.fields.name.error?.message}
+            >
+              <TextInput
+                id="vmware-name"
+                value={vmwareForm.fields.name.value}
+                type="text"
+                onChange={vmwareForm.fields.name.setValue}
+                onBlur={() => vmwareForm.fields.name.setTouched(true)}
+                validated={vmwareForm.fields.name.isValid ? 'default' : 'error'}
+              />
             </FormGroup>
-            <FormGroup label="Hostname" isRequired fieldId="vmware-hostname">
+            <FormGroup
+              label="Hostname"
+              isRequired
+              fieldId="vmware-hostname"
+              validated={vmwareForm.fields.hostname.isValid ? 'default' : 'error'}
+              helperTextInvalid={vmwareForm.fields.hostname.error?.message}
+            >
               <TextInput
                 id="vmware-hostname"
-                value={vmwareHostname}
+                value={vmwareForm.fields.hostname.value}
                 type="text"
-                onChange={setVmwareHostname}
+                onChange={vmwareForm.fields.hostname.setValue}
+                onBlur={() => vmwareForm.fields.hostname.setTouched(true)}
+                validated={vmwareForm.fields.hostname.isValid ? 'default' : 'error'}
               />
             </FormGroup>
-            <FormGroup label="Username" isRequired fieldId="vmware-username">
+            <FormGroup
+              label="Username"
+              isRequired
+              fieldId="vmware-username"
+              validated={vmwareForm.fields.username.isValid ? 'default' : 'error'}
+              helperTextInvalid={vmwareForm.fields.username.error?.message}
+            >
               <TextInput
                 id="vmware-username"
-                value={vmwareUsername}
+                value={vmwareForm.fields.username.value}
                 type="text"
-                onChange={setVmwareUsername}
+                onChange={vmwareForm.fields.username.setValue}
+                onBlur={() => vmwareForm.fields.username.setTouched(true)}
+                validated={vmwareForm.fields.username.isValid ? 'default' : 'error'}
               />
             </FormGroup>
-            <FormGroup label="Password" isRequired fieldId="vmware-password">
+            <FormGroup
+              label="Password"
+              isRequired
+              fieldId="vmware-password"
+              validated={vmwareForm.fields.password.isValid ? 'default' : 'error'}
+              helperTextInvalid={vmwareForm.fields.password.error?.message}
+            >
               <TextInput
                 id="vmware-password"
-                value={vmwarePassword}
+                value={vmwareForm.fields.password.value}
                 type="password"
-                onChange={setVmwarePassword}
+                onChange={vmwareForm.fields.password.setValue}
+                onBlur={() => vmwareForm.fields.password.setTouched(true)}
+                validated={vmwareForm.fields.password.isValid ? 'default' : 'error'}
               />
             </FormGroup>
           </>
         ) : null}
         {providerType === ProviderType.cnv ? (
           <>
-            <FormGroup label="Cluster name" isRequired fieldId="cnv-cluster-name">
+            <FormGroup
+              label="Cluster name"
+              isRequired
+              fieldId="cnv-cluster-name"
+              validated={cnvForm.fields.clusterName.isValid ? 'default' : 'error'}
+              helperTextInvalid={cnvForm.fields.clusterName.error?.message}
+            >
               <TextInput
                 id="cnv-cluster-name"
-                value={cnvClusterName}
+                value={cnvForm.fields.clusterName.value}
                 type="text"
-                onChange={setCnvClusterName}
+                onChange={cnvForm.fields.clusterName.setValue}
+                onBlur={() => cnvForm.fields.clusterName.setTouched(true)}
+                validated={cnvForm.fields.clusterName.isValid ? 'default' : 'error'}
               />
             </FormGroup>
-            <FormGroup label="URL" isRequired fieldId="cnv-url">
-              <TextInput id="cnv-url" value={cnvUrl} type="text" onChange={setCnvUrl} />
+            <FormGroup
+              label="URL"
+              isRequired
+              fieldId="cnv-url"
+              validated={cnvForm.fields.url.isValid ? 'default' : 'error'}
+              helperTextInvalid={cnvForm.fields.url.error?.message}
+            >
+              <TextInput
+                id="cnv-url"
+                value={cnvForm.fields.url.value}
+                type="text"
+                onChange={cnvForm.fields.url.setValue}
+                onBlur={() => cnvForm.fields.url.setTouched(true)}
+                validated={cnvForm.fields.url.isValid ? 'default' : 'error'}
+              />
             </FormGroup>
-            <FormGroup label="Service account token" isRequired fieldId="cnv-sa-token">
+            <FormGroup
+              label="Service account token"
+              isRequired
+              fieldId="cnv-sa-token"
+              validated={cnvForm.fields.saToken.isValid ? 'default' : 'error'}
+              helperTextInvalid={cnvForm.fields.saToken.error?.message}
+            >
               <TextInput
                 id="cnv-sa-token"
-                value={cnvSaToken}
+                value={cnvForm.fields.saToken.value}
                 type="password"
-                onChange={setCnvSaToken}
+                onChange={cnvForm.fields.saToken.setValue}
+                onBlur={() => cnvForm.fields.saToken.setTouched(true)}
+                validated={cnvForm.fields.saToken.isValid ? 'default' : 'error'}
               />
             </FormGroup>
           </>

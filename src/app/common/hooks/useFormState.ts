@@ -1,10 +1,9 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import { ProviderType } from '../constants';
-
 interface IFormFieldArgs<T> {
   initialValue: T;
+  initialTouched?: boolean;
   schema: yup.Schema<T>;
 }
 
@@ -13,12 +12,13 @@ interface IFormField<T> {
   setValue: (value: T) => void;
   touched: boolean;
   setTouched: (touched: boolean) => void;
+  reset: () => void;
   schema: yup.Schema<T>;
 }
 
 interface IValidatedFormField<T> extends IFormField<T> {
   error: yup.ValidationError | null;
-  isInvalid: boolean;
+  isValid: boolean;
 }
 
 type FormFields<FormValues> = {
@@ -32,86 +32,81 @@ type ValidatedFormFields<FormValues> = {
 interface IFormState<FormValues> {
   fields: ValidatedFormFields<FormValues>;
   values: FormValues; // For convenience in submitting forms (values are also included in fields property)
+  isValid: boolean;
+  reset: () => void;
+  schema: yup.ObjectSchema; // In case you want to do anything fancy outside the hook
 }
 
-export const useFormField = <T>({ initialValue, schema }: IFormFieldArgs<T>): IFormField<T> => {
+export const useFormField = <T>({
+  initialValue,
+  initialTouched = false,
+  schema,
+}: IFormFieldArgs<T>): IFormField<T> => {
   const [value, setValue] = React.useState<T>(initialValue);
-  const [touched, setTouched] = React.useState(false);
+  const [touched, setTouched] = React.useState<boolean>(initialTouched);
   return {
     value,
     setValue,
     touched,
     setTouched,
+    reset: () => {
+      setValue(initialValue);
+      setTouched(initialTouched);
+    },
     schema,
   };
 };
 
 // FormValues represents an interface of field key to field value type (the T in IFormField<T>).
-// It can be inferred from the arguments we pass to useFormState.
+// TypeScript can infer it from the arguments we pass to useFormState!
 export const useFormState = <FormValues>(
-  fields: FormFields<FormValues>
+  fields: FormFields<FormValues>,
+  yupOptions: yup.ValidateOptions = {}
 ): IFormState<FormValues> => {
-  const values: FormValues = Object.keys(fields).reduce(
+  const fieldKeys = Object.keys(fields) as (keyof FormValues)[];
+  const values: FormValues = fieldKeys.reduce(
     (newObj, key) => ({ ...newObj, [key]: fields[key].value }),
     {} as FormValues
   );
 
-  const schemaShape = Object.keys(fields).reduce(
+  const schemaShape = fieldKeys.reduce(
     (newObj, key) => ({ ...newObj, [key]: fields[key].schema }),
-    {} as { [key: string]: yup.Schema<unknown> }
+    {} as { [key in keyof FormValues]?: yup.Schema<FormValues[key]> }
   );
   const formSchema = yup.object().shape(schemaShape);
 
-  let result: any | null = null;
   let rootError: yup.ValidationError | null = null;
-  let errorsByField: { [key: string]: yup.ValidationError } = {};
+  type ErrorsByField = { [key in keyof FormValues]: yup.ValidationError };
+  let errorsByField: ErrorsByField;
   try {
-    result = formSchema.validateSync(values);
+    formSchema.validateSync(values, { abortEarly: false, ...yupOptions });
   } catch (e) {
     rootError = e as yup.ValidationError;
     errorsByField = rootError.inner.reduce(
       (newObj, error) => ({ ...newObj, [error.path]: error }),
-      {}
+      {} as ErrorsByField
     );
   }
 
-  // TODO remove me
-  console.log({ result, rootError });
-
-  const validatedFields: ValidatedFormFields<FormValues> = Object.keys(fields).reduce(
-    (newObj, key) => {
-      const field = fields[key];
-      const error = errorsByField[key];
-      const validatedField: IValidatedFormField<unknown> = {
-        ...field,
-        error: error || null,
-        isInvalid: field.touched && !!error,
-      };
-      return { ...newObj, [key]: validatedField };
-    },
-    {} as ValidatedFormFields<FormValues>
-  );
+  const validatedFields: ValidatedFormFields<FormValues> = fieldKeys.reduce((newObj, key) => {
+    const field = fields[key];
+    const error = errorsByField ? errorsByField[key] : null;
+    const validatedField: IValidatedFormField<FormValues[keyof FormValues]> = {
+      ...field,
+      error: error,
+      isValid: !error || !field.touched,
+    };
+    return { ...newObj, [key]: validatedField };
+  }, {} as ValidatedFormFields<FormValues>);
 
   // TODO do we need to worry about debouncing / lag from validating on each keystroke?
   // TODO do we want to memoize?
-  // infer the type of all the values and pass that out as one thing
+
   return {
     fields: validatedFields,
     values,
+    isValid: !rootError,
+    reset: () => fieldKeys.forEach((key) => fields[key].reset()),
+    schema: formSchema,
   };
-};
-
-const TestFn: React.FunctionComponent = () => {
-  const form = useFormState({
-    providerType: useFormField<ProviderType | null>({
-      initialValue: null,
-      schema: yup.mixed().oneOf(Object.values(ProviderType)).required(),
-    }),
-    vmwareName: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().min(2).max(20).required('A name is min 2 and max 20'),
-    }),
-  });
-  const typeIsInvalid = form.fields.providerType.isInvalid;
-  return null;
 };
