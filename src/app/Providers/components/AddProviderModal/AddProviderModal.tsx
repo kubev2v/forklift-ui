@@ -20,47 +20,26 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
-  const providerTypeField = useFormField<ProviderType | null>({
-    initialValue: null,
-    schema: yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required(),
-  });
-
   // TODO determine the actual validation criteria for this form -- these are for testing
+
+  const providerTypeField = useFormField<ProviderType | null>(
+    null,
+    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
+  );
 
   const vmwareForm = useFormState({
     providerType: providerTypeField,
-    name: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Name').min(2).max(20).required(),
-    }),
-    hostname: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Hostname').max(40).required(),
-    }),
-    username: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Username').max(20).required(),
-    }),
-    password: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Password').max(20).required(),
-    }),
+    name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
+    hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
+    username: useFormField('', yup.string().label('Username').max(20).required()),
+    password: useFormField('', yup.string().label('Password').max(20).required()),
   });
 
   const cnvForm = useFormState({
     providerType: providerTypeField,
-    clusterName: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Cluster name').max(40).required(),
-    }),
-    url: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('URL').max(40).required(),
-    }),
-    saToken: useFormField<string>({
-      initialValue: '',
-      schema: yup.string().label('Service account token').max(20).required(),
-    }),
+    clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
+    url: useFormField('', yup.string().label('URL').max(40).required()),
+    saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
   });
 
   const providerType = providerTypeField.value;

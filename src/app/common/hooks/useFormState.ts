@@ -2,12 +2,6 @@ import { FormGroupProps, TextInputProps } from '@patternfly/react-core';
 import * as React from 'react';
 import * as yup from 'yup';
 
-interface IFormFieldArgs<T> {
-  initialValue: T;
-  initialTouched?: boolean;
-  schema: yup.Schema<T>;
-}
-
 export interface IFormField<T> {
   value: T;
   setValue: (value: T) => void;
@@ -38,13 +32,13 @@ export interface IFormState<FormValues> {
   schema: yup.ObjectSchema; // In case you want to do anything fancy outside the hook
 }
 
-export const useFormField = <T>({
-  initialValue,
-  initialTouched = false,
-  schema,
-}: IFormFieldArgs<T>): IFormField<T> => {
+export const useFormField = <T>(
+  initialValue: T,
+  schema: yup.Schema<T>,
+  options: { initialTouched?: boolean } = {}
+): IFormField<T> => {
   const [value, setValue] = React.useState<T>(initialValue);
-  const [touched, setTouched] = React.useState<boolean>(initialTouched);
+  const [touched, setTouched] = React.useState(options.initialTouched || false);
   return {
     value,
     setValue,
@@ -52,7 +46,7 @@ export const useFormField = <T>({
     setTouched,
     reset: () => {
       setValue(initialValue);
-      setTouched(initialTouched);
+      setTouched(options.initialTouched || false);
     },
     schema,
   };
