@@ -5,8 +5,8 @@ import * as yup from 'yup';
 export interface IFormField<T> {
   value: T;
   setValue: (value: T) => void;
-  touched: boolean;
-  setTouched: (touched: boolean) => void;
+  isTouched: boolean;
+  setIsTouched: (isTouched: boolean) => void;
   reset: () => void;
   schema: yup.Schema<T>;
 }
@@ -38,15 +38,15 @@ export const useFormField = <T>(
   options: { initialTouched?: boolean } = {}
 ): IFormField<T> => {
   const [value, setValue] = React.useState<T>(initialValue);
-  const [touched, setTouched] = React.useState(options.initialTouched || false);
+  const [isTouched, setIsTouched] = React.useState(options.initialTouched || false);
   return {
     value,
     setValue,
-    touched,
-    setTouched,
+    isTouched,
+    setIsTouched,
     reset: () => {
       setValue(initialValue);
-      setTouched(options.initialTouched || false);
+      setIsTouched(options.initialTouched || false);
     },
     schema,
   };
@@ -89,7 +89,7 @@ export const useFormState = <FormValues>(
     const validatedField: IValidatedFormField<FormValues[keyof FormValues]> = {
       ...field,
       error,
-      isValid: !error || !field.touched,
+      isValid: !error || !field.isTouched,
     };
     return { ...newObj, [key]: validatedField };
   }, {} as ValidatedFormFields<FormValues>);
@@ -120,6 +120,6 @@ export const getTextInputProps = (
 ): Pick<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
   value: field.value,
   onChange: field.setValue,
-  onBlur: () => field.setTouched(true),
+  onBlur: () => field.setIsTouched(true),
   validated: field.isValid ? 'default' : 'error',
 });

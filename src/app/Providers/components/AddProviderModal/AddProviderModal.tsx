@@ -84,7 +84,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             value={[PROVIDER_TYPE_OPTIONS.find((option) => option.value === providerType)]}
             onChange={(selection) => {
               providerTypeField.setValue((selection as OptionWithValue<ProviderType>).value);
-              providerTypeField.setTouched(true);
+              providerTypeField.setIsTouched(true);
             }}
             placeholderText="Select a provider type..."
           />
