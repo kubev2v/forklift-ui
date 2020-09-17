@@ -8,7 +8,7 @@ interface IFormFieldArgs<T> {
   schema: yup.Schema<T>;
 }
 
-interface IFormField<T> {
+export interface IFormField<T> {
   value: T;
   setValue: (value: T) => void;
   touched: boolean;
@@ -17,7 +17,7 @@ interface IFormField<T> {
   schema: yup.Schema<T>;
 }
 
-interface IValidatedFormField<T> extends IFormField<T> {
+export interface IValidatedFormField<T> extends IFormField<T> {
   error: yup.ValidationError | null;
   isValid: boolean;
 }
@@ -30,7 +30,7 @@ type ValidatedFormFields<FormValues> = {
   [key in keyof FormValues]: IValidatedFormField<FormValues[key]>;
 };
 
-interface IFormState<FormValues> {
+export interface IFormState<FormValues> {
   fields: ValidatedFormFields<FormValues>;
   values: FormValues; // For convenience in submitting forms (values are also included in fields property)
   isValid: boolean;

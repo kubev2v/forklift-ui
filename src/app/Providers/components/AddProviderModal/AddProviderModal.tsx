@@ -1,15 +1,11 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
+import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import ValidatedTextInputField from '@app/common/components/ValidatedTextInputField';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import {
-  useFormState,
-  useFormField,
-  getFormGroupProps,
-  getTextInputProps,
-} from '@app/common/hooks/useFormState';
+import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -116,90 +112,54 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         </FormGroup>
         {providerType === ProviderType.vsphere ? (
           <>
-            <FormGroup
+            <ValidatedTextInputField
+              field={vmwareForm.fields.name}
               label="Name"
               isRequired
               fieldId="vmware-name"
-              {...getFormGroupProps(vmwareForm.fields.name)}
-            >
-              <TextInput
-                id="vmware-name"
-                type="text"
-                {...getTextInputProps(vmwareForm.fields.name)}
-              />
-            </FormGroup>
-            <FormGroup
+            />
+            <ValidatedTextInputField
+              field={vmwareForm.fields.hostname}
               label="Hostname"
               isRequired
               fieldId="vmware-hostname"
-              {...getFormGroupProps(vmwareForm.fields.hostname)}
-            >
-              <TextInput
-                id="vmware-hostname"
-                type="text"
-                {...getTextInputProps(vmwareForm.fields.hostname)}
-              />
-            </FormGroup>
-            <FormGroup
+            />
+            <ValidatedTextInputField
+              field={vmwareForm.fields.username}
               label="Username"
               isRequired
               fieldId="vmware-username"
-              {...getFormGroupProps(vmwareForm.fields.username)}
-            >
-              <TextInput
-                id="vmware-username"
-                type="text"
-                {...getTextInputProps(vmwareForm.fields.username)}
-              />
-            </FormGroup>
-            <FormGroup
+            />
+            <ValidatedTextInputField
+              field={vmwareForm.fields.password}
+              type="password"
               label="Password"
               isRequired
               fieldId="vmware-password"
-              {...getFormGroupProps(vmwareForm.fields.password)}
-            >
-              <TextInput
-                id="vmware-password"
-                type="password"
-                {...getTextInputProps(vmwareForm.fields.password)}
-              />
-            </FormGroup>
+            />
           </>
         ) : null}
         {providerType === ProviderType.cnv ? (
           <>
-            <FormGroup
+            <ValidatedTextInputField
+              field={cnvForm.fields.clusterName}
               label="Cluster name"
               isRequired
               fieldId="cnv-cluster-name"
-              {...getFormGroupProps(cnvForm.fields.clusterName)}
-            >
-              <TextInput
-                id="cnv-cluster-name"
-                type="text"
-                {...getTextInputProps(cnvForm.fields.clusterName)}
-              />
-            </FormGroup>
-            <FormGroup
+            />
+            <ValidatedTextInputField
+              field={cnvForm.fields.url}
               label="URL"
               isRequired
               fieldId="cnv-url"
-              {...getFormGroupProps(cnvForm.fields.url)}
-            >
-              <TextInput id="cnv-url" type="text" {...getTextInputProps(cnvForm.fields.url)} />
-            </FormGroup>
-            <FormGroup
+            />
+            <ValidatedTextInputField
+              field={cnvForm.fields.saToken}
+              type="password"
               label="Service account token"
               isRequired
               fieldId="cnv-sa-token"
-              {...getFormGroupProps(cnvForm.fields.saToken)}
-            >
-              <TextInput
-                id="cnv-sa-token"
-                type="password"
-                {...getTextInputProps(cnvForm.fields.saToken)}
-              />
-            </FormGroup>
+            />
           </>
         ) : null}
         {providerType ? (
