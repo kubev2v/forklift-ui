@@ -1,6 +1,7 @@
 import { FormGroupProps, TextInputProps } from '@patternfly/react-core';
 import * as React from 'react';
 import * as yup from 'yup';
+import equal from 'fast-deep-equal';
 
 export interface IFormField<T> {
   value: T;
@@ -53,7 +54,7 @@ export const useFormField = <T>(
 };
 
 // FormValues represents an interface of field key to field value type (the T in IFormField<T>).
-// TypeScript can infer it from the arguments we pass to useFormState!
+// TypeScript can infer it from the arguments we pass to each useFormField!
 export const useFormState = <FormValues>(
   fields: FormFields<FormValues>,
   yupOptions: yup.ValidateOptions = {}
@@ -70,18 +71,31 @@ export const useFormState = <FormValues>(
   );
   const formSchema = yup.object().shape(schemaShape);
 
-  let rootError: yup.ValidationError | null = null;
+  const [validationError, setValidationError] = React.useState<yup.ValidationError | null>(null);
+  const [hasRunInitialValidation, setHasRunInitialValidation] = React.useState(false);
+  const lastValuesRef = React.useRef(values);
+  React.useEffect(() => {
+    if (!hasRunInitialValidation || !equal(lastValuesRef.current, values)) {
+      lastValuesRef.current = values;
+      formSchema
+        .validate(values, { abortEarly: false, ...yupOptions })
+        .then(() => setValidationError(null))
+        .catch((e) => {
+          const newRootError = e as yup.ValidationError;
+          if (!validationError || !equal(validationError.errors, newRootError.errors)) {
+            setValidationError(newRootError);
+          }
+        });
+      setHasRunInitialValidation(true);
+    }
+  }, [formSchema, hasRunInitialValidation, validationError, values, yupOptions]);
+
   type ErrorsByField = { [key in keyof FormValues]: yup.ValidationError };
-  let errorsByField: ErrorsByField;
-  try {
-    formSchema.validateSync(values, { abortEarly: false, ...yupOptions });
-  } catch (e) {
-    rootError = e as yup.ValidationError;
-    errorsByField = rootError.inner.reduce(
+  const errorsByField =
+    validationError?.inner.reduce(
       (newObj, error) => ({ ...newObj, [error.path]: error }),
       {} as ErrorsByField
-    );
-  }
+    ) || ({} as ErrorsByField);
 
   const validatedFields: ValidatedFormFields<FormValues> = fieldKeys.reduce((newObj, key) => {
     const field = fields[key];
@@ -95,12 +109,11 @@ export const useFormState = <FormValues>(
   }, {} as ValidatedFormFields<FormValues>);
 
   // TODO do we need to worry about debouncing / lag from validating on each keystroke?
-  // TODO do we want to memoize?
 
   return {
     fields: validatedFields,
     values,
-    isValid: !rootError,
+    isValid: hasRunInitialValidation && !validationError,
     reset: () => fieldKeys.forEach((key) => fields[key].reset()),
     schema: formSchema,
   };
