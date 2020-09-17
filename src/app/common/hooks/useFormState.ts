@@ -117,8 +117,6 @@ export const useFormState = <FormValues>(
     return { ...newObj, [key]: validatedField };
   }, {} as ValidatedFormFields<FormValues>);
 
-  // TODO do we need to worry about debouncing / lag from validating on each keystroke?
-
   return {
     fields: validatedFields,
     values,
