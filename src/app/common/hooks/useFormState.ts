@@ -30,7 +30,7 @@ export interface IFormState<FormValues> {
   values: FormValues; // For convenience in submitting forms (values are also included in fields property)
   isValid: boolean;
   reset: () => void;
-  schema: yup.ObjectSchema; // In case you want to do anything fancy outside the hook
+  schema: yup.ObjectSchema | null; // In case you want to do anything fancy outside the hook
 }
 
 export const useFormField = <T>(
@@ -65,17 +65,27 @@ export const useFormState = <FormValues>(
     {} as FormValues
   );
 
-  const schemaShape = fieldKeys.reduce(
-    (newObj, key) => ({ ...newObj, [key]: fields[key].schema }),
-    {} as { [key in keyof FormValues]?: yup.Schema<FormValues[key]> }
-  );
-  const formSchema = yup.object().shape(schemaShape);
+  // Memoize the schema, only recompute if the field keys changed
+  const [formSchema, setFormSchema] = React.useState<yup.ObjectSchema | null>(null);
+  const lastFieldKeysRef = React.useRef(fieldKeys);
+  React.useEffect(() => {
+    if (!formSchema || !equal(lastFieldKeysRef.current, fieldKeys)) {
+      lastFieldKeysRef.current = fieldKeys;
+      const schemaShape = fieldKeys.reduce(
+        (newObj, key) => ({ ...newObj, [key]: fields[key].schema }),
+        {} as { [key in keyof FormValues]?: yup.Schema<FormValues[key]> }
+      );
+      setFormSchema(yup.object().shape(schemaShape).defined());
+    }
+  }, [fieldKeys, fields, formSchema]);
 
+  // Memoize the validation, only recompute if the field values changed
   const [validationError, setValidationError] = React.useState<yup.ValidationError | null>(null);
   const [hasRunInitialValidation, setHasRunInitialValidation] = React.useState(false);
   const lastValuesRef = React.useRef(values);
   React.useEffect(() => {
-    if (!hasRunInitialValidation || !equal(lastValuesRef.current, values)) {
+    if (formSchema && (!hasRunInitialValidation || !equal(lastValuesRef.current, values))) {
+      setHasRunInitialValidation(true);
       lastValuesRef.current = values;
       formSchema
         .validate(values, { abortEarly: false, ...yupOptions })
@@ -86,7 +96,6 @@ export const useFormState = <FormValues>(
             setValidationError(newRootError);
           }
         });
-      setHasRunInitialValidation(true);
     }
   }, [formSchema, hasRunInitialValidation, validationError, values, yupOptions]);
 
