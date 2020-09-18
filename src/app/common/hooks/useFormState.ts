@@ -17,21 +17,34 @@ export interface IValidatedFormField<T> extends IFormField<T> {
   isValid: boolean;
 }
 
-type FormFields<FormValues> = {
-  [key in keyof FormValues]: IFormField<FormValues[key]>;
+// The generic FV type variable is an interface of field value types (the T in IFormField<T>) by field key.
+// It is the generic type variable passed to useFormField. More detail below.
+
+type FormFields<FV> = {
+  [key in keyof FV]: IFormField<FV[key]>;
 };
 
-type ValidatedFormFields<FormValues> = {
-  [key in keyof FormValues]: IValidatedFormField<FormValues[key]>;
+type ValidatedFormFields<FV> = {
+  [key in keyof FV]: IValidatedFormField<FV[key]>;
 };
 
-export interface IFormState<FormValues> {
-  fields: ValidatedFormFields<FormValues>;
-  values: FormValues; // For convenience in submitting forms (values are also included in fields property)
+export interface IFormState<FV> {
+  fields: ValidatedFormFields<FV>;
+  values: FV; // For convenience in submitting forms (values are also included in fields property)
   isValid: boolean;
   reset: () => void;
   schema: yup.ObjectSchema | null; // In case you want to do anything fancy outside the hook
 }
+
+// The generic T type variable is the type of the field's value (the T in IFormField<T>).
+// It is optional, and can either be inferred from the type of the initialValue or explicitly passed.
+
+// example (explicit):
+//   useFormField<string>('', ...)
+//     -> returns IFormField<string>
+// example (implicit):
+//   useFormField('', ...)
+//     -> also returns IFormField<string>
 
 export const useFormField = <T>(
   initialValue: T,
@@ -53,16 +66,26 @@ export const useFormField = <T>(
   };
 };
 
-// FormValues represents an interface of field key to field value type (the T in IFormField<T>).
-// TypeScript can infer it from the arguments we pass to each useFormField!
-export const useFormState = <FormValues>(
-  fields: FormFields<FormValues>,
+// The generic FV type variable is an interface of field value types (the T in IFormField<T>) by field key.
+// It is optional, and can either be inferred from the types in the `fields` argument or explicitly passed.
+
+// example (explicit):
+//   interface IFormValues { foo: string, bar: number }
+//   useFormState<IFormValues>({ foo: useFormField<string>(...), bar: useFormField<number>(...) })
+//     -> returns IFormState<IFormValues>
+
+// example (implicit):
+//   useFormState({ foo: useFormField<string>(...), bar: useFormField<number>(...) })
+//     -> returns IFormState<{ foo: string, bar: bumber }>
+
+export const useFormState = <FV>(
+  fields: FormFields<FV>,
   yupOptions: yup.ValidateOptions = {}
-): IFormState<FormValues> => {
-  const fieldKeys = Object.keys(fields) as (keyof FormValues)[];
-  const values: FormValues = fieldKeys.reduce(
+): IFormState<FV> => {
+  const fieldKeys = Object.keys(fields) as (keyof FV)[];
+  const values: FV = fieldKeys.reduce(
     (newObj, key) => ({ ...newObj, [key]: fields[key].value }),
-    {} as FormValues
+    {} as FV
   );
 
   // Memoize the schema, only recompute if the field keys changed
@@ -73,7 +96,7 @@ export const useFormState = <FormValues>(
       lastFieldKeysRef.current = fieldKeys;
       const schemaShape = fieldKeys.reduce(
         (newObj, key) => ({ ...newObj, [key]: fields[key].schema }),
-        {} as { [key in keyof FormValues]?: yup.Schema<FormValues[key]> }
+        {} as { [key in keyof FV]?: yup.Schema<FV[key]> }
       );
       setFormSchema(yup.object().shape(schemaShape).defined());
     }
@@ -99,23 +122,23 @@ export const useFormState = <FormValues>(
     }
   }, [formSchema, hasRunInitialValidation, validationError, values, yupOptions]);
 
-  type ErrorsByField = { [key in keyof FormValues]: yup.ValidationError };
+  type ErrorsByField = { [key in keyof FV]: yup.ValidationError };
   const errorsByField =
     validationError?.inner.reduce(
       (newObj, error) => ({ ...newObj, [error.path]: error }),
       {} as ErrorsByField
     ) || ({} as ErrorsByField);
 
-  const validatedFields: ValidatedFormFields<FormValues> = fieldKeys.reduce((newObj, key) => {
+  const validatedFields: ValidatedFormFields<FV> = fieldKeys.reduce((newObj, key) => {
     const field = fields[key];
     const error = errorsByField ? errorsByField[key] : null;
-    const validatedField: IValidatedFormField<FormValues[keyof FormValues]> = {
+    const validatedField: IValidatedFormField<FV[keyof FV]> = {
       ...field,
       error,
       isValid: !error || !field.isTouched,
     };
     return { ...newObj, [key]: validatedField };
-  }, {} as ValidatedFormFields<FormValues>);
+  }, {} as ValidatedFormFields<FV>);
 
   return {
     fields: validatedFields,
