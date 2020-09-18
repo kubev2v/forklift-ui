@@ -113,12 +113,7 @@ export const useFormState = <FV>(
       formSchema
         .validate(values, { abortEarly: false, ...yupOptions })
         .then(() => setValidationError(null))
-        .catch((e) => {
-          const newRootError = e as yup.ValidationError;
-          if (!validationError || !equal(validationError.errors, newRootError.errors)) {
-            setValidationError(newRootError);
-          }
-        });
+        .catch((e) => setValidationError(e as yup.ValidationError));
     }
   }, [formSchema, hasRunInitialValidation, validationError, values, yupOptions]);
 

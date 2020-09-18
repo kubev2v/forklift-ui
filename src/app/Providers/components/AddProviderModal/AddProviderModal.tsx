@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import ValidatedTextInputField from '@app/common/components/ValidatedTextInputField';
+import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
 import './AddProviderModal.css';
@@ -45,6 +45,8 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   const providerType = providerTypeField.value;
   const formValues = providerType === ProviderType.vsphere ? vmwareForm.values : cnvForm.values;
   const isFormValid = providerType === ProviderType.vsphere ? vmwareForm.isValid : cnvForm.isValid;
+
+  console.log('MODAL RENDER!');
 
   return (
     <Modal
@@ -91,25 +93,25 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         </FormGroup>
         {providerType === ProviderType.vsphere ? (
           <>
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={vmwareForm.fields.name}
               label="Name"
               isRequired
               fieldId="vmware-name"
             />
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={vmwareForm.fields.hostname}
               label="Hostname"
               isRequired
               fieldId="vmware-hostname"
             />
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={vmwareForm.fields.username}
               label="Username"
               isRequired
               fieldId="vmware-username"
             />
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={vmwareForm.fields.password}
               type="password"
               label="Password"
@@ -120,19 +122,19 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         ) : null}
         {providerType === ProviderType.cnv ? (
           <>
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={cnvForm.fields.clusterName}
               label="Cluster name"
               isRequired
               fieldId="cnv-cluster-name"
             />
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={cnvForm.fields.url}
               label="URL"
               isRequired
               fieldId="cnv-url"
             />
-            <ValidatedTextInputField
+            <ValidatedTextInput
               field={cnvForm.fields.saToken}
               type="password"
               label="Service account token"
