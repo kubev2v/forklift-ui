@@ -1,8 +1,11 @@
 import * as React from 'react';
-import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
+import * as yup from 'yup';
+import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -17,18 +20,34 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
-  // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
-  //   or maybe roll our own simple validation? maybe use Yup?
-  const [providerType, setProviderType] = React.useState<ProviderType | null>(null);
+  // TODO determine the actual validation criteria for this form -- these are for testing
 
-  const [vmwareName, setVmwareName] = React.useState<string>('');
-  const [vmwareHostname, setVmwareHostname] = React.useState<string>('');
-  const [vmwareUsername, setVmwareUsername] = React.useState<string>('');
-  const [vmwarePassword, setVmwarePassword] = React.useState<string>('');
+  const providerTypeField = useFormField<ProviderType | null>(
+    null,
+    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
+  );
 
-  const [cnvClusterName, setCnvClusterName] = React.useState<string>('');
-  const [cnvUrl, setCnvUrl] = React.useState<string>('');
-  const [cnvSaToken, setCnvSaToken] = React.useState<string>('');
+  const vmwareForm = useFormState({
+    providerType: providerTypeField,
+    name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
+    hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
+    username: useFormField('', yup.string().label('Username').max(20).required()),
+    password: useFormField('', yup.string().label('Password').max(20).required()),
+  });
+
+  const cnvForm = useFormState({
+    providerType: providerTypeField,
+    clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
+    url: useFormField('', yup.string().label('URL').max(40).required()),
+    saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
+  });
+
+  const providerType = providerTypeField.value;
+  const formValues = providerType === ProviderType.vsphere ? vmwareForm.values : cnvForm.values;
+  const isFormValid = providerType === ProviderType.vsphere ? vmwareForm.isValid : cnvForm.isValid;
+
+  console.log('MODAL RENDER!');
+
   return (
     <Modal
       className="addProviderModal"
@@ -37,7 +56,15 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        <Button
+          key="confirm"
+          variant="primary"
+          isDisabled={!isFormValid}
+          onClick={() => {
+            console.log('TODO: submit form!', formValues);
+            alert('TODO');
+          }}
+        >
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
@@ -50,72 +77,70 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           label="Type"
           isRequired
           fieldId="provider-type"
-          helperTextInvalid="TODO"
-          validated="default" // TODO add state/validation/errors to this and other FormGroups
           className={!providerType ? 'extraSelectMargin' : ''}
+          {...getFormGroupProps(vmwareForm.fields.providerType)}
         >
           <SimpleSelect
             id="provider-type"
             options={PROVIDER_TYPE_OPTIONS}
             value={[PROVIDER_TYPE_OPTIONS.find((option) => option.value === providerType)]}
-            onChange={(selection) =>
-              setProviderType((selection as OptionWithValue<ProviderType>).value)
-            }
+            onChange={(selection) => {
+              providerTypeField.setValue((selection as OptionWithValue<ProviderType>).value);
+              providerTypeField.setIsTouched(true);
+            }}
             placeholderText="Select a provider type..."
           />
         </FormGroup>
         {providerType === ProviderType.vsphere ? (
           <>
-            <FormGroup label="Name" isRequired fieldId="vmware-name">
-              <TextInput id="vmware-name" value={vmwareName} type="text" onChange={setVmwareName} />
-            </FormGroup>
-            <FormGroup label="Hostname" isRequired fieldId="vmware-hostname">
-              <TextInput
-                id="vmware-hostname"
-                value={vmwareHostname}
-                type="text"
-                onChange={setVmwareHostname}
-              />
-            </FormGroup>
-            <FormGroup label="Username" isRequired fieldId="vmware-username">
-              <TextInput
-                id="vmware-username"
-                value={vmwareUsername}
-                type="text"
-                onChange={setVmwareUsername}
-              />
-            </FormGroup>
-            <FormGroup label="Password" isRequired fieldId="vmware-password">
-              <TextInput
-                id="vmware-password"
-                value={vmwarePassword}
-                type="password"
-                onChange={setVmwarePassword}
-              />
-            </FormGroup>
+            <ValidatedTextInput
+              field={vmwareForm.fields.name}
+              label="Name"
+              isRequired
+              fieldId="vmware-name"
+            />
+            <ValidatedTextInput
+              field={vmwareForm.fields.hostname}
+              label="Hostname"
+              isRequired
+              fieldId="vmware-hostname"
+            />
+            <ValidatedTextInput
+              field={vmwareForm.fields.username}
+              label="Username"
+              isRequired
+              fieldId="vmware-username"
+            />
+            <ValidatedTextInput
+              field={vmwareForm.fields.password}
+              type="password"
+              label="Password"
+              isRequired
+              fieldId="vmware-password"
+            />
           </>
         ) : null}
         {providerType === ProviderType.cnv ? (
           <>
-            <FormGroup label="Cluster name" isRequired fieldId="cnv-cluster-name">
-              <TextInput
-                id="cnv-cluster-name"
-                value={cnvClusterName}
-                type="text"
-                onChange={setCnvClusterName}
-              />
-            </FormGroup>
-            <FormGroup label="URL" isRequired fieldId="cnv-url">
-              <TextInput id="cnv-url" value={cnvUrl} type="text" onChange={setCnvUrl} />
-            </FormGroup>
-            <FormGroup label="Service account token" isRequired fieldId="cnv-sa-token">
-              <TextInput
-                id="cnv-sa-token"
-                value={cnvSaToken}
-                type="password"
-                onChange={setCnvSaToken}
-              />
-            </FormGroup>
+            <ValidatedTextInput
+              field={cnvForm.fields.clusterName}
+              label="Cluster name"
+              isRequired
+              fieldId="cnv-cluster-name"
+            />
+            <ValidatedTextInput
+              field={cnvForm.fields.url}
+              label="URL"
+              isRequired
+              fieldId="cnv-url"
+            />
+            <ValidatedTextInput
+              field={cnvForm.fields.saToken}
+              type="password"
+              label="Service account token"
+              isRequired
+              fieldId="cnv-sa-token"
+            />
           </>
         ) : null}
         {providerType ? (
