@@ -2,94 +2,116 @@ import { IVMwareProvider, ICNVProvider, IProvidersByType } from '../types/provid
 import { ProviderType } from '@app/common/constants';
 
 const vmwareProvider1: IVMwareProvider = {
-  metadata: {
-    name: 'VCenter1',
-    namespace: 'openshift-migration',
-    selfLink: '/foo/bar',
-    uid: 'foo-uid',
-    resourceVersion: '12345',
-    generation: 1,
-    creationTimestamp: '2020-08-21T18:36:41.468Z',
-  },
-  // TODO this resourceCounts prop is speculative
-  // need to look at the real structure once Jeff implements this part
-  resourceCounts: {
-    numClusters: 2,
-    numHosts: 15,
-    numVMs: 41,
-    numNetworks: 8,
-    numDatastores: 3,
-  },
-  spec: {
-    type: ProviderType.vsphere,
-    url: 'vcenter.v2v.bos.redhat.com',
-    secret: {
+  uid: 'foo-uid',
+  version: '12345',
+  namespace: 'openshift-migration',
+  name: 'VCenter1',
+  selfLink: '/foo/bar',
+  type: ProviderType.vsphere,
+  object: {
+    metadata: {
+      name: 'VCenter1',
       namespace: 'openshift-migration',
-      name: 'boston',
+      selfLink: '/foo/bar',
+      uid: 'foo-uid',
+      resourceVersion: '12345',
+      generation: 1,
+      creationTimestamp: '2020-08-21T18:36:41.468Z',
+    },
+    spec: {
+      type: ProviderType.vsphere,
+      url: 'vcenter.v2v.bos.redhat.com',
+      secret: {
+        namespace: 'openshift-migration',
+        name: 'boston',
+      },
+    },
+    status: {
+      conditions: [
+        {
+          type: 'Ready',
+          status: 'True',
+          category: 'Required',
+          message: 'The provider is ready.',
+          lastTransitionTime: '2020-08-21T18:36:41.468Z',
+        },
+      ],
+      observedGeneration: 1,
     },
   },
-  status: {
-    conditions: [
-      {
-        type: 'Ready',
-        status: 'True',
-        category: 'Required',
-        message: 'The provider is ready.',
-        lastTransitionTime: '2020-08-21T18:36:41.468Z',
-      },
-    ],
-    observedGeneration: 1,
-  },
+  datacenterCount: 1,
+  clusterCount: 2,
+  hostCount: 15,
+  vmCount: 41,
+  networkCount: 8,
+  datastoreCount: 3,
 };
 
 const vmwareProvider2: IVMwareProvider = {
   ...vmwareProvider1,
-  metadata: {
-    ...vmwareProvider1.metadata,
-    name: 'VCenter2',
+  name: 'VCenter2',
+  object: {
+    ...vmwareProvider1.object,
+    metadata: {
+      ...vmwareProvider1.object.metadata,
+      name: 'VCenter2',
+    },
   },
 };
 
 const vmwareProvider3: IVMwareProvider = {
   ...vmwareProvider1,
-  metadata: {
-    ...vmwareProvider1.metadata,
-    name: 'VCenter3',
+  name: 'VCenter3',
+  object: {
+    ...vmwareProvider1.object,
+    metadata: {
+      ...vmwareProvider1.object.metadata,
+      name: 'VCenter3',
+    },
   },
 };
 
 const cnvProvider1: ICNVProvider = {
   ...vmwareProvider1,
-  metadata: {
-    ...vmwareProvider1.metadata,
-    name: 'OCPv_1',
-    storageClasses: ['gold', 'silver', 'bronze'],
+  object: {
+    ...vmwareProvider1.object,
+    metadata: {
+      ...vmwareProvider1.object.metadata,
+      name: 'OCPv_1',
+    },
+    spec: {
+      ...vmwareProvider1.object.spec,
+      type: ProviderType.cnv, // TODO ???
+      url: 'https://my_OCPv_url',
+    },
   },
-  resourceCounts: {
-    numNamespaces: 41,
-    numVMs: 26,
-    numNetworks: 8,
-  },
-  spec: {
-    ...vmwareProvider1.spec,
-    type: ProviderType.cnv, // TODO ???
-    url: 'https://my_OCPv_url',
-  },
+  namespaceCount: 41,
+  vmCount: 26,
+  networkCount: 8,
+  storageClasses: ['gold', 'silver', 'bronze'], // TODO move these to another resource
 };
 
 const cnvProvider2: ICNVProvider = {
   ...cnvProvider1,
-  metadata: {
-    ...cnvProvider1.metadata,
-    name: 'OCPv_2',
+  name: 'OCPv_2',
+  object: {
+    ...cnvProvider1.object,
+    metadata: {
+      ...cnvProvider1.object.metadata,
+      name: 'OCPv_2',
+    },
   },
 };
 
 const cnvProvider3: ICNVProvider = {
   ...cnvProvider1,
-  metadata: {
-    ...cnvProvider1.metadata,
-    name: 'OCPv_3',
+  name: 'OCPv_3',
+  object: {
+    ...cnvProvider1.object,
+    metadata: {
+      ...cnvProvider1.object.metadata,
+      name: 'OCPv_3',
+    },
   },
 };
 

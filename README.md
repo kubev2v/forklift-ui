@@ -27,7 +27,6 @@ Create a file named `.env` in the repository root, using [`.env.example`](https:
 NODE_ENV=production  # can be `production` or `development`
 DATA_SOURCE=remote   # can be `remote` or `mock`
 REMOTE_API_URL=https://inventory-openshift-migration.example.com/
-NAMESPACE=openshift-migration
 ```
 
 Run the UI with webpack-dev-server at http://localhost:9000:
