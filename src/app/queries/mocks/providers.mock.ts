@@ -1,4 +1,4 @@
-import { IVMwareProvider, ICNVProvider, IProvidersByType } from '../types/providers.types';
+import { IVMwareProvider, IOpenShiftProvider, IProvidersByType } from '../types/providers.types';
 import { ProviderType } from '@app/common/constants';
 
 const vmwareProvider1: IVMwareProvider = {
@@ -71,7 +71,7 @@ const vmwareProvider3: IVMwareProvider = {
   },
 };
 
-const cnvProvider1: ICNVProvider = {
+const openshiftProvider1: IOpenShiftProvider = {
   ...vmwareProvider1,
   object: {
     ...vmwareProvider1.object,
@@ -81,7 +81,7 @@ const cnvProvider1: ICNVProvider = {
     },
     spec: {
       ...vmwareProvider1.object.spec,
-      type: ProviderType.cnv, // TODO ???
+      type: ProviderType.openshift,
       url: 'https://my_OCPv_url',
     },
   },
@@ -90,25 +90,25 @@ const cnvProvider1: ICNVProvider = {
   networkCount: 8,
 };
 
-const cnvProvider2: ICNVProvider = {
-  ...cnvProvider1,
+const openshiftProvider2: IOpenShiftProvider = {
+  ...openshiftProvider1,
   name: 'OCPv_2',
   object: {
-    ...cnvProvider1.object,
+    ...openshiftProvider1.object,
     metadata: {
-      ...cnvProvider1.object.metadata,
+      ...openshiftProvider1.object.metadata,
       name: 'OCPv_2',
     },
   },
 };
 
-const cnvProvider3: ICNVProvider = {
-  ...cnvProvider1,
+const openshiftProvider3: IOpenShiftProvider = {
+  ...openshiftProvider1,
   name: 'OCPv_3',
   object: {
-    ...cnvProvider1.object,
+    ...openshiftProvider1.object,
     metadata: {
-      ...cnvProvider1.object.metadata,
+      ...openshiftProvider1.object.metadata,
       name: 'OCPv_3',
     },
   },
@@ -116,5 +116,5 @@ const cnvProvider3: ICNVProvider = {
 
 export const MOCK_PROVIDERS: IProvidersByType = {
   [ProviderType.vsphere]: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
-  [ProviderType.cnv]: [cnvProvider1, cnvProvider2, cnvProvider3],
+  [ProviderType.openshift]: [openshiftProvider1, openshiftProvider2, openshiftProvider3],
 };

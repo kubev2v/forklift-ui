@@ -12,7 +12,7 @@ const storageMapping1: IStorageMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -35,7 +35,7 @@ const storageMapping2: IStorageMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -67,7 +67,7 @@ const networkMapping1: INetworkMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -94,7 +94,7 @@ const networkMapping2: INetworkMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },

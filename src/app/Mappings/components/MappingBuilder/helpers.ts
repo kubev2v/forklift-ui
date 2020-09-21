@@ -5,7 +5,7 @@ import {
   MappingType,
   MappingTarget,
   IVMwareProvider,
-  ICNVProvider,
+  IOpenShiftProvider,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById } from '../helpers';
@@ -28,7 +28,7 @@ interface IGetMappingParams {
   mappingType: MappingType;
   mappingName: string;
   sourceProvider: IVMwareProvider;
-  targetProvider: ICNVProvider;
+  targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
 }
 

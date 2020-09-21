@@ -5,7 +5,7 @@ import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
-import { MappingType, ICNVProvider, IVMwareProvider } from '@app/queries/types';
+import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
 import {
@@ -21,7 +21,7 @@ interface IPlanWizardProps {
   isOpen: boolean;
   onClose: () => void;
   sourceProviders: IVMwareProvider[];
-  targetProviders: ICNVProvider[];
+  targetProviders: IOpenShiftProvider[];
 }
 
 const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({

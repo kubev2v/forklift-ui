@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Form, FormGroup, TextArea, TextInput, Title } from '@patternfly/react-core';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ICNVProvider, IVMwareProvider } from '@app/queries/types';
+import { IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 
 interface IGeneralFormComponentProps {
   sourceProviders: IVMwareProvider[];
-  targetProviders: ICNVProvider[];
+  targetProviders: IOpenShiftProvider[];
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
@@ -15,7 +15,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
   const [planName, setPlanName] = React.useState<string>('');
   const [planDescription, setPlanDescription] = React.useState<string>('');
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
-  const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
+  const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
   const sourceProvidersOptions = Object.values(sourceProviders).map((provider) => ({
     toString: () => provider.name,
@@ -25,7 +25,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
   const targetProvidersOptions = Object.values(targetProviders).map((provider) => ({
     toString: () => provider.name,
     value: provider,
-  })) as OptionWithValue<ICNVProvider>[];
+  })) as OptionWithValue<IOpenShiftProvider>[];
 
   return (
     <Form>
@@ -89,7 +89,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
           options={targetProvidersOptions}
           value={[targetProvidersOptions.find((option) => option.value === targetProvider)]}
           onChange={(selection) =>
-            setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
+            setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
           }
           placeholderText="Select a provider"
         />

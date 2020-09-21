@@ -49,13 +49,13 @@ export interface IVMwareProvider extends ICommonProvider {
   datastoreCount: number;
 }
 
-export interface ICNVProvider extends ICommonProvider {
+export interface IOpenShiftProvider extends ICommonProvider {
   vmCount: number;
   networkCount: number;
   namespaceCount: number;
 }
 
-export type Provider = IVMwareProvider | ICNVProvider;
+export type Provider = IVMwareProvider | IOpenShiftProvider;
 
 // TODO this structure is speculative. Check with Jeff.
 export interface IHostNetwork {
@@ -90,7 +90,7 @@ export enum NetworkType {
   Multis = 'multis',
 }
 
-export interface ICNVNetwork {
+export interface IOpenShiftNetwork {
   type: NetworkType;
   name: string;
   namespace: string;
@@ -101,8 +101,8 @@ export interface IVMwareNetworksByProvider {
   [providerName: string]: IVMwareNetwork[];
 }
 
-export interface ICNVNetworksByProvider {
-  [providerName: string]: ICNVNetwork[];
+export interface IOpenShiftNetworksByProvider {
+  [providerName: string]: IOpenShiftNetwork[];
 }
 
 export interface IVMwareDatastore {
@@ -112,7 +112,7 @@ export interface IVMwareDatastore {
 
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
-  [ProviderType.cnv]: ICNVProvider[]; // TODO this needs to be openshift, not cnv....
+  [ProviderType.openshift]: IOpenShiftProvider[];
 }
 
 // TODO do these need to be indexed by provider id instead of name?

@@ -15,21 +15,21 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import CNVProviderActionsDropdown from './CNVProviderActionsDropdown';
-import { ICNVProvider } from '@app/queries/types/providers.types';
+import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
+import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderStatus from '../ProviderStatus';
-import './CNVProvidersTable.css';
+import './OpenShiftProvidersTable.css';
 
 // TODO move these to a dependent query from providers
 const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
-interface ICNVProvidersTableProps {
-  providers: ICNVProvider[];
+interface IOpenShiftProvidersTableProps {
+  providers: IOpenShiftProvider[];
 }
 
-const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
+const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
   providers,
-}: ICNVProvidersTableProps) => {
+}: IOpenShiftProvidersTableProps) => {
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
@@ -41,7 +41,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
-  const getSortValues = (provider: ICNVProvider) => {
+  const getSortValues = (provider: IOpenShiftProvider) => {
     const { namespaceCount, vmCount, networkCount } = provider;
     return [
       provider.name,
@@ -62,13 +62,13 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   const {
     toggleItemSelected: toggleProviderExpanded,
     isItemSelected: isProviderExpanded,
-  } = useSelectionState<ICNVProvider>({
+  } = useSelectionState<IOpenShiftProvider>({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
   });
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: ICNVProvider) => {
+  currentPageItems.forEach((provider: IOpenShiftProvider) => {
     const { namespaceCount, vmCount, networkCount } = provider;
     const isExpanded = isProviderExpanded(provider);
     rows.push({
@@ -93,7 +93,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
         {
           title: <ProviderStatus provider={provider} />,
         },
-        { title: <CNVProviderActionsDropdown /> },
+        { title: <OpenShiftProviderActionsDropdown /> },
       ],
     });
     if (isExpanded) {
@@ -141,4 +141,4 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   );
 };
 
-export default CNVProvidersTable;
+export default OpenShiftProvidersTable;

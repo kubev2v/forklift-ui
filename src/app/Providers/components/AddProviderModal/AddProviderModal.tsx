@@ -35,7 +35,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
     password: useFormField('', yup.string().label('Password').max(20).required()),
   });
 
-  const cnvForm = useFormState({
+  const openshiftForm = useFormState({
     providerType: providerTypeField,
     clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
     url: useFormField('', yup.string().label('URL').max(40).required()),
@@ -43,8 +43,10 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   });
 
   const providerType = providerTypeField.value;
-  const formValues = providerType === ProviderType.vsphere ? vmwareForm.values : cnvForm.values;
-  const isFormValid = providerType === ProviderType.vsphere ? vmwareForm.isValid : cnvForm.isValid;
+  const formValues =
+    providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
+  const isFormValid =
+    providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
 
   console.log('MODAL RENDER!');
 
@@ -120,26 +122,26 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             />
           </>
         ) : null}
-        {providerType === ProviderType.cnv ? (
+        {providerType === ProviderType.openshift ? (
           <>
             <ValidatedTextInput
-              field={cnvForm.fields.clusterName}
+              field={openshiftForm.fields.clusterName}
               label="Cluster name"
               isRequired
-              fieldId="cnv-cluster-name"
+              fieldId="openshift-cluster-name"
             />
             <ValidatedTextInput
-              field={cnvForm.fields.url}
+              field={openshiftForm.fields.url}
               label="URL"
               isRequired
-              fieldId="cnv-url"
+              fieldId="openshift-url"
             />
             <ValidatedTextInput
-              field={cnvForm.fields.saToken}
+              field={openshiftForm.fields.saToken}
               type="password"
               label="Service account token"
               isRequired
-              fieldId="cnv-sa-token"
+              fieldId="openshift-sa-token"
             />
           </>
         ) : null}

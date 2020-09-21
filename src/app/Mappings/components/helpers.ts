@@ -1,4 +1,4 @@
-import { ICNVNetwork, MappingSource, MappingTarget, MappingType } from '@app/queries/types';
+import { IOpenShiftNetwork, MappingSource, MappingTarget, MappingType } from '@app/queries/types';
 
 export const getMappingSourceById = (
   sources: MappingSource[],
@@ -27,7 +27,7 @@ export const getMappingTargetTitle = (mappingType: MappingType): string => {
 
 export const getMappingTargetName = (target: MappingTarget, mappingType: MappingType): string => {
   if (mappingType === MappingType.Network) {
-    return (target as ICNVNetwork).name;
+    return (target as IOpenShiftNetwork).name;
   }
   if (mappingType === MappingType.Storage) {
     return target as string;

@@ -1,7 +1,7 @@
 import { IHook } from '../types/hooks.types';
 import { ICR } from '../types/common.types';
 import { Mapping } from '../types/mappings.types';
-import { IVMwareProvider, ICNVProvider, IHost } from '../types/providers.types';
+import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
 
 export interface IPlanVM {
   uid: string;
@@ -21,7 +21,7 @@ export interface IPlan extends ICR {
   spec: {
     provider: {
       sourceProvider: IVMwareProvider;
-      destinationProvider: ICNVProvider;
+      destinationProvider: IOpenShiftProvider;
     };
     map: Mapping;
     warm: boolean;

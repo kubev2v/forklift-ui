@@ -9,12 +9,12 @@ import {
   MappingType,
   MappingSource,
   MappingTarget,
-  ICNVProvider,
+  IOpenShiftProvider,
   IVMwareProvider,
 } from '@app/queries/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-  MOCK_CNV_NETWORKS_BY_PROVIDER,
+  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
 } from '@app/queries/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
 import './AddEditMappingModal.css';
@@ -43,16 +43,16 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       toString: () => provider.name,
     })
   );
-  const targetProviderOptions: OptionWithValue<ICNVProvider>[] = providersByType.cnv.map(
-    (provider) => ({
-      value: provider,
-      toString: () => provider.name,
-    })
-  );
+  const targetProviderOptions: OptionWithValue<
+    IOpenShiftProvider
+  >[] = providersByType.openshift.map((provider) => ({
+    value: provider,
+    toString: () => provider.name,
+  }));
 
   const [mappingName, setMappingName] = React.useState('');
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
-  const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
+  const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
   React.useEffect(() => {
     console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
@@ -67,7 +67,9 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.name] : [];
-    availableTargets = targetProvider ? MOCK_CNV_NETWORKS_BY_PROVIDER[targetProvider?.name] : [];
+    availableTargets = targetProvider
+      ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER[targetProvider?.name]
+      : [];
   }
   if (mappingType === MappingType.Storage) {
     availableSources = sourceProvider
@@ -153,7 +155,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 options={targetProviderOptions}
                 value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
                 onChange={(selection) =>
-                  setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
+                  setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
                 }
                 placeholderText="Select a target provider..."
               />

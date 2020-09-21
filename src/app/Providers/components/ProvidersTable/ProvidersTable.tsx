@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
 import VMwareProvidersTable from './VMware/VMwareProvidersTable';
-import CNVProvidersTable from './CNV/CNVProvidersTable';
+import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
 import { IProvidersByType } from '@app/queries/types';
 
 interface IProvidersTableProps {
@@ -16,8 +16,8 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   if (activeProviderType === ProviderType.vsphere) {
     return <VMwareProvidersTable providers={providersByType.vsphere} />;
   }
-  if (activeProviderType === ProviderType.cnv) {
-    return <CNVProvidersTable providers={providersByType.cnv} />;
+  if (activeProviderType === ProviderType.openshift) {
+    return <OpenShiftProvidersTable providers={providersByType.openshift} />;
   }
   return null;
 };

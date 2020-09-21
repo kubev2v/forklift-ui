@@ -33,7 +33,7 @@ const PlansPage: React.FunctionComponent = () => {
     content: '',
   };
 
-  if (providersByType.vsphere.length < 1 || providersByType.cnv.length < 1) {
+  if (providersByType.vsphere.length < 1 || providersByType.openshift.length < 1) {
     addPlanDisabledObj = {
       isTooltipEnabled: true,
       content:
@@ -94,7 +94,7 @@ const PlansPage: React.FunctionComponent = () => {
         isOpen={isWizardOpen}
         onClose={toggleWizard}
         sourceProviders={providersByType.vsphere}
-        targetProviders={providersByType.cnv}
+        targetProviders={providersByType.openshift}
       />
     </>
   );

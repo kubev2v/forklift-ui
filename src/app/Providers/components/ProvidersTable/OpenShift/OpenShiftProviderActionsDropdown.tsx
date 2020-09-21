@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 
-const CNVProviderActionsDropdown: React.FunctionComponent = () => {
+const OpenShiftProviderActionsDropdown: React.FunctionComponent = () => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   return (
     <Dropdown
@@ -34,4 +34,4 @@ const CNVProviderActionsDropdown: React.FunctionComponent = () => {
   );
 };
 
-export default CNVProviderActionsDropdown;
+export default OpenShiftProviderActionsDropdown;
