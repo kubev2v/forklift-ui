@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { IPlan, IAddPlanDisabledObjModel } from '../types';
+import { IPlan } from '../types';
 
 interface IPlansTableProps {
   planList: IPlan[];
-  addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
 }
 
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
-  addPlanDisabledObj,
   toggleAddWizardOpen,
 }: IPlansTableProps) => {
   return (
