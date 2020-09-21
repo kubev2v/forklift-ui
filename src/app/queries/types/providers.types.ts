@@ -118,6 +118,11 @@ export interface IVMwareDatastore {
   name: string;
 }
 
+export interface IProvidersByType {
+  vsphere: IVMwareProvider[];
+  openshift: ICNVProvider[];
+}
+
 // TODO do these need to be indexed by provider id instead of name?
 export interface IVMwareDatastoresByProvider {
   [providerName: string]: IVMwareDatastore[];

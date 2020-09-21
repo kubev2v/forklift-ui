@@ -1,13 +1,17 @@
-import { QueryConfig, QueryFunction, QueryKey, QueryResult, useQuery } from 'react-query';
+import { UseQueryObjectConfig, QueryResult, useQuery } from 'react-query';
+
+// TODO add useMockableMutation wrapper that just turns the mutation into a noop?
+// TODO what about usePaginatedQuery, useInfiniteQuery?
+// TODO what about alternate param signatures for useQuery?
 
 export const useMockableQuery = <TResult = unknown, TError = unknown>(
-  queryKey: QueryKey,
-  queryFn: QueryFunction<TResult>,
-  mockData: TResult,
-  queryConfig?: QueryConfig<TResult, TError> | undefined
+  config: UseQueryObjectConfig<TResult, TError>,
+  mockData: TResult
 ): QueryResult<TResult, TError> =>
-  useQuery<TResult, TError>(
-    queryKey,
-    process.env.DATA_SOURCE !== 'mock' ? queryFn : () => Promise.resolve(mockData),
-    queryConfig
-  );
+  useQuery<TResult, TError>({
+    ...config,
+    queryFn: process.env.DATA_SOURCE !== 'mock' ? config.queryFn : () => Promise.resolve(mockData),
+  });
+
+export const getApiUrl = (relativePath: string): string =>
+  `${process.env.REMOTE_API_URL}${relativePath}`;

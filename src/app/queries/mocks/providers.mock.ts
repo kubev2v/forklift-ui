@@ -1,4 +1,4 @@
-import { IVMwareProvider, ICNVProvider, Provider } from '../types/providers.types';
+import { IVMwareProvider, ICNVProvider, IProvidersByType } from '../types/providers.types';
 import { ProviderType } from '@app/common/constants';
 
 const vmwareProvider1: IVMwareProvider = {
@@ -93,11 +93,7 @@ const cnvProvider3: ICNVProvider = {
   },
 };
 
-export const MOCK_PROVIDERS: Provider[] = [
-  vmwareProvider1,
-  vmwareProvider2,
-  vmwareProvider3,
-  cnvProvider1,
-  cnvProvider2,
-  cnvProvider3,
-];
+export const MOCK_PROVIDERS: IProvidersByType = {
+  vsphere: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
+  openshift: [cnvProvider1, cnvProvider2, cnvProvider3],
+};
