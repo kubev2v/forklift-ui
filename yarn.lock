@@ -620,6 +620,13 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
+"@types/dotenv-webpack@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/dotenv-webpack/-/dotenv-webpack-3.0.0.tgz#9a9156d5b569a61d61f42bf7dbe3903eee8e59b7"
+  integrity sha512-f3gFAkxOWAjsDemXp8y3gMeSfr8QilpFRt6g808hi5dQGXGU7M53Ty/INwLos7IpeJkt1fHMI+qcZ4QGnGUbGA==
+  dependencies:
+    "@types/webpack" "*"
+
 "@types/enzyme-adapter-react-16@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@types/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.0.6.tgz#8aca7ae2fd6c7137d869b6616e696d21bb8b0cec"
@@ -795,6 +802,18 @@
     "@types/node" "*"
     "@types/source-list-map" "*"
     source-map "^0.7.3"
+
+"@types/webpack@*":
+  version "4.41.22"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-4.41.22.tgz#ff9758a17c6bd499e459b91e78539848c32d0731"
+  integrity sha512-JQDJK6pj8OMV9gWOnN1dcLCyU9Hzs6lux0wBO4lr1+gyEhIBR9U3FMrz12t2GPkg110XAxEAw2WHF6g7nZIbRQ==
+  dependencies:
+    "@types/anymatch" "*"
+    "@types/node" "*"
+    "@types/tapable" "*"
+    "@types/uglify-js" "*"
+    "@types/webpack-sources" "*"
+    source-map "^0.6.0"
 
 "@types/webpack@^4.41.8":
   version "4.41.21"

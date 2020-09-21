@@ -9,9 +9,13 @@
   "scripts": {
     "prebuild": "yarn clean",
     "dr:surge": "node dr-surge.js",
-    "build": "webpack --config webpack.prod.js && yarn dr:surge",
+    "build": "NODE_ENV=production webpack --config webpack.prod.js && yarn dr:surge",
+    "build:remote": "DATA_SOURCE=remote yarn build",
+    "build:mock": "DATA_SOURCE=mock yarn build",
     "start": "node server.js",
-    "start:dev": "webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
+    "start:dev": "NODE_ENV=development webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
+    "start:dev:remote": "DATA_SOURCE=remote yarn start:dev",
+    "start:dev:mock": "DATA_SOURCE=mock yarn start:dev",
     "test": "jest",
     "eslint": "eslint --ext .tsx,.js ./src/",
     "lint": "yarn eslint",
@@ -23,6 +27,7 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@types/dotenv-webpack": "^3.0.0",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^25.2.3",
     "@types/react-router-dom": "^5.1.5",
