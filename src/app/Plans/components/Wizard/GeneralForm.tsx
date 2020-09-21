@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Form, FormGroup, TextArea, TextInput, Title } from '@patternfly/react-core';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { Provider } from '@app/queries/types';
+import { ICNVProvider, IVMwareProvider } from '@app/queries/types';
 
 interface IGeneralFormComponentProps {
-  sourceProviders: Provider[];
-  targetProviders: Provider[];
+  sourceProviders: IVMwareProvider[];
+  targetProviders: ICNVProvider[];
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
@@ -14,18 +14,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
 }: IGeneralFormComponentProps) => {
   const [planName, setPlanName] = React.useState<string>('');
   const [planDescription, setPlanDescription] = React.useState<string>('');
-  const [sourceProvider, setSourceProvider] = React.useState<Provider | null>(null);
-  const [targetProvider, setTargetProvider] = React.useState<Provider | null>(null);
+  const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
+  const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
 
   const sourceProvidersOptions = Object.values(sourceProviders).map((provider) => ({
-    toString: () => provider.metadata.name,
+    toString: () => provider.name,
     value: provider,
-  })) as OptionWithValue<Provider>[];
+  })) as OptionWithValue<IVMwareProvider>[];
 
   const targetProvidersOptions = Object.values(targetProviders).map((provider) => ({
-    toString: () => provider.metadata.name,
+    toString: () => provider.name,
     value: provider,
-  })) as OptionWithValue<Provider>[];
+  })) as OptionWithValue<ICNVProvider>[];
 
   return (
     <Form>
@@ -71,7 +71,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
           options={sourceProvidersOptions}
           value={[sourceProvidersOptions.find((option) => option.value === sourceProvider)]}
           onChange={(selection) =>
-            setSourceProvider((selection as OptionWithValue<Provider>).value)
+            setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
           }
           placeholderText="Select a provider"
         />
@@ -89,7 +89,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormComponentProps> = ({
           options={targetProvidersOptions}
           value={[targetProvidersOptions.find((option) => option.value === targetProvider)]}
           onChange={(selection) =>
-            setTargetProvider((selection as OptionWithValue<Provider>).value)
+            setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
           }
           placeholderText="Select a provider"
         />

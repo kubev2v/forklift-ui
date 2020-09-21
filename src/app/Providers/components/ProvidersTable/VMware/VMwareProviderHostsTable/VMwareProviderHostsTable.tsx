@@ -20,7 +20,7 @@ const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
   provider,
 }: IVMwareProviderHostsTableProps) => {
-  const hosts: IHost[] = hostsByProvider[provider.metadata.name];
+  const hosts: IHost[] = hostsByProvider[provider.name];
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
@@ -65,7 +65,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       <Table
         className="provider-inner-hosts-table"
         variant="compact"
-        aria-label={`Hosts table for provider ${provider.metadata.name}`}
+        aria-label={`Hosts table for provider ${provider.name}`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}

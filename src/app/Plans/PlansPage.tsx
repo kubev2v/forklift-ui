@@ -15,8 +15,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import PlansTable from './components/PlansTable';
 import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip';
-import { Provider } from '@app/queries/types';
-import { ProviderType } from '@app/common/constants';
 import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real state from react-query
@@ -25,12 +23,9 @@ import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 const IsFetchingInitialPlans = false; // Fetching for the first time, not polling
 const migplans = MOCK_PLANS;
-const providers = MOCK_PROVIDERS;
+const providersByType = MOCK_PROVIDERS;
 
 const PlansPage: React.FunctionComponent = () => {
-  const vmwareList: Provider[] = providers.filter((x) => x.spec.type === ProviderType.vsphere);
-  const cnvList: Provider[] = providers.filter((x) => x.spec.type === ProviderType.cnv);
-
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
@@ -38,7 +33,7 @@ const PlansPage: React.FunctionComponent = () => {
     content: '',
   };
 
-  if (vmwareList.length < 1 || cnvList.length < 1) {
+  if (providersByType.vsphere.length < 1 || providersByType.cnv.length < 1) {
     addPlanDisabledObj = {
       isTooltipEnabled: true,
       content:
@@ -98,8 +93,8 @@ const PlansPage: React.FunctionComponent = () => {
       <PlanWizard
         isOpen={isWizardOpen}
         onClose={toggleWizard}
-        sourceProviders={vmwareList}
-        targetProviders={cnvList}
+        sourceProviders={providersByType.vsphere}
+        targetProviders={providersByType.cnv}
       />
     </>
   );
