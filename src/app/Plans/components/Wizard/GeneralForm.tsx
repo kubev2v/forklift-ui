@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Form, FormGroup, TextArea, TextInput, Title } from '@patternfly/react-core';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { Provider } from '@app/Providers/types';
+import { Provider } from '@app/queries/types';
 
 interface IGeneralFormComponentProps {
   sourceProviders: Provider[];

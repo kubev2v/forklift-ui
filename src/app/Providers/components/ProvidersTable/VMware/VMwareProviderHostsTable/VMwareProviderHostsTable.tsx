@@ -5,8 +5,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { IVMwareProvider, IHost } from '@app/Providers/types';
-import { MOCK_HOSTS_BY_PROVIDER } from '@app/Providers/mocks/hosts.mock';
+import { IVMwareProvider, IHost } from '@app/queries/types';
+import { MOCK_HOSTS_BY_PROVIDER } from '@app/queries/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 

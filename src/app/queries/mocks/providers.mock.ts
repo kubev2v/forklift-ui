@@ -1,4 +1,4 @@
-import { IVMwareProvider, ICNVProvider, Provider } from '../types';
+import { IVMwareProvider, ICNVProvider, Provider } from '../types/providers.types';
 import { ProviderType } from '@app/common/constants';
 
 const vmwareProvider1: IVMwareProvider = {

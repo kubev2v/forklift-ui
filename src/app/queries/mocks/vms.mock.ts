@@ -1,4 +1,4 @@
-import { IVM } from '../../../types';
+import { IVM } from '../types/plans.types';
 
 export const VMsOptions = [
   {

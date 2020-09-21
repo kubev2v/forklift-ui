@@ -1,20 +1,25 @@
 import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, MappingSource, MappingTarget } from '../types';
-import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
+import {
+  MappingType,
+  MappingSource,
+  MappingTarget,
+  ICNVProvider,
+  IVMwareProvider,
+} from '@app/queries/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
   MOCK_CNV_NETWORKS_BY_PROVIDER,
-} from '@app/Providers/mocks/networks.mock';
-import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+} from '@app/queries/mocks/networks.mock';
+import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
 import './AddEditMappingModal.css';
-import { updateMockStorage } from '../mocks/helpers';
+import { updateMockStorage } from '@app/queries/mocks/helpers';
 
 interface IAddEditMappingModalProps {
   title: string;

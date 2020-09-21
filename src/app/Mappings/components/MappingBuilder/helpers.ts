@@ -1,6 +1,13 @@
-import { MappingSource, Mapping, MappingItem, MappingType, MappingTarget } from '../../types';
+import {
+  MappingSource,
+  Mapping,
+  MappingItem,
+  MappingType,
+  MappingTarget,
+  IVMwareProvider,
+  ICNVProvider,
+} from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
-import { IVMwareProvider, ICNVProvider } from '@app/Providers/types';
 import { getMappingSourceById } from '../helpers';
 
 export const getBuilderItemsFromMapping = (

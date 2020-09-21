@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
 import VMwareProvidersTable from './VMware/VMwareProvidersTable';
 import CNVProvidersTable from './CNV/CNVProvidersTable';
-import { Provider, IVMwareProvider, ICNVProvider } from '@app/Providers/types';
+import { Provider, IVMwareProvider, ICNVProvider } from '@app/queries/types';
 
 interface IProvidersTableProps {
   providers: Provider[];

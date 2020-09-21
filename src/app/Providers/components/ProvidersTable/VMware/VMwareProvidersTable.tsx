@@ -15,7 +15,7 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IVMwareProvider } from '@app/Providers/types';
+import { IVMwareProvider } from '@app/queries/types';
 import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
 import VMwareProviderHostsTable from './VMwareProviderHostsTable';
 import ProviderStatus from '../ProviderStatus';

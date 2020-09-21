@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider } from '@app/Providers/types';
+import { Provider } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 interface IProviderStatusProps {

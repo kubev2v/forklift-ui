@@ -1,4 +1,4 @@
-import { IHostNetwork } from '@app/Providers/types';
+import { IHostNetwork } from '@app/queries/types';
 
 export const formatHostNetwork = (network: IHostNetwork): string => {
   const { name, address, isDefault } = network;

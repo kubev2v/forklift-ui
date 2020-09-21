@@ -1,5 +1,4 @@
-import { ICNVNetwork } from '@app/Providers/types';
-import { MappingSource, MappingTarget, MappingType } from '../types';
+import { ICNVNetwork, MappingSource, MappingTarget, MappingType } from '@app/queries/types';
 
 export const getMappingSourceById = (
   sources: MappingSource[],

@@ -16,7 +16,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import CNVProviderActionsDropdown from './CNVProviderActionsDropdown';
-import { ICNVProvider } from '@app/Providers/types';
+import { ICNVProvider } from '@app/queries/types/providers.types';
 import ProviderStatus from '../ProviderStatus';
 import './CNVProvidersTable.css';
 

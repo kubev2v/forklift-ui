@@ -1,4 +1,4 @@
-import { MappingItem, MappingType } from '@app/Mappings/types';
+import { MappingItem, MappingType } from '@app/queries/types';
 import { getMappingTargetName } from '../helpers';
 
 export const groupMappingItemsByTarget = (

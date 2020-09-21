@@ -15,13 +15,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import PlansTable from './components/PlansTable';
 import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip';
-import { Provider } from '@app/Providers/types';
+import { Provider } from '@app/queries/types';
 import { ProviderType } from '@app/common/constants';
 import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real state e.g. from redux
-import { MOCK_PLANS } from './mocks/plans.mock';
-import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
+import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 const IsFetchingInitialPlans = false; // Fetching for the first time, not polling
 const migplans = MOCK_PLANS;

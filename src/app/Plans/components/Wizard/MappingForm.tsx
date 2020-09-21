@@ -14,9 +14,8 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingType, Mapping } from '@app/Mappings/types';
+import { MappingType, Mapping, MappingSource, MappingTarget } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
-import { MappingSource, MappingTarget } from '@app/Mappings/types';
 
 interface IMappingFormProps {
   mappingType: MappingType;

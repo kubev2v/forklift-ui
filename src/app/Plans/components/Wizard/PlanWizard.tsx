@@ -5,10 +5,9 @@ import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
-import { Provider } from '@app/Providers/types';
-import { MOCK_VMS } from './mocks/VMs.mock';
+import { Provider, MappingType } from '@app/queries/types';
+import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
-import { MappingType } from '@app/Mappings/types';
 import {
   MOCK_STORAGE_MAPPINGS,
   MOCK_STORAGE_MAPPING_SOURCES,
@@ -16,7 +15,7 @@ import {
   MOCK_NETWORK_MAPPINGS,
   MOCK_NETWORK_MAPPING_SOURCES,
   MOCK_NETWORK_MAPPING_TARGETS,
-} from '@app/Mappings/mocks/mappings.mock';
+} from '@app/queries/mocks/mappings.mock';
 
 interface IPlanWizardProps {
   isOpen: boolean;

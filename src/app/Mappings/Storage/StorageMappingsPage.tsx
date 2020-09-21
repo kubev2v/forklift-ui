@@ -12,11 +12,11 @@ import {
   Button,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IStorageMapping, MappingType } from '../types';
+import { IStorageMapping, MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
-import { fetchMockStorage } from '../mocks/helpers';
+import { fetchMockStorage } from '@app/queries/mocks/helpers';
 
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 

@@ -13,10 +13,10 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { INetworkMapping, MappingType } from '../types';
+import { INetworkMapping, MappingType } from '@app/queries/types';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
-import { fetchMockStorage } from '../mocks/helpers';
+import { fetchMockStorage } from '@app/queries/mocks/helpers';
 
 const isFetchingInitialNetworkMappings = false; // Fetching for the first time, not polling
 

@@ -4,7 +4,7 @@ import {
   ICNVNetworksByProvider,
   ICNVNetwork,
   NetworkType,
-} from '../types';
+} from '../types/providers.types';
 
 const someVMwareNetworks: IVMwareNetwork[] = [
   { id: '1', name: 'vmware-network-1' },

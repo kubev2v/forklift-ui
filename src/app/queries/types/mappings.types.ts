@@ -2,7 +2,7 @@
 // These types should probably be restructured to match API data later.
 
 import { ProviderType } from '@app/common/constants';
-import { ICNVNetwork, IVMwareDatastore, IVMwareNetwork } from '@app/Providers/types';
+import { ICNVNetwork, IVMwareDatastore, IVMwareNetwork } from '../types/providers.types';
 
 export enum MappingType {
   Network = 'Network',

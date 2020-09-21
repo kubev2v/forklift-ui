@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IPlan } from '../types';
+import { IPlan } from '@app/queries/types';
 
 interface IPlansTableProps {
   planList: IPlan[];

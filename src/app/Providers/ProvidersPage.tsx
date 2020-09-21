@@ -24,7 +24,7 @@ import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
 
 // TODO replace these with real state e.g. from redux
-import { MOCK_PROVIDERS } from './mocks/providers.mock';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
 const providers = MOCK_PROVIDERS;
 

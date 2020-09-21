@@ -1,4 +1,4 @@
-import { MappingType, Mapping } from '../types';
+import { MappingType, Mapping } from '../types/mappings.types';
 
 // TODO: This is a temporary function designed for testing the mappings table. Remove when we wire up Redux & api
 export const updateMockStorage = (generatedMapping: Mapping): void => {
