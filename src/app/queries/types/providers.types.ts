@@ -53,7 +53,6 @@ export interface ICNVProvider extends ICommonProvider {
   vmCount: number;
   networkCount: number;
   namespaceCount: number;
-  storageClasses: string[]; // TODO this is a separate resource, need to move it
 }
 
 export type Provider = IVMwareProvider | ICNVProvider;
@@ -112,8 +111,8 @@ export interface IVMwareDatastore {
 }
 
 export interface IProvidersByType {
-  vsphere: IVMwareProvider[];
-  openshift: ICNVProvider[];
+  [ProviderType.vsphere]: IVMwareProvider[];
+  [ProviderType.cnv]: ICNVProvider[]; // TODO this needs to be openshift, not cnv....
 }
 
 // TODO do these need to be indexed by provider id instead of name?

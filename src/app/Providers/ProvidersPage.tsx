@@ -25,14 +25,16 @@ import AddProviderModal from './components/AddProviderModal';
 
 // TODO replace these with real state e.g. from redux
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
+import { checkAreProvidersEmpty } from './helpers';
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling
-const providers = MOCK_PROVIDERS;
+const providersByType = MOCK_PROVIDERS;
 
 const ProvidersPage: React.FunctionComponent = () => {
-  const areTabsVisible = !isFetchingInitialProviders && providers.length > 0;
-  const availableProviderTypes: ProviderType[] = Object.values(
-    ProviderType
-  ).filter((providerType) => providers.some((provider) => provider.spec.type === providerType));
+  const areProvidersEmpty = checkAreProvidersEmpty(providersByType);
+  const areTabsVisible = !isFetchingInitialProviders && !areProvidersEmpty;
+  const availableProviderTypes: ProviderType[] = Object.keys(providersByType)
+    .filter((key) => providersByType[ProviderType[key] as ProviderType].length > 0)
+    .map((key) => ProviderType[key]);
   const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
   const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
   return (
@@ -78,7 +80,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!providers ? null : providers.length === 0 ? (
+              {!providersByType ? null : areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -90,7 +92,10 @@ const ProvidersPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <ProvidersTable providers={providers} activeProviderType={activeProviderType} />
+                <ProvidersTable
+                  providersByType={providersByType}
+                  activeProviderType={activeProviderType}
+                />
               )}
             </CardBody>
           </Card>

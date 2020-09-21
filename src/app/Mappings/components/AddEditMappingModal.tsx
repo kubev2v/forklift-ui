@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
-import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
@@ -27,8 +26,10 @@ interface IAddEditMappingModalProps {
   mappingType: MappingType;
 }
 
-// TODO replace these with real state e.g. from redux
-const providers = MOCK_PROVIDERS;
+// TODO replace these with real data from react-query
+const providersByType = MOCK_PROVIDERS;
+// TODO move these to a dependent query from providers
+const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
@@ -36,47 +37,43 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   mappingType,
 }: IAddEditMappingModalProps) => {
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
-  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] = providers
-    .filter((provider) => (SOURCE_PROVIDER_TYPES as string[]).includes(provider.spec.type))
-    .map((provider) => ({
-      value: provider as IVMwareProvider,
-      toString: () => provider.metadata.name,
-    }));
-  const targetProviderOptions: OptionWithValue<ICNVProvider>[] = providers
-    .filter((provider) => (TARGET_PROVIDER_TYPES as string[]).includes(provider.spec.type))
-    .map((provider) => ({
-      value: provider as ICNVProvider,
-      toString: () => provider.metadata.name,
-    }));
+  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] = providersByType.vsphere.map(
+    (provider) => ({
+      value: provider,
+      toString: () => provider.name,
+    })
+  );
+  const targetProviderOptions: OptionWithValue<ICNVProvider>[] = providersByType.cnv.map(
+    (provider) => ({
+      value: provider,
+      toString: () => provider.name,
+    })
+  );
 
   const [mappingName, setMappingName] = React.useState('');
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
   const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.metadata.name}`);
+    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
   }, [mappingType, sourceProvider]);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.metadata.name}`);
+    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.name}`);
   }, [mappingType, targetProvider]);
 
   // TODO use the right thing from redux here instead of mock data
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider
-      ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.metadata.name]
-      : [];
-    availableTargets = targetProvider
-      ? MOCK_CNV_NETWORKS_BY_PROVIDER[targetProvider?.metadata.name]
-      : [];
+    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.name] : [];
+    availableTargets = targetProvider ? MOCK_CNV_NETWORKS_BY_PROVIDER[targetProvider?.name] : [];
   }
   if (mappingType === MappingType.Storage) {
     availableSources = sourceProvider
-      ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.metadata.name]
+      ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.name]
       : [];
-    availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
+    availableTargets = targetProvider ? MOCK_STORAGE_CLASSES : [];
   }
 
   // TODO add support for prefilling builderItems for editing an API mapping

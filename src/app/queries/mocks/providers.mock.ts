@@ -88,7 +88,6 @@ const cnvProvider1: ICNVProvider = {
   namespaceCount: 41,
   vmCount: 26,
   networkCount: 8,
-  storageClasses: ['gold', 'silver', 'bronze'], // TODO move these to another resource
 };
 
 const cnvProvider2: ICNVProvider = {
@@ -116,6 +115,6 @@ const cnvProvider3: ICNVProvider = {
 };
 
 export const MOCK_PROVIDERS: IProvidersByType = {
-  vsphere: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
-  openshift: [cnvProvider1, cnvProvider2, cnvProvider3],
+  [ProviderType.vsphere]: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
+  [ProviderType.cnv]: [cnvProvider1, cnvProvider2, cnvProvider3],
 };

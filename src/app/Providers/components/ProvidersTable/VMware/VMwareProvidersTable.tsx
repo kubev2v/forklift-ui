@@ -30,17 +30,17 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   providers,
 }: IVMwareProvidersTableProps) => {
   const getSortValues = (provider: IVMwareProvider) => {
-    const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
+    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
     return [
       '',
-      provider.metadata.name,
-      provider.spec.url,
-      numClusters,
-      numHosts,
-      numVMs,
-      numNetworks,
-      numDatastores,
-      provider.status.conditions[0].type, // TODO maybe surface the most serious status condition?
+      provider.name,
+      provider.object.spec.url,
+      clusterCount,
+      hostCount,
+      vmCount,
+      networkCount,
+      datastoreCount,
+      provider.object.status.conditions[0].type, // TODO maybe surface the most serious status condition?
       '',
     ];
   };
@@ -49,16 +49,19 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
-    IVMwareProvider
-  >({ items: sortedItems });
   const {
-    selectedItems: expandedProviders,
-    toggleItemSelected: toggleProviderExpanded,
+    selectedItems,
+    toggleItemSelected,
+    areAllSelected,
+    selectAll,
     isItemSelected,
+  } = useSelectionState<IVMwareProvider>({ items: sortedItems });
+  const {
+    toggleItemSelected: toggleProviderExpanded,
+    isItemSelected: isItemExpanded,
   } = useSelectionState<IVMwareProvider>({
     items: sortedItems,
-    isEqual: (a, b) => a.metadata.name === b.metadata.name,
+    isEqual: (a, b) => a.name === b.name,
   });
 
   const columns: ICell[] = [
@@ -89,9 +92,9 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IVMwareProvider) => {
-    const { numClusters, numHosts, numVMs, numNetworks, numDatastores } = provider.resourceCounts;
-    const isSelected = selectedItems.includes(provider);
-    const isExpanded = expandedProviders.includes(provider);
+    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
+    const isSelected = isItemSelected(provider);
+    const isExpanded = isItemExpanded(provider);
     rows.push({
       meta: { provider },
       isOpen: isExpanded,
@@ -100,7 +103,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
           title: (
             <input
               type="checkbox"
-              aria-label={`Select provider ${provider.metadata.name}`}
+              aria-label={`Select provider ${provider.name}`}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
                 toggleItemSelected(provider, event.currentTarget.checked);
               }}
@@ -108,22 +111,22 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
             />
           ),
         },
-        provider.metadata.name,
-        provider.spec.url,
-        numClusters,
+        provider.name,
+        provider.object.spec.url,
+        clusterCount,
         {
           title: (
             <>
-              <OutlinedHddIcon key="hosts-icon" /> {numHosts}
+              <OutlinedHddIcon key="hosts-icon" /> {hostCount}
             </>
           ),
           props: {
             isOpen: isExpanded,
           },
         },
-        numVMs,
-        numNetworks,
-        numDatastores,
+        vmCount,
+        networkCount,
+        datastoreCount,
         {
           title: <ProviderStatus provider={provider} />,
         },

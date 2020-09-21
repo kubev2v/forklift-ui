@@ -20,6 +20,9 @@ import { ICNVProvider } from '@app/queries/types/providers.types';
 import ProviderStatus from '../ProviderStatus';
 import './CNVProvidersTable.css';
 
+// TODO move these to a dependent query from providers
+const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
+
 interface ICNVProvidersTableProps {
   providers: ICNVProvider[];
 }
@@ -39,15 +42,15 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   ];
 
   const getSortValues = (provider: ICNVProvider) => {
-    const { numNamespaces, numVMs, numNetworks } = provider.resourceCounts;
+    const { namespaceCount, vmCount, networkCount } = provider;
     return [
-      provider.metadata.name,
-      provider.spec.url,
-      numNamespaces,
-      numVMs,
-      numNetworks,
-      provider.metadata.storageClasses.length,
-      provider.status.conditions[0].type, // TODO maybe surface the most serious status condition?,
+      provider.name,
+      provider.object.spec.url,
+      namespaceCount,
+      vmCount,
+      networkCount,
+      MOCK_STORAGE_CLASSES.length,
+      provider.object.status.conditions[0].type, // TODO maybe surface the most serious status condition?,
       '',
     ];
   };
@@ -57,31 +60,30 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const {
-    selectedItems: expandedProviders,
     toggleItemSelected: toggleProviderExpanded,
-    isItemSelected,
+    isItemSelected: isProviderExpanded,
   } = useSelectionState<ICNVProvider>({
     items: sortedItems,
-    isEqual: (a, b) => a.metadata.name === b.metadata.name,
+    isEqual: (a, b) => a.name === b.name,
   });
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: ICNVProvider) => {
-    const { numNamespaces, numVMs, numNetworks } = provider.resourceCounts;
-    const isExpanded = isItemSelected(provider);
+    const { namespaceCount, vmCount, networkCount } = provider;
+    const isExpanded = isProviderExpanded(provider);
     rows.push({
       meta: { provider },
       isOpen: isExpanded,
       cells: [
-        provider.metadata.name,
-        provider.spec.url,
-        numNamespaces,
-        numVMs,
-        numNetworks,
+        provider.name,
+        provider.object.spec.url,
+        namespaceCount,
+        vmCount,
+        networkCount,
         {
           title: (
             <>
-              <DatabaseIcon key="storage-classes-icon" /> {provider.metadata.storageClasses.length}
+              <DatabaseIcon key="storage-classes-icon" /> {MOCK_STORAGE_CLASSES.length}
             </>
           ),
           props: {
@@ -102,7 +104,7 @@ const CNVProvidersTable: React.FunctionComponent<ICNVProvidersTableProps> = ({
           {
             title: (
               <List className={`provider-storage-classes-list ${spacing.mMd}`}>
-                {provider.metadata.storageClasses.map((storageClass) => (
+                {MOCK_STORAGE_CLASSES.map((storageClass) => (
                   <ListItem key={storageClass}>{storageClass}</ListItem>
                 ))}
               </List>
