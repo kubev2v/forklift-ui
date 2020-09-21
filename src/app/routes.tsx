@@ -52,7 +52,6 @@ export const routes: AppRouteConfig[] = [
   {
     component: HostsPage,
     exact: false,
-    label: 'Hosts',
     path: '/providers/:providerId',
     title: `${APP_TITLE} | Hosts`,
   },

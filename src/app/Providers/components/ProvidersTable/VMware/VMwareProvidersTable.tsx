@@ -16,11 +16,10 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
 import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
-import VMwareProviderHostsTable from '../../VMwareProviderHostsTable';
 import ProviderStatus from '../ProviderStatus';
 
 import './VMwareProvidersTable.css';
-import { Link, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -29,9 +28,6 @@ interface IVMwareProvidersTableProps {
 const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> = ({
   providers,
 }: IVMwareProvidersTableProps) => {
-  const { path, url } = useRouteMatch();
-  console.log('path', path);
-
   const getSortValues = (provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
     return [
@@ -120,11 +116,9 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         {
           title: (
             <>
-              <Button onClick={() => console.log('route to hosts table')} variant="link">
-                <Link to={`${url}providers/${provider.name}`}>
-                  <OutlinedHddIcon key="hosts-icon" /> {hostCount}
-                </Link>
-              </Button>
+              <Link to={`/providers/${provider.name}`}>
+                <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+              </Link>
             </>
           ),
         },

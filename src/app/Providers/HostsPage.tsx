@@ -4,7 +4,6 @@ import {
   Level,
   LevelItem,
   Bullseye,
-  Button,
   Card,
   CardBody,
   EmptyState,
@@ -12,29 +11,32 @@ import {
   EmptyStateIcon,
   Spinner,
   Title,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link, useRouteMatch } from 'react-router-dom';
 import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { useHostsQuery } from '@app/queries';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+export interface IHostsMatchParams {
+  url: string;
+  providerId: string;
+}
 
 export const HostsPage: React.FunctionComponent = () => {
-  interface MatchParams {
-    url: string;
-    providerId: string;
-  }
-  const match = useRouteMatch<MatchParams>({
+  const match = useRouteMatch<IHostsMatchParams>({
     path: '/providers/:providerId',
     strict: true,
     sensitive: true,
   });
 
-  const isFetchingInitialHosts = false;
+  const hostsQuery = useHostsQuery(match?.params?.providerId);
 
   return (
     <>
-      <PageSection>
+      <PageSection variant="light">
         <Level>
           <LevelItem>
             <Breadcrumb>
@@ -45,39 +47,37 @@ export const HostsPage: React.FunctionComponent = () => {
             </Breadcrumb>
           </LevelItem>
         </Level>
-        <Level>
+        <Level className={spacing.mtLg}>
           <LevelItem>
-            <Title headingLevel="h1">Hosts</Title>
+            <Title headingLevel="h1">Hosts - {match?.params.providerId}</Title>
           </LevelItem>
         </Level>
       </PageSection>
       <PageSection>
-        {isFetchingInitialHosts ? (
-          <Bullseye>
-            <EmptyState>
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
-        ) : (
-          <Card>
+        <Card>
+          {hostsQuery.isLoading ? (
+            <LoadingEmptyState />
+          ) : hostsQuery.isError || !match?.params.providerId || !hostsQuery.data ? (
+            <Alert variant="danger" title="Error loading hosts" />
+          ) : (
             <CardBody>
-              {!match?.params.providerId ? (
+              {hostsQuery?.data?.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
-                    No providers
+                    No hosts
                   </Title>
                   <EmptyStateBody>No hosts available for this provider.</EmptyStateBody>
                 </EmptyState>
               ) : (
-                <VMwareProviderHostsTable providerId={match?.params.providerId || ''} />
+                <VMwareProviderHostsTable
+                  providerId={match?.params.providerId}
+                  hosts={hostsQuery?.data}
+                />
               )}
             </CardBody>
-          </Card>
-        )}
+          )}
+        </Card>
       </PageSection>
     </>
   );

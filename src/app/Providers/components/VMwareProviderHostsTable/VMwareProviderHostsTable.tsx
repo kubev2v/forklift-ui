@@ -1,28 +1,21 @@
 import * as React from 'react';
-import { Button } from '@patternfly/react-core';
+import { Alert, Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
-import { useSortState } from '@app/common/hooks';
+import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { IVMwareProvider, IHost } from '@app/queries/types';
-import { MOCK_HOSTS_BY_PROVIDER } from '@app/queries/mocks/hosts.mock';
 import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 
 interface IVMwareProviderHostsTableProps {
-  // provider: IVMwareProvider;
-  providerId: string;
+  providerId?: string;
+  hosts: IHost[];
 }
-
-// TODO use real data instead of mocks
-const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 
 const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
   providerId,
+  hosts,
 }: IVMwareProviderHostsTableProps) => {
-  const hosts: IHost[] = hostsByProvider[providerId];
-
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
@@ -31,22 +24,26 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   ];
 
   const getSortValues = (host: IHost) => {
-    const { name, network, bandwidth, mtu } = host.metadata;
+    const { name, network, bandwidth, mtu } = host;
     // First cell is the generated checkbox from using onSelect.
-    return ['', name, formatHostNetwork(network), bandwidth, mtu];
+    return ['', name, 'network', 'bandwidth', 'mtu'];
+    //TODO update when api data is available
+    // return ['', name, formatHostNetwork(network), bandwidth, mtu];
   };
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
-
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>({
     items: sortedItems,
   });
 
   const rows: IRow[] = sortedItems.map((host: IHost) => {
-    const { name, bandwidth, mtu } = host.metadata;
+    const { name } = host;
     return {
       meta: { host },
       selected: selectedItems.includes(host),
-      cells: [name, formatHostNetwork(host.metadata.network), bandwidth, mtu],
+      cells: [name, 'network N/A', 'bandwidth N/A', 'mtu N/A'],
+      //TODO: update when api info is available
+      // cells: [name, formatHostNetwork(host.metadata.network), bandwidth, mtu],
     };
   });
 
@@ -54,39 +51,45 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   return (
     <>
-      <div className={`${alignment.textAlignRight} ${spacing.mtSm} ${spacing.mrSm}`}>
-        <Button
-          variant="secondary"
-          onClick={() => setIsSelectNetworkModalOpen(true)}
-          isDisabled={selectedItems.length === 0}
+      <>
+        <Level>
+          <LevelItem>
+            <Button
+              variant="secondary"
+              onClick={() => setIsSelectNetworkModalOpen(true)}
+              isDisabled={selectedItems.length === 0}
+            >
+              Select migration network
+            </Button>
+          </LevelItem>
+          <LevelItem>
+            <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+          </LevelItem>
+        </Level>
+        <Table
+          className="provider-inner-hosts-table"
+          aria-label={`Hosts table for provider ${providerId}`}
+          cells={columns}
+          rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
+          onSelect={(_event, isSelected, rowIndex, rowData) => {
+            if (rowIndex === -1) {
+              selectAll(isSelected);
+            }
+            toggleItemSelected(rowData.meta.host, isSelected);
+          }}
         >
-          Select migration network
-        </Button>
-      </div>
-      <Table
-        className="provider-inner-hosts-table"
-        variant="compact"
-        aria-label={`Hosts table for provider ${providerId}`}
-        cells={columns}
-        rows={rows}
-        sortBy={sortBy}
-        onSort={onSort}
-        onSelect={(_event, isSelected, rowIndex, rowData) => {
-          if (rowIndex === -1) {
-            selectAll(isSelected);
-          }
-          toggleItemSelected(rowData.meta.host, isSelected);
-        }}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
-      {isSelectNetworkModalOpen && (
-        <SelectNetworkModal
-          selectedHosts={selectedItems}
-          onClose={() => setIsSelectNetworkModalOpen(false)}
-        />
-      )}
+          <TableHeader />
+          <TableBody />
+        </Table>
+        {isSelectNetworkModalOpen && (
+          <SelectNetworkModal
+            selectedHosts={selectedItems}
+            onClose={() => setIsSelectNetworkModalOpen(false)}
+          />
+        )}
+      </>
     </>
   );
 };
