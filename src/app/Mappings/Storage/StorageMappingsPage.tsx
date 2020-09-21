@@ -21,11 +21,11 @@ import { fetchMockStorage } from '@app/queries/mocks/helpers';
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 
 const StorageMappingsPage: React.FunctionComponent = () => {
-  //TODO: replace with real state from redux
+  //TODO: replace with real state from react-query
   const [storageMappings, setStorageMappings] = React.useState<IStorageMapping[]>([]);
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  //TODO: replace with real state from redux
+  //TODO: replace with real state from react-query
   const mockMapObj = localStorage.getItem('storageMappingsObject');
   React.useEffect(() => {
     console.log(`TODO: fetch storage mapping items`);

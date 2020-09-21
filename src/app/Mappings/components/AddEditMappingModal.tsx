@@ -62,7 +62,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.name}`);
   }, [mappingType, targetProvider]);
 
-  // TODO use the right thing from redux here instead of mock data
+  // TODO use the right thing from react-query here instead of mock data
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {

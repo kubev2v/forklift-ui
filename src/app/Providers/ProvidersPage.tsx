@@ -23,7 +23,7 @@ import ProvidersTable from './components/ProvidersTable';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
 
-// TODO replace these with real state e.g. from redux
+// TODO replace these with real state from react-query
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { checkAreProvidersEmpty } from './helpers';
 const isFetchingInitialProviders = false; // Fetching for the first time, not polling

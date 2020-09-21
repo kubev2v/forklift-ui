@@ -19,7 +19,7 @@ import { Provider } from '@app/queries/types';
 import { ProviderType } from '@app/common/constants';
 import PlanWizard from './components/Wizard/PlanWizard';
 
-// TODO replace these with real state e.g. from redux
+// TODO replace these with real state from react-query
 import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 

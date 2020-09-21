@@ -69,7 +69,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
-    // TODO use the right thing from redux here instead of mock data
+    // TODO use the right thing from react-query here instead of mock data
     let availableSources: MappingSource[] = [];
     if (mappingType === MappingType.Network) {
       availableSources = MOCK_VMWARE_NETWORKS_BY_PROVIDER[mapping.provider.source.name];
