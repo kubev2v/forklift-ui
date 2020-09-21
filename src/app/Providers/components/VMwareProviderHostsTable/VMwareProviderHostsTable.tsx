@@ -11,16 +11,17 @@ import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 
 interface IVMwareProviderHostsTableProps {
-  provider: IVMwareProvider;
+  // provider: IVMwareProvider;
+  providerId: string;
 }
 
 // TODO use real data instead of mocks
 const hostsByProvider = MOCK_HOSTS_BY_PROVIDER;
 
 const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
-  provider,
+  providerId,
 }: IVMwareProviderHostsTableProps) => {
-  const hosts: IHost[] = hostsByProvider[provider.name];
+  const hosts: IHost[] = hostsByProvider[providerId];
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
@@ -65,7 +66,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       <Table
         className="provider-inner-hosts-table"
         variant="compact"
-        aria-label={`Hosts table for provider ${provider.name}`}
+        aria-label={`Hosts table for provider ${providerId}`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}
