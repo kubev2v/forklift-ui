@@ -13,19 +13,25 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import PlansTable from './components/PlansTable';
+
 import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip';
+import { useProvidersQuery } from '@app/queries';
+
+import PlansTable from './components/PlansTable';
 import PlanWizard from './components/Wizard/PlanWizard';
 
-// TODO replace these with real state from react-query
+// TODO replace these with real data from react-query
 import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
-import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
-const IsFetchingInitialPlans = false; // Fetching for the first time, not polling
+const isFetchingInitialPlans = false; // Fetching for the first time, not polling
 const migplans = MOCK_PLANS;
-const providersByType = MOCK_PROVIDERS;
 
 const PlansPage: React.FunctionComponent = () => {
+  // TODO handle query error case
+  const { isLoading: isLoadingProviders, data: providersByType, error } = useProvidersQuery();
+  const vmwareProviders = providersByType?.vsphere || [];
+  const openshiftProviders = providersByType?.openshift || [];
+
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
@@ -33,7 +39,7 @@ const PlansPage: React.FunctionComponent = () => {
     content: '',
   };
 
-  if (providersByType.vsphere.length < 1 || providersByType.openshift.length < 1) {
+  if (vmwareProviders.length < 1 || openshiftProviders.length < 1) {
     addPlanDisabledObj = {
       isTooltipEnabled: true,
       content:
@@ -47,7 +53,7 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
-        {IsFetchingInitialPlans ? (
+        {isLoadingProviders || isFetchingInitialPlans ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -93,8 +99,8 @@ const PlansPage: React.FunctionComponent = () => {
       <PlanWizard
         isOpen={isWizardOpen}
         onClose={toggleWizard}
-        sourceProviders={providersByType.vsphere}
-        targetProviders={providersByType.openshift}
+        sourceProviders={vmwareProviders}
+        targetProviders={openshiftProviders}
       />
     </>
   );

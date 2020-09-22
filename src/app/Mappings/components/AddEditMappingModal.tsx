@@ -34,7 +34,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
-  // TODO handle error case
+  // TODO handle query error case
   const { isLoading: isLoadingProviders, data: providersByType, error } = useProvidersQuery();
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI

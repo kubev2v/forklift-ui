@@ -29,7 +29,7 @@ import AddProviderModal from './components/AddProviderModal';
 import { checkAreProvidersEmpty } from './helpers';
 
 const ProvidersPage: React.FunctionComponent = () => {
-  // TODO handle error case
+  // TODO handle query error case
   const { isLoading, data: providersByType, error } = useProvidersQuery();
 
   const areProvidersEmpty = checkAreProvidersEmpty(providersByType);
