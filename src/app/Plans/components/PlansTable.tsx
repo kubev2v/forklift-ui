@@ -32,7 +32,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       plan.spec.provider.destinationProvider.name,
       plan.spec.vmList.length,
       '', // Plan status
-      '', // Action column
+      '', // Start/Cancel migration column
+      '', // Kebab column
     ];
   };
 
@@ -49,11 +50,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     { title: 'VMs', transforms: [sortable] },
     { title: 'Plan status', transforms: [sortable] },
     { title: '' },
+    { title: '' },
   ];
 
   const rows: IRow[] = [];
 
   currentPageItems.forEach((plan: IPlan) => {
+    let buttonText = '';
+    if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
+      buttonText = 'Start migration';
+    }
+
     rows.push({
       meta: { plan },
       cells: [
@@ -70,6 +77,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.vmList.length,
         {
           title: <PlanStatus plan={plan} migration={getMigration(plan)[0]} />,
+        },
+        {
+          title: buttonText ? (
+            <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
+              {buttonText}
+            </Button>
+          ) : null,
         },
         { title: <PlanActionsDropdown /> },
       ],
