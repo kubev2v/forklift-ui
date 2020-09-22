@@ -90,7 +90,7 @@ const ProvidersPage: React.FunctionComponent = () => {
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
-        ) : status === 'error' ? (
+        ) : providersQuery.status === 'error' ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
