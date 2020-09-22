@@ -72,10 +72,10 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     // TODO use the right thing from react-query here instead of mock data
     let availableSources: MappingSource[] = [];
     if (mappingType === MappingType.Network) {
-      availableSources = MOCK_VMWARE_NETWORKS_BY_PROVIDER[mapping.provider.source.name];
+      availableSources = MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1;
     }
     if (mappingType === MappingType.Storage) {
-      availableSources = MOCK_VMWARE_DATASTORES_BY_PROVIDER[mapping.provider.source.name];
+      availableSources = MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1;
     }
 
     const { name, provider } = mapping;

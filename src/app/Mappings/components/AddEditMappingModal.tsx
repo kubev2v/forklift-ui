@@ -83,15 +83,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.name] : [];
-    availableTargets = targetProvider
-      ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER[targetProvider?.name]
-      : [];
+    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : [];
+    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : [];
   }
   if (mappingType === MappingType.Storage) {
-    availableSources = sourceProvider
-      ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.name]
-      : [];
+    availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : [];
     availableTargets = targetProvider ? MOCK_STORAGE_CLASSES : [];
   }
 
