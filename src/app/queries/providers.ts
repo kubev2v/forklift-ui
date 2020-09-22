@@ -5,7 +5,7 @@ import { IProvidersByType } from './types';
 
 // TODO handle error responses?
 export const useProvidersQuery = (): QueryResult<IProvidersByType> =>
-  useMockableQuery(
+  useMockableQuery<IProvidersByType>(
     {
       queryKey: 'providers',
       queryFn: () => fetch(getApiUrl('/providers?detail=true')).then((res) => res.json()),

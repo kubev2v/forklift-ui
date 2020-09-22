@@ -18,24 +18,35 @@ import {
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { useProvidersQuery } from '@app/queries';
+
 import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
 
-// TODO replace these with real state from react-query
-import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { checkAreProvidersEmpty } from './helpers';
-const isFetchingInitialProviders = false; // Fetching for the first time, not polling
-const providersByType = MOCK_PROVIDERS;
 
 const ProvidersPage: React.FunctionComponent = () => {
+  const { isLoading, data: providersByType } = useProvidersQuery();
+
   const areProvidersEmpty = checkAreProvidersEmpty(providersByType);
-  const areTabsVisible = !isFetchingInitialProviders && !areProvidersEmpty;
-  const availableProviderTypes: ProviderType[] = Object.keys(providersByType)
-    .filter((key) => providersByType[ProviderType[key] as ProviderType].length > 0)
-    .map((key) => ProviderType[key]);
-  const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
+  const areTabsVisible = !isLoading && !areProvidersEmpty;
+  const availableProviderTypes: ProviderType[] = !providersByType
+    ? []
+    : Object.keys(providersByType)
+        .filter((key) => providersByType[ProviderType[key] as ProviderType].length > 0)
+        .map((key) => ProviderType[key]);
+  const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
+    availableProviderTypes[0]
+  );
+  React.useEffect(() => {
+    if (!activeProviderType && availableProviderTypes.length > 0) {
+      setActiveProviderType(availableProviderTypes[0]);
+    }
+  }, [activeProviderType, availableProviderTypes]);
+
   const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
   return (
     <>
@@ -53,7 +64,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         <CloudAnalyticsInfoAlert />
         {areTabsVisible && (
           <Tabs
-            activeKey={activeProviderType}
+            activeKey={activeProviderType || ''}
             onSelect={(_event, tabKey) => setActiveProviderType(tabKey as ProviderType)}
             className={spacing.mtSm}
           >
@@ -68,7 +79,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        {isFetchingInitialProviders ? (
+        {isLoading ? (
           <Bullseye>
             <EmptyState>
               <div className="pf-c-empty-state__icon">
@@ -80,7 +91,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!providersByType ? null : areProvidersEmpty ? (
+              {!providersByType || !activeProviderType ? null : areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
