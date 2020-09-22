@@ -99,12 +99,13 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      <PlanWizard
-        isOpen={isWizardOpen}
-        onClose={toggleWizard}
-        sourceProviders={vmwareProviders}
-        targetProviders={openshiftProviders}
-      />
+      {isWizardOpen ? (
+        <PlanWizard
+          onClose={toggleWizard}
+          sourceProviders={vmwareProviders}
+          targetProviders={openshiftProviders}
+        />
+      ) : null}
     </>
   );
 };

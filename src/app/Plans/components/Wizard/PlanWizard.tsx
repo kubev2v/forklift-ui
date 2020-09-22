@@ -16,20 +16,21 @@ import {
   MOCK_NETWORK_MAPPING_SOURCES,
   MOCK_NETWORK_MAPPING_TARGETS,
 } from '@app/queries/mocks/mappings.mock';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IPlanWizardProps {
-  isOpen: boolean;
   onClose: () => void;
   sourceProviders: IVMwareProvider[];
   targetProviders: IOpenShiftProvider[];
 }
 
 const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
-  isOpen,
   onClose,
   sourceProviders,
   targetProviders,
 }: IPlanWizardProps) => {
+  usePausedPollingEffect();
+
   enum stepId {
     General = 1,
     FilterVMs,
@@ -131,7 +132,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} width="95%" showClose={false} hasNoBodyWrapper>
+    <Modal isOpen width="95%" showClose={false} hasNoBodyWrapper>
       <Wizard
         title="Create a Migration Plan"
         steps={steps}

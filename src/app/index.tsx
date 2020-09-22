@@ -6,19 +6,21 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
 import '@app/app.css';
-import { LocalStorageContextProvider } from '@app/common/context/LocalStorageContext';
+import { PollingContextProvider, LocalStorageContextProvider } from '@app/common/context';
 
 const queryCache = new QueryCache();
 
 const App: React.FunctionComponent = () => (
   <ReactQueryCacheProvider queryCache={queryCache}>
-    <Router>
+    <PollingContextProvider>
       <LocalStorageContextProvider>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
+        <Router>
+          <AppLayout>
+            <AppRoutes />
+          </AppLayout>
+        </Router>
       </LocalStorageContextProvider>
-    </Router>
+    </PollingContextProvider>
     <ReactQueryDevtools />
   </ReactQueryCacheProvider>
 );

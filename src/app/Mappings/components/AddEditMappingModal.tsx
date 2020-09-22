@@ -32,6 +32,7 @@ import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastore
 import { useProvidersQuery } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -48,6 +49,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   mappingType,
 }: IAddEditMappingModalProps) => {
   const providersQuery = useProvidersQuery();
+  usePausedPollingEffect();
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
   const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
