@@ -47,24 +47,20 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
-  const {
-    isLoading: isLoadingProviders,
-    data: providersByType,
-    status: providersQueryStatus,
-  } = useProvidersQuery();
+  const providersQuery = useProvidersQuery();
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
   const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
-    isLoadingProviders || !providersByType
+    providersQuery.isLoading || !providersQuery.data
       ? []
-      : providersByType.vsphere.map((provider) => ({
+      : providersQuery.data.vsphere.map((provider) => ({
           value: provider,
           toString: () => provider.name,
         }));
   const targetProviderOptions: OptionWithValue<IOpenShiftProvider>[] =
-    isLoadingProviders || !providersByType
+    providersQuery.isLoading || !providersQuery.data
       ? []
-      : providersByType.openshift.map((provider) => ({
+      : providersQuery.data.openshift.map((provider) => ({
           value: provider,
           toString: () => provider.name,
         }));
@@ -141,7 +137,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       ]}
     >
       <Form className="extraSelectMargin">
-        {isLoadingProviders ? (
+        {providersQuery.isLoading ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -150,7 +146,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
-        ) : providersQueryStatus === 'error' ? (
+        ) : providersQuery.status === 'error' ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <>

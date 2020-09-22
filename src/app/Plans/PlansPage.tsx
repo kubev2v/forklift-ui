@@ -28,13 +28,10 @@ const isFetchingInitialPlans = false; // Fetching for the first time, not pollin
 const migplans = MOCK_PLANS;
 
 const PlansPage: React.FunctionComponent = () => {
-  const {
-    isLoading: isLoadingProviders,
-    data: providersByType,
-    status: providersQueryStatus,
-  } = useProvidersQuery();
-  const vmwareProviders = providersByType?.vsphere || [];
-  const openshiftProviders = providersByType?.openshift || [];
+  const providersQuery = useProvidersQuery();
+
+  const vmwareProviders = providersQuery.data?.vsphere || [];
+  const openshiftProviders = providersQuery.data?.openshift || [];
 
   const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
@@ -57,7 +54,7 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
-        {isLoadingProviders || isFetchingInitialPlans ? (
+        {providersQuery.isLoading || isFetchingInitialPlans ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -66,7 +63,7 @@ const PlansPage: React.FunctionComponent = () => {
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
-        ) : providersQueryStatus === 'error' ? (
+        ) : providersQuery.status === 'error' ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>

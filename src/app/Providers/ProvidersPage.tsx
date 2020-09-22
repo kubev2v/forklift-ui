@@ -28,16 +28,17 @@ import ProvidersTable from './components/ProvidersTable';
 import AddProviderModal from './components/AddProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
+import { IProvidersByType } from '@app/queries/types';
 
 const ProvidersPage: React.FunctionComponent = () => {
-  const { isLoading, data: providersByType, status } = useProvidersQuery();
+  const providersQuery = useProvidersQuery();
 
-  const areProvidersEmpty = checkAreProvidersEmpty(providersByType);
-  const areTabsVisible = !isLoading && !areProvidersEmpty;
-  const availableProviderTypes: ProviderType[] = !providersByType
+  const areProvidersEmpty = checkAreProvidersEmpty(providersQuery.data);
+  const areTabsVisible = !providersQuery.isLoading && !areProvidersEmpty;
+  const availableProviderTypes: ProviderType[] = !providersQuery.data
     ? []
-    : Object.keys(providersByType)
-        .filter((key) => providersByType[ProviderType[key] as ProviderType].length > 0)
+    : Object.keys(providersQuery.data)
+        .filter((key) => (providersQuery.data as IProvidersByType)[ProviderType[key]].length > 0)
         .map((key) => ProviderType[key]);
   const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
     availableProviderTypes[0]
@@ -80,7 +81,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        {isLoading ? (
+        {providersQuery.isLoading ? (
           <Bullseye>
             <EmptyState>
               <div className="pf-c-empty-state__icon">
@@ -94,7 +95,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!providersByType || !activeProviderType ? null : areProvidersEmpty ? (
+              {!providersQuery.data || !activeProviderType ? null : areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -107,7 +108,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                 </EmptyState>
               ) : (
                 <ProvidersTable
-                  providersByType={providersByType}
+                  providersByType={providersQuery.data}
                   activeProviderType={activeProviderType}
                 />
               )}
