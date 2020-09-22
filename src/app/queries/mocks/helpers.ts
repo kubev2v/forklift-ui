@@ -11,14 +11,7 @@ export const updateMockStorage = (generatedMapping: Mapping): void => {
     mappings: [
       {
         name: mappingName ? mappingName : 'name1',
-        provider: {
-          source: {
-            name: provider.source.name,
-          },
-          target: {
-            name: provider.source.name,
-          },
-        },
+        provider,
         items,
       },
       ...(currentMappings?.mappings ? currentMappings.mappings : []),

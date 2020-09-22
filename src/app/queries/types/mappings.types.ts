@@ -2,7 +2,13 @@
 // These types should probably be restructured to match API data later.
 
 import { ProviderType } from '@app/common/constants';
-import { IOpenShiftNetwork, IVMwareDatastore, IVMwareNetwork } from './providers.types';
+import {
+  IOpenShiftNetwork,
+  IOpenShiftProvider,
+  IVMwareDatastore,
+  IVMwareNetwork,
+  IVMwareProvider,
+} from './providers.types';
 import { IStorageClass } from './storageClasses.types';
 
 export enum MappingType {
@@ -30,15 +36,8 @@ export interface ICommonMapping {
   type: MappingType;
   name: string;
   provider: {
-    // TODO Should this instead use unique provider ids? what if we rename providers?
-    source: {
-      type: ProviderType;
-      name: string;
-    };
-    target: {
-      type: ProviderType;
-      name: string;
-    };
+    source: IVMwareProvider;
+    target: IOpenShiftProvider;
   };
   items: MappingItem[];
 }

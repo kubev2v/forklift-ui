@@ -1,8 +1,14 @@
 import { Bullseye, EmptyState, Spinner, Title } from '@patternfly/react-core';
 import * as React from 'react';
 
-const LoadingEmptyState: React.FunctionComponent = () => (
-  <Bullseye>
+interface ILoadingEmptyStateProps {
+  className?: string;
+}
+
+const LoadingEmptyState: React.FunctionComponent<ILoadingEmptyStateProps> = ({
+  className = '',
+}: ILoadingEmptyStateProps) => (
+  <Bullseye className={className}>
     <EmptyState variant="large">
       <div className="pf-c-empty-state__icon">
         <Spinner size="xl" />

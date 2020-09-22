@@ -13,19 +13,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import {
-  MappingType,
-  MappingSource,
-  MappingTarget,
-  IOpenShiftProvider,
-  IVMwareProvider,
-} from '@app/queries/types';
-import {
-  MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
-} from '@app/queries/mocks/networks.mock';
-import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
-import { useProvidersQuery, useStorageClassesQuery } from '@app/queries';
+import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
@@ -65,27 +54,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
   const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
-  const storageClassesQuery = useStorageClassesQuery(targetProvider);
-
-  React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
-  }, [mappingType, sourceProvider]);
-
-  React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.name}`);
-  }, [mappingType, targetProvider]);
-
-  // TODO use the right thing from react-query here instead of mock data
-  let availableSources: MappingSource[] = [];
-  let availableTargets: MappingTarget[] = [];
-  if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : [];
-    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : [];
-  }
-  if (mappingType === MappingType.Storage) {
-    availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : [];
-    availableTargets = (targetProvider && storageClassesQuery.data) || [];
-  }
+  const mappingResourceQueries = useMappingResourceQueries(
+    sourceProvider,
+    targetProvider,
+    mappingType
+  );
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
@@ -133,7 +106,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       <Form className="extraSelectMargin">
         {providersQuery.isLoading ? (
           <LoadingEmptyState />
-        ) : providersQuery.status === 'error' ? (
+        ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <>
@@ -183,15 +156,15 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={1} />
             </Grid>
             {sourceProvider && targetProvider ? (
-              storageClassesQuery.isLoading ? (
+              mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
-              ) : storageClassesQuery.status === 'error' ? (
-                <Alert variant="danger" title="Error loading storage classes" />
+              ) : mappingResourceQueries.isError ? (
+                <Alert variant="danger" title="Error loading mapping resources" />
               ) : (
                 <MappingBuilder
                   mappingType={mappingType}
-                  availableSources={availableSources}
-                  availableTargets={availableTargets}
+                  availableSources={mappingResourceQueries.availableSources}
+                  availableTargets={mappingResourceQueries.availableTargets}
                   builderItems={builderItems}
                   setBuilderItems={setBuilderItems}
                 />

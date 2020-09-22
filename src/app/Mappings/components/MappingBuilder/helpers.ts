@@ -54,14 +54,8 @@ export const getMappingFromBuilderItems = ({
     type: mappingType,
     name: mappingName,
     provider: {
-      source: {
-        type: sourceProvider.type,
-        name: sourceProvider.name,
-      },
-      target: {
-        type: targetProvider.type,
-        name: targetProvider.name,
-      },
+      source: sourceProvider,
+      target: targetProvider,
     },
     items,
   } as Mapping;

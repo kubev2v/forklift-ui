@@ -82,7 +82,7 @@ const ProvidersPage: React.FunctionComponent = () => {
       <PageSection>
         {providersQuery.isLoading ? (
           <LoadingEmptyState />
-        ) : providersQuery.status === 'error' ? (
+        ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>

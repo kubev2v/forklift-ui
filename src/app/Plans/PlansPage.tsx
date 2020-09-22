@@ -55,7 +55,7 @@ const PlansPage: React.FunctionComponent = () => {
       <PageSection>
         {providersQuery.isLoading || isFetchingInitialPlans ? (
           <LoadingEmptyState />
-        ) : providersQuery.status === 'error' ? (
+        ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>

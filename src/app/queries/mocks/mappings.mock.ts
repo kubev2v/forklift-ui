@@ -1,21 +1,15 @@
 import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings.types';
-import { ProviderType } from '@app/common/constants';
 import { MappingSource, MappingTarget } from '../types/mappings.types';
 import { NetworkType } from '../types/providers.types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
+import { MOCK_PROVIDERS } from './providers.mock';
 
 const storageMapping1: IStorageMapping = {
   type: MappingType.Storage,
   name: 'vcenter1_datastore_to_OCPv_storageclass1',
   provider: {
-    source: {
-      type: ProviderType.vsphere,
-      name: 'vcenter1',
-    },
-    target: {
-      type: ProviderType.openshift,
-      name: 'ocp1',
-    },
+    source: MOCK_PROVIDERS.vsphere[0],
+    target: MOCK_PROVIDERS.openshift[0],
   },
   items: [
     {
@@ -31,14 +25,8 @@ const storageMapping2: IStorageMapping = {
   type: MappingType.Storage,
   name: 'vcenter1_datastore_to_OCPv_storageclass2',
   provider: {
-    source: {
-      type: ProviderType.vsphere,
-      name: 'vcenter1',
-    },
-    target: {
-      type: ProviderType.openshift,
-      name: 'ocp1',
-    },
+    source: MOCK_PROVIDERS.vsphere[0],
+    target: MOCK_PROVIDERS.openshift[0],
   },
   items: [
     {
@@ -65,14 +53,8 @@ const networkMapping1: INetworkMapping = {
   type: MappingType.Network,
   name: 'vcenter1_netstore_to_OCP1_network1',
   provider: {
-    source: {
-      type: ProviderType.vsphere,
-      name: 'vcenter1',
-    },
-    target: {
-      type: ProviderType.openshift,
-      name: 'ocp1',
-    },
+    source: MOCK_PROVIDERS.vsphere[0],
+    target: MOCK_PROVIDERS.openshift[0],
   },
   items: [
     {
@@ -92,14 +74,8 @@ const networkMapping2: INetworkMapping = {
   type: MappingType.Network,
   name: 'vcenter1_netstore_to_OCP1_network2',
   provider: {
-    source: {
-      type: ProviderType.vsphere,
-      name: 'vcenter1',
-    },
-    target: {
-      type: ProviderType.openshift,
-      name: 'ocp1',
-    },
+    source: MOCK_PROVIDERS.vsphere[0],
+    target: MOCK_PROVIDERS.openshift[0],
   },
   items: [
     {
