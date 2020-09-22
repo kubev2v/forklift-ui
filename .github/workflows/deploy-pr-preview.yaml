@@ -22,8 +22,8 @@ jobs:
           node-version: 12
       - name: Install dependencies
         run: yarn install
-      - name: Build
-        run: yarn build
+      - name: Build in mock mode
+        run: yarn build:mock
       - name: Generate Surge URL
         uses: actions/github-script@v3
         id: surge-url

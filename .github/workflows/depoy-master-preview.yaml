@@ -19,8 +19,8 @@ jobs:
         run: yarn install
       - name: Run tests
         run: yarn ci
-      - name: Bundle
-        run: yarn build
+      - name: Build in mock mode
+        run: yarn build:mock
       - name: Install Surge
         run: npm install -g surge
       - name: Deploy to Surge
