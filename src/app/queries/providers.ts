@@ -20,14 +20,16 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   );
   return {
     ...result,
-    data: Object.keys(result.data || {}).reduce(
-      (newObj, key) => ({
-        ...newObj,
-        [key]: (result.data || {})[key].sort((a: Provider, b: Provider) =>
-          a.name < b.name ? -1 : 1
-        ),
-      }),
-      {} as IProvidersByType
-    ) as IProvidersByType,
+    data: result.data
+      ? (Object.keys(result.data || {}).reduce(
+          (newObj, key) => ({
+            ...newObj,
+            [key]: (result.data || {})[key].sort((a: Provider, b: Provider) =>
+              a.name < b.name ? -1 : 1
+            ),
+          }),
+          {} as IProvidersByType
+        ) as IProvidersByType)
+      : undefined,
   };
 };
