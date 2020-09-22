@@ -73,6 +73,7 @@ const vmwareProvider3: IVMwareProvider = {
 
 const openshiftProvider1: IOpenShiftProvider = {
   ...vmwareProvider1,
+  name: 'OCPv_1',
   object: {
     ...vmwareProvider1.object,
     metadata: {
