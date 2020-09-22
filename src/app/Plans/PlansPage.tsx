@@ -10,6 +10,7 @@ import {
   Button,
   Bullseye,
   Spinner,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -27,8 +28,11 @@ const isFetchingInitialPlans = false; // Fetching for the first time, not pollin
 const migplans = MOCK_PLANS;
 
 const PlansPage: React.FunctionComponent = () => {
-  // TODO handle query error case
-  const { isLoading: isLoadingProviders, data: providersByType, error } = useProvidersQuery();
+  const {
+    isLoading: isLoadingProviders,
+    data: providersByType,
+    status: providersQueryStatus,
+  } = useProvidersQuery();
   const vmwareProviders = providersByType?.vsphere || [];
   const openshiftProviders = providersByType?.openshift || [];
 
@@ -62,6 +66,8 @@ const PlansPage: React.FunctionComponent = () => {
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
+        ) : providersQueryStatus === 'error' ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>

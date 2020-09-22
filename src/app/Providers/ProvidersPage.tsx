@@ -15,6 +15,7 @@ import {
   TabTitleText,
   Level,
   LevelItem,
+  Alert,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -29,8 +30,7 @@ import AddProviderModal from './components/AddProviderModal';
 import { checkAreProvidersEmpty } from './helpers';
 
 const ProvidersPage: React.FunctionComponent = () => {
-  // TODO handle query error case
-  const { isLoading, data: providersByType, error } = useProvidersQuery();
+  const { isLoading, data: providersByType, status } = useProvidersQuery();
 
   const areProvidersEmpty = checkAreProvidersEmpty(providersByType);
   const areTabsVisible = !isLoading && !areProvidersEmpty;
@@ -89,6 +89,8 @@ const ProvidersPage: React.FunctionComponent = () => {
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
+        ) : status === 'error' ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>

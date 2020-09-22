@@ -1,5 +1,18 @@
 import * as React from 'react';
-import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Modal,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  Grid,
+  GridItem,
+  Alert,
+  Bullseye,
+  EmptyState,
+  Spinner,
+  Title,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
@@ -34,8 +47,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
-  // TODO handle query error case
-  const { isLoading: isLoadingProviders, data: providersByType, error } = useProvidersQuery();
+  const {
+    isLoading: isLoadingProviders,
+    data: providersByType,
+    status: providersQueryStatus,
+  } = useProvidersQuery();
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
   const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
@@ -125,56 +141,75 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       ]}
     >
       <Form className="extraSelectMargin">
-        <Grid className={spacing.mbMd}>
-          <GridItem sm={12} md={5} className={spacing.mbMd}>
-            <FormGroup label="Name" isRequired fieldId="mapping-name">
-              <TextInput
-                id="mapping-name"
-                value={mappingName}
-                type="text"
-                onChange={setMappingName}
+        {isLoadingProviders ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2">Loading...</Title>
+            </EmptyState>
+          </Bullseye>
+        ) : providersQueryStatus === 'error' ? (
+          <Alert variant="danger" title="Error loading providers" />
+        ) : (
+          <>
+            <Grid className={spacing.mbMd}>
+              <GridItem sm={12} md={5} className={spacing.mbMd}>
+                <FormGroup label="Name" isRequired fieldId="mapping-name">
+                  <TextInput
+                    id="mapping-name"
+                    value={mappingName}
+                    type="text"
+                    onChange={setMappingName}
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem />
+              <GridItem sm={12} md={5}>
+                <FormGroup label="Source provider" isRequired fieldId="source-provider">
+                  <SimpleSelect
+                    id="source-provider"
+                    options={sourceProviderOptions}
+                    value={[
+                      sourceProviderOptions.find((option) => option.value === sourceProvider),
+                    ]}
+                    onChange={(selection) =>
+                      setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
+                    }
+                    placeholderText="Select a source provider..."
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem sm={1} />
+              <GridItem sm={12} md={5}>
+                <FormGroup label="Target provider" isRequired fieldId="target-provider">
+                  <SimpleSelect
+                    id="target-provider"
+                    options={targetProviderOptions}
+                    value={[
+                      targetProviderOptions.find((option) => option.value === targetProvider),
+                    ]}
+                    onChange={(selection) =>
+                      setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
+                    }
+                    placeholderText="Select a target provider..."
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem sm={1} />
+            </Grid>
+            {sourceProvider && targetProvider ? (
+              <MappingBuilder
+                mappingType={mappingType}
+                availableSources={availableSources}
+                availableTargets={availableTargets}
+                builderItems={builderItems}
+                setBuilderItems={setBuilderItems}
               />
-            </FormGroup>
-          </GridItem>
-          <GridItem />
-          <GridItem sm={12} md={5}>
-            <FormGroup label="Source provider" isRequired fieldId="source-provider">
-              <SimpleSelect
-                id="source-provider"
-                options={sourceProviderOptions}
-                value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
-                onChange={(selection) =>
-                  setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
-                }
-                placeholderText="Select a source provider..."
-              />
-            </FormGroup>
-          </GridItem>
-          <GridItem sm={1} />
-          <GridItem sm={12} md={5}>
-            <FormGroup label="Target provider" isRequired fieldId="target-provider">
-              <SimpleSelect
-                id="target-provider"
-                options={targetProviderOptions}
-                value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
-                onChange={(selection) =>
-                  setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
-                }
-                placeholderText="Select a target provider..."
-              />
-            </FormGroup>
-          </GridItem>
-          <GridItem sm={1} />
-        </Grid>
-        {sourceProvider && targetProvider ? (
-          <MappingBuilder
-            mappingType={mappingType}
-            availableSources={availableSources}
-            availableTargets={availableTargets}
-            builderItems={builderItems}
-            setBuilderItems={setBuilderItems}
-          />
-        ) : null}
+            ) : null}
+          </>
+        )}
       </Form>
     </Modal>
   );
