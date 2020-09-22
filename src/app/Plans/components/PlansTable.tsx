@@ -32,8 +32,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       plan.spec.provider.destinationProvider.name,
       plan.spec.vmList.length,
       '', // Plan status
-      '', // Start/Cancel migration column
-      '', // Kebab column
+      '', // Action column
     ];
   };
 
@@ -49,7 +48,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     { title: 'Target provider', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Plan status', transforms: [sortable] },
-    { title: '' },
     { title: '' },
   ];
 
@@ -80,12 +78,14 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         {
           title: buttonText ? (
-            <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-              {buttonText}
-            </Button>
+            <>
+              <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
+                {buttonText}
+              </Button>
+              <PlanActionsDropdown />
+            </>
           ) : null,
         },
-        { title: <PlanActionsDropdown /> },
       ],
     });
   });
