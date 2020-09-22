@@ -5,6 +5,7 @@ import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
+
 import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';

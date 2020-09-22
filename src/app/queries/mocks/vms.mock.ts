@@ -124,23 +124,24 @@ export const VMsOptions = [
   },
 ];
 
-export const MOCK_VMS: IVM[] = [
-  {
-    name: 'vm1',
-    datacenter: 'Prod center 1',
-    cluster: 'Cluster 1',
-    host: 'host test1',
-    folderPath: 'folder1/folderb',
-    migrationAnalysis: 'Ok',
-    analysisDescription: 'No risk assessed',
-  },
-  {
-    name: 'vm2',
-    datacenter: 'Prod center 1',
-    cluster: 'Cluster 1',
-    host: 'host test1',
-    folderPath: 'folder2/foldera',
-    migrationAnalysis: 'Warning',
-    analysisDescription: 'There is a risk because...',
-  },
-];
+export const vm1: IVM = {
+  name: 'vm1',
+  datacenter: 'Prod center 1',
+  cluster: 'Cluster 1',
+  host: 'host test1',
+  folderPath: 'folder1/folderb',
+  migrationAnalysis: 'Ok',
+  analysisDescription: 'No risk assessed',
+};
+
+export const vm2: IVM = {
+  name: 'vm2',
+  datacenter: 'Prod center 1',
+  cluster: 'Cluster 1',
+  host: 'host test1',
+  folderPath: 'folder2/foldera',
+  migrationAnalysis: 'Warning',
+  analysisDescription: 'There is a risk because...',
+};
+
+export const MOCK_VMS: IVM[] = [vm1, vm2];

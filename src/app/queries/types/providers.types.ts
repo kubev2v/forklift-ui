@@ -1,12 +1,5 @@
 import { ProviderType } from '@app/common/constants';
-
-export interface IStatusCondition {
-  type: string;
-  status: string;
-  category: string;
-  message: string;
-  lastTransitionTime: string; // ISO timestamp
-}
+import { IStatusCondition } from '@app/common/types';
 
 export interface ICommonProvider {
   uid: string;
