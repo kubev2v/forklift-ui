@@ -33,7 +33,7 @@ export const useMappingResourceQueries = (
   // TODO vmware networks query
   // TODO openshift networks query
   // TODO vmware datastores query
-  const storageClassesQuery = useStorageClassesQuery(targetProvider);
+  const storageClassesQuery = useStorageClassesQuery(targetProvider ? [targetProvider] : null);
 
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
@@ -43,7 +43,11 @@ export const useMappingResourceQueries = (
   }
   if (mappingType === MappingType.Storage) {
     availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : []; // TODO use query data
-    availableTargets = (targetProvider && storageClassesQuery.data) || [];
+    availableTargets =
+      (targetProvider &&
+        storageClassesQuery.data &&
+        storageClassesQuery.data[targetProvider.name]) ||
+      [];
   }
 
   const status = getAggregateQueryStatus([storageClassesQuery]); // TODO add the other queries

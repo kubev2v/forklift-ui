@@ -5,3 +5,7 @@ export interface IStorageClass {
   name: string;
   selfLink: string;
 }
+
+export interface IStorageClassesByProvider {
+  [providerName: string]: IStorageClass[];
+}

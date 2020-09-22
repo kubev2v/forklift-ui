@@ -2,32 +2,64 @@ import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getApiUrl } from './helpers';
-import { IOpenShiftProvider, IStorageClass } from './types';
+import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 
 export const STORAGE_CLASSES_QUERY_KEY = 'storageClasses';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
-  provider: IOpenShiftProvider | null
-): QueryResult<IStorageClass[]> => {
+  providers: IOpenShiftProvider[] | null
+): QueryResult<IStorageClassesByProvider> => {
   const { isPollingEnabled } = usePollingContext();
-  const result = useMockableQuery<IStorageClass[]>(
+  // Key by the provider names combined, so it refetches if the list of providers changes
+  const queryKey = `${STORAGE_CLASSES_QUERY_KEY}:${(providers || [])
+    .map((provider) => provider.name)
+    .join(',')}`;
+
+  const indexedMockStorageClasses = (providers || []).reduce(
+    (newObj, provider) => ({
+      ...newObj,
+      [provider.name]: MOCK_STORAGE_CLASSES_BY_PROVIDER[provider.name],
+    }),
+    {} as IStorageClassesByProvider
+  );
+
+  const result = useMockableQuery<IStorageClassesByProvider>(
     {
-      queryKey: `${STORAGE_CLASSES_QUERY_KEY}-${provider?.name || ''}`,
-      queryFn: () =>
-        fetch(getApiUrl(`${provider?.selfLink || ''}/storageclasses`)).then((res) => res.json()),
+      queryKey: queryKey,
+      // Fetch multiple resources in one query via Promise.all()
+      queryFn: async () => {
+        const storageClassLists: IStorageClass[][] = await Promise.all(
+          (providers || []).map((provider) =>
+            fetch(getApiUrl(`${provider?.selfLink || ''}/storageclasses`)).then((res) => res.json())
+          )
+        );
+        return (providers || []).reduce(
+          (newObj, provider, index) => ({ ...newObj, [provider.name]: storageClassLists[index] }),
+          {} as IStorageClassesByProvider
+        );
+      },
       config: {
-        enabled: !!provider, // Don't fetch until a provider is selected / defined
+        enabled: !!providers, // Don't fetch until providers are selected / defined
         refetchInterval: isPollingEnabled ? POLLING_INTERVAL : false,
       },
     },
-    MOCK_STORAGE_CLASSES_BY_PROVIDER[provider?.name || '']
+    indexedMockStorageClasses
   );
   return {
     ...result,
+    // TODO maybe factor this out into a sortIndexedResources helper or something
     data: result.data
-      ? result.data.sort((a: IStorageClass, b: IStorageClass) => (a.name < b.name ? -1 : 1))
+      ? (Object.keys(result.data || {}).reduce(
+          (newObj, key) => ({
+            ...newObj,
+            [key]: (result.data || {})[key].sort((a: IStorageClass, b: IStorageClass) =>
+              a.name < b.name ? -1 : 1
+            ),
+          }),
+          {} as IStorageClassesByProvider
+        ) as IStorageClassesByProvider)
       : undefined,
   };
 };
