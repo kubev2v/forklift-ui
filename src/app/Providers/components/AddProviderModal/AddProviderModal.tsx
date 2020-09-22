@@ -48,8 +48,6 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   const isFormValid =
     providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
 
-  console.log('MODAL RENDER!');
-
   return (
     <Modal
       className="addProviderModal"
