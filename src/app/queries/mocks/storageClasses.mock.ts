@@ -1,5 +1,4 @@
 import { IStorageClass } from '../types';
-import { MOCK_PROVIDERS } from './providers.mock';
 
 export let MOCK_STORAGE_CLASSES_BY_PROVIDER: { [key: string]: IStorageClass[] } = {};
 

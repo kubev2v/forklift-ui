@@ -8,10 +8,6 @@ import {
   Grid,
   GridItem,
   Alert,
-  Bullseye,
-  EmptyState,
-  Spinner,
-  Title,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
@@ -29,20 +25,17 @@ import {
   MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
 } from '@app/queries/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
-import { useProvidersQuery } from '@app/queries';
+import { useProvidersQuery, useStorageClassesQuery } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
-import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from '@app/queries/mocks/storageClasses.mock';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IAddEditMappingModalProps {
   title: string;
   onClose: () => void;
   mappingType: MappingType;
 }
-
-// TODO move these to a dependent query from providers
-const MOCK_STORAGE_CLASSES = MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1;
 
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
@@ -72,6 +65,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
   const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
+  const storageClassesQuery = useStorageClassesQuery(targetProvider);
+
   React.useEffect(() => {
     console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
   }, [mappingType, sourceProvider]);
@@ -89,7 +84,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   }
   if (mappingType === MappingType.Storage) {
     availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : [];
-    availableTargets = targetProvider ? MOCK_STORAGE_CLASSES : [];
+    availableTargets = (targetProvider && storageClassesQuery.data) || [];
   }
 
   // TODO add support for prefilling builderItems for editing an API mapping
@@ -137,14 +132,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     >
       <Form className="extraSelectMargin">
         {providersQuery.isLoading ? (
-          <Bullseye>
-            <EmptyState variant="large">
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
+          <LoadingEmptyState />
         ) : providersQuery.status === 'error' ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
@@ -195,13 +183,19 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={1} />
             </Grid>
             {sourceProvider && targetProvider ? (
-              <MappingBuilder
-                mappingType={mappingType}
-                availableSources={availableSources}
-                availableTargets={availableTargets}
-                builderItems={builderItems}
-                setBuilderItems={setBuilderItems}
-              />
+              storageClassesQuery.isLoading ? (
+                <LoadingEmptyState />
+              ) : storageClassesQuery.status === 'error' ? (
+                <Alert variant="danger" title="Error loading storage classes" />
+              ) : (
+                <MappingBuilder
+                  mappingType={mappingType}
+                  availableSources={availableSources}
+                  availableTargets={availableTargets}
+                  builderItems={builderItems}
+                  setBuilderItems={setBuilderItems}
+                />
+              )
             ) : null}
           </>
         )}

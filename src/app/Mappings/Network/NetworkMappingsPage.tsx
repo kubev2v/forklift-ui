@@ -2,9 +2,7 @@ import * as React from 'react';
 import {
   PageSection,
   Title,
-  Bullseye,
   EmptyState,
-  Spinner,
   EmptyStateIcon,
   EmptyStateBody,
   Button,
@@ -17,6 +15,7 @@ import { INetworkMapping, MappingType } from '@app/queries/types';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const isFetchingInitialNetworkMappings = false; // Fetching for the first time, not polling
 
@@ -42,14 +41,7 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {isFetchingInitialNetworkMappings ? (
-          <Bullseye>
-            <EmptyState>
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
+          <LoadingEmptyState />
         ) : (
           <Card>
             <CardBody>

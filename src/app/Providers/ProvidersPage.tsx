@@ -2,9 +2,7 @@ import * as React from 'react';
 import {
   PageSection,
   Title,
-  Bullseye,
   EmptyState,
-  Spinner,
   Card,
   CardBody,
   EmptyStateIcon,
@@ -29,6 +27,7 @@ import AddProviderModal from './components/AddProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
 import { IProvidersByType } from '@app/queries/types';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const ProvidersPage: React.FunctionComponent = () => {
   const providersQuery = useProvidersQuery();
@@ -82,14 +81,7 @@ const ProvidersPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {providersQuery.isLoading ? (
-          <Bullseye>
-            <EmptyState>
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
+          <LoadingEmptyState />
         ) : providersQuery.status === 'error' ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (

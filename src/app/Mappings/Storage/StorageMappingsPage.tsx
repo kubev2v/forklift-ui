@@ -2,9 +2,7 @@ import * as React from 'react';
 import {
   PageSection,
   Title,
-  Bullseye,
   EmptyState,
-  Spinner,
   Card,
   CardBody,
   EmptyStateIcon,
@@ -17,6 +15,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 
@@ -42,14 +41,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {isFetchingInitialStorageMappings ? (
-          <Bullseye>
-            <EmptyState>
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
+          <LoadingEmptyState />
         ) : (
           <Card>
             <CardBody>
