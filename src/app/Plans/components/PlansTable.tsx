@@ -80,7 +80,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button variant="primary" onClick={() => alert('TODO')} isDisabled={false}>
+          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
             Create
           </Button>
         </LevelItem>
