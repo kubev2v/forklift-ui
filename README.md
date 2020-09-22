@@ -21,11 +21,10 @@ cd virt-ui
 yarn install
 ```
 
-Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Set the `REMOTE_API_URL` variable to the root URL of an API server for use in remote development mode. The `NODE_ENV` and `DATA_SOURCE` values don't matter unless you plan to run webpack directly, since the yarn start/build scripts will override them.
+Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Set the `REMOTE_API_URL` variable to the root URL of an API server for use in remote development mode. The `DATA_SOURCE` value doesn't matter unless you plan to run webpack directly, since the `yarn [start:dev|build]:[mock|remote]` commands will override it.
 
 ```bash
-NODE_ENV=production  # can be `production` or `development`
-DATA_SOURCE=remote   # can be `remote` or `mock`
+DATA_SOURCE=remote  # can be `remote` or `mock`
 REMOTE_API_URL=https://inventory-openshift-migration.example.com/
 ```
 
