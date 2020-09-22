@@ -16,7 +16,7 @@ const storageMapping1: IStorageMapping = {
       source: {
         id: 'id1',
       },
-      target: 'storageclass1',
+      target: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[0],
     },
   ],
 };
@@ -33,7 +33,7 @@ const storageMapping2: IStorageMapping = {
       source: {
         id: 'id2',
       },
-      target: 'storageclass2',
+      target: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[1],
     },
   ],
 };

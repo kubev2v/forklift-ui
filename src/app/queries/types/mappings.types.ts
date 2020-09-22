@@ -18,16 +18,16 @@ export enum MappingType {
 
 export interface INetworkMappingItem {
   source: {
-    id: string;
+    id: string; // TODO see what these actually need to be in the API?
   };
   target: IOpenShiftNetwork;
 }
 
 export interface IStorageMappingItem {
   source: {
-    id: string;
+    id: string; // TODO see what these actually need to be in the API?
   };
-  target: string; // storage class
+  target: IStorageClass;
 }
 
 export type MappingItem = INetworkMappingItem | IStorageMappingItem;

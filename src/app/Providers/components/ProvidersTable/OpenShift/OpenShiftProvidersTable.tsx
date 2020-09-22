@@ -106,7 +106,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
             title: (
               <List className={`provider-storage-classes-list ${spacing.mMd}`}>
                 {MOCK_STORAGE_CLASSES.map((storageClass) => (
-                  <ListItem key={storageClass}>{storageClass}</ListItem>
+                  <ListItem key={storageClass.name}>{storageClass}</ListItem>
                 ))}
               </List>
             ),

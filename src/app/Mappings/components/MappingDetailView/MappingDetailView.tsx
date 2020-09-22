@@ -3,12 +3,7 @@ import { Alert, Grid, GridItem, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
-import {
-  getMappingSourceById,
-  getMappingSourceTitle,
-  getMappingItemTargetName,
-  getMappingTargetTitle,
-} from '../helpers';
+import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
@@ -39,11 +34,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     return <Alert className={className} variant="danger" title="Error loading mapping resources" />;
   }
 
-  const mappingItemGroups = groupMappingItemsByTarget(
-    mapping.items,
-    mappingType,
-    mappingResourceQueries.availableTargets
-  );
+  const mappingItemGroups = groupMappingItemsByTarget(mapping.items);
   return (
     <div className={className}>
       <Grid>
@@ -60,11 +51,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         </GridItem>
       </Grid>
       {mappingItemGroups.map((items, index) => {
-        const targetName = getMappingItemTargetName(
-          items[0].target,
-          mappingType,
-          mappingResourceQueries.availableTargets
-        );
+        const targetName = items[0].target.name;
         const isLastGroup = index === mappingItemGroups.length - 1;
         return (
           <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>

@@ -3,7 +3,6 @@ import {
   Mapping,
   MappingItem,
   MappingType,
-  MappingTarget,
   IVMwareProvider,
   IOpenShiftProvider,
 } from '@app/queries/types';
@@ -44,7 +43,7 @@ export const getMappingFromBuilderItems = ({
       if (item.source && item.target) {
         return {
           source: { id: item.source.id },
-          target: item.target.name as MappingItem['target'],
+          target: item.target,
         };
       }
       return null;
