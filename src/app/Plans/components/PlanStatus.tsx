@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IMigration, IPlan } from '../types';
+import { IMigration, IPlan } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { Progress, ProgressVariant } from '@patternfly/react-core';
 

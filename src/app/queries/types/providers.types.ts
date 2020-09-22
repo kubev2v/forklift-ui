@@ -1,5 +1,5 @@
 import { ProviderType } from '@app/common/constants';
-import { IStatusCondition } from '@app/common/types';
+import { IStatusCondition } from '@app/queries/types';
 
 export interface ICommonProvider {
   uid: string;
