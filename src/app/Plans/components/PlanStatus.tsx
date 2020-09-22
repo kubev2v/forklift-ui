@@ -21,11 +21,13 @@ const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
     const label = 'Running';
 
     return (
-      <Progress
-        title={<StatusIcon status={StatusType.Failed} label={label} />}
-        value={percentVMsDone}
-        label={`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}
-      />
+      <>
+        <StatusIcon status={StatusType.Warning} label={label} />
+        <Progress
+          value={percentVMsDone}
+          label={`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}
+        />
+      </>
     );
   }
 };
