@@ -1,7 +1,7 @@
-import { IStorageMapping, INetworkMapping, MappingType } from '../types';
+import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings.types';
 import { ProviderType } from '@app/common/constants';
-import { MappingSource, MappingTarget } from '@app/Mappings/types';
-import { NetworkType } from '@app/Providers/types';
+import { MappingSource, MappingTarget } from '../types/mappings.types';
+import { NetworkType } from '../types/providers.types';
 
 const storageMapping1: IStorageMapping = {
   type: MappingType.Storage,
@@ -12,7 +12,7 @@ const storageMapping1: IStorageMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -35,7 +35,7 @@ const storageMapping2: IStorageMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -67,7 +67,7 @@ const networkMapping1: INetworkMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },
@@ -94,7 +94,7 @@ const networkMapping2: INetworkMapping = {
       name: 'vcenter1',
     },
     target: {
-      type: ProviderType.cnv,
+      type: ProviderType.openshift,
       name: 'ocp1',
     },
   },

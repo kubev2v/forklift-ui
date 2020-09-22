@@ -1,7 +1,6 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ICNVNetwork } from '@app/Providers/types';
-import { MappingTarget, MappingType } from '@app/Mappings/types';
+import { MappingTarget, MappingType } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingTargetName } from '../helpers';
 

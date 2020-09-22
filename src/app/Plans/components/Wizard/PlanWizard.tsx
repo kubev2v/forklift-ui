@@ -5,10 +5,9 @@ import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
-import { Provider } from '@app/Providers/types';
-import { MOCK_VMS } from './mocks/VMs.mock';
+import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
-import { MappingType } from '@app/Mappings/types';
 import {
   MOCK_STORAGE_MAPPINGS,
   MOCK_STORAGE_MAPPING_SOURCES,
@@ -16,21 +15,22 @@ import {
   MOCK_NETWORK_MAPPINGS,
   MOCK_NETWORK_MAPPING_SOURCES,
   MOCK_NETWORK_MAPPING_TARGETS,
-} from '@app/Mappings/mocks/mappings.mock';
+} from '@app/queries/mocks/mappings.mock';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IPlanWizardProps {
-  isOpen: boolean;
   onClose: () => void;
-  sourceProviders: Provider[];
-  targetProviders: Provider[];
+  sourceProviders: IVMwareProvider[];
+  targetProviders: IOpenShiftProvider[];
 }
 
 const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
-  isOpen,
   onClose,
   sourceProviders,
   targetProviders,
 }: IPlanWizardProps) => {
+  usePausedPollingEffect();
+
   enum stepId {
     General = 1,
     FilterVMs,
@@ -132,7 +132,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} width="95%" showClose={false} hasNoBodyWrapper>
+    <Modal isOpen width="95%" showClose={false} hasNoBodyWrapper>
       <Wizard
         title="Create a Migration Plan"
         steps={steps}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MappingSource } from '../../types';
+import { MappingSource } from '@app/queries/types';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IMappingBuilderItem } from './MappingBuilder';
 

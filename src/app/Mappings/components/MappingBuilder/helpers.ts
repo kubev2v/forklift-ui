@@ -1,6 +1,13 @@
-import { MappingSource, Mapping, MappingItem, MappingType, MappingTarget } from '../../types';
+import {
+  MappingSource,
+  Mapping,
+  MappingItem,
+  MappingType,
+  MappingTarget,
+  IVMwareProvider,
+  IOpenShiftProvider,
+} from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
-import { IVMwareProvider, ICNVProvider } from '@app/Providers/types';
 import { getMappingSourceById } from '../helpers';
 
 export const getBuilderItemsFromMapping = (
@@ -21,7 +28,7 @@ interface IGetMappingParams {
   mappingType: MappingType;
   mappingName: string;
   sourceProvider: IVMwareProvider;
-  targetProvider: ICNVProvider;
+  targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
 }
 
@@ -48,12 +55,12 @@ export const getMappingFromBuilderItems = ({
     name: mappingName,
     provider: {
       source: {
-        type: sourceProvider.spec.type,
-        name: sourceProvider.metadata.name,
+        type: sourceProvider.type,
+        name: sourceProvider.name,
       },
       target: {
-        type: targetProvider.spec.type,
-        name: targetProvider.metadata.name,
+        type: targetProvider.type,
+        name: targetProvider.name,
       },
     },
     items,

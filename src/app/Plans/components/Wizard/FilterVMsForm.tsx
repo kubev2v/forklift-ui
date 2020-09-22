@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Form, FormGroup, TreeView, Title } from '@patternfly/react-core';
 
-// TODO replace with redux or equiv.
-import { VMsOptions } from './mocks/VMs.mock';
+// TODO replace with real state from react-query
+import { VMsOptions } from '@app/queries/mocks/vms.mock';
 
 interface IFilterVMsProps {
   Inventory: [];

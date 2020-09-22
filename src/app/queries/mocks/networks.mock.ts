@@ -1,10 +1,10 @@
 import {
   IVMwareNetwork,
   IVMwareNetworksByProvider,
-  ICNVNetworksByProvider,
-  ICNVNetwork,
+  IOpenShiftNetworksByProvider,
+  IOpenShiftNetwork,
   NetworkType,
-} from '../types';
+} from '../types/providers.types';
 
 const someVMwareNetworks: IVMwareNetwork[] = [
   { id: '1', name: 'vmware-network-1' },
@@ -20,15 +20,15 @@ export const MOCK_VMWARE_NETWORKS_BY_PROVIDER: IVMwareNetworksByProvider = {
   VCenter3: [...someVMwareNetworks],
 };
 
-const someCNVNetworks: ICNVNetwork[] = [
+const someOpenShiftNetworks: IOpenShiftNetwork[] = [
   { type: NetworkType.Pod, name: 'ocp-pod-network-1', namespace: 'ocp-namespace-1' },
   { type: NetworkType.Pod, name: 'ocp-pod-network-2', namespace: 'ocp-namespace-1' },
   { type: NetworkType.Multis, name: 'ocp-multis-network-1', namespace: 'ocp-namespace-1' },
   { type: NetworkType.Multis, name: 'ocp-multis-network-2', namespace: 'ocp-namespace-1' },
 ];
 
-export const MOCK_CNV_NETWORKS_BY_PROVIDER: ICNVNetworksByProvider = {
-  OCPv_1: [...someCNVNetworks],
-  OCPv_2: [...someCNVNetworks],
-  OCPv_3: [...someCNVNetworks],
+export const MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER: IOpenShiftNetworksByProvider = {
+  OCPv_1: [...someOpenShiftNetworks],
+  OCPv_2: [...someOpenShiftNetworks],
+  OCPv_3: [...someOpenShiftNetworks],
 };

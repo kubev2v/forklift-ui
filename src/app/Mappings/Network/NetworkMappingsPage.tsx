@@ -13,18 +13,18 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { INetworkMapping, MappingType } from '../types';
+import { INetworkMapping, MappingType } from '@app/queries/types';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
-import { fetchMockStorage } from '../mocks/helpers';
+import { fetchMockStorage } from '@app/queries/mocks/helpers';
 
 const isFetchingInitialNetworkMappings = false; // Fetching for the first time, not polling
 
 const NetworkMappingsPage: React.FunctionComponent = () => {
-  //TODO: replace with real state from redux
+  //TODO: replace with real state from react-query
   const [networkMappings, setNetworkMappings] = React.useState<INetworkMapping[]>([]);
 
-  //TODO: replace with real state from redux
+  //TODO: replace with real state from react-query
   const mockMapObj = localStorage.getItem('networkMappingsObject');
   React.useEffect(() => {
     console.log(`TODO: fetch network mapping items`);

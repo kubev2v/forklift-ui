@@ -6,6 +6,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
+import { usePausedPollingEffect } from '@app/common/context';
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -20,6 +21,8 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
+  usePausedPollingEffect();
+
   // TODO determine the actual validation criteria for this form -- these are for testing
 
   const providerTypeField = useFormField<ProviderType | null>(
@@ -35,7 +38,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
     password: useFormField('', yup.string().label('Password').max(20).required()),
   });
 
-  const cnvForm = useFormState({
+  const openshiftForm = useFormState({
     providerType: providerTypeField,
     clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
     url: useFormField('', yup.string().label('URL').max(40).required()),
@@ -43,10 +46,10 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   });
 
   const providerType = providerTypeField.value;
-  const formValues = providerType === ProviderType.vsphere ? vmwareForm.values : cnvForm.values;
-  const isFormValid = providerType === ProviderType.vsphere ? vmwareForm.isValid : cnvForm.isValid;
-
-  console.log('MODAL RENDER!');
+  const formValues =
+    providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
+  const isFormValid =
+    providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
 
   return (
     <Modal
@@ -120,26 +123,26 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             />
           </>
         ) : null}
-        {providerType === ProviderType.cnv ? (
+        {providerType === ProviderType.openshift ? (
           <>
             <ValidatedTextInput
-              field={cnvForm.fields.clusterName}
+              field={openshiftForm.fields.clusterName}
               label="Cluster name"
               isRequired
-              fieldId="cnv-cluster-name"
+              fieldId="openshift-cluster-name"
             />
             <ValidatedTextInput
-              field={cnvForm.fields.url}
+              field={openshiftForm.fields.url}
               label="URL"
               isRequired
-              fieldId="cnv-url"
+              fieldId="openshift-url"
             />
             <ValidatedTextInput
-              field={cnvForm.fields.saToken}
+              field={openshiftForm.fields.saToken}
               type="password"
               label="Service account token"
               isRequired
-              fieldId="cnv-sa-token"
+              fieldId="openshift-sa-token"
             />
           </>
         ) : null}

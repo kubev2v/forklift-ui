@@ -8,62 +8,54 @@ export interface IStatusCondition {
   lastTransitionTime: string; // ISO timestamp
 }
 
-export interface ICommonProviderMetadata {
-  name: string;
-  namespace: string;
-  selfLink: string;
-  uid: string;
-  resourceVersion: string;
-  generation: number;
-  creationTimestamp: string; // ISO timestamp
-  annotations?: {
-    'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
-  };
-}
-
-export interface ICNVProviderMetadata extends ICommonProviderMetadata {
-  storageClasses: string[]; // TODO ???
-}
-
 export interface ICommonProvider {
-  metadata: ICommonProviderMetadata;
-  spec: {
-    type: ProviderType;
-    url: string; // TODO is this the "Endpoint" column?
-    secret: {
-      namespace: string;
+  uid: string;
+  version: string;
+  namespace: string;
+  name: string;
+  selfLink: string;
+  type: ProviderType;
+  object: {
+    metadata: {
       name: string;
+      namespace: string;
+      selfLink: string;
+      uid: string;
+      resourceVersion: string;
+      generation: number;
+      creationTimestamp: string; // ISO timestamp
+    };
+    spec: {
+      type: ProviderType;
+      url: string; // TODO is this the "Endpoint" column?
+      secret: {
+        namespace: string;
+        name: string;
+      };
+    };
+    status: {
+      conditions: IStatusCondition[];
+      observedGeneration: number;
     };
   };
-  status: {
-    conditions: IStatusCondition[];
-    observedGeneration: number;
-  };
 }
-
-// TODO these resourceCounts interfaces are speculative
-// need to look at the real structure once Jeff implements this part
 
 export interface IVMwareProvider extends ICommonProvider {
-  resourceCounts: {
-    numClusters: number;
-    numHosts: number;
-    numVMs: number;
-    numNetworks: number;
-    numDatastores: number;
-  };
+  datacenterCount: number;
+  clusterCount: number;
+  hostCount: number;
+  vmCount: number;
+  networkCount: number;
+  datastoreCount: number;
 }
 
-export interface ICNVProvider extends ICommonProvider {
-  metadata: ICNVProviderMetadata;
-  resourceCounts: {
-    numNamespaces: number;
-    numVMs: number;
-    numNetworks: number;
-  };
+export interface IOpenShiftProvider extends ICommonProvider {
+  vmCount: number;
+  networkCount: number;
+  namespaceCount: number;
 }
 
-export type Provider = IVMwareProvider | ICNVProvider;
+export type Provider = IVMwareProvider | IOpenShiftProvider;
 
 // TODO this structure is speculative. Check with Jeff.
 export interface IHostNetwork {
@@ -98,7 +90,7 @@ export enum NetworkType {
   Multis = 'multis',
 }
 
-export interface ICNVNetwork {
+export interface IOpenShiftNetwork {
   type: NetworkType;
   name: string;
   namespace: string;
@@ -109,13 +101,18 @@ export interface IVMwareNetworksByProvider {
   [providerName: string]: IVMwareNetwork[];
 }
 
-export interface ICNVNetworksByProvider {
-  [providerName: string]: ICNVNetwork[];
+export interface IOpenShiftNetworksByProvider {
+  [providerName: string]: IOpenShiftNetwork[];
 }
 
 export interface IVMwareDatastore {
   id: string;
   name: string;
+}
+
+export interface IProvidersByType {
+  [ProviderType.vsphere]: IVMwareProvider[];
+  [ProviderType.openshift]: IOpenShiftProvider[];
 }
 
 // TODO do these need to be indexed by provider id instead of name?

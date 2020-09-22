@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider } from '@app/Providers/types';
+import { Provider } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 interface IProviderStatusProps {
@@ -11,7 +11,7 @@ const ProviderStatus: React.FunctionComponent<IProviderStatusProps> = ({
 }: IProviderStatusProps) => {
   // TODO check if there are any warning or error conditions and change this
   // TODO probably surface the most severe condition
-  if (provider.status.conditions.every((condition) => condition.type === 'Ready')) {
+  if (provider.object.status.conditions.every((condition) => condition.type === 'Ready')) {
     return <StatusIcon status={StatusType.Ok} label="Ready" />;
   }
   return null;

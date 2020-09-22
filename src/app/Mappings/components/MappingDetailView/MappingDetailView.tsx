@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Grid, GridItem, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Mapping, MappingSource, MappingType } from '@app/Mappings/types';
+import { Mapping, MappingSource, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import {
   getMappingSourceById,

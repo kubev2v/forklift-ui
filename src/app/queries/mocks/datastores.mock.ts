@@ -1,4 +1,4 @@
-import { IVMwareDatastore, IVMwareDatastoresByProvider } from '../types';
+import { IVMwareDatastore, IVMwareDatastoresByProvider } from '../types/providers.types';
 
 const someVMwareDatastores: IVMwareDatastore[] = [
   { id: '1', name: 'vmware-datastore-1' },

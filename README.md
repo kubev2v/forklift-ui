@@ -4,7 +4,7 @@ Migration Toolkit for Virtualization UI
 
 [![Build Status](https://travis-ci.com/konveyor/virt-ui.svg?branch=master)](https://travis-ci.com/konveyor/virt-ui)
 
-A read-only preview is available at http://konveyor-virt-ui-preview.surge.sh/.
+A read-only preview with mock data is available at http://konveyor-virt-ui-preview.surge.sh/.
 
 ## Prerequisites
 
@@ -21,10 +21,19 @@ cd virt-ui
 yarn install
 ```
 
-Run the UI in local development mode at http://localhost:9000:
+Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Set the `REMOTE_API_URL` variable to the root URL of an API server for use in remote development mode. The `DATA_SOURCE` value doesn't matter unless you plan to run webpack directly, since the `yarn [start:dev|build]:[mock|remote]` commands will override it.
+
+```bash
+DATA_SOURCE=remote  # can be `remote` or `mock`
+REMOTE_API_URL=https://inventory-openshift-migration.example.com/
+```
+
+Run the UI with webpack-dev-server at http://localhost:9000:
 
 ```sh
-yarn start:dev
+yarn start:dev:remote  # uses real data from the REMOTE_API_URL in your .env file
+yarn start:dev:mock    # uses static mock data, can run offline
+yarn start:dev         # uses the DATA_SOURCE defined in your .env file
 ```
 
 ## Development Scripts
@@ -49,7 +58,9 @@ yarn format
 To run a production build using webpack (outputs to `./dist`):
 
 ```sh
-yarn build
+yarn build:remote  # uses real data from the REMOTE_API_URL in your .env file
+yarn build:mock    # uses static mock data, can run offline or be deployed as a preview
+yarn build         # uses the DATA_SOURCE defined in your .env file
 ```
 
 To launch a tool for inspecting the bundle size:
@@ -93,15 +104,3 @@ The configuration of this repository is based on [patternfly-react-seed](https:/
 - [How to use raster image assets](https://github.com/patternfly/patternfly-react-seed#raster-image-support)
 - [How to use vector image assets](https://github.com/patternfly/patternfly-react-seed#vector-image-support)
 - [How to use environment variables](https://github.com/patternfly/patternfly-react-seed#multi-environment-configuration)
-
----
-
-## TODO:
-
-- Choose a project board and track smaller tasks (JIRA? GH Projects?)
-- Add support for SCSS instead of regular CSS
-- Choose a solution for form state and validation
-- Choose a solution for API stuff (redux-saga? share k8s client with mig-ui?)
-  - Do we want to consider redux alternatives?
-- Figure out API integration and deployment details
-- ???

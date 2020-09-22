@@ -1,7 +1,7 @@
-import { IHook } from '@app/Hooks/types';
-import { ICR } from '@app/common/types';
-import { Mapping } from '@app/Mappings/types';
-import { IVMwareProvider, ICNVProvider, IHost } from '@app/Providers/types';
+import { IHook } from '../types/hooks.types';
+import { ICR } from '../types/common.types';
+import { Mapping } from '../types/mappings.types';
+import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
 
 export interface IPlanVM {
   uid: string;
@@ -14,14 +14,14 @@ export interface IPlanVM {
 
 export interface IPlanStatus {
   conditions: boolean;
-  bbservedGeneration: number;
+  observedGeneration: number;
 }
 
 export interface IPlan extends ICR {
   spec: {
     provider: {
       sourceProvider: IVMwareProvider;
-      destinationProvider: ICNVProvider;
+      destinationProvider: IOpenShiftProvider;
     };
     map: Mapping;
     warm: boolean;

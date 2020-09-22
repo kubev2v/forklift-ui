@@ -9,9 +9,13 @@
   "scripts": {
     "prebuild": "yarn clean",
     "dr:surge": "node dr-surge.js",
-    "build": "webpack --config webpack.prod.js && yarn dr:surge",
+    "build": "NODE_ENV=production webpack --config webpack.prod.js && yarn dr:surge",
+    "build:remote": "DATA_SOURCE=remote yarn build",
+    "build:mock": "DATA_SOURCE=mock yarn build",
     "start": "node server.js",
-    "start:dev": "webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
+    "start:dev": "NODE_ENV=development webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
+    "start:dev:remote": "DATA_SOURCE=remote yarn start:dev",
+    "start:dev:mock": "DATA_SOURCE=mock yarn start:dev",
     "test": "jest",
     "eslint": "eslint --ext .tsx,.js ./src/",
     "lint": "yarn eslint",
@@ -23,8 +27,10 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@types/dotenv-webpack": "^3.0.0",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^25.2.3",
+    "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.5",
     "@types/victory": "^33.1.4",
     "@types/yup": "^0.29.7",
@@ -48,6 +54,7 @@
     "raw-loader": "^4.0.1",
     "react-axe": "^3.4.1",
     "react-docgen-typescript-loader": "^3.7.2",
+    "react-query-devtools": "^2.5.0",
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.5",
     "rimraf": "^3.0.2",
@@ -77,6 +84,7 @@
     "fast-deep-equal": "^3.1.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-query": "^2.23.0",
     "react-router-last-location": "^2.0.1",
     "yup": "^0.29.3"
   }

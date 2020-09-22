@@ -15,25 +15,40 @@ import {
   TabTitleText,
   Level,
   LevelItem,
+  Alert,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { useProvidersQuery } from '@app/queries';
+
 import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import AddProviderModal from './components/AddProviderModal';
 
-// TODO replace these with real state e.g. from redux
-import { MOCK_PROVIDERS } from './mocks/providers.mock';
-const isFetchingInitialProviders = false; // Fetching for the first time, not polling
-const providers = MOCK_PROVIDERS;
+import { checkAreProvidersEmpty } from './helpers';
+import { IProvidersByType } from '@app/queries/types';
 
 const ProvidersPage: React.FunctionComponent = () => {
-  const areTabsVisible = !isFetchingInitialProviders && providers.length > 0;
-  const availableProviderTypes: ProviderType[] = Object.values(
-    ProviderType
-  ).filter((providerType) => providers.some((provider) => provider.spec.type === providerType));
-  const [activeProviderType, setActiveProviderType] = React.useState(availableProviderTypes[0]);
+  const providersQuery = useProvidersQuery();
+
+  const areProvidersEmpty = checkAreProvidersEmpty(providersQuery.data);
+  const areTabsVisible = !providersQuery.isLoading && !areProvidersEmpty;
+  const availableProviderTypes: ProviderType[] = !providersQuery.data
+    ? []
+    : Object.keys(providersQuery.data)
+        .filter((key) => (providersQuery.data as IProvidersByType)[ProviderType[key]].length > 0)
+        .map((key) => ProviderType[key]);
+  const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
+    availableProviderTypes[0]
+  );
+  React.useEffect(() => {
+    if (!activeProviderType && availableProviderTypes.length > 0) {
+      setActiveProviderType(availableProviderTypes[0]);
+    }
+  }, [activeProviderType, availableProviderTypes]);
+
   const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
   return (
     <>
@@ -51,7 +66,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         <CloudAnalyticsInfoAlert />
         {areTabsVisible && (
           <Tabs
-            activeKey={activeProviderType}
+            activeKey={activeProviderType || ''}
             onSelect={(_event, tabKey) => setActiveProviderType(tabKey as ProviderType)}
             className={spacing.mtSm}
           >
@@ -66,7 +81,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        {isFetchingInitialProviders ? (
+        {providersQuery.isLoading ? (
           <Bullseye>
             <EmptyState>
               <div className="pf-c-empty-state__icon">
@@ -75,10 +90,12 @@ const ProvidersPage: React.FunctionComponent = () => {
               <Title headingLevel="h2">Loading...</Title>
             </EmptyState>
           </Bullseye>
+        ) : providersQuery.status === 'error' ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
-              {!providers ? null : providers.length === 0 ? (
+              {!providersQuery.data || !activeProviderType ? null : areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -90,7 +107,10 @@ const ProvidersPage: React.FunctionComponent = () => {
                   </Button>
                 </EmptyState>
               ) : (
-                <ProvidersTable providers={providers} activeProviderType={activeProviderType} />
+                <ProvidersTable
+                  providersByType={providersQuery.data}
+                  activeProviderType={activeProviderType}
+                />
               )}
             </CardBody>
           </Card>

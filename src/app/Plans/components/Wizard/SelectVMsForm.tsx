@@ -14,7 +14,7 @@ import {
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
-import { IVM } from '../../types';
+import { IVM } from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';

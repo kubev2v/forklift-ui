@@ -1,4 +1,4 @@
-import { IHost, IHostsByProvider } from '../types';
+import { IHost, IHostsByProvider } from '../types/providers.types';
 
 const host1: IHost = {
   metadata: {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IHost, IHostNetwork } from '@app/Providers/types';
+import { IHost, IHostNetwork } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
 import './SelectNetworkModal.css';
 

@@ -1,20 +1,38 @@
 import * as React from 'react';
-import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Modal,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  Grid,
+  GridItem,
+  Alert,
+  Bullseye,
+  EmptyState,
+  Spinner,
+  Title,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { MOCK_PROVIDERS } from '@app/Providers/mocks/providers.mock';
-import { SOURCE_PROVIDER_TYPES, TARGET_PROVIDER_TYPES } from '@app/common/constants';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, MappingSource, MappingTarget } from '../types';
-import { ICNVProvider, IVMwareProvider } from '@app/Providers/types';
+import {
+  MappingType,
+  MappingSource,
+  MappingTarget,
+  IOpenShiftProvider,
+  IVMwareProvider,
+} from '@app/queries/types';
 import {
   MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-  MOCK_CNV_NETWORKS_BY_PROVIDER,
-} from '@app/Providers/mocks/networks.mock';
-import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/Providers/mocks/datastores.mock';
+  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
+} from '@app/queries/mocks/networks.mock';
+import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
+import { useProvidersQuery } from '@app/queries';
+import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
-import { updateMockStorage } from '../mocks/helpers';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -22,56 +40,55 @@ interface IAddEditMappingModalProps {
   mappingType: MappingType;
 }
 
-// TODO replace these with real state e.g. from redux
-const providers = MOCK_PROVIDERS;
+// TODO move these to a dependent query from providers
+const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
+  const providersQuery = useProvidersQuery();
+  usePausedPollingEffect();
+
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
-  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] = providers
-    .filter((provider) => (SOURCE_PROVIDER_TYPES as string[]).includes(provider.spec.type))
-    .map((provider) => ({
-      value: provider as IVMwareProvider,
-      toString: () => provider.metadata.name,
-    }));
-  const targetProviderOptions: OptionWithValue<ICNVProvider>[] = providers
-    .filter((provider) => (TARGET_PROVIDER_TYPES as string[]).includes(provider.spec.type))
-    .map((provider) => ({
-      value: provider as ICNVProvider,
-      toString: () => provider.metadata.name,
-    }));
+  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
+    providersQuery.isLoading || !providersQuery.data
+      ? []
+      : providersQuery.data.vsphere.map((provider) => ({
+          value: provider,
+          toString: () => provider.name,
+        }));
+  const targetProviderOptions: OptionWithValue<IOpenShiftProvider>[] =
+    providersQuery.isLoading || !providersQuery.data
+      ? []
+      : providersQuery.data.openshift.map((provider) => ({
+          value: provider,
+          toString: () => provider.name,
+        }));
 
   const [mappingName, setMappingName] = React.useState('');
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
-  const [targetProvider, setTargetProvider] = React.useState<ICNVProvider | null>(null);
+  const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.metadata.name}`);
+    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
   }, [mappingType, sourceProvider]);
 
   React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.metadata.name}`);
+    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.name}`);
   }, [mappingType, targetProvider]);
 
-  // TODO use the right thing from redux here instead of mock data
+  // TODO use the right thing from react-query here instead of mock data
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider
-      ? MOCK_VMWARE_NETWORKS_BY_PROVIDER[sourceProvider.metadata.name]
-      : [];
-    availableTargets = targetProvider
-      ? MOCK_CNV_NETWORKS_BY_PROVIDER[targetProvider?.metadata.name]
-      : [];
+    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : [];
+    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : [];
   }
   if (mappingType === MappingType.Storage) {
-    availableSources = sourceProvider
-      ? MOCK_VMWARE_DATASTORES_BY_PROVIDER[sourceProvider.metadata.name]
-      : [];
-    availableTargets = targetProvider ? targetProvider.metadata.storageClasses : [];
+    availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : [];
+    availableTargets = targetProvider ? MOCK_STORAGE_CLASSES : [];
   }
 
   // TODO add support for prefilling builderItems for editing an API mapping
@@ -118,56 +135,75 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       ]}
     >
       <Form className="extraSelectMargin">
-        <Grid className={spacing.mbMd}>
-          <GridItem sm={12} md={5} className={spacing.mbMd}>
-            <FormGroup label="Name" isRequired fieldId="mapping-name">
-              <TextInput
-                id="mapping-name"
-                value={mappingName}
-                type="text"
-                onChange={setMappingName}
+        {providersQuery.isLoading ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2">Loading...</Title>
+            </EmptyState>
+          </Bullseye>
+        ) : providersQuery.status === 'error' ? (
+          <Alert variant="danger" title="Error loading providers" />
+        ) : (
+          <>
+            <Grid className={spacing.mbMd}>
+              <GridItem sm={12} md={5} className={spacing.mbMd}>
+                <FormGroup label="Name" isRequired fieldId="mapping-name">
+                  <TextInput
+                    id="mapping-name"
+                    value={mappingName}
+                    type="text"
+                    onChange={setMappingName}
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem />
+              <GridItem sm={12} md={5}>
+                <FormGroup label="Source provider" isRequired fieldId="source-provider">
+                  <SimpleSelect
+                    id="source-provider"
+                    options={sourceProviderOptions}
+                    value={[
+                      sourceProviderOptions.find((option) => option.value === sourceProvider),
+                    ]}
+                    onChange={(selection) =>
+                      setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
+                    }
+                    placeholderText="Select a source provider..."
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem sm={1} />
+              <GridItem sm={12} md={5}>
+                <FormGroup label="Target provider" isRequired fieldId="target-provider">
+                  <SimpleSelect
+                    id="target-provider"
+                    options={targetProviderOptions}
+                    value={[
+                      targetProviderOptions.find((option) => option.value === targetProvider),
+                    ]}
+                    onChange={(selection) =>
+                      setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
+                    }
+                    placeholderText="Select a target provider..."
+                  />
+                </FormGroup>
+              </GridItem>
+              <GridItem sm={1} />
+            </Grid>
+            {sourceProvider && targetProvider ? (
+              <MappingBuilder
+                mappingType={mappingType}
+                availableSources={availableSources}
+                availableTargets={availableTargets}
+                builderItems={builderItems}
+                setBuilderItems={setBuilderItems}
               />
-            </FormGroup>
-          </GridItem>
-          <GridItem />
-          <GridItem sm={12} md={5}>
-            <FormGroup label="Source provider" isRequired fieldId="source-provider">
-              <SimpleSelect
-                id="source-provider"
-                options={sourceProviderOptions}
-                value={[sourceProviderOptions.find((option) => option.value === sourceProvider)]}
-                onChange={(selection) =>
-                  setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
-                }
-                placeholderText="Select a source provider..."
-              />
-            </FormGroup>
-          </GridItem>
-          <GridItem sm={1} />
-          <GridItem sm={12} md={5}>
-            <FormGroup label="Target provider" isRequired fieldId="target-provider">
-              <SimpleSelect
-                id="target-provider"
-                options={targetProviderOptions}
-                value={[targetProviderOptions.find((option) => option.value === targetProvider)]}
-                onChange={(selection) =>
-                  setTargetProvider((selection as OptionWithValue<ICNVProvider>).value)
-                }
-                placeholderText="Select a target provider..."
-              />
-            </FormGroup>
-          </GridItem>
-          <GridItem sm={1} />
-        </Grid>
-        {sourceProvider && targetProvider ? (
-          <MappingBuilder
-            mappingType={mappingType}
-            availableSources={availableSources}
-            availableTargets={availableTargets}
-            builderItems={builderItems}
-            setBuilderItems={setBuilderItems}
-          />
-        ) : null}
+            ) : null}
+          </>
+        )}
       </Form>
     </Modal>
   );
