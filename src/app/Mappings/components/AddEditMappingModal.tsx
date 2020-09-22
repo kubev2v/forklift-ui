@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput, Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
@@ -17,8 +16,9 @@ import {
   MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
 } from '@app/queries/mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
-import './AddEditMappingModal.css';
+import { useProvidersQuery } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
+import './AddEditMappingModal.css';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -26,8 +26,6 @@ interface IAddEditMappingModalProps {
   mappingType: MappingType;
 }
 
-// TODO replace these with real data from react-query
-const providersByType = MOCK_PROVIDERS;
 // TODO move these to a dependent query from providers
 const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
@@ -36,19 +34,24 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
+  // TODO handle error case
+  const { isLoading: isLoadingProviders, data: providersByType, error } = useProvidersQuery();
+
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
-  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] = providersByType.vsphere.map(
-    (provider) => ({
-      value: provider,
-      toString: () => provider.name,
-    })
-  );
-  const targetProviderOptions: OptionWithValue<
-    IOpenShiftProvider
-  >[] = providersByType.openshift.map((provider) => ({
-    value: provider,
-    toString: () => provider.name,
-  }));
+  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
+    isLoadingProviders || !providersByType
+      ? []
+      : providersByType.vsphere.map((provider) => ({
+          value: provider,
+          toString: () => provider.name,
+        }));
+  const targetProviderOptions: OptionWithValue<IOpenShiftProvider>[] =
+    isLoadingProviders || !providersByType
+      ? []
+      : providersByType.openshift.map((provider) => ({
+          value: provider,
+          toString: () => provider.name,
+        }));
 
   const [mappingName, setMappingName] = React.useState('');
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
