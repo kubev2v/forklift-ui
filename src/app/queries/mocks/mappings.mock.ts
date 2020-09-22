@@ -2,6 +2,7 @@ import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings
 import { ProviderType } from '@app/common/constants';
 import { MappingSource, MappingTarget } from '../types/mappings.types';
 import { NetworkType } from '../types/providers.types';
+import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
 
 const storageMapping1: IStorageMapping = {
   type: MappingType.Storage,
@@ -51,12 +52,14 @@ const storageMapping2: IStorageMapping = {
 
 export const MOCK_STORAGE_MAPPINGS: IStorageMapping[] = [storageMapping1, storageMapping2];
 
+// TODO the mocks we use for this should be actual network/storage object mocks
 export const MOCK_STORAGE_MAPPING_SOURCES: MappingSource[] = [
   { id: '1', name: 'vmware-datastore-1' },
   { id: '2', name: 'vmware-datastore-2' },
 ];
 
-export const MOCK_STORAGE_MAPPING_TARGETS: MappingTarget[] = ['gold', 'silver', 'bronze'];
+export const MOCK_STORAGE_MAPPING_TARGETS: MappingTarget[] =
+  MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1;
 
 const networkMapping1: INetworkMapping = {
   type: MappingType.Network,

@@ -19,9 +19,10 @@ import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown
 import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderStatus from '../ProviderStatus';
 import './OpenShiftProvidersTable.css';
+import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from '@app/queries/mocks/storageClasses.mock';
 
 // TODO move these to a dependent query from providers
-const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
+const MOCK_STORAGE_CLASSES = MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1;
 
 interface IOpenShiftProvidersTableProps {
   providers: IOpenShiftProvider[];

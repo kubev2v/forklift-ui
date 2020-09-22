@@ -1,12 +1,10 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingTarget, MappingType } from '@app/queries/types';
+import { MappingTarget } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
-import { getMappingTargetName } from '../helpers';
 
 interface IMappingTargetSelectProps {
   id: string;
-  mappingType: MappingType;
   builderItems: IMappingBuilderItem[];
   itemIndex: number;
   setBuilderItems: (items: IMappingBuilderItem[]) => void;
@@ -16,7 +14,6 @@ interface IMappingTargetSelectProps {
 
 const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
   id,
-  mappingType,
   builderItems,
   itemIndex,
   setBuilderItems,
@@ -31,7 +28,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => ({
     value: target,
-    toString: () => getMappingTargetName(target, mappingType),
+    toString: () => target.name,
   }));
   const selectedOption = targetOptions.find(
     (option: OptionWithValue<MappingTarget>) => option.value === builderItems[itemIndex].target

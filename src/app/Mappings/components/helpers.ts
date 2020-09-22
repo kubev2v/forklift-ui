@@ -1,4 +1,11 @@
-import { IOpenShiftNetwork, MappingSource, MappingTarget, MappingType } from '@app/queries/types';
+import {
+  IOpenShiftNetwork,
+  IStorageClass,
+  MappingItem,
+  MappingSource,
+  MappingTarget,
+  MappingType,
+} from '@app/queries/types';
 
 export const getMappingSourceById = (
   sources: MappingSource[],
@@ -25,12 +32,20 @@ export const getMappingTargetTitle = (mappingType: MappingType): string => {
   return '';
 };
 
-export const getMappingTargetName = (target: MappingTarget, mappingType: MappingType): string => {
+export const getMappingItemTargetName = (
+  target: MappingItem['target'],
+  mappingType: MappingType,
+  availableTargets: MappingTarget[]
+): string => {
   if (mappingType === MappingType.Network) {
     return (target as IOpenShiftNetwork).name;
   }
   if (mappingType === MappingType.Storage) {
-    return target as string;
+    return (
+      (availableTargets as IStorageClass[]).find(
+        (storageClass) => storageClass.name === (target as string)
+      )?.name || ''
+    );
   }
   return '';
 };

@@ -44,7 +44,7 @@ export const getMappingFromBuilderItems = ({
       if (item.source && item.target) {
         return {
           source: { id: item.source.id },
-          target: item.target as MappingTarget,
+          target: item.target.name as MappingItem['target'],
         };
       }
       return null;

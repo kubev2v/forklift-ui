@@ -102,7 +102,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
             <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
-                mappingType={mappingType}
                 builderItems={builderItems}
                 itemIndex={itemIndex}
                 setBuilderItems={setBuilderItems}

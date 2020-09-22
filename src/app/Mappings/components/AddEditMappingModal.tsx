@@ -33,6 +33,7 @@ import { useProvidersQuery } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
+import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from '@app/queries/mocks/storageClasses.mock';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -41,7 +42,7 @@ interface IAddEditMappingModalProps {
 }
 
 // TODO move these to a dependent query from providers
-const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
+const MOCK_STORAGE_CLASSES = MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1;
 
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
