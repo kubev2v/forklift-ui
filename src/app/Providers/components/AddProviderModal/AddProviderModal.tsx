@@ -6,6 +6,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
+import { usePausedPollingEffect } from '@app/common/context';
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -20,6 +21,8 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
+  usePausedPollingEffect();
+
   // TODO determine the actual validation criteria for this form -- these are for testing
 
   const providerTypeField = useFormField<ProviderType | null>(
