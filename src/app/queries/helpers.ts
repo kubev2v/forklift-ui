@@ -29,14 +29,10 @@ export const getApiUrl = (relativePath: string): string =>
   `${process.env.REMOTE_API_URL}${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {
-  const isAnyLoading = queryResults.some((result) => result.isLoading);
-  const isAnyError = queryResults.some((result) => result.isError);
-  const areAllIdle = queryResults.every((result) => result.isIdle);
-  const areAllSuccess = queryResults.every((result) => result.isSuccess);
-  if (isAnyError) return QueryStatus.Error;
-  if (isAnyLoading) return QueryStatus.Loading;
-  if (areAllIdle) return QueryStatus.Idle;
-  if (areAllSuccess) return QueryStatus.Success;
+  if (queryResults.some((result) => result.isError)) return QueryStatus.Error;
+  if (queryResults.some((result) => result.isLoading)) return QueryStatus.Loading;
+  if (queryResults.every((result) => result.isIdle)) return QueryStatus.Idle;
+  if (queryResults.every((result) => result.isSuccess)) return QueryStatus.Success;
   return QueryStatus.Error; // Should never reach this, just makes TS happy
 };
 
