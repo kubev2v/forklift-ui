@@ -40,15 +40,6 @@ const storageMapping2: IStorageMapping = {
 
 export const MOCK_STORAGE_MAPPINGS: IStorageMapping[] = [storageMapping1, storageMapping2];
 
-// TODO the mocks we use for this should be actual network/storage object mocks
-export const MOCK_STORAGE_MAPPING_SOURCES: MappingSource[] = [
-  { id: '1', name: 'vmware-datastore-1' },
-  { id: '2', name: 'vmware-datastore-2' },
-];
-
-export const MOCK_STORAGE_MAPPING_TARGETS: MappingTarget[] =
-  MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1;
-
 const networkMapping1: INetworkMapping = {
   type: MappingType.Network,
   name: 'vcenter1_netstore_to_OCP1_network1',
@@ -92,21 +83,3 @@ const networkMapping2: INetworkMapping = {
 };
 
 export const MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [networkMapping1, networkMapping2];
-
-export const MOCK_NETWORK_MAPPING_SOURCES: MappingSource[] = [
-  { id: '1', name: 'vcenter1-netstore-1' },
-  { id: '2', name: 'vcenter1-netstore-2' },
-];
-
-export const MOCK_NETWORK_MAPPING_TARGETS: MappingTarget[] = [
-  {
-    type: NetworkType.Pod,
-    name: 'network1',
-    namespace: 'namespace-test',
-  },
-  {
-    type: NetworkType.Pod,
-    name: 'network2',
-    namespace: 'namespace-test',
-  },
-];
