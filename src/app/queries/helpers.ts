@@ -1,3 +1,4 @@
+import { RUNTIME_ENV } from '@app/common/constants';
 import { UseQueryObjectConfig, QueryResult, useQuery, QueryStatus } from 'react-query';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
@@ -26,7 +27,7 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
   });
 
 export const getApiUrl = (relativePath: string): string =>
-  `${process.env.REMOTE_API_URL}${relativePath}`;
+  `${RUNTIME_ENV.INVENTORY_API_URL}${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return QueryStatus.Error;

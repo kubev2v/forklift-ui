@@ -3,6 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+require('dotenv').config(); // For runtime-env-vars.js
 const BG_IMAGES_DIRNAME = 'bgimages';
 
 module.exports = (env) => {
@@ -128,9 +129,22 @@ module.exports = (env) => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'src', 'index.html'),
-      }),
+      new HtmlWebpackPlugin(
+        env === 'development' || process.env.DATA_SOURCE === 'mock'
+          ? {
+              // In dev and mock-prod modes, populate window._env at build time
+              filename: 'index.html',
+              template: path.resolve(__dirname, 'src', 'index.html.ejs'),
+              templateParameters: {
+                _env_encoded: require('./runtime-env-vars'),
+              },
+            }
+          : {
+              // In real prod mode, populate window._env at run time with express
+              filename: 'index.html.ejs',
+              template: `!!raw-loader!${path.resolve(__dirname, 'src', 'index.html.ejs')}`,
+            }
+      ),
       new Dotenv({
         systemvars: true,
         silent: true,

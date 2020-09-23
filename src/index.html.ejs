@@ -11,6 +11,9 @@
       href="https://www.patternfly.org/components/patternfly/dist/img/favicon.ico"
     />
     <base href="/" />
+    <script>
+      window._env = JSON.parse(atob('<%= _env_encoded %>'));
+    </script>
   </head>
 
   <body>
