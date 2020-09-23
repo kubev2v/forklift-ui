@@ -21,11 +21,13 @@ cd virt-ui
 yarn install
 ```
 
-Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Set the `REMOTE_API_URL` variable to the root URL of an API server for use in remote development mode. The `DATA_SOURCE` value doesn't matter unless you plan to run webpack directly, since the `yarn [start:dev|build]:[mock|remote]` commands will override it.
+Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Set the `INVENTORY_API_URL` variable to the root URL of your virt-controller inventory API, and set `CLUSTER_API_URL` to the root URL of your host OpenShift cluster API. The `DATA_SOURCE` value doesn't matter unless you plan to run webpack directly, since the `yarn [start:dev|build]:[mock|remote]` commands will override it.
 
 ```bash
 DATA_SOURCE=remote  # can be `remote` or `mock`
-REMOTE_API_URL=https://inventory-openshift-migration.example.com/
+INVENTORY_API_URL=https://inventory-openshift-migration.example.com/
+CLUSTER_API_URL=https://api.example.com:6443
+
 ```
 
 Run the UI with webpack-dev-server at http://localhost:9000:
@@ -74,6 +76,15 @@ yarn bundle-profile:analyze
 ```sh
 yarn start
 ```
+
+## IMPORTANT: A note about environment variables
+
+The `.env` file defines variables that are shipped to the UI in two ways.
+
+1. All values from this file can be referenced from `process.env.*`, which will be statically injected **at build time**.
+2. A subset of the values from this file can be referenced from `RUNTIME_ENV.*`, which will be injected **at server start time**.
+
+It is important that we do **NOT** use variables that need to change on a per-deployment basis, such as API URLs, by referencing `process.env.*`. Instead those variables need to be referenced from `RUNTIME_ENV.*`. The list of these variables available at run time is defined in the `runtime-env-vars.js` file.
 
 ## Configurations
 
