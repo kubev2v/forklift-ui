@@ -10,26 +10,34 @@ import {
   FormGroup,
   Flex,
   FlexItem,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingType, Mapping, MappingSource, MappingTarget } from '@app/queries/types';
+import { MappingType, Mapping } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
+import { useMappingResourceQueries, useProvidersQuery } from '@app/queries';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IMappingFormProps {
   mappingType: MappingType;
   mappingList: Mapping[];
-  availableSources?: MappingSource[];
-  availableTargets?: MappingTarget[];
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   mappingType,
   mappingList,
-  availableSources = [],
-  availableTargets = [],
 }: IMappingFormProps) => {
+  ////// TODO remove this and instead use sourceProvider and targetProvider from GeneralForm when we lift that state
+  const providersQuery = useProvidersQuery();
+  /////////////// ^
+  const mappingResourceQueries = useMappingResourceQueries(
+    providersQuery.data?.vsphere[0] || null, // TODO use sourceProvider form value from GeneralForm
+    providersQuery.data?.openshift[0] || null, // TODO use targetProvider form value from GeneralForm
+    mappingType
+  );
+
   const mappingOptions = Object.values(mappingList).map((mapping) => ({
     toString: () => mapping.name,
     value: mapping,
@@ -95,13 +103,19 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         />
         {isCreateMappingChecked && (
           <>
-            <MappingBuilder
-              mappingType={mappingType}
-              availableSources={availableSources}
-              availableTargets={availableTargets}
-              builderItems={builderItems}
-              setBuilderItems={setBuilderItems}
-            />
+            {mappingResourceQueries.isLoading ? (
+              <LoadingEmptyState />
+            ) : mappingResourceQueries.isError ? (
+              <Alert variant="danger" title="Error loading mapping resources" />
+            ) : (
+              <MappingBuilder
+                mappingType={mappingType}
+                availableSources={mappingResourceQueries.availableSources}
+                availableTargets={mappingResourceQueries.availableTargets}
+                builderItems={builderItems}
+                setBuilderItems={setBuilderItems}
+              />
+            )}
             <Checkbox
               label="Save mapping to use again"
               aria-label="save mapping checkbox"

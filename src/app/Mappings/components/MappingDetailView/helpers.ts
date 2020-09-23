@@ -1,14 +1,8 @@
-import { MappingItem, MappingType } from '@app/queries/types';
-import { getMappingTargetName } from '../helpers';
+import { MappingItem } from '@app/queries/types';
 
-export const groupMappingItemsByTarget = (
-  mappingItems: MappingItem[],
-  mappingType: MappingType
-): MappingItem[][] => {
-  const targetNames: string[] = Array.from(
-    new Set(mappingItems.map((item) => getMappingTargetName(item.target, mappingType)))
-  );
+export const groupMappingItemsByTarget = (mappingItems: MappingItem[]): MappingItem[][] => {
+  const targetNames: string[] = Array.from(new Set(mappingItems.map((item) => item.target.name)));
   return targetNames.map((targetName) =>
-    mappingItems.filter((item) => getMappingTargetName(item.target, mappingType) === targetName)
+    mappingItems.filter((item) => item.target.name === targetName)
   );
 };

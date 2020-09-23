@@ -8,8 +8,6 @@ import {
   EmptyStateBody,
   Title,
   Button,
-  Bullseye,
-  Spinner,
   Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -23,6 +21,7 @@ import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real data from react-query
 import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const isFetchingInitialPlans = false; // Fetching for the first time, not polling
 const migplans = MOCK_PLANS;
@@ -55,15 +54,8 @@ const PlansPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {providersQuery.isLoading || isFetchingInitialPlans ? (
-          <Bullseye>
-            <EmptyState variant="large">
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
-        ) : providersQuery.status === 'error' ? (
+          <LoadingEmptyState />
+        ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>

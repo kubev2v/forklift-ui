@@ -8,14 +8,7 @@ import Review from './Review';
 import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
-import {
-  MOCK_STORAGE_MAPPINGS,
-  MOCK_STORAGE_MAPPING_SOURCES,
-  MOCK_STORAGE_MAPPING_TARGETS,
-  MOCK_NETWORK_MAPPINGS,
-  MOCK_NETWORK_MAPPING_SOURCES,
-  MOCK_NETWORK_MAPPING_TARGETS,
-} from '@app/queries/mocks/mappings.mock';
+import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { usePausedPollingEffect } from '@app/common/context';
 
 interface IPlanWizardProps {
@@ -86,8 +79,6 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
             key="mapping-form-storage"
             mappingType={MappingType.Storage}
             mappingList={MOCK_STORAGE_MAPPINGS}
-            availableSources={MOCK_STORAGE_MAPPING_SOURCES}
-            availableTargets={MOCK_STORAGE_MAPPING_TARGETS}
           />
         </WizardStepContainer>
       ),
@@ -102,8 +93,6 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
             key="mapping-form-network"
             mappingType={MappingType.Network}
             mappingList={MOCK_NETWORK_MAPPINGS}
-            availableSources={MOCK_NETWORK_MAPPING_SOURCES}
-            availableTargets={MOCK_NETWORK_MAPPING_TARGETS}
           />
         </WizardStepContainer>
       ),

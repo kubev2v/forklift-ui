@@ -8,40 +8,23 @@ import {
   Grid,
   GridItem,
   Alert,
-  Bullseye,
-  EmptyState,
-  Spinner,
-  Title,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import {
-  MappingType,
-  MappingSource,
-  MappingTarget,
-  IOpenShiftProvider,
-  IVMwareProvider,
-} from '@app/queries/types';
-import {
-  MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
-} from '@app/queries/mocks/networks.mock';
-import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from '@app/queries/mocks/datastores.mock';
-import { useProvidersQuery } from '@app/queries';
+import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IAddEditMappingModalProps {
   title: string;
   onClose: () => void;
   mappingType: MappingType;
 }
-
-// TODO move these to a dependent query from providers
-const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
@@ -71,25 +54,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
   const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
 
-  React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${sourceProvider?.name}`);
-  }, [mappingType, sourceProvider]);
-
-  React.useEffect(() => {
-    console.log(`TODO: fetch ${mappingType} items for ${targetProvider?.name}`);
-  }, [mappingType, targetProvider]);
-
-  // TODO use the right thing from react-query here instead of mock data
-  let availableSources: MappingSource[] = [];
-  let availableTargets: MappingTarget[] = [];
-  if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : [];
-    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : [];
-  }
-  if (mappingType === MappingType.Storage) {
-    availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : [];
-    availableTargets = targetProvider ? MOCK_STORAGE_CLASSES : [];
-  }
+  const mappingResourceQueries = useMappingResourceQueries(
+    sourceProvider,
+    targetProvider,
+    mappingType
+  );
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
@@ -136,15 +105,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     >
       <Form className="extraSelectMargin">
         {providersQuery.isLoading ? (
-          <Bullseye>
-            <EmptyState variant="large">
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2">Loading...</Title>
-            </EmptyState>
-          </Bullseye>
-        ) : providersQuery.status === 'error' ? (
+          <LoadingEmptyState />
+        ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : (
           <>
@@ -194,13 +156,19 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={1} />
             </Grid>
             {sourceProvider && targetProvider ? (
-              <MappingBuilder
-                mappingType={mappingType}
-                availableSources={availableSources}
-                availableTargets={availableTargets}
-                builderItems={builderItems}
-                setBuilderItems={setBuilderItems}
-              />
+              mappingResourceQueries.isLoading ? (
+                <LoadingEmptyState />
+              ) : mappingResourceQueries.isError ? (
+                <Alert variant="danger" title="Error loading mapping resources" />
+              ) : (
+                <MappingBuilder
+                  mappingType={mappingType}
+                  availableSources={mappingResourceQueries.availableSources}
+                  availableTargets={mappingResourceQueries.availableTargets}
+                  builderItems={builderItems}
+                  setBuilderItems={setBuilderItems}
+                />
+              )
             ) : null}
           </>
         )}

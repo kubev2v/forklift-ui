@@ -1,32 +1,40 @@
 import * as React from 'react';
-import { Grid, GridItem, Title } from '@patternfly/react-core';
+import { Alert, Grid, GridItem, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Mapping, MappingSource, MappingType } from '@app/queries/types';
+import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
-import {
-  getMappingSourceById,
-  getMappingSourceTitle,
-  getMappingTargetName,
-  getMappingTargetTitle,
-} from '../helpers';
+import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
+import { useMappingResourceQueries } from '@app/queries';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
   mapping: Mapping;
-  availableSources: MappingSource[];
   className: string;
 }
 
 const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mappingType,
   mapping,
-  availableSources,
   className,
 }: IMappingDetailViewProps) => {
-  const mappingItemGroups = groupMappingItemsByTarget(mapping.items, mappingType);
+  const mappingResourceQueries = useMappingResourceQueries(
+    mapping.provider.source,
+    mapping.provider.target,
+    mappingType
+  );
+
+  if (mappingResourceQueries.isLoading) {
+    return <LoadingEmptyState className={className} />;
+  }
+  if (mappingResourceQueries.isError) {
+    return <Alert className={className} variant="danger" title="Error loading mapping resources" />;
+  }
+
+  const mappingItemGroups = groupMappingItemsByTarget(mapping.items);
   return (
     <div className={className}>
       <Grid>
@@ -43,14 +51,17 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         </GridItem>
       </Grid>
       {mappingItemGroups.map((items, index) => {
-        const targetName = getMappingTargetName(items[0].target, mappingType);
+        const targetName = items[0].target.name;
         const isLastGroup = index === mappingItemGroups.length - 1;
         return (
           <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
             <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
               <ul>
                 {items.map((item) => {
-                  const source = getMappingSourceById(availableSources, item.source.id);
+                  const source = getMappingSourceById(
+                    mappingResourceQueries.availableSources,
+                    item.source.id
+                  );
                   const sourceName = source ? source.name : '';
                   return <li key={sourceName}>{sourceName}</li>;
                 })}

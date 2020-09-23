@@ -2,7 +2,14 @@
 // These types should probably be restructured to match API data later.
 
 import { ProviderType } from '@app/common/constants';
-import { IOpenShiftNetwork, IVMwareDatastore, IVMwareNetwork } from '../types/providers.types';
+import {
+  IOpenShiftNetwork,
+  IOpenShiftProvider,
+  IVMwareDatastore,
+  IVMwareNetwork,
+  IVMwareProvider,
+} from './providers.types';
+import { IStorageClass } from './storageClasses.types';
 
 export enum MappingType {
   Network = 'Network',
@@ -11,16 +18,16 @@ export enum MappingType {
 
 export interface INetworkMappingItem {
   source: {
-    id: string;
+    id: string; // TODO see what these actually need to be in the API?
   };
   target: IOpenShiftNetwork;
 }
 
 export interface IStorageMappingItem {
   source: {
-    id: string;
+    id: string; // TODO see what these actually need to be in the API?
   };
-  target: string; // storage class
+  target: IStorageClass;
 }
 
 export type MappingItem = INetworkMappingItem | IStorageMappingItem;
@@ -29,15 +36,8 @@ export interface ICommonMapping {
   type: MappingType;
   name: string;
   provider: {
-    // TODO Should this instead use unique provider ids? what if we rename providers?
-    source: {
-      type: ProviderType;
-      name: string;
-    };
-    target: {
-      type: ProviderType;
-      name: string;
-    };
+    source: IVMwareProvider;
+    target: IOpenShiftProvider;
   };
   items: MappingItem[];
 }
@@ -55,4 +55,4 @@ export interface IStorageMapping extends ICommonMapping {
 export type Mapping = INetworkMapping | IStorageMapping;
 
 export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = IOpenShiftNetwork | string; // string = storage class
+export type MappingTarget = IOpenShiftNetwork | IStorageClass;

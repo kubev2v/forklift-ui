@@ -15,13 +15,11 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
+import { useStorageClassesQuery } from '@app/queries';
 import { IOpenShiftProvider } from '@app/queries/types/providers.types';
+import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
 import ProviderStatus from '../ProviderStatus';
 import './OpenShiftProvidersTable.css';
-
-// TODO move these to a dependent query from providers
-const MOCK_STORAGE_CLASSES = ['gold', 'silver', 'bronze'];
 
 interface IOpenShiftProvidersTableProps {
   providers: IOpenShiftProvider[];
@@ -30,6 +28,8 @@ interface IOpenShiftProvidersTableProps {
 const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
   providers,
 }: IOpenShiftProvidersTableProps) => {
+  const storageClassesQuery = useStorageClassesQuery(providers);
+
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
@@ -42,14 +42,15 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
   ];
 
   const getSortValues = (provider: IOpenShiftProvider) => {
-    const { namespaceCount, vmCount, networkCount } = provider;
+    const { name, namespaceCount, vmCount, networkCount } = provider;
+    const storageClasses = storageClassesQuery.data ? storageClassesQuery.data[name] : [];
     return [
-      provider.name,
+      name,
       provider.object.spec.url,
       namespaceCount,
       vmCount,
       networkCount,
-      MOCK_STORAGE_CLASSES.length,
+      storageClasses.length,
       provider.object.status.conditions[0].type, // TODO maybe surface the most serious status condition?,
       '',
     ];
@@ -69,13 +70,14 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IOpenShiftProvider) => {
-    const { namespaceCount, vmCount, networkCount } = provider;
+    const { name, namespaceCount, vmCount, networkCount } = provider;
     const isExpanded = isProviderExpanded(provider);
+    const storageClasses = storageClassesQuery.data ? storageClassesQuery.data[name] : [];
     rows.push({
       meta: { provider },
       isOpen: isExpanded,
       cells: [
-        provider.name,
+        name,
         provider.object.spec.url,
         namespaceCount,
         vmCount,
@@ -83,7 +85,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         {
           title: (
             <>
-              <DatabaseIcon key="storage-classes-icon" /> {MOCK_STORAGE_CLASSES.length}
+              <DatabaseIcon key="storage-classes-icon" /> {storageClasses.length}
             </>
           ),
           props: {
@@ -104,8 +106,8 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           {
             title: (
               <List className={`provider-storage-classes-list ${spacing.mMd}`}>
-                {MOCK_STORAGE_CLASSES.map((storageClass) => (
-                  <ListItem key={storageClass}>{storageClass}</ListItem>
+                {storageClasses.map((storageClass) => (
+                  <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
                 ))}
               </List>
             ),

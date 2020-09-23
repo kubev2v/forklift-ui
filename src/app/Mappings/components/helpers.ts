@@ -1,4 +1,4 @@
-import { IOpenShiftNetwork, MappingSource, MappingTarget, MappingType } from '@app/queries/types';
+import { MappingSource, MappingType } from '@app/queries/types';
 
 export const getMappingSourceById = (
   sources: MappingSource[],
@@ -21,16 +21,6 @@ export const getMappingTargetTitle = (mappingType: MappingType): string => {
   }
   if (mappingType === MappingType.Storage) {
     return 'Target storage classes';
-  }
-  return '';
-};
-
-export const getMappingTargetName = (target: MappingTarget, mappingType: MappingType): string => {
-  if (mappingType === MappingType.Network) {
-    return (target as IOpenShiftNetwork).name;
-  }
-  if (mappingType === MappingType.Storage) {
-    return target as string;
   }
   return '';
 };

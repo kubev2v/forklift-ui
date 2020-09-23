@@ -1,4 +1,4 @@
-import { UseQueryObjectConfig, QueryResult, useQuery } from 'react-query';
+import { UseQueryObjectConfig, QueryResult, useQuery, QueryStatus } from 'react-query';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
 // TODO what about usePaginatedQuery, useInfiniteQuery?
@@ -27,3 +27,38 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
 
 export const getApiUrl = (relativePath: string): string =>
   `${process.env.REMOTE_API_URL}${relativePath}`;
+
+export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {
+  if (queryResults.some((result) => result.isError)) return QueryStatus.Error;
+  if (queryResults.some((result) => result.isLoading)) return QueryStatus.Loading;
+  if (queryResults.every((result) => result.isIdle)) return QueryStatus.Idle;
+  if (queryResults.every((result) => result.isSuccess)) return QueryStatus.Success;
+  return QueryStatus.Error; // Should never reach this, just makes TS happy
+};
+
+export const getFirstQueryError = <TError>(
+  queryResults: QueryResult<unknown, TError>[]
+): TError | null => {
+  for (const result of queryResults) {
+    if (result.isError) return result.error;
+  }
+  return null;
+};
+
+// Given a lookup object of keys to arrays of values,
+// Returns a copy of the object with the values sorted.
+export const sortIndexedData = <TItem, TIndexed>(
+  data: TIndexed | undefined,
+  getSortValue: (item: TItem) => string | number
+): TIndexed | undefined =>
+  data
+    ? Object.keys(data || {}).reduce(
+        (newObj, key) => ({
+          ...newObj,
+          [key]: (data || {})[key].sort((a: TItem, b: TItem) =>
+            getSortValue(a) < getSortValue(b) ? -1 : 1
+          ),
+        }),
+        {} as TIndexed
+      )
+    : undefined;
