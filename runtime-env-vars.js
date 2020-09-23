@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 // Variables from .env specified here will be served to the client in window['_env'] at run-time.
 // This is then exported as a typed constant RUNTIME_ENV from @app/common/constants.ts.
 // These vars MUST be referenced in UI code from RUNTIME_ENV instead of process.env (build-time values).
