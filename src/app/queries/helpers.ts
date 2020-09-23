@@ -44,3 +44,21 @@ export const getFirstQueryError = <TError>(
   }
   return null;
 };
+
+// Given a lookup object of keys to arrays of values,
+// Returns a copy of the object with the values sorted.
+export const sortIndexedData = <TItem, TIndexed>(
+  data: TIndexed | undefined,
+  getSortValue: (item: TItem) => string | number
+): TIndexed | undefined =>
+  data
+    ? Object.keys(data || {}).reduce(
+        (newObj, key) => ({
+          ...newObj,
+          [key]: (data || {})[key].sort((a: TItem, b: TItem) =>
+            getSortValue(a) < getSortValue(b) ? -1 : 1
+          ),
+        }),
+        {} as TIndexed
+      )
+    : undefined;

@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedData } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider } from './types';
 
@@ -20,16 +20,6 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   );
   return {
     ...result,
-    data: result.data
-      ? (Object.keys(result.data || {}).reduce(
-          (newObj, key) => ({
-            ...newObj,
-            [key]: (result.data || {})[key].sort((a: Provider, b: Provider) =>
-              a.name < b.name ? -1 : 1
-            ),
-          }),
-          {} as IProvidersByType
-        ) as IProvidersByType)
-      : undefined,
+    data: sortIndexedData<Provider, IProvidersByType>(result.data, (provider) => provider.name),
   };
 };

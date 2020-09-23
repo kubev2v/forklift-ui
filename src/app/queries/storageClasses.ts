@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedData } from './helpers';
 import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 
@@ -49,17 +49,6 @@ export const useStorageClassesQuery = (
   );
   return {
     ...result,
-    // TODO maybe factor this out into a sortIndexedResources helper or something
-    data: result.data
-      ? (Object.keys(result.data || {}).reduce(
-          (newObj, key) => ({
-            ...newObj,
-            [key]: (result.data || {})[key].sort((a: IStorageClass, b: IStorageClass) =>
-              a.name < b.name ? -1 : 1
-            ),
-          }),
-          {} as IStorageClassesByProvider
-        ) as IStorageClassesByProvider)
-      : undefined,
+    data: sortIndexedData<IStorageClass, IStorageClassesByProvider>(result.data, (sc) => sc.name),
   };
 };
