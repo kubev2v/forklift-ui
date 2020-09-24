@@ -23,11 +23,11 @@ const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
 
     return (
       <>
-        <Level>
+        <Level className={`${spacing.mbXs} ${spacing.prMd}`}>
           <LevelItem>
             <StatusIcon status={StatusType.Warning} label={label} />
           </LevelItem>
-          <LevelItem className={`${spacing.mbXs} ${spacing.prMd}`}>
+          <LevelItem>
             {`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}
           </LevelItem>
         </Level>
