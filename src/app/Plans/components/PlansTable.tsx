@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Level, LevelItem, Pagination, Progress } from '@patternfly/react-core';
+import { Button, Flex, Level, LevelItem, Pagination, Progress, Text } from '@patternfly/react-core';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import {
   Table,
@@ -66,7 +66,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           title: (
             <>
               <a href="#">{plan.metadata.name}</a>
-              <div>{plan.spec.description}</div>
+              <Flex>
+                <Text component="small">{plan.spec.description}</Text>
+              </Flex>
             </>
           ),
         },
