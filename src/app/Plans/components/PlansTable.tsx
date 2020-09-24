@@ -9,6 +9,7 @@ import {
   sortable,
   wrappable,
 } from '@patternfly/react-table';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import PlanStatus from './PlanStatus';
 import PlanActionsDropdown from './PlanActionsDropdown';
@@ -65,7 +66,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         {
           title: (
             <>
-              <a href="#">{plan.metadata.name}</a>
+              <Link to={`/plans/${plan.metadata.name}`}>{plan.metadata.name}</Link>
               <Flex>
                 <Text component="small">{plan.spec.description}</Text>
               </Flex>
