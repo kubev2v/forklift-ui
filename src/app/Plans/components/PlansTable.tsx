@@ -8,7 +8,9 @@ import {
   IRow,
   sortable,
   wrappable,
+  classNames,
 } from '@patternfly/react-table';
+import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
 
 import PlanStatus from './PlanStatus';
@@ -52,7 +54,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     { title: 'Target provider', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Plan status', transforms: [sortable] },
-    { title: '' },
+    { title: '', columnTransforms: [classNames(alignment.textAlignRight)] },
   ];
 
   const rows: IRow[] = [];

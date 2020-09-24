@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IMigration, IPlan } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { Level, LevelItem, Progress, ProgressMeasureLocation } from '@patternfly/react-core';
+import { Level, LevelItem, Progress, ProgressMeasureLocation, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 interface IPlanStatusProps {
@@ -25,10 +25,13 @@ const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
       <>
         <Level className={`${spacing.mbXs} ${spacing.prMd}`}>
           <LevelItem>
-            <StatusIcon status={StatusType.Warning} label={label} />
+            <StatusIcon
+              status={StatusType.Warning}
+              label={<Text component="small">{label}</Text>}
+            />
           </LevelItem>
           <LevelItem>
-            {`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}
+            <Text component="small">{`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}</Text>
           </LevelItem>
         </Level>
         <Progress value={percentVMsDone} measureLocation={ProgressMeasureLocation.none} />
