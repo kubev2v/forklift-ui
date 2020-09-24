@@ -13,6 +13,7 @@ import StorageMappingsPage from '@app/Mappings/Storage/StorageMappingsPage';
 import HooksPage from '@app/Hooks/HooksPage';
 import { HostsPage } from './Providers/HostsPage';
 import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
+import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
 
 let routeFocusTimer: number;
 
@@ -63,12 +64,17 @@ export const routes: AppRouteConfig[] = [
     path: '/plans',
     title: `${APP_TITLE} | Migration Plans`,
   },
-  // TODO Watch out for future /plans/:plan as the follow has precedence
   {
     component: PlanWizard,
     exact: true,
     path: '/plans/create',
     title: `${APP_TITLE} | Create Migration Plan`,
+  },
+  {
+    component: VMMigrationDetails,
+    exact: false,
+    path: '/plans/:planId',
+    title: `${APP_TITLE} | Migration Plan Details`,
   },
   {
     label: 'Mappings',

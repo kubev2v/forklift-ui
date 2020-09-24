@@ -46,7 +46,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       plan.metadata.name,
       plan.spec.provider.sourceProvider.name,
       plan.spec.provider.destinationProvider.name,
-      plan.spec.vmList.length,
+      plan.spec.vms.length,
       '', // Plan status
       '', // Action column
     ];
@@ -60,10 +60,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const ratioVMs = (plan: IPlan) => {
     const migration = getMigration(plan)[0];
-    const totalVMs = plan.spec.vmList.length;
-
+    const totalVMs = plan.spec.vms.length;
     const statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
-    const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
+    const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vms.length} VMs migrated`;
 
     return { statusValue, statusMessage };
   };
@@ -123,7 +122,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         plan.spec.provider.sourceProvider.name,
         plan.spec.provider.destinationProvider.name,
-        plan.spec.vmList.length,
+        plan.spec.vms.length,
         {
           title: isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusType.Ready} />

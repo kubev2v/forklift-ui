@@ -38,7 +38,7 @@ export interface IVMStatus {
 }
 
 export interface IPlanVM {
-  uid: string;
+  id: string;
   hooks: {
     before: IHook;
     after: IHook;
@@ -63,7 +63,7 @@ export interface IPlan extends ICR {
       datastores: Mapping[];
     };
     warm: boolean;
-    vmList: IPlanVM[];
+    vms: IPlanVM[];
   };
   status: IPlanStatus;
 }
@@ -72,8 +72,8 @@ export interface IPlan extends ICR {
 export interface IMigration {
   plan: IPlan;
   schedule: {
-    begin: number;
-    end: number;
+    begin: string;
+    end: string;
   };
   status: {
     ready: boolean;
