@@ -9,13 +9,14 @@ import {
   sortable,
   wrappable,
 } from '@patternfly/react-table';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import PlanStatus from './PlanStatus';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
+import PlanWizard from './Wizard/PlanWizard';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -26,6 +27,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   migrations,
 }: IPlansTableProps) => {
+  const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
+
   const getSortValues = (plan: IPlan) => {
     return [
       plan.metadata.name,
@@ -97,7 +100,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
+          <Button variant="secondary" onClick={toggleWizard} isDisabled={false}>
             Create
           </Button>
         </LevelItem>
@@ -117,6 +120,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         <TableBody />
       </Table>
       <Pagination {...paginationProps} widgetId="plans-table-pagination-bottom" variant="bottom" />
+      {isWizardOpen ? (
+        <PlanWizard onClose={toggleWizard} sourceProviders={[]} targetProviders={[]} />
+      ) : null}
     </>
   );
 };
