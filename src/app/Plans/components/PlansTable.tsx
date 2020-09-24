@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Button, Flex, Level, LevelItem, Pagination, Progress, Text } from '@patternfly/react-core';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { Button, Flex, Level, LevelItem, Pagination, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -15,6 +14,7 @@ import PlanStatus from './PlanStatus';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
+import './PlansTable.css';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -106,6 +106,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       </Level>
       <Table
         aria-label="Migration Plans table"
+        className="plans-table"
         cells={columns}
         rows={rows}
         sortBy={sortBy}
