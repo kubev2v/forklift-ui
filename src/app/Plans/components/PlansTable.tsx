@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Flex, Level, LevelItem, Pagination, Text } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Level, LevelItem, Pagination, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -9,6 +9,7 @@ import {
   sortable,
   wrappable,
   classNames,
+  cellWidth,
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
@@ -51,18 +52,27 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable] },
     { title: 'Source provider', transforms: [sortable, wrappable] },
-    { title: 'Target provider', transforms: [sortable] },
+    { title: 'Target provider', transforms: [sortable, wrappable] },
     { title: 'VMs', transforms: [sortable] },
-    { title: 'Plan status', transforms: [sortable] },
-    { title: '', columnTransforms: [classNames(alignment.textAlignRight)] },
+    { title: 'Plan status', transforms: [sortable, cellWidth(30)] },
+    {
+      title: '',
+      transforms: [cellWidth(10)],
+      columnTransforms: [classNames(alignment.textAlignRight)],
+    },
   ];
 
   const rows: IRow[] = [];
 
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonText = '';
+    let buttonText: string | React.ReactNode;
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
-      buttonText = 'Start migration';
+      buttonText = (
+        <>
+          <Text>Start</Text>
+          <Text>migration</Text>
+        </>
+      );
     }
 
     rows.push({
@@ -87,10 +97,20 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         {
           title: buttonText ? (
             <>
-              <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-                {buttonText}
-              </Button>
-              <PlanActionsDropdown />
+              <Flex
+                flex={{ default: 'flex_2' }}
+                spaceItems={{ default: 'spaceItemsNone' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+              >
+                <FlexItem align={{ default: 'alignRight' }}>
+                  <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
+                    {buttonText}
+                  </Button>
+                </FlexItem>
+                <FlexItem>
+                  <PlanActionsDropdown />
+                </FlexItem>
+              </Flex>
             </>
           ) : null,
         },
