@@ -112,7 +112,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </FlexItem>
               </Flex>
             </>
-          ) : null,
+          ) : (
+            <PlanActionsDropdown />
+          ),
         },
       ],
     });
