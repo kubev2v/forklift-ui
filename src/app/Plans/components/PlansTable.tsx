@@ -67,12 +67,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
-      buttonText = (
-        <>
-          <Text>Start</Text>
-          <Text>migration</Text>
-        </>
-      );
+      buttonText = 'Start';
     }
 
     rows.push({
@@ -101,6 +96,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 flex={{ default: 'flex_2' }}
                 spaceItems={{ default: 'spaceItemsNone' }}
                 alignItems={{ default: 'alignItemsCenter' }}
+                flexWrap={{ default: 'nowrap' }}
               >
                 <FlexItem align={{ default: 'alignRight' }}>
                   <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
