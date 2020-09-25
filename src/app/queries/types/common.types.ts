@@ -21,3 +21,12 @@ export interface IMetaObjectMeta {
 export interface ICR extends IMetaTypeMeta {
   metadata: IMetaObjectMeta;
 }
+
+export interface IStatusCondition {
+  category: string;
+  type: string;
+  status: boolean;
+  reason: string;
+  message: string;
+  lastTransitionTime: string; // ISO timestamp
+}

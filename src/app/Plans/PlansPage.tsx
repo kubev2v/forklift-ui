@@ -20,11 +20,12 @@ import PlansTable from './components/PlansTable';
 import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real data from react-query
-import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
+import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const isFetchingInitialPlans = false; // Fetching for the first time, not polling
-const migplans = MOCK_PLANS;
+const plans = MOCK_PLANS;
+const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
   const providersQuery = useProvidersQuery();
@@ -60,7 +61,7 @@ const PlansPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!migplans ? null : migplans.length === 0 ? (
+              {!plans ? null : plans.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title size="lg" headingLevel="h2">
@@ -85,7 +86,7 @@ const PlansPage: React.FunctionComponent = () => {
                   </AddTooltip>
                 </EmptyState>
               ) : (
-                <PlansTable planList={migplans} toggleAddWizardOpen={toggleWizard} />
+                <PlansTable plans={plans} migrations={migrations} />
               )}
             </CardBody>
           </Card>

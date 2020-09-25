@@ -36,10 +36,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         conditions: [
           {
             type: 'Ready',
-            status: 'True',
+            status: true,
             category: 'Required',
             message: 'The provider is ready.',
             lastTransitionTime: '2020-08-21T18:36:41.468Z',
+            reason: '',
           },
         ],
         observedGeneration: 1,

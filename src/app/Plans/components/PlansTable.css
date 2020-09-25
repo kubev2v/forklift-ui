@@ -1,0 +1,7 @@
+.pf-c-table.plans-table tr > * {
+  max-width: none;
+}
+
+.pf-c-table.plans-table tbody > tr > * {
+  vertical-align: middle;
+}
