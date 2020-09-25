@@ -7,12 +7,9 @@ import {
   MappingTarget,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
-import {
-  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
-  MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-} from './mocks/networks.mock';
 import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from './mocks/datastores.mock';
 import { getAggregateQueryStatus, getFirstQueryError } from './helpers';
+import { MOCK_VMWARE_NETWORKS, MOCK_OPENSHIFT_NETWORKS } from './mocks/networks.mock';
 
 // TODO actual useMappingsQuery bits
 
@@ -38,8 +35,8 @@ export const useMappingResourceQueries = (
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : []; // TODO use query data
-    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : []; // TODO use query data
+    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS : []; // TODO use query data
+    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS : []; // TODO use query data
   }
   if (mappingType === MappingType.Storage) {
     availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : []; // TODO use query data

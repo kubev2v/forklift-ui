@@ -5,17 +5,13 @@ import { useMockableQuery, getApiUrl, sortIndexedData } from './helpers';
 import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 
-export const STORAGE_CLASSES_QUERY_KEY = 'storageClasses';
-
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
   providers: IOpenShiftProvider[] | null
 ): QueryResult<IStorageClassesByProvider> => {
   const { isPollingEnabled } = usePollingContext();
   // Key by the provider names combined, so it refetches if the list of providers changes
-  const queryKey = `${STORAGE_CLASSES_QUERY_KEY}:${(providers || [])
-    .map((provider) => provider.name)
-    .join(',')}`;
+  const queryKey = `storageClasses:${(providers || []).map((provider) => provider.name).join(',')}`;
 
   const indexedMockStorageClasses = (providers || []).reduce(
     (newObj, provider) => ({

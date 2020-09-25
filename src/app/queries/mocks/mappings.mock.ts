@@ -1,8 +1,7 @@
 import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings.types';
-import { MappingSource, MappingTarget } from '../types/mappings.types';
-import { NetworkType } from '../types/providers.types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
 import { MOCK_PROVIDERS } from './providers.mock';
+import { MOCK_OPENSHIFT_NETWORKS } from './networks.mock';
 
 const storageMapping1: IStorageMapping = {
   type: MappingType.Storage,
@@ -52,11 +51,7 @@ const networkMapping1: INetworkMapping = {
       source: {
         id: 'id1',
       },
-      target: {
-        type: NetworkType.Pod,
-        name: 'network1',
-        namespace: 'namespace-test',
-      },
+      target: MOCK_OPENSHIFT_NETWORKS[0],
     },
   ],
 };
@@ -73,11 +68,7 @@ const networkMapping2: INetworkMapping = {
       source: {
         id: 'id2',
       },
-      target: {
-        type: NetworkType.Pod,
-        name: 'network2',
-        namespace: 'namespace-test',
-      },
+      target: MOCK_OPENSHIFT_NETWORKS[1],
     },
   ],
 };
