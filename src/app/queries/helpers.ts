@@ -62,3 +62,24 @@ export const sortIndexedData = <TItem, TIndexed>(
         {} as TIndexed
       )
     : undefined;
+
+export const sortByName = <T extends { name: string }>(data?: T[]): T[] | undefined =>
+  data?.sort((a: T, b: T) => (a.name < b.name ? -1 : 1));
+
+export const sortIndexedDataByName = <TItem extends { name: string }, TIndexed>(
+  data: TIndexed | undefined
+): TIndexed | undefined => sortIndexedData<TItem, TIndexed>(data, (item: TItem) => item.name);
+
+export const sortResultsByName = <T extends { name: string }>(
+  result: QueryResult<T[]>
+): QueryResult<T[]> => ({
+  ...result,
+  data: sortByName(result.data),
+});
+
+export const sortIndexedResultsByName = <TItem extends { name: string }, TIndexed>(
+  result: QueryResult<TIndexed>
+): QueryResult<TIndexed> => ({
+  ...result,
+  data: sortIndexedDataByName<TItem, TIndexed>(result.data),
+});
