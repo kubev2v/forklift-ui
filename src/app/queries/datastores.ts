@@ -12,7 +12,9 @@ export const useDatastoresQuery = (
     {
       queryKey: `datastores:${provider?.name}`,
       queryFn: () =>
-        fetch(getApiUrl(`${provider?.selfLink || ''}/datastores`)).then((res) => res.json()),
+        fetch(getApiUrl(`${provider?.selfLink || ''}/datastores?detail=true`)).then((res) =>
+          res.json()
+        ),
       config: {
         enabled: !!provider,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
