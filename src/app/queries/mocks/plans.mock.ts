@@ -1,6 +1,11 @@
 import { IPlan, IMigration, IPlanVM } from '../types';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
+export let MOCK_PLANS: IPlan[] = [];
+export let MOCK_MIGRATIONS: IMigration[] = [];
+
+// TODO put this condition back when we don't directly import mocks into components anymore
+// if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 const vm1: IPlanVM = {
   uid: 'vm1-id',
   hooks: {
@@ -153,7 +158,7 @@ const plan2: IPlan = {
   },
 };
 
-export const MOCK_PLANS: IPlan[] = [plan1, plan2];
+MOCK_PLANS = [plan1, plan2];
 
 export const migration1: IMigration = {
   plan: plan1,
@@ -191,4 +196,5 @@ export const migration4: IMigration = {
   status: { ready: false, storageReady: true, nbVMsDone: 0 },
 };
 
-export const MOCK_MIGRATIONS: IMigration[] = [migration1, migration2];
+MOCK_MIGRATIONS = [migration1, migration2];
+// }

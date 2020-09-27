@@ -2,7 +2,7 @@ import { IStorageClass } from '../types';
 
 export let MOCK_STORAGE_CLASSES_BY_PROVIDER: { [key: string]: IStorageClass[] } = {};
 
-// TODO un-comment this condition when we don't have other mocked components depending on this data even in remote mode
+// TODO put this condition back when we don't directly import mocks into components anymore
 //if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
 const exampleStorageClasses: IStorageClass[] = [

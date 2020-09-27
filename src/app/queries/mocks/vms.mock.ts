@@ -1,6 +1,12 @@
+import { TreeViewDataItem } from '@patternfly/react-core';
 import { IVM } from '../types/plans.types';
 
-export const VMsOptions = [
+export let MOCK_VM_TREE: TreeViewDataItem[] = [];
+export let MOCK_VMS: IVM[] = [];
+
+// TODO put this condition back when we don't directly import mocks into components anymore
+//if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
+MOCK_VM_TREE = [
   {
     name: 'All datacenters',
     id: 'all',
@@ -144,4 +150,4 @@ export const vm2: IVM = {
   analysisDescription: 'There is a risk because...',
 };
 
-export const MOCK_VMS: IVM[] = [vm1, vm2];
+MOCK_VMS = [vm1, vm2];
