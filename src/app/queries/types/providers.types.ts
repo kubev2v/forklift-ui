@@ -72,20 +72,6 @@ export interface IHostsByProvider {
   [providerName: string]: IHost[];
 }
 
-export interface IVMwareDatastore {
-  id: string;
-  parent: {
-    Kind: string;
-    ID: string;
-  };
-  name: string;
-  selfLink: string;
-  type: string;
-  capacity: number;
-  free: number;
-  maintenance: string;
-}
-
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];

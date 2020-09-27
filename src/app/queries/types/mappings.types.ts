@@ -1,5 +1,6 @@
-import { IOpenShiftProvider, IVMwareDatastore, IVMwareProvider } from './providers.types';
+import { IOpenShiftProvider, IVMwareProvider } from './providers.types';
 import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
+import { IVMwareDatastore } from './datastores.types';
 import { IStorageClass } from './storageClasses.types';
 
 export enum MappingType {
