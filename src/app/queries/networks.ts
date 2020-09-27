@@ -22,7 +22,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
     providerType === ProviderType.vsphere ? '/networks' : '/networkattachmentdefinitions';
   const result = useMockableQuery<T[]>(
     {
-      queryKey: `${providerType}-networks:${provider?.name}`,
+      queryKey: `networks:${providerType}/${provider?.name}`,
       queryFn: () =>
         fetch(getApiUrl(`${provider?.selfLink || ''}${apiSlug}`)).then((res) => res.json()),
       config: {
