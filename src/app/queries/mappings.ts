@@ -27,10 +27,13 @@ export const useMappingResourceQueries = (
   targetProvider: IOpenShiftProvider | null,
   mappingType: MappingType
 ): IMappingResourcesResult => {
-  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider);
-  const datastoresQuery = useDatastoresQuery(sourceProvider);
-  const openshiftNetworksQuery = useOpenShiftNetworksQuery(targetProvider);
-  const storageClassesQuery = useStorageClassesQuery(targetProvider ? [targetProvider] : null);
+  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider, mappingType);
+  const datastoresQuery = useDatastoresQuery(sourceProvider, mappingType);
+  const openshiftNetworksQuery = useOpenShiftNetworksQuery(targetProvider, mappingType);
+  const storageClassesQuery = useStorageClassesQuery(
+    targetProvider ? [targetProvider] : null,
+    mappingType
+  );
 
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
@@ -47,14 +50,12 @@ export const useMappingResourceQueries = (
       [];
   }
 
-  const allQueries = [
-    vmwareNetworksQuery,
-    datastoresQuery,
-    openshiftNetworksQuery,
-    storageClassesQuery,
-  ];
-  const status = getAggregateQueryStatus(allQueries);
-  const error = getFirstQueryError(allQueries);
+  const queriesToWatch =
+    mappingType === MappingType.Network
+      ? [vmwareNetworksQuery, openshiftNetworksQuery]
+      : [datastoresQuery, storageClassesQuery];
+  const status = getAggregateQueryStatus(queriesToWatch);
+  const error = getFirstQueryError(queriesToWatch);
 
   return {
     availableSources,

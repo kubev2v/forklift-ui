@@ -2,12 +2,13 @@ import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
-import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider } from './types';
+import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingType } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
-  providers: IOpenShiftProvider[] | null
+  providers: IOpenShiftProvider[] | null,
+  mappingType: MappingType
 ): QueryResult<IStorageClassesByProvider> => {
   const result = useMockableQuery<IStorageClassesByProvider>(
     {
@@ -26,7 +27,7 @@ export const useStorageClassesQuery = (
         );
       },
       config: {
-        enabled: !!providers, // Don't fetch until providers are selected / defined
+        enabled: !!providers && providers.length > 0 && mappingType === MappingType.Storage,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
       },
     },

@@ -9,6 +9,7 @@ import {
   IOpenShiftProvider,
   IVMwareNetwork,
   IVMwareProvider,
+  MappingType,
   Provider,
 } from './types';
 
@@ -16,6 +17,7 @@ import {
 export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   provider: Provider | null,
   providerType: ProviderType,
+  mappingType: MappingType,
   mockNetworks: T[]
 ): QueryResult<T[]> => {
   const apiSlug =
@@ -26,7 +28,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
       queryFn: () =>
         fetch(getApiUrl(`${provider?.selfLink || ''}${apiSlug}`)).then((res) => res.json()),
       config: {
-        enabled: !!provider,
+        enabled: !!provider && mappingType === MappingType.Network,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
       },
     },
@@ -36,11 +38,13 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
 };
 
 export const useVMwareNetworksQuery = (
-  provider: IVMwareProvider | null
+  provider: IVMwareProvider | null,
+  mappingType: MappingType
 ): QueryResult<IVMwareNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.vsphere, MOCK_VMWARE_NETWORKS);
+  useNetworksQuery(provider, ProviderType.vsphere, mappingType, MOCK_VMWARE_NETWORKS);
 
 export const useOpenShiftNetworksQuery = (
-  provider: IOpenShiftProvider | null
+  provider: IOpenShiftProvider | null,
+  mappingType: MappingType
 ): QueryResult<IOpenShiftNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.openshift, MOCK_OPENSHIFT_NETWORKS);
+  useNetworksQuery(provider, ProviderType.openshift, mappingType, MOCK_OPENSHIFT_NETWORKS);

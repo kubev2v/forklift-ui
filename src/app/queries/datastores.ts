@@ -3,10 +3,11 @@ import { QueryResult } from 'react-query';
 import { POLLING_INTERVAL } from './constants';
 import { getApiUrl, sortResultsByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_DATASTORES } from './mocks/datastores.mock';
-import { IVMwareDatastore, IVMwareProvider } from './types';
+import { IVMwareDatastore, IVMwareProvider, MappingType } from './types';
 
 export const useDatastoresQuery = (
-  provider: IVMwareProvider | null
+  provider: IVMwareProvider | null,
+  mappingType: MappingType
 ): QueryResult<IVMwareDatastore[]> => {
   const result = useMockableQuery<IVMwareDatastore[]>(
     {
@@ -16,7 +17,7 @@ export const useDatastoresQuery = (
           res.json()
         ),
       config: {
-        enabled: !!provider,
+        enabled: !!provider && mappingType === MappingType.Storage,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
       },
     },

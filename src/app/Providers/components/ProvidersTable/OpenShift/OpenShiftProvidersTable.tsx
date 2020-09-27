@@ -20,6 +20,7 @@ import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
 import ProviderStatus from '../ProviderStatus';
 import './OpenShiftProvidersTable.css';
+import { MappingType } from '@app/queries/types';
 
 interface IOpenShiftProvidersTableProps {
   providers: IOpenShiftProvider[];
@@ -28,7 +29,7 @@ interface IOpenShiftProvidersTableProps {
 const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
   providers,
 }: IOpenShiftProvidersTableProps) => {
-  const storageClassesQuery = useStorageClassesQuery(providers);
+  const storageClassesQuery = useStorageClassesQuery(providers, MappingType.Storage);
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
