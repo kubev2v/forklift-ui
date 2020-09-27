@@ -1,3 +1,8 @@
+export enum VMwareTreeType {
+  Host = 'Host',
+  VM = 'VM',
+}
+
 interface ICommonTree {
   kind: string;
   object: {
@@ -21,3 +26,5 @@ export interface IVMwareVMTree extends ICommonTree {
   kind: '' | 'Datacenter' | 'Folder' | 'VM';
   children: IVMwareVMTree[] | null;
 }
+
+export type VMwareTree = IVMwareHostTree | IVMwareVMTree;

@@ -6,6 +6,9 @@ export let MOCK_VMS: IVM[] = [];
 
 // TODO put this condition back when we don't directly import mocks into components anymore
 //if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
+
+// TODO this isn't a resource directly, write a helper to convert from tree objects to treeviewdataitems
+
 MOCK_VM_TREE = [
   {
     name: 'All datacenters',

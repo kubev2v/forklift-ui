@@ -1,5 +1,6 @@
 import { RUNTIME_ENV } from '@app/common/constants';
 import { UseQueryObjectConfig, QueryResult, useQuery, QueryStatus } from 'react-query';
+import { VMwareTree } from './types/tree.types';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
 // TODO what about usePaginatedQuery, useInfiniteQuery?
@@ -83,4 +84,25 @@ export const sortIndexedResultsByName = <TItem extends { name: string }, TIndexe
 ): QueryResult<TIndexed> => ({
   ...result,
   data: sortIndexedDataByName<TItem, TIndexed>(result.data),
+});
+
+export const sortTreeItemsByName = <T extends VMwareTree>(tree?: T): T | undefined =>
+  tree
+    ? {
+        ...tree,
+        children:
+          tree.children &&
+          (tree.children as T[]).map(sortTreeItemsByName).sort((a?: T, b?: T) => {
+            if (!a || !a.object) return -1;
+            if (!b || !b.object) return 1;
+            return a.object.name < b.object.name ? -1 : 1;
+          }),
+      }
+    : undefined;
+
+export const sortTreeResultsByName = <T extends VMwareTree>(
+  result: QueryResult<T>
+): QueryResult<T> => ({
+  ...result,
+  data: sortTreeItemsByName(result.data),
 });
