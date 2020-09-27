@@ -74,15 +74,19 @@ export interface IHostsByProvider {
 
 export interface IVMwareDatastore {
   id: string;
+  parent: {
+    Kind: string;
+    ID: string;
+  };
   name: string;
+  selfLink: string;
+  type: string;
+  capacity: number;
+  free: number;
+  maintenance: string;
 }
 
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];
-}
-
-// TODO do these need to be indexed by provider id instead of name?
-export interface IVMwareDatastoresByProvider {
-  [providerName: string]: IVMwareDatastore[];
 }
