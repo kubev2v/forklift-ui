@@ -2,14 +2,14 @@ import * as React from 'react';
 import { Form, FormGroup, TreeView, Title } from '@patternfly/react-core';
 
 // TODO replace with real state from react-query
-import { VMsOptions } from '@app/queries/mocks/vms.mock';
+import { MOCK_VM_TREE } from '@app/queries/mocks/vms.mock';
 
 interface IFilterVMsProps {
   Inventory: [];
 }
 
 const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFilterVMsProps) => {
-  const [activeItems, setItems] = React.useState(VMsOptions);
+  const [activeItems, setItems] = React.useState(MOCK_VM_TREE);
   const [checkedItems, setCheckedItems] = React.useState([]);
 
   const onSelect = (event, treeViewItem, parentItem) => {
@@ -32,7 +32,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFil
         validated="default" // TODO add state/validation/errors to this and other FormGroups
       >
         <TreeView
-          data={VMsOptions}
+          data={MOCK_VM_TREE}
           activeItems={activeItems}
           hasChecks
           onSearch={() => {

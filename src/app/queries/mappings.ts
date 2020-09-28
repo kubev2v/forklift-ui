@@ -7,12 +7,9 @@ import {
   MappingTarget,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
-import {
-  MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER,
-  MOCK_VMWARE_NETWORKS_BY_PROVIDER,
-} from './mocks/networks.mock';
-import { MOCK_VMWARE_DATASTORES_BY_PROVIDER } from './mocks/datastores.mock';
 import { getAggregateQueryStatus, getFirstQueryError } from './helpers';
+import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
+import { useDatastoresQuery } from './datastores';
 
 // TODO actual useMappingsQuery bits
 
@@ -30,19 +27,22 @@ export const useMappingResourceQueries = (
   targetProvider: IOpenShiftProvider | null,
   mappingType: MappingType
 ): IMappingResourcesResult => {
-  // TODO vmware networks query
-  // TODO openshift networks query
-  // TODO vmware datastores query
-  const storageClassesQuery = useStorageClassesQuery(targetProvider ? [targetProvider] : null);
+  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider, mappingType);
+  const datastoresQuery = useDatastoresQuery(sourceProvider, mappingType);
+  const openshiftNetworksQuery = useOpenShiftNetworksQuery(targetProvider, mappingType);
+  const storageClassesQuery = useStorageClassesQuery(
+    targetProvider ? [targetProvider] : null,
+    mappingType
+  );
 
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = sourceProvider ? MOCK_VMWARE_NETWORKS_BY_PROVIDER.VCenter1 : []; // TODO use query data
-    availableTargets = targetProvider ? MOCK_OPENSHIFT_NETWORKS_BY_PROVIDER.OCPv_1 : []; // TODO use query data
+    availableSources = (sourceProvider && vmwareNetworksQuery.data) || [];
+    availableTargets = (targetProvider && openshiftNetworksQuery.data) || [];
   }
   if (mappingType === MappingType.Storage) {
-    availableSources = sourceProvider ? MOCK_VMWARE_DATASTORES_BY_PROVIDER.VCenter1 : []; // TODO use query data
+    availableSources = (sourceProvider && datastoresQuery.data) || [];
     availableTargets =
       (targetProvider &&
         storageClassesQuery.data &&
@@ -50,8 +50,12 @@ export const useMappingResourceQueries = (
       [];
   }
 
-  const status = getAggregateQueryStatus([storageClassesQuery]); // TODO add the other queries
-  const error = getFirstQueryError([storageClassesQuery]); // TODO add the other queries
+  const queriesToWatch =
+    mappingType === MappingType.Network
+      ? [vmwareNetworksQuery, openshiftNetworksQuery]
+      : [datastoresQuery, storageClassesQuery];
+  const status = getAggregateQueryStatus(queriesToWatch);
+  const error = getFirstQueryError(queriesToWatch);
 
   return {
     availableSources,

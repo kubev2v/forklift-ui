@@ -1,6 +1,12 @@
+import { TreeViewDataItem } from '@patternfly/react-core';
 import { IVM } from '../types/plans.types';
 
-export const VMsOptions = [
+export let MOCK_VM_TREE: TreeViewDataItem[] = [];
+export let MOCK_VMS: IVM[] = [];
+
+// TODO put this condition back when we don't directly import mocks into components anymore
+//if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
+MOCK_VM_TREE = [
   {
     name: 'All datacenters',
     id: 'all',
@@ -124,23 +130,24 @@ export const VMsOptions = [
   },
 ];
 
-export const MOCK_VMS: IVM[] = [
-  {
-    name: 'vm1',
-    datacenter: 'Prod center 1',
-    cluster: 'Cluster 1',
-    host: 'host test1',
-    folderPath: 'folder1/folderb',
-    migrationAnalysis: 'Ok',
-    analysisDescription: 'No risk assessed',
-  },
-  {
-    name: 'vm2',
-    datacenter: 'Prod center 1',
-    cluster: 'Cluster 1',
-    host: 'host test1',
-    folderPath: 'folder2/foldera',
-    migrationAnalysis: 'Warning',
-    analysisDescription: 'There is a risk because...',
-  },
-];
+export const vm1: IVM = {
+  name: 'vm1',
+  datacenter: 'Prod center 1',
+  cluster: 'Cluster 1',
+  host: 'host test1',
+  folderPath: 'folder1/folderb',
+  migrationAnalysis: 'Ok',
+  analysisDescription: 'No risk assessed',
+};
+
+export const vm2: IVM = {
+  name: 'vm2',
+  datacenter: 'Prod center 1',
+  cluster: 'Cluster 1',
+  host: 'host test1',
+  folderPath: 'folder2/foldera',
+  migrationAnalysis: 'Warning',
+  analysisDescription: 'There is a risk because...',
+};
+
+MOCK_VMS = [vm1, vm2];

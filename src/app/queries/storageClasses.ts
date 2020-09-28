@@ -1,33 +1,19 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedData } from './helpers';
-import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider } from './types';
+import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
+import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingType } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
-
-export const STORAGE_CLASSES_QUERY_KEY = 'storageClasses';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
-  providers: IOpenShiftProvider[] | null
+  providers: IOpenShiftProvider[] | null,
+  mappingType: MappingType
 ): QueryResult<IStorageClassesByProvider> => {
-  const { isPollingEnabled } = usePollingContext();
-  // Key by the provider names combined, so it refetches if the list of providers changes
-  const queryKey = `${STORAGE_CLASSES_QUERY_KEY}:${(providers || [])
-    .map((provider) => provider.name)
-    .join(',')}`;
-
-  const indexedMockStorageClasses = (providers || []).reduce(
-    (newObj, provider) => ({
-      ...newObj,
-      [provider.name]: MOCK_STORAGE_CLASSES_BY_PROVIDER[provider.name],
-    }),
-    {} as IStorageClassesByProvider
-  );
-
   const result = useMockableQuery<IStorageClassesByProvider>(
     {
-      queryKey: queryKey,
+      // Key by the provider names combined, so it refetches if the list of providers changes
+      queryKey: `storageClasses:${(providers || []).map((provider) => provider.name).join(',')}`,
       // Fetch multiple resources in one query via Promise.all()
       queryFn: async () => {
         const storageClassLists: IStorageClass[][] = await Promise.all(
@@ -41,14 +27,11 @@ export const useStorageClassesQuery = (
         );
       },
       config: {
-        enabled: !!providers, // Don't fetch until providers are selected / defined
-        refetchInterval: isPollingEnabled ? POLLING_INTERVAL : false,
+        enabled: !!providers && providers.length > 0 && mappingType === MappingType.Storage,
+        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
       },
     },
-    indexedMockStorageClasses
+    MOCK_STORAGE_CLASSES_BY_PROVIDER
   );
-  return {
-    ...result,
-    data: sortIndexedData<IStorageClass, IStorageClassesByProvider>(result.data, (sc) => sc.name),
-  };
+  return sortIndexedResultsByName<IStorageClass, IStorageClassesByProvider>(result);
 };
