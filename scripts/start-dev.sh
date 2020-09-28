@@ -1,0 +1,9 @@
+#!/bin/bash
+_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $_dir/..
+export NODE_ENV=development
+export EXPRESS_PORT=9001
+yarn concurrently --names "EXPRESS,WEBPACK" -c "green.bold.inverse,blue.bold.inverse" \
+  "$_dir/run-local-express.sh --auto-reload" \
+  "./node_modules/webpack-dev-server/bin/webpack-dev-server.js \
+    --hot --color --progress --info=true --config=$_dir/../webpack.dev.js"

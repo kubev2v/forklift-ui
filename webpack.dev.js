@@ -4,6 +4,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || '9000';
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001;
 
 module.exports = merge(common('development'), {
   mode: 'development',
@@ -18,6 +19,13 @@ module.exports = merge(common('development'), {
     hot: true,
     overlay: true,
     open: true,
+    proxy: [
+      {
+        // NOTE: Any future backend-only routes added to server.js need to be listed here:
+        context: ['/hello'], // TODO remove this /hello example once we have some real routes here
+        target: `http://localhost:${EXPRESS_PORT}`,
+      },
+    ],
   },
   module: {
     rules: [
