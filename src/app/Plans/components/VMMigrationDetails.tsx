@@ -35,6 +35,7 @@ import VMStatusTable from './VMStatusTable';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { vmStatus1, vmStatus2 } from '@app/queries/mocks/plans.mock';
+import PipelineSummary from '@app/common/components/PipelineSummary';
 
 // TODO: Replace with final data definitions
 interface ITempMockMigration {
@@ -148,7 +149,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         `${Math.round(migration.other.copied / 1024)} / ${Math.round(
           migration.other.total / 1024
         )} GB`,
-        migration.other.status,
+        {
+          title: <PipelineSummary total={0} current={0} status={migration.other.status} />,
+        },
         {
           title: buttonText ? (
             <>
