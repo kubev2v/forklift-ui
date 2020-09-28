@@ -5,37 +5,20 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { PlanStatusType } from '@app/common/constants';
 
 interface IPlanStatusProps {
-  status: string;
+  isReady: boolean;
+  title?: string;
   value?: number;
   message?: string;
+  variant?: ProgressVariant | undefined;
 }
 
 const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
-  status,
+  isReady = false,
+  title,
   value,
   message,
+  variant,
 }: IPlanStatusProps) => {
-  let isReady = false;
-  let variant: ProgressVariant | undefined;
-  let title: PlanStatusType | undefined;
-
-  switch (status) {
-    case PlanStatusType.ready:
-      isReady = true;
-      break;
-    case PlanStatusType.running:
-      title = PlanStatusType.running;
-      break;
-    case PlanStatusType.finished:
-      variant = ProgressVariant.success;
-      title = PlanStatusType.finished;
-      break;
-    case PlanStatusType.error:
-      variant = ProgressVariant.danger;
-      title = PlanStatusType.error;
-      break;
-  }
-
   return isReady ? (
     <StatusIcon status={StatusType.Ok} label={PlanStatusType.ready} />
   ) : (

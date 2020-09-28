@@ -21,6 +21,7 @@ import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import PlanWizard from './Wizard/PlanWizard';
 import { PlanStatusType } from '@app/common/constants';
+import { ProgressVariant } from '@patternfly/react-core';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -76,17 +77,21 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
-    let statusLabel = '';
+    let variant: ProgressVariant | undefined;
+    let title = '';
+    let isReady = false;
 
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
       buttonText = 'Start';
-      statusLabel = PlanStatusType.ready;
+      isReady = true;
     } else if (plan.status.conditions.every((condition) => condition.type === 'Finished')) {
-      statusLabel = PlanStatusType.finished;
+      title = PlanStatusType.finished;
+      variant = ProgressVariant.success;
     } else if (plan.status.conditions.find((condition) => condition.type === 'Error')) {
-      statusLabel = PlanStatusType.error;
+      title = PlanStatusType.error;
+      variant = ProgressVariant.danger;
     } else {
-      statusLabel = PlanStatusType.running;
+      title = PlanStatusType.running;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -108,7 +113,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.provider.destinationProvider.name,
         plan.spec.vmList.length,
         {
-          title: <PlanStatus status={statusLabel} value={statusValue} message={statusMessage} />,
+          title: (
+            <PlanStatus
+              isReady={isReady}
+              title={title}
+              variant={variant}
+              value={statusValue}
+              message={statusMessage}
+            />
+          ),
         },
         {
           title: buttonText ? (
