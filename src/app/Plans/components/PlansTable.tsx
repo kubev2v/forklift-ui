@@ -79,11 +79,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let buttonText: string | React.ReactNode;
     let variant: ProgressVariant | undefined;
     let title = '';
-    let isReady = false;
+    let isStatusReady = false;
 
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
       buttonText = 'Start';
-      isReady = true;
+      isStatusReady = true;
     } else if (plan.status.conditions.every((condition) => condition.type === 'Finished')) {
       title = PlanStatusType.finished;
       variant = ProgressVariant.success;
@@ -115,7 +115,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         {
           title: (
             <PlanStatus
-              isReady={isReady}
+              isStatusReady={isStatusReady}
               title={title}
               variant={variant}
               value={statusValue}
