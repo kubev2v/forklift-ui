@@ -1,43 +1,52 @@
 import * as React from 'react';
-import { IMigration, IPlan } from '@app/queries/types';
+import { Progress, ProgressVariant, ProgressMeasureLocation } from '@patternfly/react-core';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { Level, LevelItem, Progress, ProgressMeasureLocation, Text } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 interface IPlanStatusProps {
-  plan: IPlan;
-  migration: IMigration;
+  status: string;
+  value?: number;
+  message?: string;
 }
 
 const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
-  plan,
-  migration,
+  status,
+  value,
+  message,
 }: IPlanStatusProps) => {
-  if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
-    return <StatusIcon status={StatusType.Ok} label="Ready" />;
-  } else {
-    // TODO: This is only a placeholder, more statuses check needs to be done.
-    const totalVMs = plan.spec.vmList.length;
-    const percentVMsDone = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
-    const label = 'Running';
+  let isReady = false;
+  let title = '';
+  let variant: ProgressVariant | undefined;
 
-    return (
-      <>
-        <Level className={`${spacing.mbXs} ${spacing.prMd}`}>
-          <LevelItem>
-            <StatusIcon
-              status={StatusType.Warning}
-              label={<Text component="small">{label}</Text>}
-            />
-          </LevelItem>
-          <LevelItem>
-            <Text component="small">{`${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`}</Text>
-          </LevelItem>
-        </Level>
-        <Progress value={percentVMsDone} measureLocation={ProgressMeasureLocation.none} />
-      </>
-    );
+  switch (status) {
+    case 'Ready':
+      title = 'Ready';
+      isReady = true;
+      break;
+    case 'Error':
+      title = 'Failed';
+      variant = ProgressVariant.danger;
+      break;
+    case 'Finished':
+      title = 'Complete';
+      variant = ProgressVariant.success;
+      break;
+    default:
+      title = 'Running';
+      break;
   }
+
+  return isReady ? (
+    <StatusIcon status={StatusType.Ok} label="Ready" />
+  ) : (
+    <Progress
+      title={title}
+      value={value}
+      label={message}
+      valueText={message}
+      variant={variant}
+      measureLocation={ProgressMeasureLocation.top}
+    />
+  );
 };
 
 export default PlanStatus;

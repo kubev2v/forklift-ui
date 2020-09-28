@@ -66,8 +66,18 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
+    let statusLabel = '';
+    let statusMessage = '';
+    let statusValue = 0;
+
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
       buttonText = 'Start';
+      statusLabel = 'Ready';
+    } else {
+      const migration = getMigration(plan)[0];
+      const totalVMs = plan.spec.vmList.length;
+      statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
+      statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
     }
 
     rows.push({
@@ -87,7 +97,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.provider.destinationProvider.name,
         plan.spec.vmList.length,
         {
-          title: <PlanStatus plan={plan} migration={getMigration(plan)[0]} />,
+          title: <PlanStatus status={statusLabel} value={statusValue} message={statusMessage} />,
         },
         {
           title: buttonText ? (
