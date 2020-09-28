@@ -1,15 +1,27 @@
-import { IVMwareDatastore, IVMwareDatastoresByProvider } from '../types/providers.types';
+import { IVMwareDatastore } from '../types';
 
-const someVMwareDatastores: IVMwareDatastore[] = [
-  { id: '1', name: 'vmware-datastore-1' },
-  { id: '2', name: 'vmware-datastore-2' },
-  { id: '3', name: 'vmware-datastore-3' },
-  { id: '4', name: 'vmware-datastore-4' },
-  { id: '5', name: 'vmware-datastore-5' },
-];
+export let MOCK_VMWARE_DATASTORES: IVMwareDatastore[] = [];
 
-export const MOCK_VMWARE_DATASTORES_BY_PROVIDER: IVMwareDatastoresByProvider = {
-  VCenter1: [...someVMwareDatastores],
-  VCenter2: [...someVMwareDatastores],
-  VCenter3: [...someVMwareDatastores],
-};
+if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
+  const mockVmwareDatastore1: IVMwareDatastore = {
+    id: '1',
+    parent: {
+      Kind: 'Folder',
+      ID: 'group-1',
+    },
+    name: 'vmware-datastore-1',
+    selfLink: '/foo/bar',
+    type: 'VMFS',
+    capacity: 1048576,
+    free: 1048576,
+    maintenance: 'normal',
+  };
+
+  MOCK_VMWARE_DATASTORES = [
+    mockVmwareDatastore1,
+    { ...mockVmwareDatastore1, name: 'vmware-datastore-2' },
+    { ...mockVmwareDatastore1, name: 'vmware-datastore-3' },
+    { ...mockVmwareDatastore1, name: 'vmware-datastore-4' },
+    { ...mockVmwareDatastore1, name: 'vmware-datastore-5' },
+  ];
+}

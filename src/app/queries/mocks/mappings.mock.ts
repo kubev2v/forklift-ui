@@ -1,9 +1,12 @@
 import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings.types';
-import { MappingSource, MappingTarget } from '../types/mappings.types';
-import { NetworkType } from '../types/providers.types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
 import { MOCK_PROVIDERS } from './providers.mock';
+import { MOCK_OPENSHIFT_NETWORKS } from './networks.mock';
 
+export let MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [];
+
+// TODO put this condition back when we don't directly import mocks into components anymore
+// if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 const storageMapping1: IStorageMapping = {
   type: MappingType.Storage,
   name: 'vcenter1_datastore_to_OCPv_storageclass1',
@@ -52,11 +55,7 @@ const networkMapping1: INetworkMapping = {
       source: {
         id: 'id1',
       },
-      target: {
-        type: NetworkType.Pod,
-        name: 'network1',
-        namespace: 'namespace-test',
-      },
+      target: MOCK_OPENSHIFT_NETWORKS[0],
     },
   ],
 };
@@ -73,13 +72,10 @@ const networkMapping2: INetworkMapping = {
       source: {
         id: 'id2',
       },
-      target: {
-        type: NetworkType.Pod,
-        name: 'network2',
-        namespace: 'namespace-test',
-      },
+      target: MOCK_OPENSHIFT_NETWORKS[1],
     },
   ],
 };
 
-export const MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [networkMapping1, networkMapping2];
+MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2];
+// }

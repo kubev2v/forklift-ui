@@ -72,43 +72,7 @@ export interface IHostsByProvider {
   [providerName: string]: IHost[];
 }
 
-export interface IVMwareNetwork {
-  id: string;
-  name: string;
-}
-
-// TODO not sure if these are right
-export enum NetworkType {
-  Pod = 'pod',
-  Multis = 'multis',
-}
-
-export interface IOpenShiftNetwork {
-  type: NetworkType;
-  name: string;
-  namespace: string;
-}
-
-// TODO do these need to be indexed by provider id instead of name?
-export interface IVMwareNetworksByProvider {
-  [providerName: string]: IVMwareNetwork[];
-}
-
-export interface IOpenShiftNetworksByProvider {
-  [providerName: string]: IOpenShiftNetwork[];
-}
-
-export interface IVMwareDatastore {
-  id: string;
-  name: string;
-}
-
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];
-}
-
-// TODO do these need to be indexed by provider id instead of name?
-export interface IVMwareDatastoresByProvider {
-  [providerName: string]: IVMwareDatastore[];
 }

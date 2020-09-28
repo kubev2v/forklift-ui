@@ -1,14 +1,6 @@
-// TODO this structure is speculative for now.
-// These types should probably be restructured to match API data later.
-
-import { ProviderType } from '@app/common/constants';
-import {
-  IOpenShiftNetwork,
-  IOpenShiftProvider,
-  IVMwareDatastore,
-  IVMwareNetwork,
-  IVMwareProvider,
-} from './providers.types';
+import { IOpenShiftProvider, IVMwareProvider } from './providers.types';
+import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
+import { IVMwareDatastore } from './datastores.types';
 import { IStorageClass } from './storageClasses.types';
 
 export enum MappingType {
