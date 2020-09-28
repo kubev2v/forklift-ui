@@ -12,6 +12,13 @@ export enum ProviderType {
   openshift = 'openshift',
 }
 
+export enum PlanStatusConditionsType {
+  ready = 'Ready',
+  running = 'Running',
+  finished = 'Finished',
+  error = 'Error',
+}
+
 export enum PlanStatusType {
   ready = 'Ready',
   running = 'Running',

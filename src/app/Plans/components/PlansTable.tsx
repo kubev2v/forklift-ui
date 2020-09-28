@@ -20,7 +20,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import PlanWizard from './Wizard/PlanWizard';
-import { PlanStatusType } from '@app/common/constants';
+import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
 import { ProgressVariant } from '@patternfly/react-core';
 
 interface IPlansTableProps {
@@ -77,17 +77,25 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
-    let variant: ProgressVariant | undefined;
-    let title = '';
     let isStatusReady = false;
+    let title = '';
+    let variant: ProgressVariant | undefined;
 
-    if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
+    if (
+      plan.status.conditions.every((condition) => condition.type === PlanStatusConditionsType.ready)
+    ) {
       buttonText = 'Start';
       isStatusReady = true;
-    } else if (plan.status.conditions.every((condition) => condition.type === 'Finished')) {
+    } else if (
+      plan.status.conditions.every(
+        (condition) => condition.type === PlanStatusConditionsType.finished
+      )
+    ) {
       title = PlanStatusType.finished;
       variant = ProgressVariant.success;
-    } else if (plan.status.conditions.find((condition) => condition.type === 'Error')) {
+    } else if (
+      plan.status.conditions.find((condition) => condition.type === PlanStatusConditionsType.error)
+    ) {
       title = PlanStatusType.error;
       variant = ProgressVariant.danger;
     } else {
@@ -115,7 +123,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         {
           title: (
             <PlanStatus
-              isStatusReady={isStatusReady}
+              isReady={isStatusReady}
               title={title}
               variant={variant}
               value={statusValue}
