@@ -20,6 +20,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import PlanWizard from './Wizard/PlanWizard';
+import { PlanStatusType } from '@app/common/constants';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -49,6 +50,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const getMigration = (plan) => migrations.filter((migration) => migration.plan === plan);
 
+  const ratioVMs = (plan) => {
+    const migration = getMigration(plan)[0];
+    const totalVMs = plan.spec.vmList.length;
+
+    const statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
+    const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
+    return { statusValue, statusMessage };
+  };
+
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable] },
     { title: 'Source provider', transforms: [sortable, wrappable] },
@@ -67,18 +77,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
     let statusLabel = '';
-    let statusMessage = '';
-    let statusValue = 0;
 
     if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
       buttonText = 'Start';
-      statusLabel = 'Ready';
+      statusLabel = PlanStatusType.ready;
+    } else if (plan.status.conditions.every((condition) => condition.type === 'Finished')) {
+      statusLabel = PlanStatusType.finished;
+    } else if (plan.status.conditions.find((condition) => condition.type === 'Error')) {
+      statusLabel = PlanStatusType.error;
     } else {
-      const migration = getMigration(plan)[0];
-      const totalVMs = plan.spec.vmList.length;
-      statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
-      statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
+      statusLabel = PlanStatusType.running;
     }
+
+    const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
 
     rows.push({
       meta: { plan },

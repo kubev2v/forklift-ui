@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Progress, ProgressVariant, ProgressMeasureLocation } from '@patternfly/react-core';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
+import { PlanStatusType } from '@app/common/constants';
+
 interface IPlanStatusProps {
   status: string;
   value?: number;
@@ -14,29 +16,28 @@ const PlanStatus: React.FunctionComponent<IPlanStatusProps> = ({
   message,
 }: IPlanStatusProps) => {
   let isReady = false;
-  let title = '';
   let variant: ProgressVariant | undefined;
+  let title: PlanStatusType | undefined;
 
   switch (status) {
-    case 'Ready':
-      title = 'Ready';
+    case PlanStatusType.ready:
       isReady = true;
       break;
-    case 'Error':
-      title = 'Failed';
-      variant = ProgressVariant.danger;
+    case PlanStatusType.running:
+      title = PlanStatusType.running;
       break;
-    case 'Finished':
-      title = 'Complete';
+    case PlanStatusType.finished:
       variant = ProgressVariant.success;
+      title = PlanStatusType.finished;
       break;
-    default:
-      title = 'Running';
+    case PlanStatusType.error:
+      variant = ProgressVariant.danger;
+      title = PlanStatusType.error;
       break;
   }
 
   return isReady ? (
-    <StatusIcon status={StatusType.Ok} label="Ready" />
+    <StatusIcon status={StatusType.Ok} label={PlanStatusType.ready} />
   ) : (
     <Progress
       title={title}
