@@ -11,7 +11,6 @@ import {
   Title,
 } from '@patternfly/react-core';
 import {
-  classNames,
   Table,
   TableHeader,
   TableBody,
@@ -25,15 +24,13 @@ import {
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { IVMStatus } from '@app/queries/types';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-// import { MOCK_TEMP_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import VMStatusTable from './VMStatusTable';
-
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { vmStatus1, vmStatus2 } from '@app/queries/mocks/plans.mock';
 import PipelineSummary from '@app/common/components/PipelineSummary';
 
@@ -170,7 +167,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       cells: [
         {
           title: <VMStatusTable vmstatus={migration.status} />,
-          columnTransforms: [classNames(alignment.textAlignRight)],
+          columnTransforms: [classNamesTransform(alignment.textAlignRight)],
         },
       ],
     });
