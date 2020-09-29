@@ -1,0 +1,6 @@
+/* This shouldn't be necessary, there is a weird spacing bug in PF TreeView. */
+/* https://github.com/patternfly/patternfly/issues/3532 */
+
+.plan-wizard-filter-vms-form .pf-c-tree-view li.pf-c-tree-view__list-item:not(.pf-m-expandable) {
+  padding-left: var(--pf-global--spacer--lg);
+}

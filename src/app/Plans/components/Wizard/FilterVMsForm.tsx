@@ -6,6 +6,8 @@ import { VMwareTreeType } from '@app/queries/types';
 import { convertVMwareTree } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
+import './FilterVMsForm.css';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IFilterVMsProps {
   // sourceProvider: IVMwareProvider;
@@ -30,7 +32,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
   };
 
   return (
-    <>
+    <div className="plan-wizard-filter-vms-form">
       <Title headingLevel="h2" size="md">
         Select datacenters, clusters and folders that contain the VMs to be included in the plan.
       </Title>
@@ -60,7 +62,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
           defaultAllExpanded
           hasChecks
           onSearch={() => {
-            return;
+            return; // TODO filter items by search value
           }}
           onSelect={onSelect}
           onCheck={onCheck}
@@ -71,7 +73,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
           }}
         />
       )}
-    </>
+    </div>
   );
 };
 
