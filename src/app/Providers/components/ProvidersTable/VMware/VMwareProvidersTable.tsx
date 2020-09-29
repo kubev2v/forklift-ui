@@ -5,7 +5,6 @@ import {
   TableHeader,
   TableBody,
   sortable,
-  compoundExpand,
   classNames as classNamesTransform,
   ICell,
   IRow,
@@ -17,10 +16,10 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
 import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
-import VMwareProviderHostsTable from './VMwareProviderHostsTable';
 import ProviderStatus from '../ProviderStatus';
 
 import './VMwareProvidersTable.css';
+import { Link } from 'react-router-dom';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -82,7 +81,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
     { title: 'Clusters', transforms: [sortable] },
-    { title: 'Hosts', transforms: [sortable], cellTransforms: [compoundExpand] },
+    { title: 'Hosts', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Networks', transforms: [sortable] },
     { title: 'Datastores', transforms: [sortable] },
@@ -117,12 +116,11 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         {
           title: (
             <>
-              <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+              <Link to={`/providers/${provider.name}`}>
+                <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+              </Link>
             </>
           ),
-          props: {
-            isOpen: isExpanded,
-          },
         },
         vmCount,
         networkCount,
@@ -135,18 +133,6 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         },
       ],
     });
-    if (isExpanded) {
-      rows.push({
-        parent: rows.length - 1,
-        compoundExpand: 4,
-        cells: [
-          {
-            title: <VMwareProviderHostsTable provider={provider} />,
-            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
-          },
-        ],
-      });
-    }
   });
 
   return (

@@ -11,6 +11,7 @@ import PlansPage from '@app/Plans/PlansPage';
 import NetworkMappingsPage from '@app/Mappings/Network/NetworkMappingsPage';
 import StorageMappingsPage from '@app/Mappings/Storage/StorageMappingsPage';
 import HooksPage from '@app/Hooks/HooksPage';
+import { HostsPage } from './Providers/HostsPage';
 
 let routeFocusTimer: number;
 
@@ -47,6 +48,12 @@ export const routes: AppRouteConfig[] = [
     label: 'Providers',
     path: '/providers',
     title: `${APP_TITLE} | Providers`,
+  },
+  {
+    component: HostsPage,
+    exact: false,
+    path: '/providers/:providerId',
+    title: `${APP_TITLE} | Hosts`,
   },
   {
     component: PlansPage,

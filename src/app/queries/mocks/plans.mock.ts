@@ -22,16 +22,14 @@ const vm1: IPlanVM = {
     },
   },
   host: {
-    metadata: {
+    name: 'string',
+    network: {
       name: 'string',
-      network: {
-        name: 'string',
-        address: 'string',
-        isDefault: true,
-      },
-      bandwidth: 'string',
-      mtu: 1400,
+      address: 'string',
+      isDefault: true,
     },
+    bandwidth: 'string',
+    mtu: 1400,
   },
 };
 
@@ -54,16 +52,14 @@ const vm2: IPlanVM = {
     },
   },
   host: {
-    metadata: {
+    name: 'string',
+    network: {
       name: 'string',
-      network: {
-        name: 'string',
-        address: 'string',
-        isDefault: true,
-      },
-      bandwidth: 'string',
-      mtu: 1400,
+      address: 'string',
+      isDefault: true,
     },
+    bandwidth: 'string',
+    mtu: 1400,
   },
 };
 

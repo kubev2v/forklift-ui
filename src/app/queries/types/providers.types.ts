@@ -59,17 +59,10 @@ export interface IHostNetwork {
 
 // TODO this structure is speculative. Check with Jeff.
 export interface IHost {
-  metadata: {
-    name: string;
-    network: IHostNetwork;
-    bandwidth: string;
-    mtu: number;
-  };
-}
-
-// TODO do these need to be indexed by provider id instead of name?
-export interface IHostsByProvider {
-  [providerName: string]: IHost[];
+  name: string;
+  network?: IHostNetwork;
+  bandwidth?: string;
+  mtu?: number;
 }
 
 export interface IProvidersByType {
