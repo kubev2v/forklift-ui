@@ -3,7 +3,7 @@ import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/rea
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useProvidersQuery, useVMwareTreeQuery } from '@app/queries';
 import { VMwareTreeType } from '@app/queries/types';
-import { convertVMwareTree } from './helpers';
+import { filterAndConvertVMwareTree } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './FilterVMsForm.css';
@@ -20,6 +20,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
   /////////////// ^
 
   const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
+  const [searchText, setSearchText] = React.useState('');
 
   const treeQuery = useVMwareTreeQuery(sourceProvider, treeType);
 
@@ -58,12 +59,10 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
         <Alert variant="danger" title="Error loading VMware tree data" />
       ) : (
         <TreeView
-          data={convertVMwareTree(treeQuery.data || null)}
+          data={filterAndConvertVMwareTree(treeQuery.data || null, searchText)}
           defaultAllExpanded
           hasChecks
-          onSearch={() => {
-            return; // TODO filter items by search value
-          }}
+          onSearch={(event) => setSearchText(event.target.value)}
           onSelect={onSelect}
           onCheck={onCheck}
           searchProps={{

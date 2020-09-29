@@ -3,9 +3,9 @@ import { TreeViewDataItem } from '@patternfly/react-core';
 import { VMwareTree } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 
-const convertVMwareTreeNode = (node: VMwareTree): TreeViewDataItem => ({
+const convertVMwareTreeNode = (node: VMwareTree, searchText: string): TreeViewDataItem => ({
   name: node.object?.name || '',
-  children: convertVMwareTreeChildren(node.children),
+  children: filterAndConvertVMwareTreeChildren(node.children, searchText),
   icon:
     node.kind === 'Cluster' ? (
       <ClusterIcon />
@@ -16,16 +16,30 @@ const convertVMwareTreeNode = (node: VMwareTree): TreeViewDataItem => ({
     ) : null,
 });
 
-const convertVMwareTreeChildren = (
-  children: VMwareTree[] | null
+const filterAndConvertVMwareTreeChildren = (
+  children: VMwareTree[] | null,
+  searchText: string
 ): TreeViewDataItem[] | undefined => {
-  // Don't show VMs in the tree
-  const filteredChildren = ((children || []) as VMwareTree[]).filter((node) => node.kind !== 'VM');
-  if (filteredChildren.length > 0) return filteredChildren.map(convertVMwareTreeNode);
+  const filteredChildren = ((children || []) as VMwareTree[]).filter(
+    (node) =>
+      node.kind !== 'VM' && // Don't show VMs in the tree
+      (searchText === '' ||
+        (node.object?.name || '').toLowerCase().includes(searchText.toLowerCase()))
+  );
+  if (filteredChildren.length > 0)
+    return filteredChildren.map((node) => convertVMwareTreeNode(node, searchText));
   return undefined;
 };
 
-export const convertVMwareTree = (rootNode: VMwareTree | null): TreeViewDataItem[] =>
-  rootNode
-    ? [{ name: 'All datacenters', children: convertVMwareTreeChildren(rootNode.children) }]
-    : [];
+export const filterAndConvertVMwareTree = (
+  rootNode: VMwareTree | null,
+  searchText: string
+): TreeViewDataItem[] => {
+  if (!rootNode) return [];
+  return [
+    {
+      name: 'All datacenters',
+      children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText),
+    },
+  ];
+};
