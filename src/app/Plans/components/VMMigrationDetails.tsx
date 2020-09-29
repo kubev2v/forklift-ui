@@ -14,7 +14,6 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableVariant,
   sortable,
   classNames as classNamesTransform,
   ICell,
@@ -189,7 +188,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
             <Table
               aria-label="Migration VMs table"
-              variant={TableVariant.compact}
               cells={columns}
               rows={rows}
               sortBy={sortBy}
