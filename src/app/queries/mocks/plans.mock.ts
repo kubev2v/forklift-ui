@@ -234,7 +234,7 @@ const plan4: IPlan = {
 export const MOCK_PLANS: IPlan[] = [plan1, plan2, plan3, plan4];
 
 export const migration1: IMigration = {
-  plan: MOCK_PLANS[0],
+  plan: plan1,
   schedule: {
     begin: '09 Aug 2019, 11:34:56',
     end: '',
@@ -243,7 +243,7 @@ export const migration1: IMigration = {
 };
 
 export const migration2: IMigration = {
-  plan: MOCK_PLANS[1],
+  plan: plan2,
   schedule: {
     begin: '09 Aug 2019, 08:19:11',
     end: '09 Aug 2019, 12:33:44',
@@ -252,7 +252,7 @@ export const migration2: IMigration = {
 };
 
 export const migration3: IMigration = {
-  plan: MOCK_PLANS[0],
+  plan: plan3,
   schedule: {
     begin: '09 Aug 2019, 08:19:11',
     end: '09 Aug 2019, 09:43:12',
@@ -261,7 +261,7 @@ export const migration3: IMigration = {
 };
 
 export const migration4: IMigration = {
-  plan: MOCK_PLANS[1],
+  plan: plan4,
   schedule: {
     begin: '09 Aug 2019, 11:34:56',
     end: '10 Aug 2019, 11:34:56',
