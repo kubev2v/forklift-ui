@@ -10,6 +10,7 @@ interface IMappingSourceSelectProps {
   setBuilderItems: (items: IMappingBuilderItem[]) => void;
   availableSources: MappingSource[];
   placeholderText: string;
+  toggleAddMappingDisable: () => void;
 }
 
 const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
@@ -19,6 +20,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   setBuilderItems,
   availableSources,
   placeholderText,
+  toggleAddMappingDisable,
 }: IMappingSourceSelectProps) => {
   const setSource = (source: MappingSource) => {
     const newItems = [...builderItems];
@@ -47,6 +49,11 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
       options={options}
       value={[selectedOption]}
       onChange={(selection) => {
+        console.log(filteredSources);
+        if (filteredSources.length < 2) {
+          console.log('toggle in select');
+          toggleAddMappingDisable();
+        }
         setSource((selection as OptionWithValue<MappingSource>).value);
       }}
       typeAheadAriaLabel={placeholderText}

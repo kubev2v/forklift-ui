@@ -30,7 +30,16 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   builderItems,
   setBuilderItems,
 }: IMappingBuilderProps) => {
-  const reset = () => setBuilderItems([{ source: null, target: null }]);
+  const [isAddSourceDisabled, toggleAddMappingDisable] = React.useReducer(
+    (isToggled) => !isToggled,
+    false
+  );
+
+  const reset = () => {
+    toggleAddMappingDisable();
+    setBuilderItems([{ source: null, target: null }]);
+  };
+
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
   const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
   const removeItem = (itemIndex: number) => {
@@ -92,6 +101,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 setBuilderItems={setBuilderItems}
                 availableSources={availableSources}
                 placeholderText={selectSourcePlaceholder}
+                toggleAddMappingDisable={toggleAddMappingDisable}
               />
             </GridItem>
             <GridItem span={1}>
@@ -128,7 +138,12 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         justifyContent={{ default: 'justifyContentCenter' }}
         spaceItems={{ default: 'spaceItemsMd' }}
       >
-        <Button variant="secondary" icon={<PlusCircleIcon />} onClick={addEmptyItem}>
+        <Button
+          isDisabled={isAddSourceDisabled}
+          variant="secondary"
+          icon={<PlusCircleIcon />}
+          onClick={addEmptyItem}
+        >
           Add
         </Button>
         <Button variant="secondary" onClick={reset} isDisabled={isReset}>
