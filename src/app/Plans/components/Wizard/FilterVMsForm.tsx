@@ -1,16 +1,25 @@
 import * as React from 'react';
-import { Form, FormGroup, TreeView, Title } from '@patternfly/react-core';
+import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useProvidersQuery, useVMwareTreeQuery } from '@app/queries';
+import { VMwareTreeType } from '@app/queries/types';
+import { convertVMwareTree } from './helpers';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
-// TODO replace with real state from react-query
-import { MOCK_VM_TREE } from '@app/queries/mocks/vms.mock';
-
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IFilterVMsProps {
-  Inventory: [];
+  // sourceProvider: IVMwareProvider;
 }
 
-const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFilterVMsProps) => {
-  const [activeItems, setItems] = React.useState(MOCK_VM_TREE);
-  const [checkedItems, setCheckedItems] = React.useState([]);
+const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
+  ////// TODO remove this and instead use sourceProvider from GeneralForm when we lift that state
+  const providersQuery = useProvidersQuery();
+  const sourceProvider = providersQuery.data?.vsphere[0] || null;
+  /////////////// ^
+
+  const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
+
+  const treeQuery = useVMwareTreeQuery(sourceProvider, treeType);
 
   const onSelect = (event, treeViewItem, parentItem) => {
     return;
@@ -21,19 +30,34 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFil
   };
 
   return (
-    <Form>
+    <>
       <Title headingLevel="h2" size="md">
         Select datacenters, clusters and folders that contain the VMs to be included in the plan.
       </Title>
-      <FormGroup
-        isRequired
-        fieldId="filterVMs"
-        helperTextInvalid="TODO"
-        validated="default" // TODO add state/validation/errors to this and other FormGroups
+      <Tabs
+        activeKey={treeType}
+        onSelect={(_event, tabKey) => setTreeType(tabKey as VMwareTreeType)}
+        className={spacing.mtMd}
       >
+        <Tab
+          key={VMwareTreeType.Host}
+          eventKey={VMwareTreeType.Host}
+          title={<TabTitleText>By clusters and hosts</TabTitleText>}
+        />
+        <Tab
+          key={VMwareTreeType.VM}
+          eventKey={VMwareTreeType.VM}
+          title={<TabTitleText>By folders</TabTitleText>}
+        />
+      </Tabs>
+      {treeQuery.isLoading ? (
+        <LoadingEmptyState />
+      ) : treeQuery.isError ? (
+        <Alert variant="danger" title="Error loading VMware tree data" />
+      ) : (
         <TreeView
-          data={MOCK_VM_TREE}
-          activeItems={activeItems}
+          data={convertVMwareTree(treeQuery.data || null)}
+          defaultAllExpanded
           hasChecks
           onSearch={() => {
             return;
@@ -46,8 +70,8 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({ Inventory }: IFil
             'aria-label': 'Search inventory',
           }}
         />
-      </FormGroup>
-    </Form>
+      )}
+    </>
   );
 };
 
