@@ -26,57 +26,13 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
-import { IVMStatus } from '@app/queries/types';
+import { IMigration } from '@app/queries/types';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import VMStatusTable from './VMStatusTable';
-import { vmStatus1, vmStatus2 } from '@app/queries/mocks/plans.mock';
 import PipelineSummary from '@app/common/components/PipelineSummary';
 
-// TODO: Replace with final data definitions
-interface ITempMockMigration {
-  id: string;
-  schedule: {
-    begin: string;
-    end: string;
-  };
-  status: IVMStatus;
-  other: {
-    copied: number;
-    total: number;
-    status: string;
-  };
-}
-
-const mockMigration1: ITempMockMigration = {
-  id: 'VM1',
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 12:33:44',
-  },
-  status: vmStatus1,
-  other: {
-    copied: 93184,
-    total: 125952,
-    status: 'Ready',
-  },
-};
-
-const mockMigration2: ITempMockMigration = {
-  id: 'VM2',
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 09:43:12',
-  },
-  status: vmStatus2,
-  other: {
-    copied: 87952,
-    total: 87952,
-    status: 'Running',
-  },
-};
-
-const MOCK_TEMP_MIGRATIONS: ITempMockMigration[] = [mockMigration1, mockMigration2];
+import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 
 export interface IPlanMatchParams {
   url: string;
@@ -84,8 +40,8 @@ export interface IPlanMatchParams {
 }
 
 const VMMigrationDetails: React.FunctionComponent = () => {
-  // TODO: Remove test data
-  const migrations = MOCK_TEMP_MIGRATIONS;
+  // TODO: Replace with useMockableQuery
+  const migrations = MOCK_MIGRATIONS;
 
   const match = useRouteMatch<IPlanMatchParams>({
     path: '/plans/:planId',
@@ -93,7 +49,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     sensitive: true,
   });
 
-  const getSortValues = (migration: ITempMockMigration) => {
+  const getSortValues = (migration: IMigration) => {
     return [
       migration.id,
       migration.schedule.begin,
@@ -109,7 +65,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const { selectedItems: expandedVMs, toggleItemSelected: toggleVMsExpanded } = useSelectionState<
-    ITempMockMigration
+    IMigration
   >({
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
@@ -126,7 +82,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((migration: ITempMockMigration) => {
+  currentPageItems.forEach((migration: IMigration) => {
     const isExpanded = expandedVMs.includes(migration);
 
     let buttonText = '';
@@ -164,7 +120,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       fullWidth: true,
       cells: [
         {
-          title: <VMStatusTable vmstatus={migration.status} />,
+          // TODO: status2 to be replaced once statuses consolidated
+          title: <VMStatusTable vmstatus={migration.status2} />,
           columnTransforms: [classNamesTransform(alignment.textAlignRight)],
         },
       ],

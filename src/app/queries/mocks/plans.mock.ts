@@ -233,44 +233,6 @@ const plan4: IPlan = {
 
 export const MOCK_PLANS: IPlan[] = [plan1, plan2, plan3, plan4];
 
-export const migration1: IMigration = {
-  plan: plan1,
-  schedule: {
-    begin: '09 Aug 2019, 11:34:56',
-    end: '',
-  },
-  status: { ready: true, storageReady: true, nbVMsDone: 1 },
-};
-
-export const migration2: IMigration = {
-  plan: plan2,
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 12:33:44',
-  },
-  status: { ready: true, storageReady: true, nbVMsDone: 0 },
-};
-
-export const migration3: IMigration = {
-  plan: plan3,
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 09:43:12',
-  },
-  status: { ready: false, storageReady: true, nbVMsDone: 1 },
-};
-
-export const migration4: IMigration = {
-  plan: plan4,
-  schedule: {
-    begin: '09 Aug 2019, 11:34:56',
-    end: '10 Aug 2019, 11:34:56',
-  },
-  status: { ready: false, storageReady: false, nbVMsDone: 2 },
-};
-
-export const MOCK_MIGRATIONS: IMigration[] = [migration1, migration2, migration3, migration4];
-
 export const vmStatus1: IVMStatus = {
   id: 'vm1-id',
   pipeline: [
@@ -391,3 +353,69 @@ export const vmStatus2: IVMStatus = {
   },
 };
 export const MOCK_VMSSTATUS: IVMStatus[] = [vmStatus2, vmStatus1];
+
+export const migration1: IMigration = {
+  id: 'VM1',
+  plan: plan1,
+  schedule: {
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 12:33:44',
+  },
+  status: { ready: true, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus1,
+  other: {
+    copied: 93184,
+    total: 125952,
+    status: 'Ready',
+  },
+};
+
+export const migration2: IMigration = {
+  id: 'VM2',
+  plan: plan2,
+  schedule: {
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 12:33:44',
+  },
+  status: { ready: false, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Running',
+  },
+};
+
+export const migration3: IMigration = {
+  id: 'VM3',
+  plan: plan3,
+  schedule: {
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 09:43:12',
+  },
+  status: { ready: false, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Running',
+  },
+};
+
+export const migration4: IMigration = {
+  id: 'VM4',
+  plan: plan4,
+  schedule: {
+    begin: '09 Aug 2019, 11:34:56',
+    end: '10 Aug 2019, 11:34:56',
+  },
+  status: { ready: false, storageReady: false, nbVMsDone: 2 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Running',
+  },
+};
+
+export const MOCK_MIGRATIONS: IMigration[] = [migration1, migration2, migration3, migration4];

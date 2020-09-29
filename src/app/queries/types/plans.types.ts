@@ -71,6 +71,7 @@ export interface IPlan extends ICR {
 // TODO: This is speculative
 export interface IMigration {
   plan: IPlan;
+  id: string;
   schedule: {
     begin: string;
     end: string;
@@ -79,5 +80,11 @@ export interface IMigration {
     ready: boolean;
     storageReady: boolean;
     nbVMsDone: number;
+  };
+  status2: IVMStatus;
+  other: {
+    copied: number;
+    total: number;
+    status: string;
   };
 }
