@@ -12,6 +12,20 @@ export enum ProviderType {
   openshift = 'openshift',
 }
 
+export enum PlanStatusConditionsType {
+  Ready = 'Ready',
+  Running = 'Running',
+  Finished = 'Finished',
+  Error = 'Error',
+}
+
+export enum PlanStatusType {
+  Ready = 'Ready',
+  Running = 'Running',
+  Finished = 'Complete',
+  Error = 'Failed',
+}
+
 export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
   [ProviderType.openshift]: 'OpenShift Virtualization',
