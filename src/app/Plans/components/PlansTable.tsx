@@ -1,5 +1,16 @@
 import * as React from 'react';
-import { Button, Flex, FlexItem, Level, LevelItem, Pagination, Text } from '@patternfly/react-core';
+import {
+  Button,
+  Flex,
+  FlexItem,
+  Level,
+  LevelItem,
+  Pagination,
+  Progress,
+  ProgressMeasureLocation,
+  ProgressVariant,
+  Text,
+} from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -13,13 +24,14 @@ import {
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
-import PlanStatus from './PlanStatus';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import PlanWizard from './Wizard/PlanWizard';
+import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -47,7 +59,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const getMigration = (plan) => migrations.filter((migration) => migration.plan === plan);
+  const getMigration = (plan: IPlan) => migrations.filter((migration) => migration.plan === plan);
+
+  const ratioVMs = (plan: IPlan) => {
+    const migration = getMigration(plan)[0];
+    const totalVMs = plan.spec.vmList.length;
+
+    const statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
+    const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
+
+    return { statusValue, statusMessage };
+  };
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable] },
@@ -66,9 +88,28 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonText: string | React.ReactNode;
-    if (plan.status.conditions.every((condition) => condition.type === 'Ready')) {
+    let isStatusReady = false;
+    let title = '';
+    let variant: ProgressVariant | undefined;
+
+    const hasCondition = (type: string) => {
+      return plan.status.conditions.find((condition) => condition.type === type);
+    };
+
+    if (hasCondition(PlanStatusConditionsType.Ready)) {
       buttonText = 'Start';
+      isStatusReady = true;
+    } else if (hasCondition(PlanStatusConditionsType.Finished)) {
+      title = PlanStatusType.Finished;
+      variant = ProgressVariant.success;
+    } else if (hasCondition(PlanStatusConditionsType.Error)) {
+      title = PlanStatusType.Error;
+      variant = ProgressVariant.danger;
+    } else {
+      title = PlanStatusType.Running;
     }
+
+    const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
 
     rows.push({
       meta: { plan },
@@ -87,7 +128,18 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.provider.destinationProvider.name,
         plan.spec.vmList.length,
         {
-          title: <PlanStatus plan={plan} migration={getMigration(plan)[0]} />,
+          title: isStatusReady ? (
+            <StatusIcon status={StatusType.Ok} label={PlanStatusType.Ready} />
+          ) : (
+            <Progress
+              title={title}
+              value={statusValue}
+              label={statusMessage}
+              valueText={statusMessage}
+              variant={variant}
+              measureLocation={ProgressMeasureLocation.top}
+            />
+          ),
         },
         {
           title: buttonText ? (
