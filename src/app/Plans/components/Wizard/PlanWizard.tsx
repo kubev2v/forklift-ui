@@ -53,7 +53,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <FilterVMs Inventory={[]} />
+              <FilterVMs /* TODO pass sourceProvider prop here */ />
             </WizardStepContainer>
           ),
           enableNext: true,
