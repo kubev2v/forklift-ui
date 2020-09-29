@@ -64,7 +64,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { selectedItems: expandedVMs, toggleItemSelected: toggleVMsExpanded } = useSelectionState<
+  const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } = useSelectionState<
     IMigration
   >({
     items: sortedItems,
@@ -83,7 +83,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const rows: IRow[] = [];
 
   currentPageItems.forEach((migration: IMigration) => {
-    const isExpanded = expandedVMs.includes(migration);
+    const isExpanded = isVMExpanded(migration);
 
     let buttonText = '';
     if (migration.other.status !== 'Ready') {
@@ -150,7 +150,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               sortBy={sortBy}
               onSort={onSort}
               onCollapse={(event, rowKey, isOpen, rowData) => {
-                toggleVMsExpanded(rowData.meta.migration);
+                toggleVMExpanded(rowData.meta.migration);
               }}
             >
               <TableHeader />
