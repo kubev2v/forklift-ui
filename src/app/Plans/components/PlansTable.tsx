@@ -59,9 +59,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const getMigration = (plan) => migrations.filter((migration) => migration.plan === plan);
+  const getMigration = (plan: IPlan) => migrations.filter((migration) => migration.plan === plan);
 
-  const ratioVMs = (plan) => {
+  const ratioVMs = (plan: IPlan) => {
     const migration = getMigration(plan)[0];
     const totalVMs = plan.spec.vmList.length;
 
@@ -92,7 +92,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let title = '';
     let variant: ProgressVariant | undefined;
 
-    const hasCondition = (type) => {
+    const hasCondition = (type: string) => {
       return plan.status.conditions.find((condition) => condition.type === type);
     };
 
