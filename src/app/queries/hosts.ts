@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { MOCK_HOSTS } from './mocks/hosts.mock';
 import { IHost } from './types';
 import { useProvidersQuery } from '.';
@@ -28,8 +28,5 @@ export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
     },
     MOCK_HOSTS
   );
-  return {
-    ...result,
-    data: result.data,
-  };
+  return sortIndexedResultsByName<IHost, IHost[]>(result);
 };
