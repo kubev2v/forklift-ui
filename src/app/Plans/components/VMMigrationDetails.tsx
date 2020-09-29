@@ -138,7 +138,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     rows.push({
       meta: { migration },
       isOpen: isExpanded,
-      // isOpen: true,
       cells: [
         migration.id,
         migration.schedule.begin,
