@@ -58,7 +58,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         <Text component="p">{instructionText}</Text>
       </TextContent>
       {builderItems.map((item, itemIndex) => {
-        const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
+        const key = item.source ? `${item.source.id}-${itemIndex}` : `empty-${itemIndex}`;
         return (
           <Grid key={key}>
             {itemIndex === 0 ? (
