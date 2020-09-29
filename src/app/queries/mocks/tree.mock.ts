@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         object: {
           id: '',
           parent: null,
-          name: '',
+          name: 'Fake_DC',
           selfLink:
             '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-2760',
         },
@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         object: {
           id: '',
           parent: null,
-          name: '',
+          name: 'V2V-DC',
           selfLink:
             '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-21',
         },
