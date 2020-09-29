@@ -1,5 +1,16 @@
 import * as React from 'react';
-import { Button, Flex, FlexItem, Level, LevelItem, Pagination, Text } from '@patternfly/react-core';
+import {
+  Button,
+  Flex,
+  FlexItem,
+  Level,
+  LevelItem,
+  Pagination,
+  Progress,
+  ProgressMeasureLocation,
+  ProgressVariant,
+  Text,
+} from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -13,15 +24,14 @@ import {
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
-import PlanStatus from './PlanStatus';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import PlanWizard from './Wizard/PlanWizard';
 import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
-import { ProgressVariant } from '@patternfly/react-core';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -57,6 +67,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
     const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vmList.length} VMs migrated`;
+
     return { statusValue, statusMessage };
   };
 
@@ -81,25 +92,21 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let title = '';
     let variant: ProgressVariant | undefined;
 
-    if (
-      plan.status.conditions.every((condition) => condition.type === PlanStatusConditionsType.ready)
-    ) {
+    const hasCondition = (type) => {
+      return plan.status.conditions.find((condition) => condition.type === type);
+    };
+
+    if (hasCondition(PlanStatusConditionsType.Ready)) {
       buttonText = 'Start';
       isStatusReady = true;
-    } else if (
-      plan.status.conditions.every(
-        (condition) => condition.type === PlanStatusConditionsType.finished
-      )
-    ) {
-      title = PlanStatusType.finished;
+    } else if (hasCondition(PlanStatusConditionsType.Finished)) {
+      title = PlanStatusType.Finished;
       variant = ProgressVariant.success;
-    } else if (
-      plan.status.conditions.find((condition) => condition.type === PlanStatusConditionsType.error)
-    ) {
-      title = PlanStatusType.error;
+    } else if (hasCondition(PlanStatusConditionsType.Error)) {
+      title = PlanStatusType.Error;
       variant = ProgressVariant.danger;
     } else {
-      title = PlanStatusType.running;
+      title = PlanStatusType.Running;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -121,13 +128,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.provider.destinationProvider.name,
         plan.spec.vmList.length,
         {
-          title: (
-            <PlanStatus
-              isReady={isStatusReady}
+          title: isStatusReady ? (
+            <StatusIcon status={StatusType.Ok} label={PlanStatusType.Ready} />
+          ) : (
+            <Progress
               title={title}
-              variant={variant}
               value={statusValue}
-              message={statusMessage}
+              label={statusMessage}
+              valueText={statusMessage}
+              variant={variant}
+              measureLocation={ProgressMeasureLocation.top}
             />
           ),
         },

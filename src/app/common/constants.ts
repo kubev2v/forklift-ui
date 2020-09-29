@@ -13,17 +13,17 @@ export enum ProviderType {
 }
 
 export enum PlanStatusConditionsType {
-  ready = 'Ready',
-  running = 'Running',
-  finished = 'Finished',
-  error = 'Error',
+  Ready = 'Ready',
+  Running = 'Running',
+  Finished = 'Finished',
+  Error = 'Error',
 }
 
 export enum PlanStatusType {
-  ready = 'Ready',
-  running = 'Running',
-  finished = 'Complete',
-  error = 'Failed',
+  Ready = 'Ready',
+  Running = 'Running',
+  Finished = 'Complete',
+  Error = 'Failed',
 }
 
 export const PROVIDER_TYPE_NAMES = {
