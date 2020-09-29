@@ -57,11 +57,11 @@ export const HostsPage: React.FunctionComponent = () => {
         <Card>
           {hostsQuery.isLoading ? (
             <LoadingEmptyState />
-          ) : hostsQuery.isError || !match?.params.providerId || !hostsQuery.data ? (
+          ) : hostsQuery.isError || !match?.params.providerId ? (
             <Alert variant="danger" title="Error loading hosts" />
           ) : (
             <CardBody>
-              {hostsQuery?.data?.length === 0 ? (
+              {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
