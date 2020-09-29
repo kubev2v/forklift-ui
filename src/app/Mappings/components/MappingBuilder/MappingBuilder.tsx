@@ -51,17 +51,14 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   };
 
   let instructionText = '';
-  let selectSourcePlaceholder = '';
-  let selectTargetPlaceholder = '';
+  const selectSourcePlaceholder = 'Select source...';
+  const selectTargetPlaceholder = 'Select target...';
+
   if (mappingType === MappingType.Network) {
     instructionText = 'Map source and target networks.';
-    selectSourcePlaceholder = 'Select source...';
-    selectTargetPlaceholder = 'Select target...';
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
-    selectSourcePlaceholder = 'Select source...';
-    selectTargetPlaceholder = 'Select target...';
   }
 
   return (
