@@ -23,14 +23,16 @@ import PlansTable from './components/PlansTable';
 import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
+// TODO replace these with real state from react-query results
 const isFetchingInitialPlans = false; // Fetching for the first time, not polling
+const isErrorFetchingPlans = false;
+
 const plans = MOCK_PLANS;
 const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
   const history = useHistory();
   const providersQuery = useProvidersQuery();
-
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 
@@ -57,6 +59,8 @@ const PlansPage: React.FunctionComponent = () => {
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
+        ) : isErrorFetchingPlans ? (
+          <Alert variant="danger" title="Error loading plans" />
         ) : (
           <Card>
             <CardBody>

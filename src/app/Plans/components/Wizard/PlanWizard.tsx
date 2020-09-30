@@ -41,7 +41,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm sourceProviders={[]} targetProviders={[]} />
+          <GeneralForm />
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -54,7 +54,7 @@ const PlanWizard: React.FunctionComponent = () => {
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <FilterVMs /* TODO pass sourceProvider prop here */ />
+              <FilterVMs /* TODO pass sourceProvider prop here from form values? */ />
             </WizardStepContainer>
           ),
           enableNext: true,
