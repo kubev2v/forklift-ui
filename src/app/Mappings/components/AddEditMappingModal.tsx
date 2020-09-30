@@ -60,6 +60,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     mappingType
   );
 
+  const isEveryItemFilled = () => builderItems.every((item) => item.source && item.target);
+
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
     { source: null, target: null },
@@ -95,6 +97,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               onClose();
             }
           }}
+          isDisabled={!isEveryItemFilled()}
         >
           Create
         </Button>,
@@ -167,6 +170,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   availableTargets={mappingResourceQueries.availableTargets}
                   builderItems={builderItems}
                   setBuilderItems={setBuilderItems}
+                  isEveryItemFilled={isEveryItemFilled}
                 />
               )
             ) : null}

@@ -21,6 +21,7 @@ interface IMappingBuilderProps {
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
+  isEveryItemFilled: () => void;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -29,6 +30,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   availableTargets,
   builderItems,
   setBuilderItems,
+  isEveryItemFilled,
 }: IMappingBuilderProps) => {
   const reset = () => setBuilderItems([{ source: null, target: null }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
@@ -52,7 +54,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     instructionText = 'Map source datastores to target storage classes.';
   }
 
-  const isEveryItemFilled = () => builderItems.every((item) => item.source && item.target);
   const allSourcesExhausted = () => builderItems.length === availableSources.length;
 
   return (
@@ -61,7 +62,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         <Text component="p">{instructionText}</Text>
       </TextContent>
       {builderItems.map((item, itemIndex) => {
-        const key = item.source ? `${item.source.id}-${itemIndex}` : `empty-${itemIndex}`;
+        const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
         return (
           <Grid key={key}>
             {itemIndex === 0 ? (
