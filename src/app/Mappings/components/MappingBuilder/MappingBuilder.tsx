@@ -56,8 +56,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     instructionText = 'Map source datastores to target storage classes.';
   }
 
-  const allSourcesExhausted = () => builderItems.length === availableSources.length;
-
   return (
     <>
       <TextContent>
@@ -138,7 +136,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         >
           <div>
             <Button
-              isDisabled={!isEveryItemFilled() || allSourcesExhausted()}
+              isDisabled={!isEveryItemFilled() || builderItems.length === availableSources.length}
               variant="secondary"
               icon={<PlusCircleIcon />}
               onClick={addEmptyItem}

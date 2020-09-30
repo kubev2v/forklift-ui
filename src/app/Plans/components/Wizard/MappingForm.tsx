@@ -61,9 +61,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     { source: null, target: null },
   ]);
 
-  // TODO add to disable Next step
-  const isEveryItemFilled = () => builderItems.every((item) => item.source && item.target);
-
   return (
     <Form>
       <Title headingLevel="h3" size="md">
@@ -117,7 +114,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 availableTargets={mappingResourceQueries.availableTargets}
                 builderItems={builderItems}
                 setBuilderItems={setBuilderItems}
-                isEveryItemFilled={isEveryItemFilled}
+                isEveryItemFilled={() => builderItems.every((item) => item.source && item.target)}
               />
             )}
             <Checkbox
