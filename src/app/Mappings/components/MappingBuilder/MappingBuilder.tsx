@@ -7,8 +7,10 @@ import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
+import AddTooltip from '@app/common/components/AddTooltip';
 
 import './MappingBuilder.css';
+// import AddTooltip from '@app/common/components/AddTooltip';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
@@ -21,7 +23,7 @@ interface IMappingBuilderProps {
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
-  isEveryItemFilled: () => void;
+  isEveryItemFilled: () => boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -129,14 +131,20 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         justifyContent={{ default: 'justifyContentCenter' }}
         spaceItems={{ default: 'spaceItemsMd' }}
       >
-        <Button
-          isDisabled={!isEveryItemFilled() || allSourcesExhausted()}
-          variant="secondary"
-          icon={<PlusCircleIcon />}
-          onClick={addEmptyItem}
+        <AddTooltip
+          isTooltipEnabled={!isEveryItemFilled()}
+          content="You must select a source and target before adding another mapping."
+          position="bottom"
         >
-          Add
-        </Button>
+          <Button
+            isDisabled={!isEveryItemFilled() || allSourcesExhausted()}
+            variant="secondary"
+            icon={<PlusCircleIcon />}
+            onClick={addEmptyItem}
+          >
+            Add
+          </Button>
+        </AddTooltip>
         <Button variant="secondary" onClick={reset} isDisabled={isReset}>
           Remove all
         </Button>
