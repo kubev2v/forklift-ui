@@ -242,7 +242,7 @@ export const vmStatus1: IVMStatus = {
         total: 2,
         completed: 2,
       },
-      phase: '',
+      phase: 'Latest message from controller',
     },
     {
       name: 'Step 2',

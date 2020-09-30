@@ -36,7 +36,9 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
             </Flex>
           ),
         },
-        step.progress,
+        // TODO Replace with data from API structure
+        // step.progress...,
+        'hh:mm:ss',
         step.phase,
         {
           title: <Link to={'#'}>View pod log</Link>,
