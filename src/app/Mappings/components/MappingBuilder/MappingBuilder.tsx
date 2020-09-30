@@ -136,14 +136,16 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           content="You must select a source and target before adding another mapping."
           position="bottom"
         >
-          <Button
-            isDisabled={!isEveryItemFilled() || allSourcesExhausted()}
-            variant="secondary"
-            icon={<PlusCircleIcon />}
-            onClick={addEmptyItem}
-          >
-            Add
-          </Button>
+          <div>
+            <Button
+              isDisabled={!isEveryItemFilled() || allSourcesExhausted()}
+              variant="secondary"
+              icon={<PlusCircleIcon />}
+              onClick={addEmptyItem}
+            >
+              Add
+            </Button>
+          </div>
         </AddTooltip>
         <Button variant="secondary" onClick={reset} isDisabled={isReset}>
           Remove all
