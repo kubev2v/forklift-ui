@@ -14,6 +14,7 @@ import HooksPage from '@app/Hooks/HooksPage';
 import { HostsPage } from './Providers/HostsPage';
 import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
+import CertErrorPage from './common/CertErrorPage';
 
 let routeFocusTimer: number;
 
@@ -42,6 +43,13 @@ export const routes: AppRouteConfig[] = [
     exact: true,
     path: '/welcome',
     title: `${APP_TITLE} | Welcome`,
+    // No label property, so it won't be rendered in the nav
+  },
+  {
+    component: CertErrorPage,
+    exact: false,
+    path: '/cert-error',
+    title: `${APP_TITLE} | Cert error`,
     // No label property, so it won't be rendered in the nav
   },
   {

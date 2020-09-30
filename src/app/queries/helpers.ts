@@ -27,6 +27,9 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
     queryFn: process.env.DATA_SOURCE !== 'mock' ? config.queryFn : () => mockPromise(mockData),
   });
 
+const handleGlobalCertErrors = (error: any) => {
+  console.log('error big time', error);
+};
 export const getApiUrl = (relativePath: string): string =>
   `${RUNTIME_ENV.INVENTORY_API_URL}${relativePath}`;
 
