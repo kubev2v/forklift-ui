@@ -31,6 +31,7 @@ const PlansPage: React.FunctionComponent = () => {
   const providersQuery = useProvidersQuery();
 
   const vmwareProviders = providersQuery.data?.vsphere || [];
+  const vmwareProviders = []; //providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
@@ -73,11 +74,21 @@ const PlansPage: React.FunctionComponent = () => {
                     content={addPlanDisabledObj.content}
                   >
                     <div className={`${spacing.mtMd}`}>
-                      <Link to="/plans/create">
+                      {/* TODO: Fix with a wrapper */}
+                      {addPlanDisabledObj.isTooltipEnabled ? (
                         <Button isDisabled={addPlanDisabledObj.isTooltipEnabled} variant="primary">
                           Create migration plan
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link to="/plans/create">
+                          <Button
+                            isDisabled={addPlanDisabledObj.isTooltipEnabled}
+                            variant="primary"
+                          >
+                            Create migration plan
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </AddTooltip>
                 </EmptyState>
