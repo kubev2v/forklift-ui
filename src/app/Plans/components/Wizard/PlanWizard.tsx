@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { Wizard } from '@patternfly/react-core';
+import { Breadcrumb, BreadcrumbItem, PageSection, Wizard } from '@patternfly/react-core';
+import { Link } from 'react-router-dom';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
-import { MappingType } from '@app/queries/types';
-import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
-import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
+import { MappingType } from '@app/queries/types';
 import { usePausedPollingEffect } from '@app/common/context';
+import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
+import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 
 const PlanWizard: React.FunctionComponent = () => {
   usePausedPollingEffect();
@@ -111,15 +114,23 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   return (
-    <Wizard
-      title="Create a Migration Plan"
-      steps={steps}
-      onNext={onMove}
-      onBack={onMove}
-      onSubmit={(event) => event.preventDefault()}
-      hideClose={true}
-      cancelButtonText=""
-    />
+    <PageSection variant="light">
+      <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
+        <BreadcrumbItem>
+          <Link to={`/plans`}>Migration plans</Link>
+        </BreadcrumbItem>
+        <BreadcrumbItem>Plan Wizard</BreadcrumbItem>
+      </Breadcrumb>
+      <Wizard
+        title="Create a Migration Plan"
+        steps={steps}
+        onNext={onMove}
+        onBack={onMove}
+        onSubmit={(event) => event.preventDefault()}
+        hideClose={true}
+        cancelButtonText=""
+      />
+    </PageSection>
   );
 };
 
