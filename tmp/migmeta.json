@@ -1,1 +1,1 @@
-{"clusterApi":"https://api.cluster-ibb6039ocp4b.ibb6039ocp4b.mg.dog8code.com:6443","oauth":{"clientId":"mig-ui","redirectUri":"http://localhost:9000/login/callback","userScope":"user:full","clientSecret":"bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"},"namespace":"openshift-migration","configNamespace":"openshift-config","inventoryApi":"https://inventory-openshift-migration.apps.cluster-ibb6039ocp4b.ibb6039ocp4b.mg.dog8code.com"}
+undefined

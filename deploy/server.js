@@ -3,7 +3,6 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
-const helpers = require('../config/helpers');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';

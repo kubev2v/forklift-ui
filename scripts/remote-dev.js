@@ -8,7 +8,7 @@ const helpers = require('../config/helpers');
 // Init some consts
 const configDir = path.join(__dirname, '..', 'config');
 const oauthclientFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
-const remoteConfigFile = path.join(configDir, 'config.dev.json');
+const remoteConfigFile = path.join(configDir, 'virtMeta.dev.json');
 const oauthClientTemplateFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
 
 // Validations
@@ -109,6 +109,7 @@ function setupCors() {
 }
 
 function generateMigMeta() {
+  console.log('helpers.getLocalConfig()', helpers.getLocalConfig());
   const { migMeta } = helpers.getLocalConfig();
   const migMetaJson = JSON.stringify(migMeta);
   execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);

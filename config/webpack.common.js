@@ -141,9 +141,7 @@ module.exports = (env) => {
               template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
                 _env_encoded: require('../runtime-env-vars'),
-                _mig_meta: Buffer.from(JSON.stringify(helpers.getLocalConfig().migMeta)).toString(
-                  'base64'
-                ),
+                _mig_meta: Buffer.from(JSON.stringify(helpers.getLocalConfig())).toString('base64'),
               },
             }
           : {
