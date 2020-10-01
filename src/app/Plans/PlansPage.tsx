@@ -31,7 +31,6 @@ const PlansPage: React.FunctionComponent = () => {
   const providersQuery = useProvidersQuery();
 
   const vmwareProviders = providersQuery.data?.vsphere || [];
-  const vmwareProviders = []; //providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
