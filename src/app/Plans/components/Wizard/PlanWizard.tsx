@@ -128,7 +128,6 @@ const PlanWizard: React.FunctionComponent = () => {
         onBack={onMove}
         onSubmit={(event) => event.preventDefault()}
         hideClose={true}
-        cancelButtonText=""
       />
     </PageSection>
   );
