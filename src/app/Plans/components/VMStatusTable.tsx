@@ -17,11 +17,10 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
   const columns: ICell[] = [
     {
       title: 'Step',
-      transforms: [cellWidth(35)],
+      transforms: [cellWidth(40)],
     },
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
-    { title: 'State', transforms: [cellWidth(30)] },
-    { title: '' },
+    { title: 'State' },
   ];
 
   const rows: IRow[] = vmstatus.pipeline.map((step: IStep) => {
@@ -40,9 +39,6 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
         // step.progress...,
         'hh:mm:ss',
         step.phase,
-        {
-          title: <Link to={'#'}>View pod log</Link>,
-        },
       ],
     };
   });
