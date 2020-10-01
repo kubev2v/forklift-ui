@@ -4,7 +4,7 @@ import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider } from './types';
-import { useFetch } from './httpService';
+import { useFetch } from './useFetch';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {

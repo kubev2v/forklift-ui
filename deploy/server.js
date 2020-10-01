@@ -4,14 +4,15 @@ const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
 
-const helpers = require('./helpers');
-const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
+const helpers = require('../config/helpers');
+const { sanitizeVirtMeta, getClusterAuth } = require('./oAuthHelpers');
 
-const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
-const migMetaStr = fs.readFileSync(migMetaFile, 'utf8');
-const migMeta = JSON.parse(migMetaStr);
-const sanitizedMigMeta = sanitizeMigMeta(migMeta);
-const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
+console.log('hfjshkfhsjkfa', virtMetaFile);
+const virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
+const virtMeta = JSON.parse(virtMetaStr);
+const sanitizedVirtMeta = sanitizeVirtMeta(virtMeta);
+const encodedVirtMeta = Buffer.from(JSON.stringify(sanitizedVirtMeta)).toString('base64');
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
 
@@ -23,10 +24,10 @@ app.use(express.static(path.join(__dirname, '/dist')));
 
 app.get('/login', async (req, res, next) => {
   try {
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth(virtMeta);
     const authorizationUri = clusterAuth.authorizeURL({
-      redirect_uri: migMeta.oauth.redirectUri,
-      scope: migMeta.oauth.userScope,
+      redirect_uri: virtMeta.oauth.redirectUri,
+      scope: virtMeta.oauth.userScope,
     });
 
     res.redirect(authorizationUri);
@@ -43,10 +44,10 @@ app.get('/login/callback', async (req, res, next) => {
   const { code } = req.query;
   const options = {
     code,
-    redirect_uri: migMeta.oauth.redirectUri,
+    redirect_uri: virtMeta.oauth.redirectUri,
   };
   try {
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth(virtMeta);
     const accessToken = await clusterAuth.getToken(options);
     const currentUnixTime = moment().unix();
     const user = {

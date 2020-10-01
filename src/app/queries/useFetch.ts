@@ -1,5 +1,5 @@
 import { VIRT_META } from '@app/common/constants';
-import { useAppContext } from '@app/common/context/AppContext';
+import { useNetworkContext } from '@app/common/context/NetworkContext';
 import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export const isSelfSignedCertError = <T>(response: HttpResponse<T>): boolean => 
 export const useFetch = <T>(url: string): QueryFunction<T> => {
   const history = useHistory();
 
-  const { setSelfSignedCertUrl } = useAppContext();
+  const { setSelfSignedCertUrl } = useNetworkContext();
 
   const handleFetchResponse = (response: HttpResponse<T>) => {
     if (isSelfSignedCertError(response)) {

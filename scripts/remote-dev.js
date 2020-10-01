@@ -81,19 +81,18 @@ function setupOAuthClient() {
   }
 }
 
-function generateMigMeta() {
+function generateVirtMeta() {
   console.log('helpers.getLocalConfig()', helpers.getLocalConfig());
-  const { migMeta } = helpers.getLocalConfig();
-  const migMetaJson = JSON.stringify(migMeta);
+  const virtMetaJson = JSON.stringify(helpers.getLocalConfig());
   execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
-  fs.writeFileSync(path.join(__dirname, '../tmp/migmeta.json'), migMetaJson, 'utf8');
+  fs.writeFileSync(path.join(__dirname, '../tmp/virtmeta.json'), virtMetaJson, 'utf8');
 }
 
 // Main
 
 function main() {
   setupOAuthClient();
-  generateMigMeta();
+  generateVirtMeta();
 }
 
 main();

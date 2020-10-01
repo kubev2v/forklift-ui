@@ -1,3 +1,3 @@
 export * from './LocalStorageContext';
 export * from './PollingContext';
-export * from './AppContext';
+export * from './NetworkContext';

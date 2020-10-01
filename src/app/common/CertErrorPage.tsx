@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Card, CardBody, Alert } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
-import { useAppContext } from './context/AppContext';
+import { useNetworkContext } from './context/NetworkContext';
 
 const CertErrorPage: React.FunctionComponent = () => {
   const history = useHistory();
-  const { selfSignedCertUrl } = useAppContext();
+  const { selfSignedCertUrl } = useNetworkContext();
   if (!selfSignedCertUrl) {
     history.push('/');
   }

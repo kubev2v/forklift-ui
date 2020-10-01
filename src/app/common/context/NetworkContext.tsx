@@ -1,29 +1,29 @@
 import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 
-interface IAppContext {
+interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
   selfSignedCertUrl: string;
   saveLoginToken: (user: string, history: any) => void;
 }
 
-const AppContext = React.createContext<IAppContext>({
+const NetworkContext = React.createContext<INetworkContext>({
   selfSignedCertUrl: '',
   setSelfSignedCertUrl: () => {
-    console.error('setSelfSignedCertUrl was called without a AppContextProvider in the tree');
+    console.error('setSelfSignedCertUrl was called without a NetworkContextProvider in the tree');
   },
   saveLoginToken: () => {
-    console.error('saveLoginToken was called without a AppContextProvider in the tree');
+    console.error('saveLoginToken was called without a NetworkContextProvider in the tree');
   },
 });
 
-interface IAppContextProviderProps {
+interface INetworkContextProviderProps {
   children: React.ReactNode;
 }
 
-export const AppContextProvider: React.FunctionComponent<IAppContextProviderProps> = ({
+export const NetworkContextProvider: React.FunctionComponent<INetworkContextProviderProps> = ({
   children,
-}: IAppContextProviderProps) => {
+}: INetworkContextProviderProps) => {
   const [selfSignedCertUrl, setSelfSignedCertUrl] = React.useState('');
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
 
@@ -34,7 +34,7 @@ export const AppContextProvider: React.FunctionComponent<IAppContextProviderProp
   };
 
   return (
-    <AppContext.Provider
+    <NetworkContext.Provider
       value={{
         selfSignedCertUrl,
         setSelfSignedCertUrl,
@@ -42,8 +42,8 @@ export const AppContextProvider: React.FunctionComponent<IAppContextProviderProp
       }}
     >
       {children}
-    </AppContext.Provider>
+    </NetworkContext.Provider>
   );
 };
 
-export const useAppContext = (): IAppContext => React.useContext(AppContext);
+export const useNetworkContext = (): INetworkContext => React.useContext(NetworkContext);
