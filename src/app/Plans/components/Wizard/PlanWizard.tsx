@@ -141,6 +141,7 @@ const PlanWizard: React.FunctionComponent = () => {
             onNext={onMove}
             onBack={onMove}
             onSubmit={(event) => event.preventDefault()}
+            onClose={() => alert('close')} // TODO
           />
         </PlanWizardFormContextProvider>
       </PageSection>

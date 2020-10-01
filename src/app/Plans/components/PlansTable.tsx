@@ -169,6 +169,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
+          {/* TODO replace link/button here with useHistory too */}
           <Link to="/plans/create">
             <Button variant="secondary">Create</Button>
           </Link>
