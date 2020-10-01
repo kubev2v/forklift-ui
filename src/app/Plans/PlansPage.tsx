@@ -10,6 +10,7 @@ import {
   Button,
   Alert,
 } from '@patternfly/react-core';
+import { useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
@@ -17,7 +18,6 @@ import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip'
 import { useProvidersQuery } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
-import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real data from react-query
 import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
@@ -28,12 +28,11 @@ const plans = MOCK_PLANS;
 const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
+  const history = useHistory();
   const providersQuery = useProvidersQuery();
 
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
-
-  const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
     isTooltipEnabled: false,
@@ -76,8 +75,8 @@ const PlansPage: React.FunctionComponent = () => {
                   >
                     <div className={`${spacing.mtMd}`}>
                       <Button
+                        onClick={() => history.push('/plans/create')}
                         isDisabled={addPlanDisabledObj.isTooltipEnabled}
-                        onClick={toggleWizard}
                         variant="primary"
                       >
                         Create migration plan
@@ -92,13 +91,6 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      {isWizardOpen ? (
-        <PlanWizard
-          onClose={toggleWizard}
-          sourceProviders={vmwareProviders}
-          targetProviders={openshiftProviders}
-        />
-      ) : null}
     </>
   );
 };
