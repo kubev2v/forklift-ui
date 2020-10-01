@@ -21,8 +21,8 @@ const CertErrorPage: React.FunctionComponent = () => {
               <div />
               The correct way to address this is to install your self CA into your browser.
               <div />
-              NOTE: The contents of the resulting page may report "unauthorized". This is expected.
-              After accepting the certificate, please reload the app.
+              NOTE: The contents of the resulting page may report &quot;unauthorized&quot; This is
+              expected. After accepting the certificate, please reload the app.
             </Alert>
           </CardBody>
         </Card>
