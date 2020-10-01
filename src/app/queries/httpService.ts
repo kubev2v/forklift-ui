@@ -2,14 +2,25 @@ import { useOAuthContext } from '@app/common/context';
 import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 
+interface HttpResponse<T> extends Response {
+  parsedBody?: T;
+}
+
+export const isSelfSignedCertError = <T>(response: HttpResponse<T>): boolean => {
+  // HACK: Doing our best to determine whether or not the
+  // error was produced due to a self signed cert error.
+  // It's an extremely barren object.
+  const certErrorText = 'Failed to fetch';
+  return response instanceof TypeError && response.message === certErrorText;
+};
+
 export const useFetch = <T>(url: string): QueryFunction<T> => {
   const history = useHistory();
 
-  const { setFailedUrl } = useOAuthContext();
+  const { setFailedUrl, migMeta } = useOAuthContext();
 
-  const handleFetchResponse = (response) => {
-    const certErrorText = 'Failed to fetch';
-    if (response instanceof TypeError && response.message === certErrorText) {
+  const handleFetchResponse = (response: HttpResponse<T>) => {
+    if (isSelfSignedCertError(response)) {
       setFailedUrl(url);
       history.push(`/cert-error`);
     }
@@ -24,11 +35,9 @@ export const useFetch = <T>(url: string): QueryFunction<T> => {
       //   credentials: 'include'
       // mode: 'cors',
       // credentials: 'include',
-      // headers: {
-      //   'Content-Type': 'application/json',
-      //   Authorization: `Bearer ${myToken}`,
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-      // },
+      headers: {
+        Authorization: `Bearer ${migMeta.oauth.clientSecret}`,
+      },
     })
       .then(handleFetchResponse)
       .catch(handleFetchResponse);

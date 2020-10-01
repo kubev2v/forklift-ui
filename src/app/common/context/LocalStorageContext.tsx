@@ -4,6 +4,7 @@ import * as React from 'react';
 // TODO we'd have to parameterize the LocalStorageKey types, not sure how that would carry down to the consumer
 
 enum LocalStorageKey {
+  currentUser = 'currentUser',
   isWelcomePageHidden = 'isWelcomePageHidden',
   isProvidersPageMAAlertHidden = 'isProvidersPageMAAlertHidden',
 }
