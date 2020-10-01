@@ -8,6 +8,7 @@ import {
   PageSection,
   Title,
   Wizard,
+  WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -44,7 +45,7 @@ export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // 
 const PlanWizard: React.FunctionComponent = () => {
   const forms = usePlanWizardFormState();
 
-  enum stepId {
+  enum StepId {
     General = 1,
     FilterVMs,
     SelectVMs,
@@ -54,9 +55,16 @@ const PlanWizard: React.FunctionComponent = () => {
     Review,
   }
 
+  const [stepIdReached, setStepIdReached] = React.useState(StepId.General);
+  const onMove: WizardStepFunctionType = ({ id }) => {
+    if (id !== undefined && id > stepIdReached) {
+      setStepIdReached(id as StepId);
+    }
+  };
+
   const steps = [
     {
-      id: stepId.General,
+      id: StepId.General,
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
@@ -69,7 +77,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'VM Selection',
       steps: [
         {
-          id: stepId.FilterVMs,
+          id: StepId.FilterVMs,
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
@@ -77,9 +85,10 @@ const PlanWizard: React.FunctionComponent = () => {
             </WizardStepContainer>
           ),
           enableNext: true,
+          canJumpTo: stepIdReached >= StepId.FilterVMs,
         },
         {
-          id: stepId.SelectVMs,
+          id: StepId.SelectVMs,
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
@@ -87,11 +96,12 @@ const PlanWizard: React.FunctionComponent = () => {
             </WizardStepContainer>
           ),
           enableNext: true,
+          canJumpTo: stepIdReached >= StepId.SelectVMs,
         },
       ],
     },
     {
-      id: stepId.StorageMapping,
+      id: StepId.StorageMapping,
       name: 'Storage Mapping',
       component: (
         <WizardStepContainer title="Map Storage">
@@ -103,9 +113,10 @@ const PlanWizard: React.FunctionComponent = () => {
         </WizardStepContainer>
       ),
       enableNext: true,
+      canJumpTo: stepIdReached >= StepId.StorageMapping,
     },
     {
-      id: stepId.NetworkMapping,
+      id: StepId.NetworkMapping,
       name: 'Network Mapping',
       component: (
         <WizardStepContainer title="Network Mapping">
@@ -117,9 +128,10 @@ const PlanWizard: React.FunctionComponent = () => {
         </WizardStepContainer>
       ),
       enableNext: true,
+      canJumpTo: stepIdReached >= StepId.NetworkMapping,
     },
     {
-      id: stepId.Hooks,
+      id: StepId.Hooks,
       name: 'Hooks',
       component: (
         <WizardStepContainer title="Hooks">
@@ -127,18 +139,16 @@ const PlanWizard: React.FunctionComponent = () => {
         </WizardStepContainer>
       ),
       enableNext: true,
+      canJumpTo: stepIdReached >= StepId.Hooks,
     },
     {
-      id: stepId.Review,
+      id: StepId.Review,
       name: 'Review',
       component: <Review />,
       nextButtonText: 'Finish',
+      canJumpTo: stepIdReached >= StepId.Review,
     },
   ];
-
-  const onMove = () => {
-    return;
-  };
 
   return (
     <>
