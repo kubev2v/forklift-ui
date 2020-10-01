@@ -109,7 +109,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
                 {buttonText}
               </Button>
-              <PlanActionsDropdown />
             </>
           ) : null,
         },
