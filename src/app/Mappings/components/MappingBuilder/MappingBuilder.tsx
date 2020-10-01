@@ -32,6 +32,16 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   builderItems,
   setBuilderItems,
 }: IMappingBuilderProps) => {
+  const messageSelectBoth = 'You must select a source and target before adding another mapping.';
+  const messageExhausted = `All sources ${mappingType.toLowerCase()} have been mapped.`;
+
+  const getTooltipContent = () => {
+    if (builderItems.length === availableSources.length) {
+      return messageExhausted;
+    }
+    return messageSelectBoth;
+  };
+
   const reset = () => setBuilderItems([{ source: null, target: null }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
   const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
@@ -128,8 +138,11 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         spaceItems={{ default: 'spaceItemsMd' }}
       >
         <AddTooltip
-          isTooltipEnabled={!builderItems.every((item) => item.source && item.target)}
-          content="You must select a source and target before adding another mapping."
+          isTooltipEnabled={
+            !builderItems.every((item) => item.source && item.target) ||
+            builderItems.length === availableSources.length
+          }
+          content={getTooltipContent()}
           position="bottom"
         >
           <div>
