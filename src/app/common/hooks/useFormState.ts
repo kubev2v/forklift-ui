@@ -1,4 +1,4 @@
-import { FormGroupProps, TextInputProps } from '@patternfly/react-core';
+import { FormGroupProps, TextAreaProps, TextInputProps } from '@patternfly/react-core';
 import * as React from 'react';
 import * as yup from 'yup';
 import equal from 'fast-deep-equal';
@@ -153,11 +153,17 @@ export const getFormGroupProps = <T>(
   helperTextInvalid: field.error?.message,
 });
 
-export const getTextInputProps = (
+export const getTextFieldProps = (
   field: IValidatedFormField<string>
-): Pick<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
+): Pick<TextInputProps | TextAreaProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
   value: field.value,
   onChange: field.setValue,
   onBlur: () => field.setIsTouched(true),
   validated: field.isValid ? 'default' : 'error',
 });
+
+export const getTextInputProps = (field: IValidatedFormField<string>): Partial<TextInputProps> =>
+  getTextFieldProps(field) as Partial<TextInputProps>;
+
+export const getTextAreaProps = (field: IValidatedFormField<string>): Partial<TextAreaProps> =>
+  getTextFieldProps(field) as Partial<TextAreaProps>;

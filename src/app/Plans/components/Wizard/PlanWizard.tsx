@@ -18,13 +18,11 @@ import SelectVMs from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import { MappingType } from '@app/queries/types';
-import { usePausedPollingEffect } from '@app/common/context';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
+import { PlanWizardFormContextProvider } from './PlanWizardFormContext';
 
 const PlanWizard: React.FunctionComponent = () => {
-  usePausedPollingEffect();
-
   enum stepId {
     General = 1,
     FilterVMs,
@@ -137,12 +135,14 @@ const PlanWizard: React.FunctionComponent = () => {
         </Level>
       </PageSection>
       <PageSection variant="light">
-        <Wizard
-          steps={steps}
-          onNext={onMove}
-          onBack={onMove}
-          onSubmit={(event) => event.preventDefault()}
-        />
+        <PlanWizardFormContextProvider>
+          <Wizard
+            steps={steps}
+            onNext={onMove}
+            onBack={onMove}
+            onSubmit={(event) => event.preventDefault()}
+          />
+        </PlanWizardFormContextProvider>
       </PageSection>
     </>
   );
