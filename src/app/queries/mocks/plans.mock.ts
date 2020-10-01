@@ -1,10 +1,10 @@
-import { IPlan, IMigration, IPlanVM } from '../types';
+import { IPlan, IMigration, IPlanVM, IVMStatus } from '../types';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 // TODO put this condition back when we don't directly import mocks into components anymore
 // if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 const vm1: IPlanVM = {
-  uid: 'vm1-id',
+  id: 'vm1-id',
   hooks: {
     before: {
       type: 'string',
@@ -34,7 +34,7 @@ const vm1: IPlanVM = {
 };
 
 const vm2: IPlanVM = {
-  uid: 'vm1-id',
+  id: 'vm2-id',
   hooks: {
     before: {
       type: 'string',
@@ -86,7 +86,7 @@ const plan1: IPlan = {
       datastores: [],
     },
     warm: false,
-    vmList: [vm1, vm2],
+    vms: [vm1, vm2],
   },
   status: {
     conditions: [
@@ -134,7 +134,7 @@ const plan2: IPlan = {
       datastores: [],
     },
     warm: false,
-    vmList: [vm1],
+    vms: [vm1],
   },
   status: {
     conditions: [
@@ -174,7 +174,7 @@ const plan3: IPlan = {
       datastores: [],
     },
     warm: false,
-    vmList: [vm1, vm2, vm1, vm2],
+    vms: [vm1, vm2, vm1, vm2],
   },
   status: {
     conditions: [
@@ -214,7 +214,7 @@ const plan4: IPlan = {
       datastores: [],
     },
     warm: false,
-    vmList: [vm1, vm2],
+    vms: [vm1, vm2],
   },
   status: {
     conditions: [
@@ -233,40 +233,189 @@ const plan4: IPlan = {
 
 export const MOCK_PLANS: IPlan[] = [plan1, plan2, plan3, plan4];
 
+export const vmStatus1: IVMStatus = {
+  id: 'vm1-id',
+  pipeline: [
+    {
+      name: 'Step 1',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: 'Latest message from controller',
+    },
+    {
+      name: 'Step 2',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 3',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 4',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Copying data',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+  ],
+  step: 5,
+  completed: false,
+  error: {
+    phase: '',
+    reasons: [''],
+  },
+};
+
+export const vmStatus2: IVMStatus = {
+  id: 'vm1-id',
+  pipeline: [
+    {
+      name: 'Step 1',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 2',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 3',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 4',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 5',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 6',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 7',
+      progress: {
+        total: 1,
+        completed: 1,
+      },
+      phase: '',
+    },
+  ],
+  step: 7,
+  completed: true,
+  error: {
+    phase: '',
+    reasons: [''],
+  },
+};
+export const MOCK_VMSSTATUS: IVMStatus[] = [vmStatus2, vmStatus1];
+
 export const migration1: IMigration = {
+  id: 'VM1',
   plan: plan1,
   schedule: {
-    begin: Date.parse('04 Dec 2020 00:12:00 GMT'),
-    end: Date.parse('05 Dec 2020 00:12:00 GMT'),
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 12:33:44',
   },
   status: { ready: true, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus1,
+  other: {
+    copied: 93184,
+    total: 125952,
+    status: 'Ready',
+  },
 };
 
 export const migration2: IMigration = {
+  id: 'VM2',
   plan: plan2,
   schedule: {
-    begin: Date.parse('10 Janv 2021 00:00:00 GMT'),
-    end: Date.parse('12 Janv 2021 00:00:00 GMT'),
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 12:33:44',
   },
-  status: { ready: true, storageReady: true, nbVMsDone: 0 },
+  status: { ready: false, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Running',
+  },
 };
 
 export const migration3: IMigration = {
+  id: 'VM3',
   plan: plan3,
   schedule: {
-    begin: Date.parse('04 Dec 2020 00:12:00 GMT'),
-    end: Date.parse('05 Dec 2020 00:12:00 GMT'),
+    begin: '09 Aug 2019, 08:19:11',
+    end: '09 Aug 2019, 09:43:12',
   },
   status: { ready: false, storageReady: true, nbVMsDone: 1 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Terminated',
+  },
 };
 
 export const migration4: IMigration = {
+  id: 'VM4',
   plan: plan4,
   schedule: {
-    begin: Date.parse('10 Janv 2021 00:00:00 GMT'),
-    end: Date.parse('12 Janv 2021 00:00:00 GMT'),
+    begin: '09 Aug 2019, 11:34:56',
+    end: '10 Aug 2019, 11:34:56',
   },
   status: { ready: false, storageReady: false, nbVMsDone: 2 },
+  status2: vmStatus2,
+  other: {
+    copied: 87952,
+    total: 87952,
+    status: 'Failed',
+  },
 };
 
 export const MOCK_MIGRATIONS: IMigration[] = [migration1, migration2, migration3, migration4];
