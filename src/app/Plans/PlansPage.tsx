@@ -10,7 +10,7 @@ import {
   Button,
   Alert,
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
@@ -28,9 +28,11 @@ const plans = MOCK_PLANS;
 const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
+  const history = useHistory();
   const providersQuery = useProvidersQuery();
 
-  const vmwareProviders = providersQuery.data?.vsphere || [];
+  // const vmwareProviders = providersQuery.data?.vsphere || [];
+  const vmwareProviders = [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
@@ -73,21 +75,13 @@ const PlansPage: React.FunctionComponent = () => {
                     content={addPlanDisabledObj.content}
                   >
                     <div className={`${spacing.mtMd}`}>
-                      {/* TODO: Fix with a wrapper */}
-                      {addPlanDisabledObj.isTooltipEnabled ? (
-                        <Button isDisabled={addPlanDisabledObj.isTooltipEnabled} variant="primary">
-                          Create migration plan
-                        </Button>
-                      ) : (
-                        <Link to="/plans/create">
-                          <Button
-                            isDisabled={addPlanDisabledObj.isTooltipEnabled}
-                            variant="primary"
-                          >
-                            Create migration plan
-                          </Button>
-                        </Link>
-                      )}
+                      <Button
+                        onClick={() => history.push('/plans/create')}
+                        isDisabled={addPlanDisabledObj.isTooltipEnabled}
+                        variant="primary"
+                      >
+                        Create migration plan
+                      </Button>
                     </div>
                   </AddTooltip>
                 </EmptyState>
