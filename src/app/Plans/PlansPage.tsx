@@ -10,7 +10,7 @@ import {
   Button,
   Alert,
 } from '@patternfly/react-core';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
@@ -31,8 +31,7 @@ const PlansPage: React.FunctionComponent = () => {
   const history = useHistory();
   const providersQuery = useProvidersQuery();
 
-  // const vmwareProviders = providersQuery.data?.vsphere || [];
-  const vmwareProviders = [];
+  const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
