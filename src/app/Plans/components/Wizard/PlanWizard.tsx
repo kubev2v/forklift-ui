@@ -119,7 +119,7 @@ const PlanWizard: React.FunctionComponent = () => {
         <BreadcrumbItem>
           <Link to={`/plans`}>Migration plans</Link>
         </BreadcrumbItem>
-        <BreadcrumbItem>Plan Wizard</BreadcrumbItem>
+        <BreadcrumbItem>Create</BreadcrumbItem>
       </Breadcrumb>
       <Wizard
         title="Create a Migration Plan"
