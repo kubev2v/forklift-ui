@@ -63,6 +63,7 @@ export const routes: AppRouteConfig[] = [
     path: '/plans',
     title: `${APP_TITLE} | Migration Plans`,
   },
+  // TODO Watch out for future /plans/:plan as the follow has precedence
   {
     component: PlanWizard,
     exact: true,
