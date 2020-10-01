@@ -136,7 +136,7 @@ const PlanWizard: React.FunctionComponent = () => {
           </LevelItem>
         </Level>
       </PageSection>
-      <PageSection>
+      <PageSection variant="light">
         <Wizard
           steps={steps}
           onNext={onMove}
