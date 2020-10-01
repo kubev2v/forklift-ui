@@ -94,6 +94,7 @@ export const routes: AppRouteConfig[] = [
     exact: true,
     path: '/plans/create',
     title: `${APP_TITLE} | Create Migration Plan`,
+    isProtected: true,
   },
   {
     component: VMMigrationDetails,
