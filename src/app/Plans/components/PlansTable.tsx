@@ -102,6 +102,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title = PlanStatusType.Error;
       variant = ProgressVariant.danger;
     } else {
+      buttonText = 'Cancel';
       title = PlanStatusType.Running;
     }
 
