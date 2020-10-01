@@ -108,6 +108,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
 
+    console.log({ plan });
+
     rows.push({
       meta: { plan },
       cells: [

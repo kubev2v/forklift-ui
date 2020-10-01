@@ -1,5 +1,20 @@
 import { ProviderType } from '@app/common/constants';
-import { IStatusCondition } from '@app/queries/types';
+import { ICR, IStatusCondition } from '@app/queries/types';
+
+interface ICommonProviderObject extends ICR {
+  spec: {
+    type: ProviderType;
+    url: string; // TODO is this the "Endpoint" column?
+    secret: {
+      namespace: string;
+      name: string;
+    };
+  };
+  status: {
+    conditions: IStatusCondition[];
+    observedGeneration: number;
+  };
+}
 
 export interface ICommonProvider {
   uid: string;
@@ -8,29 +23,7 @@ export interface ICommonProvider {
   name: string;
   selfLink: string;
   type: ProviderType;
-  object: {
-    metadata: {
-      name: string;
-      namespace: string;
-      selfLink: string;
-      uid: string;
-      resourceVersion: string;
-      generation: number;
-      creationTimestamp: string; // ISO timestamp
-    };
-    spec: {
-      type: ProviderType;
-      url: string; // TODO is this the "Endpoint" column?
-      secret: {
-        namespace: string;
-        name: string;
-      };
-    };
-    status: {
-      conditions: IStatusCondition[];
-      observedGeneration: number;
-    };
-  };
+  object: ICommonProviderObject;
 }
 
 export interface IVMwareProvider extends ICommonProvider {
