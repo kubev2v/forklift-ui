@@ -114,7 +114,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 availableTargets={mappingResourceQueries.availableTargets}
                 builderItems={builderItems}
                 setBuilderItems={setBuilderItems}
-                isEveryItemFilled={() => builderItems.every((item) => item.source && item.target)}
+                isEveryItemFilled={builderItems.every((item) => item.source && item.target)}
               />
             )}
             <Checkbox

@@ -168,7 +168,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   availableTargets={mappingResourceQueries.availableTargets}
                   builderItems={builderItems}
                   setBuilderItems={setBuilderItems}
-                  isEveryItemFilled={() => builderItems.every((item) => item.source && item.target)}
+                  isEveryItemFilled={builderItems.every((item) => item.source && item.target)}
                 />
               )
             ) : null}

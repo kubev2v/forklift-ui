@@ -23,7 +23,7 @@ interface IMappingBuilderProps {
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
-  isEveryItemFilled: () => boolean;
+  isEveryItemFilled: boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -130,13 +130,13 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         spaceItems={{ default: 'spaceItemsMd' }}
       >
         <AddTooltip
-          isTooltipEnabled={!isEveryItemFilled()}
+          isTooltipEnabled={!isEveryItemFilled}
           content="You must select a source and target before adding another mapping."
           position="bottom"
         >
           <div>
             <Button
-              isDisabled={!isEveryItemFilled() || builderItems.length === availableSources.length}
+              isDisabled={!isEveryItemFilled || builderItems.length === availableSources.length}
               variant="secondary"
               icon={<PlusCircleIcon />}
               onClick={addEmptyItem}
