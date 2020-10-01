@@ -101,6 +101,7 @@ export const routes: AppRouteConfig[] = [
     exact: false,
     path: '/plans/:planId',
     title: `${APP_TITLE} | Migration Plan Details`,
+    isProtected: true,
   },
   {
     label: 'Mappings',
