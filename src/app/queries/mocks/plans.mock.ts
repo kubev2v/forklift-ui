@@ -231,7 +231,7 @@ const plan4: IPlan = {
   },
 };
 
-export const MOCK_PLANS: IPlan[] = [plan1, plan2, plan3, plan4];
+export const MOCK_PLANS: IPlan[] = []; //[plan1, plan2, plan3, plan4];
 
 export const migration1: IMigration = {
   plan: plan1,

@@ -169,7 +169,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Link to="/plan/create">
+          <Link to="/plans/create">
             <Button variant="secondary">Create</Button>
           </Link>
         </LevelItem>
