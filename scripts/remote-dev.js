@@ -82,7 +82,6 @@ function setupOAuthClient() {
 }
 
 function generateVirtMeta() {
-  console.log('helpers.getLocalConfig()', helpers.getLocalConfig());
   const virtMetaJson = JSON.stringify(helpers.getLocalConfig());
   execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
   fs.writeFileSync(path.join(__dirname, '../tmp/virtmeta.json'), virtMetaJson, 'utf8');

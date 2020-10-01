@@ -8,7 +8,6 @@ const helpers = require('../config/helpers');
 const { sanitizeVirtMeta, getClusterAuth } = require('./oAuthHelpers');
 
 const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
-console.log('hfjshkfhsjkfa', virtMetaFile);
 const virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
 const virtMeta = JSON.parse(virtMetaStr);
 const sanitizedVirtMeta = sanitizeVirtMeta(virtMeta);

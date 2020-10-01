@@ -16,17 +16,17 @@ const queryCache = new QueryCache();
 
 const App: React.FunctionComponent = () => (
   <ReactQueryCacheProvider queryCache={queryCache}>
-    <NetworkContextProvider>
-      <PollingContextProvider>
-        <LocalStorageContextProvider>
+    <PollingContextProvider>
+      <LocalStorageContextProvider>
+        <NetworkContextProvider>
           <Router>
             <AppLayout>
               <AppRoutes />
             </AppLayout>
           </Router>
-        </LocalStorageContextProvider>
-      </PollingContextProvider>
-    </NetworkContextProvider>
+        </NetworkContextProvider>
+      </LocalStorageContextProvider>
+    </PollingContextProvider>
     <ReactQueryDevtools />
   </ReactQueryCacheProvider>
 );
