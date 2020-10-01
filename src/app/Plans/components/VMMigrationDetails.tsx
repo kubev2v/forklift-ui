@@ -30,6 +30,7 @@ import { IMigration } from '@app/queries/types';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import VMStatusTable from './VMStatusTable';
 import PipelineSummary from '@app/common/components/PipelineSummary';
+import { PlanStatusConditionsType } from '@app/common/constants';
 
 import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 
@@ -84,9 +85,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   currentPageItems.forEach((migration: IMigration) => {
     const isExpanded = isVMExpanded(migration);
 
-    let buttonText = '';
-    if (migration.other.status !== 'Ready') {
-      buttonText = 'Cancel';
+    let isButtonCancel = false;
+    if (
+      migration.other.status !== PlanStatusConditionsType.Ready &&
+      migration.other.status !== PlanStatusConditionsType.Finished &&
+      migration.other.status !== PlanStatusConditionsType.Error
+    ) {
+      isButtonCancel = true;
     }
 
     rows.push({
@@ -103,10 +108,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           title: <PipelineSummary total={0} current={0} status={migration.other.status} />,
         },
         {
-          title: buttonText ? (
+          title: isButtonCancel ? (
             <>
               <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-                {buttonText}
+                Cancel
               </Button>
             </>
           ) : null,
