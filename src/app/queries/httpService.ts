@@ -2,7 +2,7 @@ import { useOAuthContext } from '@app/common/context';
 import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 
-export const useOurApi = <T>(url: string): QueryFunction<T> => {
+export const useFetch = <T>(url: string): QueryFunction<T> => {
   const history = useHistory();
 
   const { setFailedUrl } = useOAuthContext();
