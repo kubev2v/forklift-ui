@@ -64,7 +64,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   );
 
   const renderNavItem = (route: IAppRoute, index: number) => (
-    <NavItem key={`${route.label}-${index}`} id={`${route.label}-${index}`}>
+    <NavItem
+      key={`${route.label}-${index}`}
+      id={`${route.label}-${index}`}
+      onClick={isMobileView ? onNavToggleMobile : undefined}
+    >
       <NavLink exact to={route.path} activeClassName="pf-m-current">
         {route.label}
       </NavLink>
