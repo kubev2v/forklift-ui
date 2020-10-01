@@ -3,10 +3,6 @@ import { Card, CardBody, Alert } from '@patternfly/react-core';
 import { useOAuthContext } from './context';
 import { useHistory } from 'react-router-dom';
 
-export interface ICertErrorMatchParams {
-  url: string;
-}
-
 const CertErrorPage: React.FunctionComponent = () => {
   const history = useHistory();
   const { failedUrl } = useOAuthContext();
