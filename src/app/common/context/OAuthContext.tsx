@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 
 interface IOAuthContext {
@@ -30,10 +29,10 @@ export const OAuthContextProvider: React.FunctionComponent<IOAuthContextProvider
   const [failedUrl, setFailedUrl] = React.useState('');
   const [migMeta, setMigMeta] = React.useState('');
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
-  const history = useHistory();
 
-  const saveLoginToken = (user) => {
+  const saveLoginToken = (user, history) => {
     setCurrentUser(user);
+    console.log('history', history);
     history.push('/');
   };
 

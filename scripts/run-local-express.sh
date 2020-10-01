@@ -8,7 +8,7 @@ mkdir -p "$STATIC_DIR"
 cd $_dir/..
 if [ "$1" == "--auto-reload" ]; then
   # node node_modules/nodemon/bin/nodemon.js server.js
-  node $_dir/../node_modules/nodemon/bin/nodemon.js --watch $_dir/../deploy $_dir/../deploy/server.js
+  node $_dir/../node_modules/nodemon/bin/nodemon.js --inspect --watch $_dir/../deploy $_dir/../deploy/server.js
 else
-  node $_dir/../deploy/server.js
+  node $_dir/../deploy/server.js --inspect
 fi

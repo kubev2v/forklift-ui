@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation, Redirect } from 'react-router-dom';
+import { useLocation, Redirect, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { AuthActions } from './duck/actions';
 import { useOAuthContext } from '@app/common/context';
@@ -10,6 +10,7 @@ interface ILoginHandlerComponentProps {
 
 const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = () => {
   const { setFailedUrl, migMeta, saveLoginToken } = useOAuthContext();
+  const history = useHistory();
 
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
@@ -28,7 +29,7 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
     if (loginError) {
       console.log('Authentication error: ', loginError);
     } else if (user) {
-      saveLoginToken(user); // Will cause a redirect to "/"
+      saveLoginToken(user.access_token, history); // Will cause a redirect to "/"
     }
   }, []);
 

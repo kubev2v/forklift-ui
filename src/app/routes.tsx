@@ -16,6 +16,7 @@ import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
 import CertErrorPage from './common/CertErrorPage';
 import LoginHandlerComponent from './common/LoginHandlerComponent';
+import RedirectToLogin from './common/RedirectToLogin';
 
 let routeFocusTimer: number;
 
@@ -29,6 +30,8 @@ export interface IAppRoute {
   title: string;
   isAsync?: boolean;
   routes?: undefined;
+  isLoggedIn?: boolean;
+  isProtected: boolean;
 }
 
 export interface IAppRouteGroup {
@@ -44,6 +47,7 @@ export const routes: AppRouteConfig[] = [
     exact: true,
     path: '/welcome',
     title: `${APP_TITLE} | Welcome`,
+    isProtected: true,
     // No label property, so it won't be rendered in the nav
   },
   {
@@ -51,12 +55,15 @@ export const routes: AppRouteConfig[] = [
     exact: true,
     path: '/cert-error',
     title: `${APP_TITLE} | Cert error`,
+    isProtected: false,
     // No label property, so it won't be rendered in the nav
   },
   {
     component: LoginHandlerComponent,
+    exact: true,
     path: '/handle-login',
     title: `${APP_TITLE} | Login`,
+    isProtected: false,
     // No label property, so it won't be rendered in the nav
   },
   {
@@ -65,12 +72,14 @@ export const routes: AppRouteConfig[] = [
     label: 'Providers',
     path: '/providers',
     title: `${APP_TITLE} | Providers`,
+    isProtected: true,
   },
   {
     component: HostsPage,
     exact: false,
     path: '/providers/:providerId',
     title: `${APP_TITLE} | Hosts`,
+    isProtected: true,
   },
   {
     component: PlansPage,
@@ -78,6 +87,7 @@ export const routes: AppRouteConfig[] = [
     label: 'Migration Plans',
     path: '/plans',
     title: `${APP_TITLE} | Migration Plans`,
+    isProtected: true,
   },
   {
     component: PlanWizard,
@@ -100,6 +110,7 @@ export const routes: AppRouteConfig[] = [
         label: 'Network',
         path: '/mappings/network',
         title: `${APP_TITLE} | Network Mappings`,
+        isProtected: true,
       },
       {
         component: StorageMappingsPage,
@@ -107,6 +118,7 @@ export const routes: AppRouteConfig[] = [
         label: 'Storage',
         path: '/mappings/storage',
         title: `${APP_TITLE} | Storage Mappings`,
+        isProtected: true,
       },
     ],
   },
@@ -116,6 +128,7 @@ export const routes: AppRouteConfig[] = [
     label: 'Hooks',
     path: '/hooks',
     title: `${APP_TITLE} | Hooks`,
+    isProtected: true,
   },
 ];
 
@@ -138,13 +151,19 @@ const RouteWithTitleUpdates = ({
   component: Component,
   isAsync = false,
   title,
+  isLoggedIn,
+  isProtected,
   ...rest
 }: IAppRoute) => {
   useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 
   function routeWithTitle(routeProps: RouteComponentProps) {
-    return <Component {...rest} {...routeProps} />;
+    if (isProtected) {
+      return isLoggedIn ? <Component {...rest} {...routeProps} /> : <RedirectToLogin />;
+    } else {
+      return <Component {...rest} {...routeProps} />;
+    }
   }
 
   return <Route render={routeWithTitle} />;
@@ -157,14 +176,17 @@ const flattenedRoutes: IAppRoute[] = routes.reduce(
 
 export const AppRoutes = (): React.ReactElement => {
   const [isWelcomePageHidden] = useLocalStorageContext(LocalStorageKey.isWelcomePageHidden);
+  const [currentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
   return (
     <LastLocationProvider>
       <Switch>
         <Route exact path="/">
           {isWelcomePageHidden ? <Redirect to="/providers" /> : <Redirect to="/welcome" />}
         </Route>
-        {flattenedRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
+        {flattenedRoutes.map(({ path, exact, component, title, isAsync, isProtected }, idx) => (
           <RouteWithTitleUpdates
+            isProtected={isProtected}
+            isLoggedIn={!!currentUser}
             path={path}
             exact={exact}
             component={component}

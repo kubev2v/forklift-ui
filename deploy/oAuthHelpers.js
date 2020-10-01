@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { AuthorizationCode } = require('simple-oauth2');
+const fetch = require('node-fetch');
 
 let cachedOAuthMeta = null;
 
@@ -14,9 +15,8 @@ const getOAuthMeta = async (migMeta) => {
     return cachedOAuthMeta;
   }
   const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
-  //   const res = await axios.get(oAuthMetaUrl);
   const res = await fetch(oAuthMetaUrl).then((res) => res.json());
-  cachedOAuthMeta = res.data;
+  cachedOAuthMeta = res;
   return cachedOAuthMeta;
 };
 
