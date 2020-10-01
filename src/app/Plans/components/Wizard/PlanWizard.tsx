@@ -63,7 +63,7 @@ const PlanWizard: React.FunctionComponent = () => {
           <GeneralForm form={forms.general} />
         </WizardStepContainer>
       ),
-      enableNext: true,
+      enableNext: forms.general.isValid,
     },
     {
       name: 'VM Selection',

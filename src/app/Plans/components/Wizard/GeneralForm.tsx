@@ -50,7 +50,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
         component={TextArea}
         field={form.fields.planDescription}
         label="Plan description"
-        isRequired
         fieldId="plan-description"
       />
 
