@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as yup from 'yup';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,12 +18,32 @@ import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
-import { MappingType } from '@app/queries/types';
+import { IOpenShiftProvider, IVMwareProvider, MappingType } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
-import { PlanWizardFormContextProvider } from './PlanWizardFormContext';
+import { useFormField, useFormState } from '@app/common/hooks/useFormState';
+
+const usePlanWizardFormState = () => ({
+  general: useFormState({
+    planName: useFormField('', yup.string().label('Plan name').required()),
+    planDescription: useFormField('', yup.string().label('Plan description').defined()),
+    sourceProvider: useFormField<IVMwareProvider | null>(
+      null,
+      yup.mixed<IVMwareProvider>().label('Source provider').required()
+    ),
+    targetProvider: useFormField<IOpenShiftProvider | null>(
+      null,
+      yup.mixed<IOpenShiftProvider>().label('Target provider').required()
+    ),
+  }),
+  filterVMs: useFormState({}),
+});
+
+export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
 const PlanWizard: React.FunctionComponent = () => {
+  const forms = usePlanWizardFormState();
+
   enum stepId {
     General = 1,
     FilterVMs,
@@ -39,7 +60,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm />
+          <GeneralForm form={forms.general} />
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -135,15 +156,13 @@ const PlanWizard: React.FunctionComponent = () => {
         </Level>
       </PageSection>
       <PageSection variant="light">
-        <PlanWizardFormContextProvider>
-          <Wizard
-            steps={steps}
-            onNext={onMove}
-            onBack={onMove}
-            onSubmit={(event) => event.preventDefault()}
-            onClose={() => alert('close')} // TODO
-          />
-        </PlanWizardFormContextProvider>
+        <Wizard
+          steps={steps}
+          onNext={onMove}
+          onBack={onMove}
+          onSubmit={(event) => event.preventDefault()}
+          onClose={() => alert('close')} // TODO
+        />
       </PageSection>
     </>
   );

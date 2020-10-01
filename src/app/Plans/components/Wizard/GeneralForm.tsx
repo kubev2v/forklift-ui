@@ -4,15 +4,17 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { usePlanWizardFormContext } from './PlanWizardFormContext';
 import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
+import { PlanWizardFormState } from './PlanWizard';
 
-const GeneralForm: React.FunctionComponent = () => {
+interface IGeneralFormProps {
+  form: PlanWizardFormState['general'];
+}
+
+const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGeneralFormProps) => {
   const providersQuery = useProvidersQuery();
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
-
-  const form = usePlanWizardFormContext().general;
 
   if (providersQuery.isLoading) {
     return <LoadingEmptyState />;
