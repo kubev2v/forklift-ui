@@ -73,7 +73,7 @@ const PlansPage: React.FunctionComponent = () => {
                     content={addPlanDisabledObj.content}
                   >
                     <div className={`${spacing.mtMd}`}>
-                      <Link to="/planwizard">
+                      <Link to="/plans/create">
                         <Button isDisabled={addPlanDisabledObj.isTooltipEnabled} variant="primary">
                           Create migration plan
                         </Button>

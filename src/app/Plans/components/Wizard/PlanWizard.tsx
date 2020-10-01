@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Breadcrumb, BreadcrumbItem, PageSection, Wizard } from '@patternfly/react-core';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  Level,
+  LevelItem,
+  PageSection,
+  Title,
+  Wizard,
+} from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -114,22 +122,29 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   return (
-    <PageSection variant="light">
-      <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
-        <BreadcrumbItem>
-          <Link to={`/plans`}>Migration plans</Link>
-        </BreadcrumbItem>
-        <BreadcrumbItem>Plan Wizard</BreadcrumbItem>
-      </Breadcrumb>
-      <Wizard
-        title="Create a Migration Plan"
-        steps={steps}
-        onNext={onMove}
-        onBack={onMove}
-        onSubmit={(event) => event.preventDefault()}
-        hideClose={true}
-      />
-    </PageSection>
+    <>
+      <PageSection title="Create a Migration Plan" variant="light">
+        <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
+          <BreadcrumbItem>
+            <Link to={`/plans`}>Migration plans</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem>Create</BreadcrumbItem>
+        </Breadcrumb>
+        <Level>
+          <LevelItem>
+            <Title headingLevel="h1">Create Migration Plan</Title>
+          </LevelItem>
+        </Level>
+      </PageSection>
+      <PageSection>
+        <Wizard
+          steps={steps}
+          onNext={onMove}
+          onBack={onMove}
+          onSubmit={(event) => event.preventDefault()}
+        />
+      </PageSection>
+    </>
   );
 };
 

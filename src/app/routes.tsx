@@ -66,8 +66,8 @@ export const routes: AppRouteConfig[] = [
   {
     component: PlanWizard,
     exact: true,
-    path: '/planwizard',
-    title: `${APP_TITLE} | Migration Plan Wizard`,
+    path: '/plan/create',
+    title: `${APP_TITLE} | Create Migration Plan`,
   },
   {
     label: 'Mappings',
