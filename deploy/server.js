@@ -3,6 +3,8 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
+
+const helpers = require('./helpers');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
@@ -66,7 +68,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/dist/index.html'));
   } else {
     res.render('index.html.ejs', {
-      _env_encoded: require('./runtime-env-vars'),
+      _virt_meta: helpers.getEncodedLocalConfig(),
     });
   }
 });

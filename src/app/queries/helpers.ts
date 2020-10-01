@@ -1,4 +1,4 @@
-import { RUNTIME_ENV } from '@app/common/constants';
+import { VIRT_META } from '@app/common/constants';
 import { UseQueryObjectConfig, QueryResult, useQuery, QueryStatus } from 'react-query';
 import { VMwareTree } from './types/tree.types';
 
@@ -28,7 +28,7 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
   });
 
 export const getApiUrl = (relativePath: string): string =>
-  `${RUNTIME_ENV.INVENTORY_API_URL}${relativePath}`;
+  `${VIRT_META.inventoryApi}${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return QueryStatus.Error;

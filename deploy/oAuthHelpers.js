@@ -4,28 +4,28 @@ const fetch = require('node-fetch');
 
 let cachedOAuthMeta = null;
 
-const sanitizeMigMeta = (migMeta) => {
-  const oauthCopy = { ...migMeta.oauth };
+const sanitizeVirtMeta = (virtMeta) => {
+  const oauthCopy = { ...virtMeta.oauth };
   delete oauthCopy.clientSecret;
-  return { ...migMeta, oauth: oauthCopy };
+  return { ...virtMeta, oauth: oauthCopy };
 };
 
-const getOAuthMeta = async (migMeta) => {
+const getOAuthMeta = async (virtMeta) => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${virtMeta.clusterApi}/.well-known/oauth-authorization-server`;
   const res = await fetch(oAuthMetaUrl).then((res) => res.json());
   cachedOAuthMeta = res;
   return cachedOAuthMeta;
 };
 
-const getClusterAuth = async (migMeta) => {
-  const oAuthMeta = await getOAuthMeta(migMeta);
+const getClusterAuth = async (virtMeta) => {
+  const oAuthMeta = await getOAuthMeta(virtMeta);
   return new AuthorizationCode({
     client: {
-      id: migMeta.oauth.clientId,
-      secret: migMeta.oauth.clientSecret,
+      id: virtMeta.oauth.clientId,
+      secret: virtMeta.oauth.clientSecret,
     },
     auth: {
       tokenHost: oAuthMeta.token_endpoint,
@@ -35,6 +35,6 @@ const getClusterAuth = async (migMeta) => {
 };
 
 module.exports = {
-  sanitizeMigMeta,
+  sanitizeVirtMeta,
   getClusterAuth,
 };

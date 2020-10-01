@@ -7,3 +7,4 @@ coverage
 .idea
 .env
 virtMeta.dev.json
+tmp/migmeta.json

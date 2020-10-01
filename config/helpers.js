@@ -19,4 +19,7 @@ const getLocalConfig = () => {
   return localConfig;
 };
 
-module.exports = { getLocalConfig };
+const getEncodedLocalConfig = (localConfig) =>
+  Buffer.from(JSON.stringify(getLocalConfig())).toString('base64');
+
+module.exports = { getLocalConfig, getEncodedLocalConfig };

@@ -1,4 +1,5 @@
-import { useOAuthContext } from '@app/common/context';
+import { VIRT_META } from '@app/common/constants';
+import { useAppContext } from '@app/common/context/AppContext';
 import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 
@@ -17,30 +18,26 @@ export const isSelfSignedCertError = <T>(response: HttpResponse<T>): boolean => 
 export const useFetch = <T>(url: string): QueryFunction<T> => {
   const history = useHistory();
 
-  const { setFailedUrl, migMeta } = useOAuthContext();
+  const { setSelfSignedCertUrl } = useAppContext();
 
   const handleFetchResponse = (response: HttpResponse<T>) => {
     if (isSelfSignedCertError(response)) {
-      setFailedUrl(url);
+      setSelfSignedCertUrl(url);
       history.push(`/cert-error`);
     }
-    return response.ok && response.json && response.json();
+    if (response.ok && response.json) {
+      return response.json();
+    } else {
+      return response; // or maybe something that pulls out the error message? we can figure that out later
+    }
   };
 
-  //TODO: add real oauth token fetch here
   const fetchData = () => {
     return fetch(url, {
-      //TODO: add token here when we fetch from oauth server
-      // const myToken = 'fjdslafjdlksajflkj';
-      //   credentials: 'include'
-      // mode: 'cors',
-      // credentials: 'include',
       headers: {
-        Authorization: `Bearer ${migMeta.oauth.clientSecret}`,
+        Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
       },
-    })
-      .then(handleFetchResponse)
-      .catch(handleFetchResponse);
+    }).then(handleFetchResponse);
   };
 
   return fetchData;

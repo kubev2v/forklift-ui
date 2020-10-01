@@ -40,10 +40,10 @@ function setupOAuthClient() {
   const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/login/callback`;
 
   const oauthClientName = 'mig-ui';
-  const remoteDevSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
+  const remoteDevSecret = remoteConfig.oauth.clientSecret;
 
   try {
-    console.log('Checking to see if mig-ui oauthclient exists in cluster...');
+    console.log(`Checking to see if ${oauthClientName} oauthclient exists in cluster...`);
     execSync(`oc get oauthclient ${oauthClientName} -o json`);
     console.log('Found existing OAuthClient object in cluster');
     console.log('Deleting existing OAuthClient so it can be reset');
@@ -57,7 +57,7 @@ function setupOAuthClient() {
     }
   }
 
-  console.log('Attempting to create oauthclient for mig-ui...');
+  console.log(`Attempting to create oauthclient for ${oauthClientName} ...`);
   // NOTE: Not providing a secret since we are a public client, defined
   // as one *without* a secret. Will implement PKCE.
   const oauthClient = {
@@ -81,33 +81,6 @@ function setupOAuthClient() {
   }
 }
 
-function setupCors() {
-  if (!process.env.ORIGIN3_HOST && process.env.DEPRECATED_CORS === 'true') {
-    try {
-      console.log('Patching in CORS support to the auth server');
-      const patch = {
-        spec: {
-          unsupportedConfigOverrides: {
-            corsAllowedOrigins: ['//127.0.0.1(:|$)', '//localhost(:|$)'],
-          },
-        },
-      };
-
-      execSync(
-        `oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`
-      );
-    } catch (error) {
-      console.error(
-        'ERROR: Something went wrong while trying to patch in CORS support to the auth server'
-      );
-      console.error(error.stdout.toString());
-      process.exit(1);
-    }
-  } else {
-    console.log('Skipping deprecated CORS config');
-  }
-}
-
 function generateMigMeta() {
   console.log('helpers.getLocalConfig()', helpers.getLocalConfig());
   const { migMeta } = helpers.getLocalConfig();
@@ -120,7 +93,6 @@ function generateMigMeta() {
 
 function main() {
   setupOAuthClient();
-  setupCors();
   generateMigMeta();
 }
 

@@ -9,24 +9,24 @@ import '@app/app.css';
 import {
   PollingContextProvider,
   LocalStorageContextProvider,
-  OAuthContextProvider,
+  AppContextProvider,
 } from '@app/common/context';
 
 const queryCache = new QueryCache();
 
 const App: React.FunctionComponent = () => (
   <ReactQueryCacheProvider queryCache={queryCache}>
-    <PollingContextProvider>
-      <LocalStorageContextProvider>
-        <OAuthContextProvider>
+    <AppContextProvider>
+      <PollingContextProvider>
+        <LocalStorageContextProvider>
           <Router>
             <AppLayout>
               <AppRoutes />
             </AppLayout>
           </Router>
-        </OAuthContextProvider>
-      </LocalStorageContextProvider>
-    </PollingContextProvider>
+        </LocalStorageContextProvider>
+      </PollingContextProvider>
+    </AppContextProvider>
     <ReactQueryDevtools />
   </ReactQueryCacheProvider>
 );

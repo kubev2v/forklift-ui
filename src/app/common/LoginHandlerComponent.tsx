@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
 import { useLocation, Redirect, useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { AuthActions } from './duck/actions';
-import { useOAuthContext } from '@app/common/context';
+import { useAppContext } from './context/AppContext';
 
 interface ILoginHandlerComponentProps {
   test: any;
 }
 
 const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = () => {
-  const { setFailedUrl, migMeta, saveLoginToken } = useOAuthContext();
+  const { saveLoginToken } = useAppContext();
   const history = useHistory();
 
   const searchParams = new URLSearchParams(useLocation().search);
@@ -31,7 +29,7 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
     } else if (user) {
       saveLoginToken(user.access_token, history); // Will cause a redirect to "/"
     }
-  }, []);
+  }, [loginError, user, history, saveLoginToken]);
 
   return user ? null : <Redirect to="/" />;
 };
