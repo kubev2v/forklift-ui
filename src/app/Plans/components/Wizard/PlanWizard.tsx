@@ -1,27 +1,17 @@
 import * as React from 'react';
-import { Modal, Wizard } from '@patternfly/react-core';
+import { Wizard } from '@patternfly/react-core';
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
-import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { MappingType } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import MappingForm from './MappingForm';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { usePausedPollingEffect } from '@app/common/context';
 
-interface IPlanWizardProps {
-  onClose: () => void;
-  sourceProviders: IVMwareProvider[];
-  targetProviders: IOpenShiftProvider[];
-}
-
-const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
-  onClose,
-  sourceProviders,
-  targetProviders,
-}: IPlanWizardProps) => {
+const PlanWizard: React.FunctionComponent = () => {
   usePausedPollingEffect();
 
   enum stepId {
@@ -40,7 +30,7 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm sourceProviders={sourceProviders} targetProviders={targetProviders} />
+          <GeneralForm sourceProviders={[]} targetProviders={[]} />
         </WizardStepContainer>
       ),
       enableNext: true,
@@ -121,16 +111,15 @@ const PlanWizard: React.FunctionComponent<IPlanWizardProps> = ({
   };
 
   return (
-    <Modal isOpen width="95%" showClose={false} hasNoBodyWrapper>
-      <Wizard
-        title="Create a Migration Plan"
-        steps={steps}
-        onClose={onClose}
-        onNext={onMove}
-        onBack={onMove}
-        onSubmit={(event) => event.preventDefault()}
-      />
-    </Modal>
+    <Wizard
+      title="Create a Migration Plan"
+      steps={steps}
+      onNext={onMove}
+      onBack={onMove}
+      onSubmit={(event) => event.preventDefault()}
+      hideClose={true}
+      cancelButtonText=""
+    />
   );
 };
 

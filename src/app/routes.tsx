@@ -12,6 +12,7 @@ import NetworkMappingsPage from '@app/Mappings/Network/NetworkMappingsPage';
 import StorageMappingsPage from '@app/Mappings/Storage/StorageMappingsPage';
 import HooksPage from '@app/Hooks/HooksPage';
 import { HostsPage } from './Providers/HostsPage';
+import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 
 let routeFocusTimer: number;
 
@@ -61,6 +62,12 @@ export const routes: AppRouteConfig[] = [
     label: 'Migration Plans',
     path: '/plans',
     title: `${APP_TITLE} | Migration Plans`,
+  },
+  {
+    component: PlanWizard,
+    exact: true,
+    path: '/planwizard',
+    title: `${APP_TITLE} | Migration Plan Wizard`,
   },
   {
     label: 'Mappings',

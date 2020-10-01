@@ -10,6 +10,7 @@ import {
   Button,
   Alert,
 } from '@patternfly/react-core';
+import { Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
@@ -17,7 +18,6 @@ import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip'
 import { useProvidersQuery } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
-import PlanWizard from './components/Wizard/PlanWizard';
 
 // TODO replace these with real data from react-query
 import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
@@ -32,8 +32,6 @@ const PlansPage: React.FunctionComponent = () => {
 
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
-
-  const [isWizardOpen, toggleWizard] = React.useReducer((isWizardOpen) => !isWizardOpen, false);
 
   let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
     isTooltipEnabled: false,
@@ -75,13 +73,11 @@ const PlansPage: React.FunctionComponent = () => {
                     content={addPlanDisabledObj.content}
                   >
                     <div className={`${spacing.mtMd}`}>
-                      <Button
-                        isDisabled={addPlanDisabledObj.isTooltipEnabled}
-                        onClick={toggleWizard}
-                        variant="primary"
-                      >
-                        Create migration plan
-                      </Button>
+                      <Link to="/planwizard">
+                        <Button isDisabled={addPlanDisabledObj.isTooltipEnabled} variant="primary">
+                          Create migration plan
+                        </Button>
+                      </Link>
                     </div>
                   </AddTooltip>
                 </EmptyState>
@@ -92,13 +88,6 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         )}
       </PageSection>
-      {isWizardOpen ? (
-        <PlanWizard
-          onClose={toggleWizard}
-          sourceProviders={vmwareProviders}
-          targetProviders={openshiftProviders}
-        />
-      ) : null}
     </>
   );
 };
