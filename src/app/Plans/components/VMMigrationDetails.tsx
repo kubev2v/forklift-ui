@@ -28,7 +28,6 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 
 import { IMigration } from '@app/queries/types';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import PlanActionsDropdown from './PlanActionsDropdown';
 import VMStatusTable from './VMStatusTable';
 import PipelineSummary from '@app/common/components/PipelineSummary';
 
