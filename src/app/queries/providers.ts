@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedResultsByName, handleErrors } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider } from './types';
 import { useOurApi } from './httpService';
