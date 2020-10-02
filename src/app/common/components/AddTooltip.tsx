@@ -1,9 +1,8 @@
 import React from 'react';
-import { Tooltip } from '@patternfly/react-core';
+import { Tooltip, TooltipProps } from '@patternfly/react-core';
 
-export interface IAddTooltipProps {
+export interface IAddTooltipProps extends TooltipProps {
   isTooltipEnabled: boolean;
-  content: string;
   children: React.ReactElement;
 }
 

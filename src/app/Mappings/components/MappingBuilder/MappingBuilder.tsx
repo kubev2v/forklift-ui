@@ -7,8 +7,10 @@ import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
+import AddTooltip from '@app/common/components/AddTooltip';
 
 import './MappingBuilder.css';
+// import AddTooltip from '@app/common/components/AddTooltip';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
@@ -30,6 +32,18 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   builderItems,
   setBuilderItems,
 }: IMappingBuilderProps) => {
+  const messageSelectBoth = 'You must select a source and target before adding another mapping.';
+  const messageExhausted = `All source ${
+    mappingType === MappingType.Network ? 'networks' : 'datastores'
+  } have been mapped.`;
+
+  const getTooltipContent = () => {
+    if (builderItems.length === availableSources.length) {
+      return messageExhausted;
+    }
+    return messageSelectBoth;
+  };
+
   const reset = () => setBuilderItems([{ source: null, target: null }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
   const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
@@ -42,17 +56,14 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   };
 
   let instructionText = '';
-  let selectSourcePlaceholder = '';
-  let selectTargetPlaceholder = '';
+  const selectSourcePlaceholder = 'Select source...';
+  const selectTargetPlaceholder = 'Select target...';
+
   if (mappingType === MappingType.Network) {
     instructionText = 'Map source and target networks.';
-    selectSourcePlaceholder = 'Select source...';
-    selectTargetPlaceholder = 'Select target...';
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
-    selectSourcePlaceholder = 'Select source...';
-    selectTargetPlaceholder = 'Select target...';
   }
 
   return (
@@ -128,9 +139,28 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         justifyContent={{ default: 'justifyContentCenter' }}
         spaceItems={{ default: 'spaceItemsMd' }}
       >
-        <Button variant="secondary" icon={<PlusCircleIcon />} onClick={addEmptyItem}>
-          Add
-        </Button>
+        <AddTooltip
+          isTooltipEnabled={
+            !builderItems.every((item) => item.source && item.target) ||
+            builderItems.length === availableSources.length
+          }
+          content={getTooltipContent()}
+          position="bottom"
+        >
+          <div>
+            <Button
+              isDisabled={
+                !builderItems.every((item) => item.source && item.target) ||
+                builderItems.length === availableSources.length
+              }
+              variant="secondary"
+              icon={<PlusCircleIcon />}
+              onClick={addEmptyItem}
+            >
+              Add
+            </Button>
+          </div>
+        </AddTooltip>
         <Button variant="secondary" onClick={reset} isDisabled={isReset}>
           Remove all
         </Button>

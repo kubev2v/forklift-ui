@@ -95,6 +95,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               onClose();
             }
           }}
+          isDisabled={!builderItems.every((item) => item.source && item.target)}
         >
           Create
         </Button>,
