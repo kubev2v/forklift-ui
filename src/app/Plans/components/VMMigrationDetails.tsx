@@ -105,7 +105,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           migration.other.total / 1024
         )} GB`,
         {
-          title: <PipelineSummary total={0} current={0} status={migration.other.status} />,
+          title: <PipelineSummary pipeline={migration.status2.pipeline} />,
         },
         {
           title: isButtonCancel ? (

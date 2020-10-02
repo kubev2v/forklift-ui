@@ -13,10 +13,11 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
 }: IPlansActionDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
 
-  const hasNotCondition = (type: string) => {
-    return !conditions.find((condition) => condition.type === type);
+  const hasCondition = (type: string) => {
+    return !!conditions.find((condition) => condition.type === type);
   };
 
+  console.log(conditions);
   return (
     <Dropdown
       aria-label="Actions"
@@ -25,7 +26,11 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       isPlain
       dropdownItems={[
         <DropdownItem
-          isDisabled={hasNotCondition(PlanStatusConditionsType.Ready)}
+          isDisabled={
+            hasCondition(PlanStatusConditionsType.Execute) ||
+            hasCondition(PlanStatusConditionsType.Finished) ||
+            hasCondition(PlanStatusConditionsType.Error)
+          }
           onClick={() => {
             setKebabIsOpen(false);
             alert('TODO');
@@ -35,16 +40,12 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           Edit
         </DropdownItem>,
         <DropdownItem
-          isDisabled={
-            hasNotCondition(PlanStatusConditionsType.Ready) &&
-            hasNotCondition(PlanStatusConditionsType.Finished) &&
-            hasNotCondition(PlanStatusConditionsType.Error)
-          }
+          isDisabled={hasCondition(PlanStatusConditionsType.Execute)}
           onClick={() => {
             setKebabIsOpen(false);
             alert('TODO');
           }}
-          key="Delete"
+          key="Remove"
         >
           Remove
         </DropdownItem>,

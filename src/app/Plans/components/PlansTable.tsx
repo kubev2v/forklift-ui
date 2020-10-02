@@ -103,7 +103,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       variant = ProgressVariant.danger;
     } else {
       buttonText = 'Cancel';
-      title = PlanStatusType.Running;
+      title = PlanStatusType.Execute;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
