@@ -171,14 +171,16 @@ const PlanWizard: React.FunctionComponent = () => {
           </LevelItem>
         </Level>
       </PageSection>
-      <Wizard
-        className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
-        steps={steps}
-        onNext={onMove}
-        onBack={onMove}
-        onSubmit={(event) => event.preventDefault()}
-        onClose={() => history.push('/plans')}
-      />
+      <PageSection variant="light" className={spacing.p_0}>
+        <Wizard
+          className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
+          steps={steps}
+          onNext={onMove}
+          onBack={onMove}
+          onSubmit={(event) => event.preventDefault()}
+          onClose={() => history.push('/plans')}
+        />
+      </PageSection>
     </>
   );
 };
