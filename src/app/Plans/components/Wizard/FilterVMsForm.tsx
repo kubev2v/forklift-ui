@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useSelectionState } from '@konveyor/lib-ui';
 import { useVMwareTreeQuery } from '@app/queries';
 import { IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
 import { filterAndConvertVMwareTree, findMatchingNode, flattenVMwareTreeNodes } from './helpers';
@@ -8,7 +9,6 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
-import { useSelectionState } from '@konveyor/lib-ui';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IFilterVMsProps {
@@ -31,17 +31,10 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
     isEqual: (a: VMwareTree, b: VMwareTree) => a.object?.selfLink === b.object?.selfLink,
   });
 
-  const toggleNodeAndChildren = (node: VMwareTree, isSelecting: boolean) => {
-    const nodesToSelect: VMwareTree[] = [];
-    const pushNodeAndChildren = (n: VMwareTree) => {
-      nodesToSelect.push(n);
-      if (n.children) {
-        n.children.forEach(pushNodeAndChildren);
-      }
-    };
-    pushNodeAndChildren(node);
-    treeSelection.selectMultiple(nodesToSelect, isSelecting);
-  };
+  React.useEffect(() => {
+    treeSelection.selectAll(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treeType]);
 
   return (
     <div className="plan-wizard-filter-vms-form">
@@ -86,7 +79,18 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
               const matchingNode =
                 treeQuery.data && findMatchingNode(treeQuery.data, treeViewItem.id || '');
               if (matchingNode) {
-                toggleNodeAndChildren(matchingNode, !treeSelection.isItemSelected(matchingNode));
+                const nodesToSelect: VMwareTree[] = [];
+                const pushNodeAndDescendants = (n: VMwareTree) => {
+                  nodesToSelect.push(n);
+                  if (n.children) {
+                    n.children.forEach(pushNodeAndDescendants);
+                  }
+                };
+                pushNodeAndDescendants(matchingNode);
+                treeSelection.selectMultiple(
+                  nodesToSelect,
+                  !treeSelection.isItemSelected(matchingNode)
+                );
               }
             }
           }}
