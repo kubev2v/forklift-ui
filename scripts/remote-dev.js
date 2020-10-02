@@ -81,17 +81,11 @@ function setupOAuthClient() {
   }
 }
 
-function generateVirtMeta() {
-  const virtMetaJson = JSON.stringify(helpers.getLocalConfig());
-  execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
-  fs.writeFileSync(path.join(__dirname, '../tmp/virtmeta.json'), virtMetaJson, 'utf8');
-}
-
 // Main
 
 function main() {
   setupOAuthClient();
-  generateVirtMeta();
+  helpers.generateVirtMeta();
 }
 
 main();

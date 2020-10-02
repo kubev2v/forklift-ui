@@ -3,12 +3,21 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
+const execSync = require('child_process').execSync;
 
 const helpers = require('../config/helpers');
 const { sanitizeVirtMeta, getClusterAuth } = require('./oAuthHelpers');
 
-const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
-const virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
+let virtMetaStr;
+if (process.env['DATA_SOURCE'] === 'mock') {
+  helpers.generateVirtMeta();
+  virtMetaStr = fs.readFileSync(path.join(__dirname, '../tmp/virtmeta.json'));
+} else {
+  const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
+  virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
+}
+
+// const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
 const virtMeta = JSON.parse(virtMetaStr);
 const sanitizedVirtMeta = sanitizeVirtMeta(virtMeta);
 const encodedVirtMeta = Buffer.from(JSON.stringify(sanitizedVirtMeta)).toString('base64');
@@ -65,7 +74,7 @@ app.get('/login/callback', async (req, res, next) => {
 
 app.get('*', (req, res) => {
   if (process.env['DATA_SOURCE'] === 'mock') {
-    res.sendFile(path.join(__dirname + '/dist/index.html'));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
   } else {
     res.render('index.html.ejs', {
       _virt_meta: helpers.getEncodedLocalConfig(),

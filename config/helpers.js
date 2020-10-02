@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const fs = require('fs');
+const execSync = require('child_process').execSync;
 
 const localConfigFileName = 'virtMeta.dev.json';
 
@@ -22,4 +23,10 @@ const getLocalConfig = () => {
 const getEncodedLocalConfig = (localConfig) =>
   Buffer.from(JSON.stringify(getLocalConfig())).toString('base64');
 
-module.exports = { getLocalConfig, getEncodedLocalConfig };
+const generateVirtMeta = () => {
+  const virtMetaJson = JSON.stringify(getLocalConfig());
+  execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
+  fs.writeFileSync(path.join(__dirname, '../tmp/virtmeta.json'), virtMetaJson, 'utf8');
+};
+
+module.exports = { generateVirtMeta, getLocalConfig, getEncodedLocalConfig };
