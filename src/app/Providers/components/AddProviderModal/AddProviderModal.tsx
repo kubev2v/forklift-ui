@@ -85,6 +85,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         >
           <SimpleSelect
             id="provider-type"
+            aria-label="Provider type"
             options={PROVIDER_TYPE_OPTIONS}
             value={[PROVIDER_TYPE_OPTIONS.find((option) => option.value === providerType)]}
             onChange={(selection) => {

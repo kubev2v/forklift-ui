@@ -41,6 +41,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   return (
     <SimpleSelect
       id={id}
+      aria-label="Select source"
       className="mapping-item-select"
       variant="typeahead"
       isPlain

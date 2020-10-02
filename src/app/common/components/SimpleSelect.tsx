@@ -19,6 +19,7 @@ export interface ISimpleSelectProps
     SelectProps,
     'onChange' | 'isExpanded' | 'onToggle' | 'onSelect' | 'selections' | 'value'
   > {
+  'aria-label': string; // Make required to satisfy react-axe
   onChange: (selection: OptionLike) => void;
   options: OptionLike[];
   value: OptionLike | OptionLike[];

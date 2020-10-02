@@ -37,6 +37,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   return (
     <SimpleSelect
       id={id}
+      aria-label="Select target"
       className="mapping-item-select"
       variant="typeahead"
       isPlain

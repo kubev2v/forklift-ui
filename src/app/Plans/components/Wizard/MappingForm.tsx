@@ -79,13 +79,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
           <FlexItem>
             <FormGroup
               isRequired
-              fieldId="sourceProvider"
+              fieldId="mappingSelect"
               helperTextInvalid="TODO"
               // TODO add state/validation/errors to this and other FormGroups
               validated="default"
             >
               <SimpleSelect
                 id="mappingSelect"
+                aria-label="Select mapping"
                 options={mappingOptions}
                 value={[mappingOptions.find((option) => option.value === mapping)]}
                 onChange={(selection) => setMapping((selection as OptionWithValue<Mapping>).value)}

@@ -66,6 +66,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
       >
         <SimpleSelect
           id="source-provider"
+          aria-label="Source provider"
           options={sourceProvidersOptions}
           value={[
             sourceProvidersOptions.find(
@@ -90,6 +91,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
       >
         <SimpleSelect
           id="target-provider"
+          aria-label="Target provider"
           options={targetProvidersOptions}
           value={[
             targetProvidersOptions.find(

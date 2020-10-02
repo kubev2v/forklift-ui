@@ -127,6 +127,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 <FormGroup label="Source provider" isRequired fieldId="source-provider">
                   <SimpleSelect
                     id="source-provider"
+                    aria-label="Source provider"
                     options={sourceProviderOptions}
                     value={[
                       sourceProviderOptions.find((option) => option.value === sourceProvider),
@@ -143,6 +144,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 <FormGroup label="Target provider" isRequired fieldId="target-provider">
                   <SimpleSelect
                     id="target-provider"
+                    aria-label="Target provider"
                     options={targetProviderOptions}
                     value={[
                       targetProviderOptions.find((option) => option.value === targetProvider),
