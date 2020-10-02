@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const RedirectToLogin: React.FunctionComponent<{}> = () => {
+const RedirectToLogin: React.FunctionComponent = () => {
   useEffect(() => {
     window.location.href = '/login';
   }, []);
