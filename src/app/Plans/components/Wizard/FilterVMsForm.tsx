@@ -1,28 +1,30 @@
 import * as React from 'react';
 import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useProvidersQuery, useVMwareTreeQuery } from '@app/queries';
-import { VMwareTreeType } from '@app/queries/types';
+import { useVMwareTreeQuery } from '@app/queries';
+import { IVMwareProvider, VMwareTreeType } from '@app/queries/types';
 import { filterAndConvertVMwareTree } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IFilterVMsProps {
-  // sourceProvider: IVMwareProvider;
+  form: PlanWizardFormState['filterVMs'];
+  sourceProvider: IVMwareProvider | null;
 }
 
-const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
-  ////// TODO remove this and instead use sourceProvider from GeneralForm when we lift that state
-  const providersQuery = useProvidersQuery();
-  const sourceProvider = providersQuery.data?.vsphere[0] || null;
-  /////////////// ^
-
+const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
+  form,
+  sourceProvider,
+}: IFilterVMsProps) => {
   const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
   const [searchText, setSearchText] = React.useState('');
 
   const treeQuery = useVMwareTreeQuery(sourceProvider, treeType);
+
+  // TODO use form.fields.selectedTreeNodes
 
   const onSelect = (event, treeViewItem, parentItem) => {
     return;

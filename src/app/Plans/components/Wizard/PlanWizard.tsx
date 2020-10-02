@@ -19,7 +19,7 @@ import FilterVMs from './FilterVMsForm';
 import SelectVMs from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
-import { IOpenShiftProvider, IVMwareProvider, MappingType } from '@app/queries/types';
+import { IOpenShiftProvider, IVMwareProvider, MappingType, VMwareTree } from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { useFormField, useFormState } from '@app/common/hooks/useFormState';
@@ -39,7 +39,9 @@ const usePlanWizardFormState = () => ({
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
   }),
-  filterVMs: useFormState({}),
+  filterVMs: useFormState({
+    selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
+  }),
 });
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
@@ -84,10 +86,13 @@ const PlanWizard: React.FunctionComponent = () => {
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <FilterVMs /* TODO pass sourceProvider prop here from form values? */ />
+              <FilterVMs
+                form={forms.filterVMs}
+                sourceProvider={forms.general.fields.sourceProvider.value}
+              />
             </WizardStepContainer>
           ),
-          enableNext: true,
+          enableNext: forms.filterVMs.isValid,
           canJumpTo: stepIdReached >= StepId.FilterVMs,
         },
         {
