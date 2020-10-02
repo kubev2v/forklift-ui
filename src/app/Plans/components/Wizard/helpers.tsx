@@ -14,14 +14,11 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   return node.children && node.children.some((child) => subtreeMatchesSearch(child, searchText));
 };
 
-export const getCompositeNodeId = (node: VMwareTree): string =>
-  `${node.kind}/${node.object?.id || ''}`;
-
-export const findMatchingNode = (node: VMwareTree, compositeId: string): VMwareTree | null => {
-  if (getCompositeNodeId(node) === compositeId) return node;
+export const findMatchingNode = (node: VMwareTree, selfLink: string): VMwareTree | null => {
+  if (node?.object?.selfLink === selfLink) return node;
   if (node?.children) {
     for (const i in node.children) {
-      const found = findMatchingNode(node.children[i], compositeId);
+      const found = findMatchingNode(node.children[i], selfLink);
       if (found) return found;
     }
   }
@@ -34,7 +31,7 @@ const convertVMwareTreeNode = (
   isNodeSelected: (node: VMwareTree) => boolean
 ): TreeViewDataItem => ({
   name: node.object?.name || '',
-  id: getCompositeNodeId(node),
+  id: node.object?.selfLink,
   children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
   checkProps: {
     'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
@@ -66,12 +63,18 @@ const filterAndConvertVMwareTreeChildren = (
 export const filterAndConvertVMwareTree = (
   rootNode: VMwareTree | null,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean
+  isNodeSelected: (node: VMwareTree) => boolean,
+  areAllSelected: boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   return [
     {
       name: 'All datacenters',
+      id: 'converted-root',
+      checkProps: {
+        'aria-label': 'Select all datacenters',
+        checked: areAllSelected,
+      },
       children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
     },
   ];
@@ -80,7 +83,7 @@ export const filterAndConvertVMwareTree = (
 export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
   if (rootNode?.children) {
     const children = rootNode.children as VMwareTree[];
-    return [...children, ...children.map(flattenVMwareTreeNodes)] as VMwareTree[];
+    return [...children, ...children.flatMap(flattenVMwareTreeNodes)];
   }
   return [];
 };

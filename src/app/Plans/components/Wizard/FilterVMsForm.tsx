@@ -28,18 +28,20 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
   const treeSelection = useSelectionState({
     items: flattenVMwareTreeNodes(treeQuery.data || null),
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
-    isEqual: (a: VMwareTree, b: VMwareTree) => a.kind === b.kind && a.object?.id === b.object?.id,
+    isEqual: (a: VMwareTree, b: VMwareTree) => a.object?.selfLink === b.object?.selfLink,
   });
-  const toggleNodeAndChildren = (node: VMwareTree, isSelecting: boolean) => {
-    // TODO: this isn't going to work being called a bunch of times synchronously.
-    //       we need a treeSelection.toggleItemsSelected (multiple items atomically)
-    treeSelection.toggleItemSelected(node, isSelecting);
-    if (node.children) {
-      node.children.forEach((child) => toggleNodeAndChildren(child, isSelecting));
-    }
-  };
 
-  console.log(treeSelection);
+  const toggleNodeAndChildren = (node: VMwareTree, isSelecting: boolean) => {
+    const nodesToSelect: VMwareTree[] = [];
+    const pushNodeAndChildren = (n: VMwareTree) => {
+      nodesToSelect.push(n);
+      if (n.children) {
+        n.children.forEach(pushNodeAndChildren);
+      }
+    };
+    pushNodeAndChildren(node);
+    treeSelection.selectMultiple(nodesToSelect, isSelecting);
+  };
 
   return (
     <div className="plan-wizard-filter-vms-form">
@@ -71,16 +73,21 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
           data={filterAndConvertVMwareTree(
             treeQuery.data || null,
             searchText,
-            treeSelection.isItemSelected
+            treeSelection.isItemSelected,
+            treeSelection.areAllSelected
           )}
           defaultAllExpanded
           hasChecks
           onSearch={(event) => setSearchText(event.target.value)}
           onCheck={(_event, treeViewItem) => {
-            const matchingNode =
-              treeQuery.data && findMatchingNode(treeQuery.data, treeViewItem.id || '');
-            if (matchingNode) {
-              toggleNodeAndChildren(matchingNode, !treeSelection.isItemSelected(matchingNode));
+            if (treeViewItem.id === 'converted-root') {
+              treeSelection.selectAll(!treeSelection.areAllSelected);
+            } else {
+              const matchingNode =
+                treeQuery.data && findMatchingNode(treeQuery.data, treeViewItem.id || '');
+              if (matchingNode) {
+                toggleNodeAndChildren(matchingNode, !treeSelection.isItemSelected(matchingNode));
+              }
             }
           }}
           searchProps={{
