@@ -106,6 +106,14 @@ const plan1: IPlan = {
         status: true,
         type: 'SourceNetworkNotValid',
       },
+      {
+        category: 'Info',
+        lastTransitionTime: '2020-09-18T16:04:10Z',
+        message: 'In progress',
+        reason: 'Valid',
+        status: true,
+        type: 'Execute',
+      },
     ],
     observedGeneration: 2,
   },
@@ -398,7 +406,7 @@ export const migration3: IMigration = {
   other: {
     copied: 87952,
     total: 87952,
-    status: 'Terminated',
+    status: 'Complete',
   },
 };
 

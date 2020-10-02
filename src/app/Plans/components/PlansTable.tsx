@@ -103,7 +103,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       variant = ProgressVariant.danger;
     } else {
       buttonText = 'Cancel';
-      title = PlanStatusType.Running;
+      title = PlanStatusType.Execute;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -153,12 +153,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </Button>
                 </FlexItem>
                 <FlexItem>
-                  <PlanActionsDropdown />
+                  <PlanActionsDropdown conditions={plan.status.conditions} />
                 </FlexItem>
               </Flex>
             </>
           ) : (
-            <PlanActionsDropdown />
+            <PlanActionsDropdown conditions={plan.status.conditions} />
           ),
         },
       ],

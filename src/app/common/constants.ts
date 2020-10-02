@@ -14,14 +14,14 @@ export enum ProviderType {
 
 export enum PlanStatusConditionsType {
   Ready = 'Ready',
-  Running = 'Running',
+  Execute = 'Execute',
   Finished = 'Finished',
   Error = 'Error',
 }
 
 export enum PlanStatusType {
   Ready = 'Ready',
-  Running = 'Running',
+  Execute = 'Running',
   Finished = 'Complete',
   Error = 'Failed',
 }
