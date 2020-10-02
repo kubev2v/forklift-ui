@@ -33,7 +33,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   setBuilderItems,
 }: IMappingBuilderProps) => {
   const messageSelectBoth = 'You must select a source and target before adding another mapping.';
-  const messageExhausted = `All sources ${mappingType.toLowerCase()} have been mapped.`;
+  const messageExhausted = `All sources ${mappingType.toLowerCase()}s have been mapped.`;
 
   const getTooltipContent = () => {
     if (builderItems.length === availableSources.length) {
