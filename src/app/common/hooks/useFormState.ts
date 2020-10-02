@@ -7,7 +7,7 @@ type MaybeArraySchema<T> = T extends Array<infer E> ? yup.ArraySchema<E> : yup.S
 
 export interface IFormField<T> {
   value: T;
-  setValue: (value: T) => void;
+  setValue: React.Dispatch<React.SetStateAction<T>>;
   isTouched: boolean;
   setIsTouched: (isTouched: boolean) => void;
   reset: () => void;
