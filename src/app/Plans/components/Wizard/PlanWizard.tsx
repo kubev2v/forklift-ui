@@ -24,6 +24,8 @@ import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { useFormField, useFormState } from '@app/common/hooks/useFormState';
 
+import './PlanWizard.css';
+
 const usePlanWizardFormState = () => ({
   general: useFormState({
     planName: useFormField('', yup.string().label('Plan name').required()),
@@ -165,7 +167,7 @@ const PlanWizard: React.FunctionComponent = () => {
           </LevelItem>
         </Level>
       </PageSection>
-      <PageSection variant="light">
+      <PageSection variant="light" className="plan-wizard-page-section">
         <Wizard
           steps={steps}
           onNext={onMove}
