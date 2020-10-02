@@ -24,8 +24,6 @@ import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { useFormField, useFormState } from '@app/common/hooks/useFormState';
 
-import './PlanWizard.css';
-
 const usePlanWizardFormState = () => ({
   general: useFormState({
     planName: useFormField('', yup.string().label('Plan name').required()),
@@ -173,15 +171,14 @@ const PlanWizard: React.FunctionComponent = () => {
           </LevelItem>
         </Level>
       </PageSection>
-      <PageSection variant="light" className="plan-wizard-page-section">
-        <Wizard
-          steps={steps}
-          onNext={onMove}
-          onBack={onMove}
-          onSubmit={(event) => event.preventDefault()}
-          onClose={() => history.push('/plans')}
-        />
-      </PageSection>
+      <Wizard
+        className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
+        steps={steps}
+        onNext={onMove}
+        onBack={onMove}
+        onSubmit={(event) => event.preventDefault()}
+        onClose={() => history.push('/plans')}
+      />
     </>
   );
 };
