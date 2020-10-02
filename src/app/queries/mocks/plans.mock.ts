@@ -398,7 +398,7 @@ export const migration3: IMigration = {
   other: {
     copied: 87952,
     total: 87952,
-    status: 'Terminated',
+    status: 'Complete',
   },
 };
 

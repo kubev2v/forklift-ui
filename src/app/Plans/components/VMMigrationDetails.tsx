@@ -30,7 +30,7 @@ import { IMigration } from '@app/queries/types';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import VMStatusTable from './VMStatusTable';
 import PipelineSummary from '@app/common/components/PipelineSummary';
-import { PlanStatusConditionsType } from '@app/common/constants';
+import { PlanStatusType } from '@app/common/constants';
 
 import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 
@@ -87,9 +87,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
     let isButtonCancel = false;
     if (
-      migration.other.status !== PlanStatusConditionsType.Ready &&
-      migration.other.status !== PlanStatusConditionsType.Finished &&
-      migration.other.status !== PlanStatusConditionsType.Error
+      migration.other.status !== PlanStatusType.Ready &&
+      migration.other.status !== PlanStatusType.Finished &&
+      migration.other.status !== PlanStatusType.Error
     ) {
       isButtonCancel = true;
     }
