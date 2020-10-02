@@ -10,7 +10,7 @@ import {
   Wizard,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import WizardStepContainer from './WizardStepContainer';
@@ -45,6 +45,7 @@ const usePlanWizardFormState = () => ({
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
 const PlanWizard: React.FunctionComponent = () => {
+  const history = useHistory();
   const forms = usePlanWizardFormState();
 
   enum StepId {
@@ -173,7 +174,7 @@ const PlanWizard: React.FunctionComponent = () => {
           onNext={onMove}
           onBack={onMove}
           onSubmit={(event) => event.preventDefault()}
-          onClose={() => alert('close')} // TODO
+          onClose={() => history.push('/plans')}
         />
       </PageSection>
     </>
