@@ -153,12 +153,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </Button>
                 </FlexItem>
                 <FlexItem>
-                  <PlanActionsDropdown />
+                  <PlanActionsDropdown conditions={plan.status.conditions} />
                 </FlexItem>
               </Flex>
             </>
           ) : (
-            <PlanActionsDropdown />
+            <PlanActionsDropdown conditions={plan.status.conditions} />
           ),
         },
       ],
