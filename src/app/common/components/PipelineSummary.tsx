@@ -50,11 +50,9 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
       <Flex>
         <FlexItem>
           {full}
-          {half ? (
-            <>
-              <Dash /> {half} <Dash />
-            </>
-          ) : null}
+          {half ? <Dash /> : null}
+          {half}
+          {half ? <Dash /> : null}
           {empty}
         </FlexItem>
       </Flex>
