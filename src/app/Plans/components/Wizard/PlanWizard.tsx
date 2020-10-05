@@ -207,10 +207,8 @@ const PlanWizard: React.FunctionComponent = () => {
           steps={steps}
           onNext={onMove}
           onBack={onMove}
-          onSubmit={(event) => {
-            event.preventDefault();
-            alert('TODO: create plan CR');
-          }}
+          onSubmit={(event) => event.preventDefault()}
+          onSave={() => alert('TODO: create plan CR')}
           onClose={() => history.push('/plans')}
         />
       </PageSection>
