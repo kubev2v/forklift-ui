@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import { Level, LevelItem, Button, Pagination, Form } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -82,11 +82,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         cells: [
           {
             title: (
-              <MappingDetailView
-                mappingType={mappingType}
-                mapping={mapping}
-                className={spacing.mLg}
-              />
+              <Form>
+                <MappingDetailView
+                  mappingType={mappingType}
+                  mapping={mapping}
+                  className={spacing.mLg}
+                />
+              </Form>
             ),
             props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
