@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination } from '@patternfly/react-core';
+import { Pagination, TextContent, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -132,11 +132,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   return (
     <>
-      <div>
-        Select VMs for migration. The Migration analysis column shows the risk associated with
-        migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
-        indicate the reason for that risk assement.
-      </div>
+      <TextContent>
+        <Text component="p">
+          Select VMs for migration. The Migration analysis column shows the risk associated with
+          migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
+          indicate the reason for that risk assement.
+        </Text>
+      </TextContent>
       <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
       <Table
         aria-label="VMware VMs table"

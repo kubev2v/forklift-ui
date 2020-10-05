@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/react-core';
+import {
+  TreeView,
+  Alert,
+  Tabs,
+  Tab,
+  TabTitleText,
+  TextContent,
+  Text,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useVMwareTreeQuery } from '@app/queries';
@@ -38,9 +46,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
 
   return (
     <div className="plan-wizard-filter-vms-form">
-      <Title headingLevel="h2" size="md">
-        Select datacenters, clusters and folders that contain the VMs to be included in the plan.
-      </Title>
+      <TextContent>
+        <Text component="p">
+          Select datacenters, clusters and folders that contain the VMs to be included in the plan.
+        </Text>
+      </TextContent>
       <Tabs
         activeKey={treeType}
         onSelect={(_event, tabKey) => setTreeType(tabKey as VMwareTreeType)}

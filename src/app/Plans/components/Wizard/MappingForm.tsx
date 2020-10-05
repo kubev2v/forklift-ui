@@ -4,7 +4,8 @@ import {
   Grid,
   GridItem,
   Radio,
-  Title,
+  TextContent,
+  Text,
   Form,
   FormGroup,
   Flex,
@@ -59,10 +60,12 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   return (
     <Form>
-      <Title headingLevel="h3" size="md">
-        Select an existing {mappingType.toLowerCase()} mapping between your source and target
-        providers, or create a new one.
-      </Title>
+      <TextContent>
+        <Text component="p">
+          Select an existing {mappingType.toLowerCase()} mapping between your source and target
+          providers, or create a new one.
+        </Text>
+      </TextContent>
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
         <Radio
           id="existing-mapping"
