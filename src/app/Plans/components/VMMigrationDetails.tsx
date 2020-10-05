@@ -8,6 +8,7 @@ import {
   CardBody,
   Pagination,
   PageSection,
+  Text,
   Title,
 } from '@patternfly/react-core';
 import {

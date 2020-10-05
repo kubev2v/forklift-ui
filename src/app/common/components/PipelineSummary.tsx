@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex } from '@patternfly/react-core';
+import { Flex, FlexItem, Text } from '@patternfly/react-core';
 import {
   MinusIcon,
   ResourcesAlmostEmptyIcon,
@@ -43,13 +43,20 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   }
 
   return (
-    <Flex>
-      {full}
-      {half ? <Dash /> : null}
-      {half}
-      {half ? <Dash /> : null}
-      {empty}
-    </Flex>
+    <>
+      <Text>
+        Step {status.step} of {status.pipeline.length}
+      </Text>
+      <Flex>
+        <FlexItem>
+          {full}
+          {half ? <Dash /> : null}
+          {half}
+          {half ? <Dash /> : null}
+          {empty}
+        </FlexItem>
+      </Flex>
+    </>
   );
 };
 
