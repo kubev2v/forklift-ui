@@ -23,6 +23,7 @@ import {
   IOpenShiftProvider,
   IVM,
   IVMwareProvider,
+  Mapping,
   MappingType,
   VMwareTree,
 } from '@app/queries/types';
@@ -48,6 +49,16 @@ const usePlanWizardFormState = () => ({
   }),
   selectVMs: useFormState({
     selectedVMs: useFormField<IVM[]>([], yup.array<IVM>().required()),
+  }),
+  storageMapping: useFormState({
+    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
+    isSaveNewMapping: useFormField(false, yup.boolean().required()),
+    newMappingName: useFormField('', yup.string()),
+  }),
+  networkMapping: useFormState({
+    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
+    isSaveNewMapping: useFormField(false, yup.boolean().required()),
+    newMappingName: useFormField('', yup.string()),
   }),
 });
 
@@ -95,7 +106,7 @@ const PlanWizard: React.FunctionComponent = () => {
             <WizardStepContainer title="Filter VMs">
               <FilterVMsForm
                 form={forms.filterVMs}
-                sourceProvider={forms.general.fields.sourceProvider.value}
+                sourceProvider={forms.general.values.sourceProvider}
               />
             </WizardStepContainer>
           ),
@@ -122,12 +133,15 @@ const PlanWizard: React.FunctionComponent = () => {
         <WizardStepContainer title="Map Storage">
           <MappingForm
             key="mapping-form-storage"
+            form={forms.storageMapping}
+            sourceProvider={forms.general.values.sourceProvider}
+            targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
             mappingList={MOCK_STORAGE_MAPPINGS}
           />
         </WizardStepContainer>
       ),
-      enableNext: true,
+      enableNext: forms.storageMapping.isValid,
       canJumpTo: stepIdReached >= StepId.StorageMapping,
     },
     {
@@ -137,12 +151,15 @@ const PlanWizard: React.FunctionComponent = () => {
         <WizardStepContainer title="Network Mapping">
           <MappingForm
             key="mapping-form-network"
+            form={forms.networkMapping}
+            sourceProvider={forms.general.values.sourceProvider}
+            targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
             mappingList={MOCK_NETWORK_MAPPINGS}
           />
         </WizardStepContainer>
       ),
-      enableNext: true,
+      enableNext: forms.networkMapping.isValid,
       canJumpTo: stepIdReached >= StepId.NetworkMapping,
     },
     {
