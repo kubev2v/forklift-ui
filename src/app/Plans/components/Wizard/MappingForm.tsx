@@ -60,7 +60,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   return (
     <Form>
       <Title headingLevel="h3" size="md">
-        Select an existing {mappingType.toLowerCase} mapping between your source and target
+        Select an existing {mappingType.toLowerCase()} mapping between your source and target
         providers, or create a new one.
       </Title>
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
