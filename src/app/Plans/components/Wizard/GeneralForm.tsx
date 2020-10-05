@@ -35,7 +35,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
 
   return (
     <Form>
-      <Title headingLevel="h1" size="md">
+      <Title headingLevel="h2" size="md">
         Give your plan a name and a description
       </Title>
 
