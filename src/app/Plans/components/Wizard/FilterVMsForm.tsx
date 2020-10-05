@@ -10,16 +10,15 @@ import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface IFilterVMsProps {
+interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
   sourceProvider: IVMwareProvider | null;
 }
 
-const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
+const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
-}: IFilterVMsProps) => {
+}: IFilterVMsFormProps) => {
   const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
   const [searchText, setSearchText] = React.useState('');
 
@@ -32,6 +31,7 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
   });
 
   React.useEffect(() => {
+    // Clear selection when the tree type tab changes
     treeSelection.selectAll(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeType]);
@@ -105,4 +105,4 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = ({
   );
 };
 
-export default FilterVMs;
+export default FilterVMsForm;

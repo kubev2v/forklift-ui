@@ -15,11 +15,17 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
-import FilterVMs from './FilterVMsForm';
-import SelectVMs from './SelectVMsForm';
+import FilterVMsForm from './FilterVMsForm';
+import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
-import { IOpenShiftProvider, IVMwareProvider, MappingType, VMwareTree } from '@app/queries/types';
+import {
+  IOpenShiftProvider,
+  IVM,
+  IVMwareProvider,
+  MappingType,
+  VMwareTree,
+} from '@app/queries/types';
 import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { useFormField, useFormState } from '@app/common/hooks/useFormState';
@@ -39,6 +45,9 @@ const usePlanWizardFormState = () => ({
   }),
   filterVMs: useFormState({
     selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
+  }),
+  selectVMs: useFormState({
+    selectedVMs: useFormField<IVM[]>([], yup.array<IVM>().required()),
   }),
 });
 
@@ -84,7 +93,7 @@ const PlanWizard: React.FunctionComponent = () => {
           name: 'Filter VMs',
           component: (
             <WizardStepContainer title="Filter VMs">
-              <FilterVMs
+              <FilterVMsForm
                 form={forms.filterVMs}
                 sourceProvider={forms.general.fields.sourceProvider.value}
               />
@@ -98,10 +107,10 @@ const PlanWizard: React.FunctionComponent = () => {
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
-              <SelectVMs vms={MOCK_VMS} />
+              <SelectVMsForm form={forms.selectVMs} vms={MOCK_VMS} />
             </WizardStepContainer>
           ),
-          enableNext: true,
+          enableNext: forms.selectVMs.isValid,
           canJumpTo: stepIdReached >= StepId.SelectVMs,
         },
       ],
