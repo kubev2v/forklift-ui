@@ -9,7 +9,6 @@ interface IMappingSourceSelectProps {
   itemIndex: number;
   setBuilderItems: (items: IMappingBuilderItem[]) => void;
   availableSources: MappingSource[];
-  placeholderText: string;
 }
 
 const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
@@ -18,7 +17,6 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   itemIndex,
   setBuilderItems,
   availableSources,
-  placeholderText,
 }: IMappingSourceSelectProps) => {
   const setSource = (source: MappingSource) => {
     const newItems = [...builderItems];
@@ -50,8 +48,8 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
       onChange={(selection) => {
         setSource((selection as OptionWithValue<MappingSource>).value);
       }}
-      typeAheadAriaLabel={placeholderText}
-      placeholderText={placeholderText}
+      typeAheadAriaLabel="Select source..."
+      placeholderText="Select source..."
     />
   );
 };
