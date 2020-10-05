@@ -176,7 +176,11 @@ const PlanWizard: React.FunctionComponent = () => {
     {
       id: StepId.Review,
       name: 'Review',
-      component: <Review />,
+      component: (
+        <WizardStepContainer title="Review the migration plan">
+          <Review forms={forms} />
+        </WizardStepContainer>
+      ),
       nextButtonText: 'Finish',
       canJumpTo: stepIdReached >= StepId.Review,
     },
@@ -203,7 +207,10 @@ const PlanWizard: React.FunctionComponent = () => {
           steps={steps}
           onNext={onMove}
           onBack={onMove}
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={(event) => {
+            event.preventDefault();
+            alert('TODO: create plan CR');
+          }}
           onClose={() => history.push('/plans')}
         />
       </PageSection>

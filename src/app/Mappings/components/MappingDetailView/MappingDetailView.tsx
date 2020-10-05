@@ -12,18 +12,18 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
-  mapping: Mapping;
-  className: string;
+  mapping: Mapping | null;
+  className?: string;
 }
 
 const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mappingType,
   mapping,
-  className,
+  className = '',
 }: IMappingDetailViewProps) => {
   const mappingResourceQueries = useMappingResourceQueries(
-    mapping.provider.source,
-    mapping.provider.target,
+    mapping?.provider.source || null,
+    mapping?.provider.target || null,
     mappingType
   );
 
@@ -34,7 +34,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     return <Alert className={className} variant="danger" title="Error loading mapping resources" />;
   }
 
-  const mappingItemGroups = groupMappingItemsByTarget(mapping.items);
+  const mappingItemGroups = groupMappingItemsByTarget(mapping?.items || []);
   return (
     <div className={className}>
       <Grid>
