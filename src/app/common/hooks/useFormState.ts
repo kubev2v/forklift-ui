@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as yup from 'yup';
 import equal from 'fast-deep-equal';
 
-type MaybeArraySchema<T> = T extends Array<infer E> ? yup.ArraySchema<E> : yup.Schema<T>;
+type MaybeArraySchema<T> = [T] extends [Array<infer E>] ? yup.ArraySchema<E> : yup.Schema<T>;
 
 export interface IFormField<T> {
   value: T;
