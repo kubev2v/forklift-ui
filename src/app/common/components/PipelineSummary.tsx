@@ -44,7 +44,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
 
   return (
     <>
-      <Text>
+      <Text component="small">
         Step {status.step} of {status.pipeline.length}
       </Text>
       <Flex>
