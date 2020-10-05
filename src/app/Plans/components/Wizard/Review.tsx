@@ -28,18 +28,18 @@ const Review: React.FunctionComponent<IReviewProps> = ({ forms }: IReviewProps) 
             <GridItem md={9}>{forms.general.values.planDescription}</GridItem>
           </>
         ) : null}
-        <GridItem md={3}>Storage mapping</GridItem>
-        <GridItem md={9}>
-          <MappingDetailView
-            mappingType={MappingType.Storage}
-            mapping={forms.storageMapping.values.mapping}
-          />
-        </GridItem>
         <GridItem md={3}>Network mapping</GridItem>
         <GridItem md={9}>
           <MappingDetailView
             mappingType={MappingType.Network}
             mapping={forms.networkMapping.values.mapping}
+          />
+        </GridItem>
+        <GridItem md={3}>Storage mapping</GridItem>
+        <GridItem md={9}>
+          <MappingDetailView
+            mappingType={MappingType.Storage}
+            mapping={forms.storageMapping.values.mapping}
           />
         </GridItem>
         <GridItem md={3}>Selected VMs</GridItem>

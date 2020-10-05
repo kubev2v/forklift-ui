@@ -50,12 +50,12 @@ const usePlanWizardFormState = () => ({
   selectVMs: useFormState({
     selectedVMs: useFormField<IVM[]>([], yup.array<IVM>().required()),
   }),
-  storageMapping: useFormState({
+  networkMapping: useFormState({
     mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
     isSaveNewMapping: useFormField(false, yup.boolean().required()),
     newMappingName: useFormField('', yup.string()),
   }),
-  networkMapping: useFormState({
+  storageMapping: useFormState({
     mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
     isSaveNewMapping: useFormField(false, yup.boolean().required()),
     newMappingName: useFormField('', yup.string()),
@@ -72,8 +72,8 @@ const PlanWizard: React.FunctionComponent = () => {
     General = 1,
     FilterVMs,
     SelectVMs,
-    StorageMapping,
     NetworkMapping,
+    StorageMapping,
     Hooks,
     Review,
   }
@@ -127,24 +127,6 @@ const PlanWizard: React.FunctionComponent = () => {
       ],
     },
     {
-      id: StepId.StorageMapping,
-      name: 'Storage Mapping',
-      component: (
-        <WizardStepContainer title="Map Storage">
-          <MappingForm
-            key="mapping-form-storage"
-            form={forms.storageMapping}
-            sourceProvider={forms.general.values.sourceProvider}
-            targetProvider={forms.general.values.targetProvider}
-            mappingType={MappingType.Storage}
-            mappingList={MOCK_STORAGE_MAPPINGS}
-          />
-        </WizardStepContainer>
-      ),
-      enableNext: forms.storageMapping.isValid,
-      canJumpTo: stepIdReached >= StepId.StorageMapping,
-    },
-    {
       id: StepId.NetworkMapping,
       name: 'Network Mapping',
       component: (
@@ -161,6 +143,24 @@ const PlanWizard: React.FunctionComponent = () => {
       ),
       enableNext: forms.networkMapping.isValid,
       canJumpTo: stepIdReached >= StepId.NetworkMapping,
+    },
+    {
+      id: StepId.StorageMapping,
+      name: 'Storage Mapping',
+      component: (
+        <WizardStepContainer title="Map Storage">
+          <MappingForm
+            key="mapping-form-storage"
+            form={forms.storageMapping}
+            sourceProvider={forms.general.values.sourceProvider}
+            targetProvider={forms.general.values.targetProvider}
+            mappingType={MappingType.Storage}
+            mappingList={MOCK_STORAGE_MAPPINGS}
+          />
+        </WizardStepContainer>
+      ),
+      enableNext: forms.storageMapping.isValid,
+      canJumpTo: stepIdReached >= StepId.StorageMapping,
     },
     {
       id: StepId.Hooks,
