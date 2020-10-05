@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IHost, IHostNetwork } from '@app/queries/types';
+import { IHost } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
 import './SelectNetworkModal.css';
 
@@ -11,21 +11,13 @@ interface ISelectNetworkModalProps {
   onClose: () => void;
 }
 
-// TODO replace the mock data with real data
-const MOCK_NETWORKS: IHostNetwork[] = [
-  { name: 'storage_network', address: '192.168.0.1/24' },
-  { name: 'compute_network', address: '192.168.0.2/24' },
-  { name: 'other_network', address: '192.168.0.3/24' },
-];
-
 const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   onClose,
 }: ISelectNetworkModalProps) => {
-  console.log('TODO: generate options for selected hosts: ', selectedHosts);
-  const networkOptions = MOCK_NETWORKS.map((network) => ({
-    toString: () => formatHostNetwork(network),
-    value: network.name,
+  const networkOptions = selectedHosts.map((host) => ({
+    toString: () => `${formatHostNetwork(host.network)} - ${host.bandwidth} - ${host.mtu}`,
+    value: host.network.name,
   }));
 
   // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
