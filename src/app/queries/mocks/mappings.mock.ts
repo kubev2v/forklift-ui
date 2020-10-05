@@ -1,7 +1,8 @@
 import { IStorageMapping, INetworkMapping, MappingType } from '../types/mappings.types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
 import { MOCK_PROVIDERS } from './providers.mock';
-import { MOCK_OPENSHIFT_NETWORKS } from './networks.mock';
+import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './networks.mock';
+import { MOCK_VMWARE_DATASTORES } from './datastores.mock';
 
 export let MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [];
 
@@ -17,7 +18,7 @@ const storageMapping1: IStorageMapping = {
   items: [
     {
       source: {
-        id: 'id1',
+        id: MOCK_VMWARE_DATASTORES[0].id,
       },
       target: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[0],
     },
@@ -34,7 +35,7 @@ const storageMapping2: IStorageMapping = {
   items: [
     {
       source: {
-        id: 'id2',
+        id: MOCK_VMWARE_DATASTORES[1].id,
       },
       target: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[1],
     },
@@ -53,7 +54,7 @@ const networkMapping1: INetworkMapping = {
   items: [
     {
       source: {
-        id: 'id1',
+        id: MOCK_VMWARE_NETWORKS[0].id,
       },
       target: MOCK_OPENSHIFT_NETWORKS[0],
     },
@@ -70,7 +71,7 @@ const networkMapping2: INetworkMapping = {
   items: [
     {
       source: {
-        id: 'id2',
+        id: MOCK_VMWARE_NETWORKS[1].id,
       },
       target: MOCK_OPENSHIFT_NETWORKS[1],
     },
