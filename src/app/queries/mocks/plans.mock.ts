@@ -269,14 +269,6 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 4',
-      progress: {
-        total: 2,
-        completed: 2,
-      },
-      phase: '',
-    },
-    {
       name: 'Copying data',
       progress: {
         total: 2,
@@ -329,32 +321,8 @@ export const vmStatus2: IVMStatus = {
       },
       phase: '',
     },
-    {
-      name: 'Step 5',
-      progress: {
-        total: 1,
-        completed: 0,
-      },
-      phase: '',
-    },
-    {
-      name: 'Step 6',
-      progress: {
-        total: 1,
-        completed: 0,
-      },
-      phase: '',
-    },
-    {
-      name: 'Step 7',
-      progress: {
-        total: 1,
-        completed: 0,
-      },
-      phase: '',
-    },
   ],
-  step: 7,
+  step: 4,
   started: '2020-10-10T16:04:10Z',
   completed: '2020-10-10T16:04:10Z',
   error: {
@@ -396,6 +364,43 @@ export const vmStatus3: IVMStatus = {
   completed: '',
   error: {
     phase: '',
+    reasons: [''],
+  },
+};
+
+export const vmStatus4: IVMStatus = {
+  id: 'vm4-id',
+  pipeline: [
+    {
+      name: 'Step 1',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: 'Latest message from controller',
+    },
+    {
+      name: 'Step 2',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Step 3',
+      progress: {
+        total: 3,
+        completed: 3,
+      },
+      phase: '',
+    },
+  ],
+  step: 2,
+  started: '2020-10-10T16:04:10Z',
+  completed: '',
+  error: {
+    phase: 'Error',
     reasons: [''],
   },
 };
@@ -458,7 +463,7 @@ export const migration4: IMigration = {
     end: '10 Aug 2019, 11:34:56',
   },
   status: { ready: false, storageReady: false, nbVMsDone: 2 },
-  status2: vmStatus2,
+  status2: vmStatus4,
   other: {
     copied: 87952,
     total: 87952,

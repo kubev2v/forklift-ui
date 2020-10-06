@@ -629,10 +629,10 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.9.11.tgz#771ba9d7c10af146a7337170ad34177b21a5f4d3"
   integrity sha512-0qEPj3G+hQ+uVa2IDuGRUqP5eXaKoEFdjqowqzN8uWJ10P/h1F4FV+61qfmWuZATJlFh0Q3S4BonnGmb9nr5nQ==
 
-"@patternfly/react-tokens@^4.9.6":
-  version "4.9.6"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.9.6.tgz#4df2c49173184a0c16c754329311d87c8c2a6778"
-  integrity sha512-HxJ49yDar5+PEVQGvXd3WKuDTXhm5opYg7wU9lNlh72+8TPXw1gIxTO8WIfPhjWxwEwwukVb2Cd/yTSYK81rdg==
+"@patternfly/react-tokens@^4.9.8":
+  version "4.9.8"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.9.8.tgz#260079b01359bcaf23875890e412f3c6e87e0202"
+  integrity sha512-HBbtQHlWl3/B9KrS1fI3/k6sXDowfTsmw0zKuHXWjG552l0ApOrDmzh120Q7m6cvvkFv/Cw6XRwtJIDZBCEiyg==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
