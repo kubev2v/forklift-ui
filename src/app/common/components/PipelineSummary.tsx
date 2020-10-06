@@ -14,10 +14,13 @@ import {
 } from '@patternfly/react-tokens';
 
 import { IVMStatus } from '@app/queries/types';
+import './PipelineSummary.css';
 
 interface IPipelineSummaryProps {
   status: IVMStatus;
 }
+
+const Dash = <span className="pipelineSummary">&nbsp;&nbsp;</span>;
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
@@ -28,7 +31,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     return times < 1 ? null : (
       <>
         <Face color={color.value} />
-        {times > 1 ? `-` : null}
+        {times > 1 ? Dash : null}
         {chain(Face, times - 1, color)}
       </>
     );
@@ -46,9 +49,9 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     sum = (
       <>
         {full}
-        {full ? '-' : null}
+        {full ? Dash : null}
         <ResourcesAlmostFullIcon color={status.error.phase ? dangerColor.value : infoColor.value} />
-        {empty ? '-' : null}
+        {empty ? Dash : null}
         {empty}
       </>
     );
