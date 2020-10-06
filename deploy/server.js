@@ -3,10 +3,9 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
-const execSync = require('child_process').execSync;
 
 const helpers = require('../config/helpers');
-const { sanitizeVirtMeta, getClusterAuth } = require('./oAuthHelpers');
+const { getClusterAuth } = require('./oAuthHelpers');
 
 let virtMetaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
@@ -17,17 +16,11 @@ if (process.env['DATA_SOURCE'] === 'mock') {
   virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
 }
 
-// const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
 const virtMeta = JSON.parse(virtMetaStr);
-const sanitizedVirtMeta = sanitizeVirtMeta(virtMeta);
-const encodedVirtMeta = Buffer.from(JSON.stringify(sanitizedVirtMeta)).toString('base64');
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
 
-require('dotenv').config();
-
 app.engine('ejs', require('ejs').renderFile);
-app.set('views', path.join(__dirname, '/dist'));
 app.use(express.static(path.join(__dirname, '/dist')));
 
 app.get('/login', async (req, res, next) => {

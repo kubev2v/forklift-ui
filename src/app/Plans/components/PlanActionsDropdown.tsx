@@ -17,7 +17,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
     return !!conditions.find((condition) => condition.type === type);
   };
 
-  console.log(conditions);
   return (
     <Dropdown
       aria-label="Actions"

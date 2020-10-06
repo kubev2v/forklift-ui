@@ -29,7 +29,6 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
 
   const saveLoginToken = (user, history) => {
     setCurrentUser(user);
-    console.log('history', history);
     history.push('/');
   };
 
