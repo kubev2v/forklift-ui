@@ -9,14 +9,14 @@ const { getClusterAuth } = require('./oAuthHelpers');
 
 let virtMetaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
-  helpers.generateVirtMeta();
-  virtMetaStr = fs.readFileSync(path.join(__dirname, '../tmp/virtmeta.json'));
+  virtMetaStr = { oauth: {} };
 } else {
   const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtmeta.json';
   virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
 }
 
 const virtMeta = JSON.parse(virtMetaStr);
+
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
 
@@ -41,7 +41,7 @@ app.get('/login', async (req, res, next) => {
   }
 });
 
-app.get('/login/callback', async (req, res, next) => {
+app.get('/login/callback', async (req, res) => {
   const { code } = req.query;
   const options = {
     code,
@@ -66,11 +66,12 @@ app.get('/login/callback', async (req, res, next) => {
 });
 
 app.get('*', (req, res) => {
-  if (process.env['DATA_SOURCE'] === 'mock') {
+  if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
+    // In dev and mock-prod modes, window._virt_meta was populated at build time
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   } else {
     res.render('index.html.ejs', {
-      _virt_meta: helpers.getEncodedLocalConfig(),
+      _virt_meta: helpers.sanitizeAndEncodeVirtMeta(virtMeta),
     });
   }
 });

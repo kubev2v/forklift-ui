@@ -139,7 +139,7 @@ module.exports = (env) => {
               filename: 'index.html',
               template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
-                _virt_meta: helpers.getEncodedLocalConfig(),
+                _virt_meta: helpers.sanitizeAndEncodeVirtMeta(helpers.getDevVirtMeta()),
               },
             }
           : {
