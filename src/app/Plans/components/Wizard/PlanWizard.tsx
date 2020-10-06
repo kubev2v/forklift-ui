@@ -193,7 +193,7 @@ const PlanWizard: React.FunctionComponent = () => {
   return (
     <>
       <Prompt
-        when={isSomeFormDirty}
+        when={isSomeFormDirty} // TODO onSave will have to set something to unblock this when the wizard closes after saving
         message="You have unsaved changes, are you sure you want to leave this page?"
       />
       <PageSection title="Create a Migration Plan" variant="light">
