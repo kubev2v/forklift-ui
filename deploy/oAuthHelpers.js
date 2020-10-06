@@ -4,12 +4,6 @@ const fetch = require('node-fetch');
 
 let cachedOAuthMeta = null;
 
-const sanitizeVirtMeta = (virtMeta) => {
-  const oauthCopy = { ...virtMeta.oauth };
-  delete oauthCopy.clientSecret;
-  return { ...virtMeta, oauth: oauthCopy };
-};
-
 const getOAuthMeta = async (virtMeta) => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
@@ -35,6 +29,5 @@ const getClusterAuth = async (virtMeta) => {
 };
 
 module.exports = {
-  sanitizeVirtMeta,
   getClusterAuth,
 };

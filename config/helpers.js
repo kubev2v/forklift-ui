@@ -2,6 +2,11 @@
 const path = require('path');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
+const sanitizeVirtMeta = (virtMeta) => {
+  const oauthCopy = { ...virtMeta.oauth };
+  delete oauthCopy.clientSecret;
+  return { ...virtMeta, oauth: oauthCopy };
+};
 
 const localConfigFileName = 'virtMeta.dev.json';
 
@@ -17,10 +22,11 @@ const getLocalConfig = () => {
     process.exit(1);
   }
   const localConfig = require(configPath);
+  sanitizeVirtMeta(localConfig);
   return localConfig;
 };
 
-const getEncodedLocalConfig = (localConfig) =>
+const getEncodedLocalConfig = () =>
   Buffer.from(JSON.stringify(getLocalConfig())).toString('base64');
 
 const generateVirtMeta = () => {
