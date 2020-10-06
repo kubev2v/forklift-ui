@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 
-interface INetworkContext {
+export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
   selfSignedCertUrl: string;
   saveLoginToken: (user: string, history: any) => void;

@@ -4,12 +4,14 @@ import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingType } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
+import { authorizedFetch, useFetchContext } from './fetchHelpers';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
   providers: IOpenShiftProvider[] | null,
   mappingType: MappingType
 ): QueryResult<IStorageClassesByProvider> => {
+  const fetchContext = useFetchContext();
   const result = useMockableQuery<IStorageClassesByProvider>(
     {
       // Key by the provider names combined, so it refetches if the list of providers changes
@@ -18,7 +20,10 @@ export const useStorageClassesQuery = (
       queryFn: async () => {
         const storageClassLists: IStorageClass[][] = await Promise.all(
           (providers || []).map((provider) =>
-            fetch(getApiUrl(`${provider?.selfLink || ''}/storageclasses`)).then((res) => res.json())
+            authorizedFetch<IStorageClass[]>(
+              getApiUrl(`${provider?.selfLink || ''}/storageclasses`),
+              fetchContext
+            )
           )
         );
         return (providers || []).reduce(

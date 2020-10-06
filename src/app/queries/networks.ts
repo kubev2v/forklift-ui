@@ -12,7 +12,7 @@ import {
   MappingType,
   Provider,
 } from './types';
-import { useFetch } from './useFetch';
+import { useAuthorizedFetch } from './fetchHelpers';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
@@ -26,7 +26,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   const result = useMockableQuery<T[]>(
     {
       queryKey: `networks:${providerType}/${provider?.name}`,
-      queryFn: useFetch(getApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
+      queryFn: useAuthorizedFetch(getApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
         enabled: !!provider && mappingType === MappingType.Network,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
