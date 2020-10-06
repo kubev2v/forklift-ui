@@ -10,7 +10,7 @@ import {
   Wizard,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, Prompt, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import WizardStepContainer from './WizardStepContainer';
@@ -186,8 +186,16 @@ const PlanWizard: React.FunctionComponent = () => {
     },
   ];
 
+  const isSomeFormDirty = (Object.keys(forms) as (keyof PlanWizardFormState)[]).some(
+    (key) => forms[key].isDirty
+  );
+
   return (
     <>
+      <Prompt
+        when={isSomeFormDirty}
+        message="You have unsaved changes, are you sure you want to leave this page?"
+      />
       <PageSection title="Create a Migration Plan" variant="light">
         <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
           <BreadcrumbItem>

@@ -8,6 +8,7 @@ type MaybeArraySchema<T> = [T] extends [Array<infer E>] ? yup.ArraySchema<E> : y
 export interface IFormField<T> {
   value: T;
   setValue: React.Dispatch<React.SetStateAction<T>>;
+  isDirty: boolean;
   isTouched: boolean;
   setIsTouched: (isTouched: boolean) => void;
   reset: () => void;
@@ -33,6 +34,7 @@ type ValidatedFormFields<FV> = {
 export interface IFormState<FV> {
   fields: ValidatedFormFields<FV>;
   values: FV; // For convenience in submitting forms (values are also included in fields property)
+  isDirty: boolean;
   isValid: boolean;
   reset: () => void;
   schema: yup.ObjectSchema | null; // In case you want to do anything fancy outside the hook
@@ -58,6 +60,7 @@ export const useFormField = <T>(
   return {
     value,
     setValue,
+    isDirty: !equal(value, initialValue),
     isTouched,
     setIsTouched,
     reset: () => {
@@ -89,6 +92,7 @@ export const useFormState = <FV>(
     (newObj, key) => ({ ...newObj, [key]: fields[key].value }),
     {} as FV
   );
+  const isDirty = fieldKeys.some((key) => fields[key].isDirty);
 
   // Memoize the schema, only recompute if the field keys changed
   const [formSchema, setFormSchema] = React.useState<yup.ObjectSchema | null>(null);
@@ -140,6 +144,7 @@ export const useFormState = <FV>(
   return {
     fields: validatedFields,
     values,
+    isDirty,
     isValid: hasRunInitialValidation && !validationError,
     reset: () => fieldKeys.forEach((key) => fields[key].reset()),
     schema: formSchema,
