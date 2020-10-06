@@ -188,7 +188,7 @@ export const AppRoutes = (): React.ReactElement => {
         {flattenedRoutes.map(({ path, exact, component, title, isAsync, isProtected }, idx) => (
           <RouteWithTitleUpdates
             isProtected={isProtected}
-            isLoggedIn={!!currentUser}
+            isLoggedIn={!!currentUser || process.env['DATA_SOURCE'] === 'mock'}
             path={path}
             exact={exact}
             component={component}
