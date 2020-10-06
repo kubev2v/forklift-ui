@@ -7,7 +7,6 @@ import {
   CardBody,
   EmptyStateIcon,
   EmptyStateBody,
-  Button,
   Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -18,7 +17,7 @@ import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { useHasSufficientProvidersQuery } from '@app/queries';
-import AddTooltip from '@app/common/components/AddTooltip';
+import CreateMappingButton from '../components/CreateMappingButton';
 
 // TODO we should probably combine this and NetworkMappingsPage, they're nearly identical
 
@@ -38,7 +37,6 @@ const StorageMappingsPage: React.FunctionComponent = () => {
   }, [mockMapObj]);
 
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const { hasSufficientProviders } = sufficientProvidersQuery;
 
   return (
     <>
@@ -64,20 +62,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Map source provider datastores to target provider storage classes.
                   </EmptyStateBody>
-                  <AddTooltip
-                    isTooltipEnabled={!hasSufficientProviders}
-                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a storage mapping."
-                  >
-                    <div className={`${spacing.mtMd}`}>
-                      <Button
-                        onClick={toggleAddEditModal}
-                        isDisabled={!hasSufficientProviders}
-                        variant="primary"
-                      >
-                        Create mapping
-                      </Button>
-                    </div>
-                  </AddTooltip>
+                  <CreateMappingButton onClick={toggleAddEditModal} />
                 </EmptyState>
               ) : (
                 <MappingsTable

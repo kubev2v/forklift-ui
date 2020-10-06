@@ -5,7 +5,6 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  Button,
   Card,
   CardBody,
   Alert,
@@ -17,8 +16,8 @@ import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import AddTooltip from '@app/common/components/AddTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
+import CreateMappingButton from '../components/CreateMappingButton';
 
 // TODO we should probably combine this and StorageMappingsPage, they're nearly identical
 
@@ -39,7 +38,6 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const { hasSufficientProviders } = sufficientProvidersQuery;
 
   return (
     <>
@@ -65,20 +63,7 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Map source provider networks to target provider networks.
                   </EmptyStateBody>
-                  <AddTooltip
-                    isTooltipEnabled={!hasSufficientProviders}
-                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a network mapping."
-                  >
-                    <div className={`${spacing.mtMd}`}>
-                      <Button
-                        onClick={toggleAddEditModal}
-                        isDisabled={!hasSufficientProviders}
-                        variant="primary"
-                      >
-                        Create mapping
-                      </Button>
-                    </div>
-                  </AddTooltip>
+                  <CreateMappingButton onClick={toggleAddEditModal} />
                 </EmptyState>
               ) : (
                 <MappingsTable
