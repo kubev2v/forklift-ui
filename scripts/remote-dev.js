@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
 const execSync = require('child_process').execSync;
 const helpers = require('../config/helpers');
-
-// Init some consts
-const configDir = path.join(__dirname, '..', 'config');
-const oauthclientFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
-const oauthClientTemplateFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
 
 try {
   execSync('hash oc');
