@@ -6,5 +6,5 @@ coverage
 .DS_Store
 .idea
 .env
-virtMeta.dev.json
+config/virtMeta.dev.json
 tmp/virtmeta.json
