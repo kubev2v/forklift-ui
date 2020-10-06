@@ -20,7 +20,7 @@ interface IPipelineSummaryProps {
   status: IVMStatus;
 }
 
-const Dash = <span className="pipelineSummary">&nbsp;&nbsp;</span>;
+const Dash = <span className="pipelineDash">&nbsp;&nbsp;</span>;
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
