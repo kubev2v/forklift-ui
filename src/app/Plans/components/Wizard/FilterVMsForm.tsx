@@ -1,42 +1,56 @@
 import * as React from 'react';
-import { TreeView, Title, Alert, Tabs, Tab, TabTitleText } from '@patternfly/react-core';
+import {
+  TreeView,
+  Alert,
+  Tabs,
+  Tab,
+  TabTitleText,
+  TextContent,
+  Text,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useProvidersQuery, useVMwareTreeQuery } from '@app/queries';
-import { VMwareTreeType } from '@app/queries/types';
-import { filterAndConvertVMwareTree } from './helpers';
+import { useSelectionState } from '@konveyor/lib-ui';
+import { useVMwareTreeQuery } from '@app/queries';
+import { IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
+import { filterAndConvertVMwareTree, findMatchingNode, flattenVMwareTreeNodes } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface IFilterVMsProps {
-  // sourceProvider: IVMwareProvider;
+interface IFilterVMsFormProps {
+  form: PlanWizardFormState['filterVMs'];
+  sourceProvider: IVMwareProvider | null;
 }
 
-const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
-  ////// TODO remove this and instead use sourceProvider from GeneralForm when we lift that state
-  const providersQuery = useProvidersQuery();
-  const sourceProvider = providersQuery.data?.vsphere[0] || null;
-  /////////////// ^
-
+const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
+  form,
+  sourceProvider,
+}: IFilterVMsFormProps) => {
   const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
   const [searchText, setSearchText] = React.useState('');
 
   const treeQuery = useVMwareTreeQuery(sourceProvider, treeType);
 
-  const onSelect = (event, treeViewItem, parentItem) => {
-    return;
-  };
+  const treeSelection = useSelectionState({
+    items: flattenVMwareTreeNodes(treeQuery.data || null),
+    externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
+    isEqual: (a: VMwareTree, b: VMwareTree) => a.object?.selfLink === b.object?.selfLink,
+  });
 
-  const onCheck = (event, treeViewItem) => {
-    return;
-  };
+  React.useEffect(() => {
+    // Clear selection when the tree type tab changes
+    treeSelection.selectAll(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treeType]);
 
   return (
     <div className="plan-wizard-filter-vms-form">
-      <Title headingLevel="h2" size="md">
-        Select datacenters, clusters and folders that contain the VMs to be included in the plan.
-      </Title>
+      <TextContent>
+        <Text component="p">
+          Select datacenters, clusters and folders that contain the VMs to be included in the plan.
+        </Text>
+      </TextContent>
       <Tabs
         activeKey={treeType}
         onSelect={(_event, tabKey) => setTreeType(tabKey as VMwareTreeType)}
@@ -59,12 +73,37 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
         <Alert variant="danger" title="Error loading VMware tree data" />
       ) : (
         <TreeView
-          data={filterAndConvertVMwareTree(treeQuery.data || null, searchText)}
+          data={filterAndConvertVMwareTree(
+            treeQuery.data || null,
+            searchText,
+            treeSelection.isItemSelected,
+            treeSelection.areAllSelected
+          )}
           defaultAllExpanded
           hasChecks
           onSearch={(event) => setSearchText(event.target.value)}
-          onSelect={onSelect}
-          onCheck={onCheck}
+          onCheck={(_event, treeViewItem) => {
+            if (treeViewItem.id === 'converted-root') {
+              treeSelection.selectAll(!treeSelection.areAllSelected);
+            } else {
+              const matchingNode =
+                treeQuery.data && findMatchingNode(treeQuery.data, treeViewItem.id || '');
+              if (matchingNode) {
+                const nodesToSelect: VMwareTree[] = [];
+                const pushNodeAndDescendants = (n: VMwareTree) => {
+                  nodesToSelect.push(n);
+                  if (n.children) {
+                    n.children.forEach(pushNodeAndDescendants);
+                  }
+                };
+                pushNodeAndDescendants(matchingNode);
+                treeSelection.selectMultiple(
+                  nodesToSelect,
+                  !treeSelection.isItemSelected(matchingNode)
+                );
+              }
+            }
+          }}
           searchProps={{
             id: 'inventory-search',
             name: 'search-inventory',
@@ -76,4 +115,4 @@ const FilterVMs: React.FunctionComponent<IFilterVMsProps> = () => {
   );
 };
 
-export default FilterVMs;
+export default FilterVMsForm;

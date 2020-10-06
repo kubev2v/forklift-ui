@@ -16,6 +16,8 @@ const vmwareProvider1: IVMwareProvider = {
   selfLink: '/foo/bar',
   type: ProviderType.vsphere,
   object: {
+    apiVersion: '12345',
+    kind: 'foo-kind',
     metadata: {
       name: 'VCenter1',
       namespace: 'openshift-migration',

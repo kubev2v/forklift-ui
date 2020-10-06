@@ -9,7 +9,6 @@ interface IMappingTargetSelectProps {
   itemIndex: number;
   setBuilderItems: (items: IMappingBuilderItem[]) => void;
   availableTargets: MappingTarget[];
-  placeholderText: string;
 }
 
 const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
@@ -18,7 +17,6 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   itemIndex,
   setBuilderItems,
   availableTargets,
-  placeholderText,
 }: IMappingTargetSelectProps) => {
   const setTarget = (target: MappingTarget) => {
     const newItems = [...builderItems];
@@ -37,6 +35,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   return (
     <SimpleSelect
       id={id}
+      aria-label="Select target"
       className="mapping-item-select"
       variant="typeahead"
       isPlain
@@ -45,7 +44,8 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
       onChange={(selection) => {
         setTarget((selection as OptionWithValue<MappingTarget>).value);
       }}
-      placeholderText={placeholderText}
+      typeAheadAriaLabel="Select target..."
+      placeholderText="Select target..."
     />
   );
 };

@@ -87,7 +87,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!providersQuery.data || !activeProviderType ? null : areProvidersEmpty ? (
+              {!providersQuery.data || areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -98,7 +98,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                     Add provider
                   </Button>
                 </EmptyState>
-              ) : (
+              ) : !activeProviderType ? null : (
                 <ProvidersTable
                   providersByType={providersQuery.data}
                   activeProviderType={activeProviderType}

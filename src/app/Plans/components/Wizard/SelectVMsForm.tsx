@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination } from '@patternfly/react-core';
+import { Pagination, TextContent, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -19,12 +19,17 @@ import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { PlanWizardFormState } from './PlanWizard';
 
-interface ISelectVMsProps {
+interface ISelectVMsFormProps {
+  form: PlanWizardFormState['selectVMs'];
   vms: IVM[];
 }
 
-const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMsProps) => {
+const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
+  form,
+  vms,
+}: ISelectVMsFormProps) => {
   const getSortValues = (vm: IVM) => {
     return [
       '', // Expand control column
@@ -43,15 +48,15 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { selectedItems, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>({
+  const { isItemSelected, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>({
     items: sortedItems,
+    isEqual: (a, b) => a.name === b.name,
+    externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
-  const {
-    selectedItems: expandedVMs,
-    toggleItemSelected: toggleVMsExpanded,
-    isItemSelected,
-  } = useSelectionState<IVM>({
+  const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
+    IVM
+  >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
   });
@@ -86,8 +91,8 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
   const rows: IRow[] = [];
 
   currentPageItems.forEach((vm: IVM) => {
-    const isSelected = selectedItems.includes(vm);
-    const isExpanded = expandedVMs.includes(vm);
+    const isSelected = isItemSelected(vm);
+    const isExpanded = isVMExpanded(vm);
     rows.push({
       meta: { vm },
       isOpen: isExpanded,
@@ -116,20 +121,24 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
         vm.folderPath,
       ],
     });
-    rows.push({
-      parent: rows.length - 1,
-      fullWidth: true,
-      cells: [vm.analysisDescription],
-    });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
+        fullWidth: true,
+        cells: [vm.analysisDescription],
+      });
+    }
   });
 
   return (
     <>
-      <div>
-        Select VMs for migration. The Migration analysis column shows the risk associated with
-        migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
-        indicate the reason for that risk assement.
-      </div>
+      <TextContent>
+        <Text component="p">
+          Select VMs for migration. The Migration analysis column shows the risk associated with
+          migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
+          indicate the reason for that risk assement.
+        </Text>
+      </TextContent>
       <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
       <Table
         aria-label="VMware VMs table"
@@ -150,4 +159,4 @@ const SelectVMs: React.FunctionComponent<ISelectVMsProps> = ({ vms }: ISelectVMs
   );
 };
 
-export default SelectVMs;
+export default SelectVMsForm;

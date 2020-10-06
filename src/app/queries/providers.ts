@@ -19,3 +19,21 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
 
   return sortIndexedResultsByName<Provider, IProvidersByType>(result);
 };
+
+export const useHasSufficientProvidersQuery = (): {
+  isLoading: boolean;
+  isError: boolean;
+  hasSufficientProviders: boolean | undefined;
+} => {
+  const result = useProvidersQuery();
+  const vmwareProviders = result.data?.vsphere || [];
+  const openshiftProviders = result.data?.openshift || [];
+  const hasSufficientProviders = result.data
+    ? vmwareProviders.length >= 1 && openshiftProviders.length >= 1
+    : undefined;
+  return {
+    isLoading: result.isLoading,
+    isError: result.isError,
+    hasSufficientProviders,
+  };
+};
