@@ -16,8 +16,9 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   onClose,
 }: ISelectNetworkModalProps) => {
   const networkOptions = selectedHosts.map((host) => ({
-    toString: () => `${formatHostNetwork(host.network)} - ${host.bandwidth} - ${host.mtu}`,
+    toString: () => `${formatHostNetwork(host.network)}`,
     value: host.network.name,
+    props: { description: `${host.bandwidth}; MTU:${host.mtu}` },
   }));
 
   // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
@@ -71,6 +72,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               setSelectedNetwork((selection as OptionWithValue<string>).value)
             }
             placeholderText="Select a network..."
+            // description=<{Text>blah</Text>}
           />
         </FormGroup>
         <div>
