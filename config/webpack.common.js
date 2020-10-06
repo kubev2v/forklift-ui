@@ -3,13 +3,13 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-require('dotenv').config(); // For runtime-env-vars.js
 const BG_IMAGES_DIRNAME = 'bgimages';
+const helpers = require('./helpers');
 
 module.exports = (env) => {
   return {
     entry: {
-      app: path.resolve(__dirname, 'src', 'index.tsx'),
+      app: path.resolve(__dirname, '../src/index.tsx'),
     },
     module: {
       rules: [
@@ -30,14 +30,17 @@ module.exports = (env) => {
           // only process modules with this loader
           // if they live under a 'fonts' or 'pficon' directory
           include: [
-            path.resolve(__dirname, 'node_modules/patternfly/dist/fonts'),
-            path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/assets/fonts'),
+            path.resolve(__dirname, '../node_modules/patternfly/dist/fonts'),
             path.resolve(
               __dirname,
-              'node_modules/@patternfly/react-core/dist/styles/assets/pficon'
+              '../node_modules/@patternfly/react-core/dist/styles/assets/fonts'
             ),
-            path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/fonts'),
-            path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/pficon'),
+            path.resolve(
+              __dirname,
+              '../node_modules/@patternfly/react-core/dist/styles/assets/pficon'
+            ),
+            path.resolve(__dirname, '../node_modules/@patternfly/patternfly/assets/fonts'),
+            path.resolve(__dirname, '../node_modules/@patternfly/patternfly/assets/pficon'),
           ],
           use: {
             loader: 'file-loader',
@@ -90,25 +93,25 @@ module.exports = (env) => {
         {
           test: /\.(jpg|jpeg|png|gif)$/i,
           include: [
-            path.resolve(__dirname, 'src'),
-            path.resolve(__dirname, 'node_modules/patternfly'),
-            path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/images'),
-            path.resolve(__dirname, 'node_modules/@patternfly/react-styles/css/assets/images'),
+            path.resolve(__dirname, '../src'),
+            path.resolve(__dirname, '../node_modules/patternfly'),
+            path.resolve(__dirname, '../node_modules/@patternfly/patternfly/assets/images'),
+            path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css/assets/images'),
             path.resolve(
               __dirname,
-              'node_modules/@patternfly/react-core/dist/styles/assets/images'
+              '../node_modules/@patternfly/react-core/dist/styles/assets/images'
             ),
             path.resolve(
               __dirname,
-              'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css/assets/images'
+              '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css/assets/images'
             ),
             path.resolve(
               __dirname,
-              'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css/assets/images'
+              '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css/assets/images'
             ),
             path.resolve(
               __dirname,
-              'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css/assets/images'
+              '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css/assets/images'
             ),
           ],
           use: [
@@ -126,23 +129,23 @@ module.exports = (env) => {
     },
     output: {
       filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, '../dist'),
     },
     plugins: [
       new HtmlWebpackPlugin(
         env === 'development' || process.env.DATA_SOURCE === 'mock'
           ? {
-              // In dev and mock-prod modes, populate window._env at build time
+              // In dev and mock-prod modes, populate window._virt_meta at build time
               filename: 'index.html',
-              template: path.resolve(__dirname, 'src', 'index.html.ejs'),
+              template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
-                _env_encoded: require('./runtime-env-vars'),
+                _virt_meta: helpers.sanitizeAndEncodeVirtMeta(helpers.getDevVirtMeta()),
               },
             }
           : {
               // In real prod mode, populate window._env at run time with express
               filename: 'index.html.ejs',
-              template: `!!raw-loader!${path.resolve(__dirname, 'src', 'index.html.ejs')}`,
+              template: `!!raw-loader!${path.resolve(__dirname, '../src/index.html.ejs')}`,
             }
       ),
       new Dotenv({
@@ -154,7 +157,7 @@ module.exports = (env) => {
       extensions: ['.js', '.ts', '.tsx', '.jsx'],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: path.resolve(__dirname, './tsconfig.json'),
+          configFile: path.resolve(__dirname, '../tsconfig.json'),
         }),
       ],
       symlinks: false,

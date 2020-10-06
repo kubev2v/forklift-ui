@@ -22,7 +22,7 @@ module.exports = merge(common('development'), {
     proxy: [
       {
         // NOTE: Any future backend-only routes added to server.js need to be listed here:
-        context: ['/hello'], // TODO remove this /hello example once we have some real routes here
+        context: ['/login', '/login/callback'],
         target: `http://localhost:${EXPRESS_PORT}`,
       },
     ],
@@ -32,26 +32,26 @@ module.exports = merge(common('development'), {
       {
         test: /\.css$/,
         include: [
-          path.resolve(__dirname, 'src'),
-          path.resolve(__dirname, 'node_modules/patternfly'),
-          path.resolve(__dirname, 'node_modules/@patternfly/patternfly'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/styles/base.css'),
+          path.resolve(__dirname, '../src'),
+          path.resolve(__dirname, '../node_modules/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
           path.resolve(
             __dirname,
-            'node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+            '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
           ),
           path.resolve(
             __dirname,
-            'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+            '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
           ),
           path.resolve(
             __dirname,
-            'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+            '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
           ),
           path.resolve(
             __dirname,
-            'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+            '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
           ),
         ],
         use: ['style-loader', 'css-loader'],

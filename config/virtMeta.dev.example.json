@@ -1,0 +1,13 @@
+{
+  "inventoryApi": "https://inventory-openshift-migration.apps.cluster-foo.example.com",
+  "clusterApi": "https://api.cluster-foo.example.com:6443",
+  "devServerPort": 9000,
+  "oauth": {
+    "clientId": "mig-ui",
+    "redirectUri": "http://localhost:9000/login/callback",
+    "userScope": "user:full",
+    "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
+  },
+  "namespace": "openshift-migration",
+  "configNamespace": "openshift-config"
+}

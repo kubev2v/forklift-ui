@@ -6,4 +6,4 @@ export EXPRESS_PORT=9001
 yarn concurrently --names "EXPRESS,WEBPACK" -c "green.bold.inverse,blue.bold.inverse" \
   "$_dir/run-local-express.sh --auto-reload" \
   "./node_modules/webpack-dev-server/bin/webpack-dev-server.js \
-    --hot --color --progress --info=true --config=$_dir/../webpack.dev.js"
+    --hot --color --progress --info=true --config=$_dir/../config/webpack.dev.js"

@@ -1,4 +1,4 @@
-import { IRuntimeEnvVars } from './types';
+import { IVirtMetaVars } from './types';
 
 export const APP_TITLE = 'Migration Toolkit for Virtualization';
 
@@ -34,4 +34,4 @@ export const PROVIDER_TYPE_NAMES = {
 export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
 export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
-export const RUNTIME_ENV: IRuntimeEnvVars = window['_env'];
+export const VIRT_META: IVirtMetaVars = window['_virt_meta'];
