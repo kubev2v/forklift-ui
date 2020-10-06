@@ -1,15 +1,18 @@
-import { FormGroupProps, TextInputProps } from '@patternfly/react-core';
+import { FormGroupProps, TextAreaProps, TextInputProps } from '@patternfly/react-core';
 import * as React from 'react';
 import * as yup from 'yup';
 import equal from 'fast-deep-equal';
 
+type MaybeArraySchema<T> = [T] extends [Array<infer E>] ? yup.ArraySchema<E> : yup.Schema<T>;
+
 export interface IFormField<T> {
   value: T;
-  setValue: (value: T) => void;
+  setValue: React.Dispatch<React.SetStateAction<T>>;
+  isDirty: boolean;
   isTouched: boolean;
   setIsTouched: (isTouched: boolean) => void;
   reset: () => void;
-  schema: yup.Schema<T>;
+  schema: MaybeArraySchema<T>;
 }
 
 export interface IValidatedFormField<T> extends IFormField<T> {
@@ -31,6 +34,7 @@ type ValidatedFormFields<FV> = {
 export interface IFormState<FV> {
   fields: ValidatedFormFields<FV>;
   values: FV; // For convenience in submitting forms (values are also included in fields property)
+  isDirty: boolean;
   isValid: boolean;
   reset: () => void;
   schema: yup.ObjectSchema | null; // In case you want to do anything fancy outside the hook
@@ -48,7 +52,7 @@ export interface IFormState<FV> {
 
 export const useFormField = <T>(
   initialValue: T,
-  schema: yup.Schema<T>,
+  schema: MaybeArraySchema<T>,
   options: { initialTouched?: boolean } = {}
 ): IFormField<T> => {
   const [value, setValue] = React.useState<T>(initialValue);
@@ -56,6 +60,7 @@ export const useFormField = <T>(
   return {
     value,
     setValue,
+    isDirty: !equal(value, initialValue),
     isTouched,
     setIsTouched,
     reset: () => {
@@ -87,6 +92,7 @@ export const useFormState = <FV>(
     (newObj, key) => ({ ...newObj, [key]: fields[key].value }),
     {} as FV
   );
+  const isDirty = fieldKeys.some((key) => fields[key].isDirty);
 
   // Memoize the schema, only recompute if the field keys changed
   const [formSchema, setFormSchema] = React.useState<yup.ObjectSchema | null>(null);
@@ -138,6 +144,7 @@ export const useFormState = <FV>(
   return {
     fields: validatedFields,
     values,
+    isDirty,
     isValid: hasRunInitialValidation && !validationError,
     reset: () => fieldKeys.forEach((key) => fields[key].reset()),
     schema: formSchema,
@@ -153,11 +160,17 @@ export const getFormGroupProps = <T>(
   helperTextInvalid: field.error?.message,
 });
 
-export const getTextInputProps = (
+export const getTextFieldProps = (
   field: IValidatedFormField<string>
-): Pick<TextInputProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
+): Pick<TextInputProps | TextAreaProps, 'value' | 'onChange' | 'onBlur' | 'validated'> => ({
   value: field.value,
   onChange: field.setValue,
   onBlur: () => field.setIsTouched(true),
   validated: field.isValid ? 'default' : 'error',
 });
+
+export const getTextInputProps = (field: IValidatedFormField<string>): Partial<TextInputProps> =>
+  getTextFieldProps(field) as Partial<TextInputProps>;
+
+export const getTextAreaProps = (field: IValidatedFormField<string>): Partial<TextAreaProps> =>
+  getTextFieldProps(field) as Partial<TextAreaProps>;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import { Level, LevelItem, Pagination, Form } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -14,9 +14,10 @@ import {
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { Mapping, MappingType, INetworkMapping, IStorageMapping } from '@app/queries/types';
+import { Mapping, MappingType } from '@app/queries/types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
+import CreateMappingButton from './CreateMappingButton';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
@@ -82,11 +83,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         cells: [
           {
             title: (
-              <MappingDetailView
-                mappingType={mappingType}
-                mapping={mapping}
-                className={spacing.mLg}
-              />
+              <Form>
+                <MappingDetailView
+                  mappingType={mappingType}
+                  mapping={mapping}
+                  className={spacing.mLg}
+                />
+              </Form>
             ),
             props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
@@ -97,33 +100,11 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   // I wonder if we can make use of generics right in the props interface?
   // Might be overkill: https://wanago.io/2020/03/09/functional-react-components-with-generic-props-in-typescript/
 
-  // TODO remove this stuff, just demonstrating how we can handle these types maybe?
-  // These kind of checks can be in helpers instead of here.
-  mappings.forEach((m) => {
-    if (m.type === MappingType.Network) {
-      const mapping = m as INetworkMapping;
-      console.log('Do something with network mapping', mapping);
-    }
-    if (m.type === MappingType.Storage) {
-      const mapping = m as IStorageMapping;
-      console.log('Do something with storage mapping', mapping);
-    }
-    return {};
-  });
-
   return (
     <>
       <Level>
         <LevelItem>
-          <Button
-            key="confirm"
-            variant="primary"
-            onClick={() => {
-              toggleAddEditModal();
-            }}
-          >
-            Add mapping
-          </Button>
+          <CreateMappingButton label="Add mapping" onClick={toggleAddEditModal} />
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />

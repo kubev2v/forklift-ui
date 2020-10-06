@@ -56,9 +56,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   };
 
   let instructionText = '';
-  const selectSourcePlaceholder = 'Select source...';
-  const selectTargetPlaceholder = 'Select target...';
-
   if (mappingType === MappingType.Network) {
     instructionText = 'Map source and target networks.';
   }
@@ -102,7 +99,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 itemIndex={itemIndex}
                 setBuilderItems={setBuilderItems}
                 availableSources={availableSources}
-                placeholderText={selectSourcePlaceholder}
               />
             </GridItem>
             <GridItem span={1}>
@@ -117,7 +113,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 itemIndex={itemIndex}
                 setBuilderItems={setBuilderItems}
                 availableTargets={availableTargets}
-                placeholderText={selectTargetPlaceholder}
               />
             </GridItem>
             <GridItem span={1}>

@@ -7,7 +7,7 @@ import {
   CardBody,
   EmptyStateIcon,
   EmptyStateBody,
-  Button,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IStorageMapping, MappingType } from '@app/queries/types';
@@ -16,6 +16,10 @@ import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { useHasSufficientProvidersQuery } from '@app/queries';
+import CreateMappingButton from '../components/CreateMappingButton';
+
+// TODO we should probably combine this and NetworkMappingsPage, they're nearly identical
 
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 
@@ -32,6 +36,8 @@ const StorageMappingsPage: React.FunctionComponent = () => {
     setStorageMappings((currentMappings as IStorageMapping[]) || []);
   }, [mockMapObj]);
 
+  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+
   return (
     <>
       <PageSection variant="light">
@@ -40,8 +46,10 @@ const StorageMappingsPage: React.FunctionComponent = () => {
         </Title>
       </PageSection>
       <PageSection>
-        {isFetchingInitialStorageMappings ? (
+        {sufficientProvidersQuery.isLoading || isFetchingInitialStorageMappings ? (
           <LoadingEmptyState />
+        ) : sufficientProvidersQuery.isError ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
@@ -54,9 +62,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Map source provider datastores to target provider storage classes.
                   </EmptyStateBody>
-                  <Button onClick={toggleAddEditModal} variant="primary">
-                    Create mapping
-                  </Button>
+                  <CreateMappingButton onClick={toggleAddEditModal} />
                 </EmptyState>
               ) : (
                 <MappingsTable

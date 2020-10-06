@@ -31,6 +31,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
+import CreatePlanButton from './CreatePlanButton';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -169,9 +170,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Link to="/plans/create">
-            <Button variant="secondary">Create</Button>
-          </Link>
+          <CreatePlanButton variant="secondary" label="Create" />
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />

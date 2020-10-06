@@ -72,6 +72,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         >
           <SimpleSelect
             id="network"
+            aria-label="Network"
             options={networkOptions}
             value={[networkOptions.find((option) => option.value === selectedNetwork)]}
             onChange={(selection) =>
