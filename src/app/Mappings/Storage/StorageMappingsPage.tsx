@@ -8,6 +8,7 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   Button,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IStorageMapping, MappingType } from '@app/queries/types';
@@ -16,6 +17,10 @@ import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { useHasSufficientProvidersQuery } from '@app/queries';
+import AddTooltip from '@app/common/components/AddTooltip';
+
+// TODO we should probably combine this and NetworkMappingsPage, they're nearly identical
 
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 
@@ -32,6 +37,9 @@ const StorageMappingsPage: React.FunctionComponent = () => {
     setStorageMappings((currentMappings as IStorageMapping[]) || []);
   }, [mockMapObj]);
 
+  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const { hasSufficientProviders } = sufficientProvidersQuery;
+
   return (
     <>
       <PageSection variant="light">
@@ -40,8 +48,10 @@ const StorageMappingsPage: React.FunctionComponent = () => {
         </Title>
       </PageSection>
       <PageSection>
-        {isFetchingInitialStorageMappings ? (
+        {sufficientProvidersQuery.isLoading || isFetchingInitialStorageMappings ? (
           <LoadingEmptyState />
+        ) : sufficientProvidersQuery.isError ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
@@ -54,9 +64,20 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Map source provider datastores to target provider storage classes.
                   </EmptyStateBody>
-                  <Button onClick={toggleAddEditModal} variant="primary">
-                    Create mapping
-                  </Button>
+                  <AddTooltip
+                    isTooltipEnabled={!hasSufficientProviders}
+                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a storage mapping."
+                  >
+                    <div className={`${spacing.mtMd}`}>
+                      <Button
+                        onClick={toggleAddEditModal}
+                        isDisabled={!hasSufficientProviders}
+                        variant="primary"
+                      >
+                        Create mapping
+                      </Button>
+                    </div>
+                  </AddTooltip>
                 </EmptyState>
               ) : (
                 <MappingsTable

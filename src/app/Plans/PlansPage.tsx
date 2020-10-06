@@ -14,8 +14,8 @@ import { useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
-import AddTooltip, { IAddTooltipProps } from '@app/common/components/AddTooltip';
-import { useProvidersQuery } from '@app/queries';
+import AddTooltip from '@app/common/components/AddTooltip';
+import { useHasSufficientProvidersQuery } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
 
@@ -32,22 +32,8 @@ const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
   const history = useHistory();
-  const providersQuery = useProvidersQuery();
-  const vmwareProviders = providersQuery.data?.vsphere || [];
-  const openshiftProviders = providersQuery.data?.openshift || [];
-
-  let addPlanDisabledObj: Pick<IAddTooltipProps, 'isTooltipEnabled' | 'content'> = {
-    isTooltipEnabled: false,
-    content: '',
-  };
-
-  if (vmwareProviders.length < 1 || openshiftProviders.length < 1) {
-    addPlanDisabledObj = {
-      isTooltipEnabled: true,
-      content:
-        'You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a migration plan.',
-    };
-  }
+  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const { hasSufficientProviders } = sufficientProvidersQuery;
 
   return (
     <>
@@ -55,9 +41,9 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
-        {providersQuery.isLoading || isFetchingInitialPlans ? (
+        {sufficientProvidersQuery.isLoading || isFetchingInitialPlans ? (
           <LoadingEmptyState />
-        ) : providersQuery.isError ? (
+        ) : sufficientProvidersQuery.isError ? (
           <Alert variant="danger" title="Error loading providers" />
         ) : isErrorFetchingPlans ? (
           <Alert variant="danger" title="Error loading plans" />
@@ -74,13 +60,13 @@ const PlansPage: React.FunctionComponent = () => {
                     Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
                   <AddTooltip
-                    isTooltipEnabled={addPlanDisabledObj.isTooltipEnabled}
-                    content={addPlanDisabledObj.content}
+                    isTooltipEnabled={!hasSufficientProviders}
+                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a migration plan."
                   >
                     <div className={`${spacing.mtMd}`}>
                       <Button
                         onClick={() => history.push('/plans/create')}
-                        isDisabled={addPlanDisabledObj.isTooltipEnabled}
+                        isDisabled={!hasSufficientProviders}
                         variant="primary"
                       >
                         Create migration plan

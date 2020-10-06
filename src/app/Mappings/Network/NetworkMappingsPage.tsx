@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardBody,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -16,6 +17,10 @@ import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import AddTooltip from '@app/common/components/AddTooltip';
+import { useHasSufficientProvidersQuery } from '@app/queries';
+
+// TODO we should probably combine this and StorageMappingsPage, they're nearly identical
 
 const isFetchingInitialNetworkMappings = false; // Fetching for the first time, not polling
 
@@ -32,6 +37,10 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
   }, [mockMapObj]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
+
+  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const { hasSufficientProviders } = sufficientProvidersQuery;
+
   return (
     <>
       <PageSection variant="light">
@@ -40,8 +49,10 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
         </Title>
       </PageSection>
       <PageSection>
-        {isFetchingInitialNetworkMappings ? (
+        {sufficientProvidersQuery.isLoading || isFetchingInitialNetworkMappings ? (
           <LoadingEmptyState />
+        ) : sufficientProvidersQuery.isError ? (
+          <Alert variant="danger" title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
@@ -54,9 +65,20 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Map source provider networks to target provider networks.
                   </EmptyStateBody>
-                  <Button onClick={toggleAddEditModal} variant="primary">
-                    Create mapping
-                  </Button>
+                  <AddTooltip
+                    isTooltipEnabled={!hasSufficientProviders}
+                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a network mapping."
+                  >
+                    <div className={`${spacing.mtMd}`}>
+                      <Button
+                        onClick={toggleAddEditModal}
+                        isDisabled={!hasSufficientProviders}
+                        variant="primary"
+                      >
+                        Create mapping
+                      </Button>
+                    </div>
+                  </AddTooltip>
                 </EmptyState>
               ) : (
                 <MappingsTable
