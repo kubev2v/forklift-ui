@@ -7,4 +7,3 @@ coverage
 .idea
 .env
 config/virtMeta.dev.json
-tmp/virtmeta.json
