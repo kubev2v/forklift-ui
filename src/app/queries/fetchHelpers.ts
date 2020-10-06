@@ -1,7 +1,8 @@
 import { VIRT_META } from '@app/common/constants';
-import { useNetworkContext } from '@app/common/context/NetworkContext';
+import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
 import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
+import { History, LocationState } from 'history';
 
 interface HttpResponse<T> extends Response {
   parsedBody?: T;
@@ -15,10 +16,18 @@ export const isSelfSignedCertError = <T>(response: HttpResponse<T>): boolean => 
   return response instanceof TypeError && response.message === certErrorText;
 };
 
-export const useFetch = <T>(url: string): QueryFunction<T> => {
-  const history = useHistory();
+interface IFetchContext {
+  history: History<LocationState>;
+  setSelfSignedCertUrl: INetworkContext['setSelfSignedCertUrl'];
+}
 
-  const { setSelfSignedCertUrl } = useNetworkContext();
+export const useFetchContext = (): IFetchContext => ({
+  history: useHistory(),
+  setSelfSignedCertUrl: useNetworkContext().setSelfSignedCertUrl,
+});
+
+export const authorizedFetch = async <T>(url: string, fetchContext: IFetchContext): Promise<T> => {
+  const { history, setSelfSignedCertUrl } = fetchContext;
 
   const handleFetchResponse = (response: HttpResponse<T>) => {
     if (isSelfSignedCertError(response)) {
@@ -32,13 +41,15 @@ export const useFetch = <T>(url: string): QueryFunction<T> => {
     }
   };
 
-  const fetchData = () => {
-    return fetch(url, {
-      headers: {
-        Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
-      },
-    }).then(handleFetchResponse);
-  };
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
+    },
+  });
+  return handleFetchResponse(response);
+};
 
-  return fetchData;
+export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
+  const fetchContext = useFetchContext();
+  return () => authorizedFetch(url, fetchContext);
 };

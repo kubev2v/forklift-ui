@@ -2,7 +2,9 @@ import React, { useEffect } from 'react';
 
 const RedirectToLogin: React.FunctionComponent = () => {
   useEffect(() => {
-    window.location.href = '/login';
+    if (process.env['DATA_SOURCE'] !== 'mock') {
+      window.location.href = '/login';
+    }
   }, []);
   return null;
 };

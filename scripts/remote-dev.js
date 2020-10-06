@@ -1,22 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
 const execSync = require('child_process').execSync;
 const helpers = require('../config/helpers');
-
-// Init some consts
-const configDir = path.join(__dirname, '..', 'config');
-const oauthclientFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
-const remoteConfigFile = path.join(configDir, 'virtMeta.dev.json');
-const oauthClientTemplateFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
-
-// Validations
-if (!fs.existsSync(remoteConfigFile)) {
-  console.error(`ERROR: Remote config file ${remoteConfigFile} is missing`);
-  console.error(`You could should copy the example to that location and edit with desired config`);
-  process.exit(1);
-}
 
 try {
   execSync('hash oc');
@@ -36,11 +20,11 @@ try {
 // Helpers
 
 function setupOAuthClient() {
-  const remoteConfig = JSON.parse(fs.readFileSync(remoteConfigFile));
-  const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/login/callback`;
+  const virtMeta = helpers.getDevVirtMeta();
+  const oauthRedirectUri = `http://localhost:${virtMeta.devServerPort}/login/callback`;
 
   const oauthClientName = 'mig-ui';
-  const remoteDevSecret = remoteConfig.oauth.clientSecret;
+  const remoteDevSecret = virtMeta.oauth.clientSecret;
 
   try {
     console.log(`Checking to see if ${oauthClientName} oauthclient exists in cluster...`);
@@ -85,7 +69,6 @@ function setupOAuthClient() {
 
 function main() {
   setupOAuthClient();
-  helpers.generateVirtMeta();
 }
 
 main();

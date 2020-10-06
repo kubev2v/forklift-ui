@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const fs = require('fs');
-const execSync = require('child_process').execSync;
+
 const sanitizeVirtMeta = (virtMeta) => {
   const oauthCopy = { ...virtMeta.oauth };
   delete oauthCopy.clientSecret;
@@ -10,7 +10,8 @@ const sanitizeVirtMeta = (virtMeta) => {
 
 const localConfigFileName = 'virtMeta.dev.json';
 
-const getLocalConfig = () => {
+const getDevVirtMeta = () => {
+  if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
   const configPath = path.join(__dirname, localConfigFileName);
   if (!fs.existsSync(configPath)) {
     console.error('ERROR: config/virtMeta.dev.json is missing');
@@ -21,18 +22,10 @@ const getLocalConfig = () => {
     );
     process.exit(1);
   }
-  const localConfig = require(configPath);
-  sanitizeVirtMeta(localConfig);
-  return localConfig;
+  return JSON.parse(fs.readFileSync(configPath));
 };
 
-const getEncodedLocalConfig = () =>
-  Buffer.from(JSON.stringify(getLocalConfig())).toString('base64');
+const sanitizeAndEncodeVirtMeta = (virtMeta) =>
+  Buffer.from(JSON.stringify(sanitizeVirtMeta(virtMeta))).toString('base64');
 
-const generateVirtMeta = () => {
-  const virtMetaJson = JSON.stringify(getLocalConfig());
-  execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
-  fs.writeFileSync(path.join(__dirname, '../tmp/virtmeta.json'), virtMetaJson, 'utf8');
-};
-
-module.exports = { generateVirtMeta, getLocalConfig, getEncodedLocalConfig };
+module.exports = { getDevVirtMeta, sanitizeAndEncodeVirtMeta };

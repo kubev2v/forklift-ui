@@ -5,6 +5,7 @@ import { useMockableQuery, getApiUrl, sortResultsByName } from './helpers';
 import { MOCK_HOSTS } from './mocks/hosts.mock';
 import { IHost } from './types';
 import { useProvidersQuery } from '.';
+import { useAuthorizedFetch } from './fetchHelpers';
 
 export const HOSTS_QUERY_KEY = 'hosts';
 
@@ -17,10 +18,9 @@ export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: providers && HOSTS_QUERY_KEY,
-      queryFn: () =>
-        fetch(getApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)).then((res) =>
-          res.json()
-        ),
+      queryFn: useAuthorizedFetch(
+        getApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)
+      ),
       config: {
         enabled: !!currentProvider,
         refetchInterval: isPollingEnabled ? POLLING_INTERVAL : false,

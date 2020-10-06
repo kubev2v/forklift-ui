@@ -1,5 +1,6 @@
 {
-  "clusterApi": "https://api.cluster-ibb6039ocp4b.ibb6039ocp4b.mg.dog8code.com:6443",
+  "inventoryApi": "https://inventory-openshift-migration.apps.cluster-foo.example.com",
+  "clusterApi": "https://api.cluster-foo.example.com:6443",
   "devServerPort": 9000,
   "oauth": {
     "clientId": "mig-ui",
@@ -8,6 +9,5 @@
     "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
   },
   "namespace": "openshift-migration",
-  "configNamespace": "openshift-config",
-  "inventoryApi": "https://inventory-openshift-migration.apps.cluster-ibb6039ocp4b.ibb6039ocp4b.mg.dog8code.com"
+  "configNamespace": "openshift-config"
 }
