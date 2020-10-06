@@ -19,9 +19,10 @@ const virtMeta = JSON.parse(virtMetaStr);
 
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
+const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
 
 app.engine('ejs', require('ejs').renderFile);
-app.use(express.static(path.join(__dirname, '/dist')));
+app.use(express.static(staticDir));
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
   app.get('/login', async (req, res, next) => {
