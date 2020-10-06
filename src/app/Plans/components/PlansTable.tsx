@@ -23,7 +23,7 @@ import {
   cellWidth,
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 import PlanActionsDropdown from './PlanActionsDropdown';
@@ -31,6 +31,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
+import CreatePlanButton from './CreatePlanButton';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -41,8 +42,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   migrations,
 }: IPlansTableProps) => {
-  const history = useHistory();
-
   const getSortValues = (plan: IPlan) => {
     return [
       plan.metadata.name,
@@ -171,9 +170,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button variant="secondary" onClick={() => history.push('/plans/create')}>
-            Create
-          </Button>
+          <CreatePlanButton variant="secondary" label="Create" />
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />

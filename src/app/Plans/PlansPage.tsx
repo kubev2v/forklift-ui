@@ -7,14 +7,11 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   Title,
-  Button,
   Alert,
 } from '@patternfly/react-core';
-import { useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
-import AddTooltip from '@app/common/components/AddTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
@@ -22,6 +19,7 @@ import PlansTable from './components/PlansTable';
 // TODO replace these with real data from react-query
 import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import CreatePlanButton from './components/CreatePlanButton';
 
 // TODO replace these with real state from react-query results
 const isFetchingInitialPlans = false; // Fetching for the first time, not polling
@@ -31,9 +29,7 @@ const plans = MOCK_PLANS;
 const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
-  const history = useHistory();
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const { hasSufficientProviders } = sufficientProvidersQuery;
 
   return (
     <>
@@ -59,20 +55,7 @@ const PlansPage: React.FunctionComponent = () => {
                   <EmptyStateBody>
                     Create a migration plan to select VMs to migrate to OpenShift Virtualization.
                   </EmptyStateBody>
-                  <AddTooltip
-                    isTooltipEnabled={!hasSufficientProviders}
-                    content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a migration plan."
-                  >
-                    <div className={`${spacing.mtMd}`}>
-                      <Button
-                        onClick={() => history.push('/plans/create')}
-                        isDisabled={!hasSufficientProviders}
-                        variant="primary"
-                      >
-                        Create migration plan
-                      </Button>
-                    </div>
-                  </AddTooltip>
+                  <CreatePlanButton />
                 </EmptyState>
               ) : (
                 <PlansTable plans={plans} migrations={migrations} />
