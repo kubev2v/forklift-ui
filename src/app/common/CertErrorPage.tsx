@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Card, CardBody, Alert } from '@patternfly/react-core';
+import { Alert, PageSection } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useHistory } from 'react-router-dom';
 import { useNetworkContext } from './context/NetworkContext';
 
@@ -10,26 +11,28 @@ const CertErrorPage: React.FunctionComponent = () => {
     history.push('/');
   }
   return (
-    <>
+    <PageSection variant="light">
       {selfSignedCertUrl ? (
-        <Card>
-          <CardBody>
-            <Alert title="Certificate error">
-              A certificate error has occurred, likely due to the usage of self signed certificates
-              in one of the clusters. Please try to visit the failed url and accept the CA:
-              <a href={selfSignedCertUrl}> {selfSignedCertUrl}</a>
-              <div />
-              The correct way to address this is to install your self CA into your browser.
-              <div />
-              NOTE: The contents of the resulting page may report &quot;unauthorized&quot; This is
-              expected. After accepting the certificate, please reload the app.
-            </Alert>
-          </CardBody>
-        </Card>
+        <Alert title="Certificate error" className={spacing.mMd}>
+          A certificate error has occurred, likely due to the usage of self signed certificates in
+          one of the clusters.
+          <br />
+          <br />
+          Please try to visit the failed url and accept the CA:
+          <br />
+          <a href={selfSignedCertUrl}> {selfSignedCertUrl}</a>
+          <br />
+          <br />
+          The correct way to address this is to install your self CA into your browser.
+          <br />
+          <br />
+          NOTE: The contents of the resulting page may report &quot;unauthorized&quot; This is
+          expected. After accepting the certificate, please reload the app.
+        </Alert>
       ) : (
         <div />
       )}
-    </>
+    </PageSection>
   );
 };
 
