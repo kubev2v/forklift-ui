@@ -24,6 +24,7 @@ export const useFetch = <T>(url: string): QueryFunction<T> => {
     if (isSelfSignedCertError(response)) {
       setSelfSignedCertUrl(url);
       history.push(`/cert-error`);
+      return null;
     }
     if (response.ok && response.json) {
       return response.json();
