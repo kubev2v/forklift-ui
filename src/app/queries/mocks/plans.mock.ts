@@ -245,7 +245,7 @@ export const vmStatus1: IVMStatus = {
   id: 'vm1-id',
   pipeline: [
     {
-      name: 'Step 1',
+      name: 'Pre Hook',
       progress: {
         total: 2,
         completed: 2,
@@ -253,7 +253,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 2',
+      name: 'Disk transfer',
       progress: {
         total: 2,
         completed: 2,
@@ -261,7 +261,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 3',
+      name: 'Import',
       progress: {
         total: 2,
         completed: 2,
@@ -269,7 +269,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Copying data',
+      name: 'Post Hook',
       progress: {
         total: 2,
         completed: 2,
@@ -277,7 +277,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
   ],
-  step: 4,
+  step: 2,
   started: '2020-10-10T16:04:10Z',
   completed: '',
   error: {
@@ -287,7 +287,7 @@ export const vmStatus1: IVMStatus = {
 };
 
 export const vmStatus2: IVMStatus = {
-  id: 'vm1-id',
+  id: 'vm2-id',
   pipeline: [
     {
       name: 'Step 1',
