@@ -29,7 +29,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
-  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  const { paginationProps } = usePaginationState(sortedItems, 10);
   const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>({
     items: sortedItems,
   });
