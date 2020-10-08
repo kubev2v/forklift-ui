@@ -3,16 +3,6 @@ import { ICR, IStatusCondition } from '../types/common.types';
 import { Mapping } from '../types/mappings.types';
 import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
 
-export interface IVM {
-  name: string;
-  migrationAnalysis: string;
-  datacenter: string;
-  cluster: string;
-  host: string;
-  folderPath: string;
-  analysisDescription: string;
-}
-
 export interface IProgress {
   total: number;
   completed: number;
