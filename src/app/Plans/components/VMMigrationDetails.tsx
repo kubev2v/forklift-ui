@@ -21,6 +21,7 @@ import {
   IRow,
   wrappable,
   expandable,
+  cellWidth,
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -79,7 +80,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     { title: 'Data copied', transforms: [sortable] },
     {
       title: 'Status',
-      transforms: [sortable],
+      transforms: [sortable, cellWidth(10)],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
@@ -110,7 +111,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         )} GB`,
         {
           title: (
-            <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsCenter' }}>
+            <Flex direction={{ default: 'column' }}>
               <PipelineSummary status={migration.status2} />
             </Flex>
           ),
