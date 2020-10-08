@@ -33,9 +33,9 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
   let title: string;
-  let summary: React.ReactNode;
+  let summary: JSX.Element;
 
-  const chain = (Face, times, color) => {
+  const Chain = (Face, times, color) => {
     return times < 1 ? null : (
       <>
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
@@ -46,14 +46,14 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
             {color === disabledColor ? Dash(false) : Dash(true)}
           </FlexItem>
         ) : null}
-        {chain(Face, times - 1, color)}
+        {Chain(Face, times - 1, color)}
       </>
     );
   };
 
   if (status.completed) {
     title = MigrationVMStepsType.Completed;
-    summary = chain(ResourcesFullIcon, status.pipeline.length, successColor);
+    summary = Chain(ResourcesFullIcon, status.pipeline.length, successColor);
   } else if (status.started && !status.completed) {
     if (status.error.phase) {
       title =
@@ -61,8 +61,8 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         ' - ' +
         MigrationVMStepsType[status.pipeline[status.step - 1].name];
     } else title = MigrationVMStepsType[status.pipeline[status.step - 1].name];
-    const full = chain(ResourcesFullIcon, status.step - 1, successColor);
-    const empty = chain(
+    const full = Chain(ResourcesFullIcon, status.step - 1, successColor);
+    const empty = Chain(
       ResourcesAlmostEmptyIcon,
       status.pipeline.length - status.step,
       disabledColor
@@ -82,7 +82,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     );
   } else {
     title = MigrationVMStepsType.NotStarted;
-    summary = chain(ResourcesAlmostEmptyIcon, status.pipeline.length, disabledColor);
+    summary = Chain(ResourcesAlmostEmptyIcon, status.pipeline.length, disabledColor);
   }
 
   return (
