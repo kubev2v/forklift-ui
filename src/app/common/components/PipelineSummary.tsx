@@ -91,6 +91,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
       <Flex
         spaceItems={{ default: 'spaceItemsNone' }}
         alignContent={{ default: 'alignContentCenter' }}
+        flexWrap={{ default: 'nowrap' }}
       >
         {summary}
       </Flex>

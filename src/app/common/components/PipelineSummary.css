@@ -1,6 +1,7 @@
 .dash {
   height: 2px;
   width: 10px;
+  white-space: nowrap;
 }
 
 .dashReached {
