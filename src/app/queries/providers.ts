@@ -40,8 +40,11 @@ export const useCreateProvider = () => {
   const useProviderPost = async (values: IProviderValues) => {
     try {
       const response = await fetch(getApiUrl(`/providers/${values.type}`), {
+        credentials: 'include',
         method: 'POST',
         headers: {
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Request-Headers': 'Content-Type',
           'Content-Type': 'application/json',
           Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
           body: JSON.stringify(values),

@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const sanitizeVirtMeta = (virtMeta) => {
   const oauthCopy = { ...virtMeta.oauth };
-  delete oauthCopy.clientSecret;
+  // delete oauthCopy.clientSecret;
   return { ...virtMeta, oauth: oauthCopy };
 };
 
