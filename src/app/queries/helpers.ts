@@ -61,6 +61,8 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
 //     //   : () => window.alert('Sorry, this feature is not available in mock mode.'),
 // }
 // );
+export const getClusterApiUrl = (relativePath: string): string =>
+  `${VIRT_META.clusterApi}/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration${relativePath}`;
 
 export const getApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;

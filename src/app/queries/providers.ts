@@ -8,13 +8,15 @@ import {
 } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedResultsByName, getClusterApiUrl } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider, IVMwareProvider, ICommonProvider } from './types';
 import { useAuthorizedFetch, useAuthorizedMutate } from './fetchHelpers';
 import { any } from 'prop-types';
 import { ProviderType, VIRT_META } from '@app/common/constants';
 
+import { ClientFactory } from '@konveyor/lib-ui/dist/modules/kube-client';
+// import { ClientFactory } from '../../../client/client_factory';
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
@@ -37,17 +39,22 @@ interface IProviderResult {
 }
 
 export const useCreateProvider = () => {
+  // const client: IClusterClient = ClientFactory.cluster(state);
+
   const useProviderPost = async (values: IProviderValues) => {
     try {
-      const response = await fetch(getApiUrl(`/providers/${values.type}`), {
-        credentials: 'include',
+      // const response = await fetch(getClusterApiUrl(`/providers/${values.type}`), {
+      const user = { access_token: 'fdjklsafjklj', expiry_time: 43898230984902 };
+      const client: any = ClientFactory.cluster(user, getClusterApiUrl('/provider/namedfsf'));
+      const response = await fetch(getClusterApiUrl(`/provider/namekjkj33`), {
+        // mode: 'no-cors',
         method: 'POST',
         headers: {
-          'Access-Control-Allow-Credentials': 'true',
-          'Access-Control-Request-Headers': 'Content-Type',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
           Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
-          body: JSON.stringify(values),
+          data: JSON.stringify(values),
+          // body: JSON.stringify(values),
         },
       });
       if (response.ok && response.json) {
