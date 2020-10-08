@@ -14,7 +14,6 @@ import {
   expandable,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import {
   ICommonTreeObject,
@@ -51,12 +50,15 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
   const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
 
-  const availableVMs = getAvailableVMs(selectedTreeNodes);
-  const treePathInfoByVM = getVMTreePathInfoByVM(
-    availableVMs,
-    hostTreeQuery.data || null,
-    vmTreeQuery.data || null
-  );
+  const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
+    const availableVMs = getAvailableVMs(selectedTreeNodes);
+    const treePathInfoByVM = getVMTreePathInfoByVM(
+      availableVMs,
+      hostTreeQuery.data || null,
+      vmTreeQuery.data || null
+    );
+    return { availableVMs, treePathInfoByVM };
+  }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data]);
 
   const getSortValues = (vm: ICommonTreeObject) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
