@@ -3,17 +3,19 @@ export enum VMwareTreeType {
   VM = 'VM',
 }
 
+export interface ICommonTreeObject {
+  id: string;
+  parent: {
+    Kind: string;
+    ID: string;
+  } | null;
+  name: string;
+  selfLink: string;
+}
+
 interface ICommonTree {
   kind: string;
-  object: {
-    id: string;
-    parent: {
-      Kind: string;
-      ID: string;
-    } | null;
-    name: string;
-    selfLink: string;
-  } | null;
+  object: ICommonTreeObject | null;
   children: ICommonTree[] | null;
 }
 

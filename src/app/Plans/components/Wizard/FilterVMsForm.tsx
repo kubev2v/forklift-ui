@@ -12,7 +12,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useVMwareTreeQuery } from '@app/queries';
 import { IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
-import { filterAndConvertVMwareTree, findMatchingNode, flattenVMwareTreeNodes } from './helpers';
+import { filterAndConvertVMwareTree, findVMTreePath, flattenVMwareTreeNodes } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
@@ -86,8 +86,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else {
-              const matchingNode =
-                treeQuery.data && findMatchingNode(treeQuery.data, treeViewItem.id || '');
+              const matchingPath =
+                treeQuery.data && findVMTreePath(treeQuery.data, treeViewItem.id || '');
+              const matchingNode = matchingPath && matchingPath[matchingPath.length - 1];
               if (matchingNode) {
                 const nodesToSelect: VMwareTree[] = [];
                 const pushNodeAndDescendants = (n: VMwareTree) => {

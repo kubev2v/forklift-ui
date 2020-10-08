@@ -20,14 +20,13 @@ import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import {
+  ICommonTreeObject,
   IOpenShiftProvider,
-  IVM,
   IVMwareProvider,
   Mapping,
   MappingType,
   VMwareTree,
 } from '@app/queries/types';
-import { MOCK_VMS } from '@app/queries/mocks/vms.mock';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
 import { useFormField, useFormState } from '@app/common/hooks/useFormState';
 
@@ -48,7 +47,7 @@ const usePlanWizardFormState = () => ({
     selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
   }),
   selectVMs: useFormState({
-    selectedVMs: useFormField<IVM[]>([], yup.array<IVM>().required()),
+    selectedVMs: useFormField<ICommonTreeObject[]>([], yup.array<ICommonTreeObject>().required()),
   }),
   networkMapping: useFormState({
     mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
@@ -118,7 +117,11 @@ const PlanWizard: React.FunctionComponent = () => {
           name: 'Select VMs',
           component: (
             <WizardStepContainer title="Select VMs">
-              <SelectVMsForm form={forms.selectVMs} vms={MOCK_VMS} />
+              <SelectVMsForm
+                form={forms.selectVMs}
+                selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
+                sourceProvider={forms.general.values.sourceProvider}
+              />
             </WizardStepContainer>
           ),
           enableNext: forms.selectVMs.isValid,

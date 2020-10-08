@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
-import { VMwareTree } from '@app/queries/types';
+import { ICommonTreeObject, IVMwareHostTree, IVMwareVMTree, VMwareTree } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 
+// Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   if (node.kind === 'VM') return false; // Exclude VMs from the tree entirely
   if (
@@ -14,17 +15,7 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   return node.children && node.children.some((child) => subtreeMatchesSearch(child, searchText));
 };
 
-export const findMatchingNode = (node: VMwareTree, selfLink: string): VMwareTree | null => {
-  if (node?.object?.selfLink === selfLink) return node;
-  if (node?.children) {
-    for (const i in node.children) {
-      const found = findMatchingNode(node.children[i], selfLink);
-      if (found) return found;
-    }
-  }
-  return null;
-};
-
+// Helper for filterAndConvertVMwareTree
 const convertVMwareTreeNode = (
   node: VMwareTree,
   searchText: string,
@@ -47,6 +38,7 @@ const convertVMwareTreeNode = (
     ) : null,
 });
 
+// Helper for filterAndConvertVMwareTree
 const filterAndConvertVMwareTreeChildren = (
   children: VMwareTree[] | null,
   searchText: string,
@@ -60,6 +52,7 @@ const filterAndConvertVMwareTreeChildren = (
   return undefined;
 };
 
+// Convert the API tree structure to the PF TreeView structure, while filtering by the user's search text.
 export const filterAndConvertVMwareTree = (
   rootNode: VMwareTree | null,
   searchText: string,
@@ -80,6 +73,7 @@ export const filterAndConvertVMwareTree = (
   ];
 };
 
+// To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
 export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
   if (rootNode?.children) {
     const children = rootNode.children as VMwareTree[];
@@ -88,13 +82,85 @@ export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[
   return [];
 };
 
+// From the flattened selected nodes list, get all the unique VMs from all descendants of them.
 export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
   Array.from(
     new Set(
-      (nodes.map((node) => {
+      nodes.flatMap((node) => {
         const thisNode = node.kind === 'VM' ? [node] : [];
         const childNodes = node.children ? getAllVMNodes(node.children) : [];
         return [...thisNode, ...childNodes];
-      }) as unknown) as VMwareTree[]
+      })
     )
+  );
+
+export const getAvailableVMs = (selectedTreeNodes: VMwareTree[]): ICommonTreeObject[] =>
+  getAllVMNodes(selectedTreeNodes)
+    .map((node) => node.object)
+    .filter((object) => !!object) as ICommonTreeObject[];
+
+// Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
+export const findVMTreePath = (node: VMwareTree, vmSelfLink: string): VMwareTree[] | null => {
+  if (node.object?.selfLink === vmSelfLink) return [node];
+  if (!node.children) return null;
+  for (const i in node.children) {
+    const childPath = findVMTreePath(node.children[i], vmSelfLink);
+    if (childPath) return [node, ...childPath];
+  }
+  return null;
+};
+
+export interface IVMTreePathInfo {
+  datacenter: ICommonTreeObject | null;
+  cluster: ICommonTreeObject | null;
+  host: ICommonTreeObject | null;
+  folders: ICommonTreeObject[] | null;
+  folderPathStr: string | null;
+}
+
+// Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
+export const findVMTreePathInfo = (
+  vm: ICommonTreeObject,
+  hostTree: IVMwareHostTree | null,
+  vmTree: IVMwareVMTree | null
+): IVMTreePathInfo => {
+  if (!hostTree || !vmTree) {
+    return {
+      datacenter: null,
+      cluster: null,
+      host: null,
+      folders: null,
+      folderPathStr: null,
+    };
+  }
+  const hostTreePath = findVMTreePath(hostTree, vm.selfLink);
+  const vmTreePath = findVMTreePath(vmTree, vm.selfLink);
+  const folders =
+    (vmTreePath
+      ?.filter((node) => !!node && node.kind === 'Folder')
+      .map((node) => node.object) as ICommonTreeObject[]) || null;
+  return {
+    datacenter: hostTreePath?.find((node) => node.kind === 'Datacenter')?.object || null,
+    cluster: hostTreePath?.find((node) => node.kind === 'Cluster')?.object || null,
+    host: hostTreePath?.find((node) => node.kind === 'Host')?.object || null,
+    folders,
+    folderPathStr: folders?.map((folder) => folder.name).join('/') || null,
+  };
+};
+
+export interface IVMTreePathInfoByVM {
+  [vmSelfLink: string]: IVMTreePathInfo;
+}
+
+export const getVMTreePathInfoByVM = (
+  vms: ICommonTreeObject[],
+  hostTree: IVMwareHostTree | null,
+  vmTree: IVMwareVMTree | null
+): IVMTreePathInfoByVM =>
+  vms.reduce(
+    (newObj, vm) => ({
+      ...newObj,
+      [vm.selfLink]: findVMTreePathInfo(vm, hostTree, vmTree),
+    }),
+    {}
   );

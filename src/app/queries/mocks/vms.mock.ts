@@ -2,6 +2,9 @@ import { IVM } from '../types/plans.types';
 
 export let MOCK_VMS: IVM[] = [];
 
+// TODO this might not be necessary at all, since we can use the tree leaf nodes instead...
+// TODO remove this?
+
 // TODO put this condition back when we don't directly import mocks into components anymore
 //if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
