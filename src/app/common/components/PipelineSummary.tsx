@@ -20,7 +20,13 @@ interface IPipelineSummaryProps {
   status: IVMStatus;
 }
 
-const Dash = <span className="pipelineDash">&nbsp;&nbsp;</span>;
+const Dash = (isReached: boolean): JSX.Element => {
+  return (
+    <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+      {isReached ? <div className="dash dashReached" /> : <div className="dash dashNotReached" />}
+    </FlexItem>
+  );
+};
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
@@ -30,8 +36,14 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   const chain = (Face, times, color) => {
     return times < 1 ? null : (
       <>
-        <Face color={color.value} />
-        {times > 1 ? Dash : null}
+        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+          <Face color={color.value} />
+        </FlexItem>
+        {times > 1 ? (
+          <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+            {color === disabledColor ? Dash(false) : Dash(true)}
+          </FlexItem>
+        ) : null}
         {chain(Face, times - 1, color)}
       </>
     );
@@ -49,9 +61,13 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     sum = (
       <>
         {full}
-        {full ? Dash : null}
-        <ResourcesAlmostFullIcon color={status.error.phase ? dangerColor.value : infoColor.value} />
-        {empty ? Dash : null}
+        {full ? Dash(true) : null}
+        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+          <ResourcesAlmostFullIcon
+            color={status.error.phase ? dangerColor.value : infoColor.value}
+          />
+        </FlexItem>
+        {empty ? Dash(false) : null}
         {empty}
       </>
     );
@@ -64,8 +80,11 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
       <Text component="small">
         Step {status.step} of {status.pipeline.length}
       </Text>
-      <Flex>
-        <FlexItem>{sum}</FlexItem>
+      <Flex
+        spaceItems={{ default: 'spaceItemsNone' }}
+        alignContent={{ default: 'alignContentCenter' }}
+      >
+        {sum}
       </Flex>
     </>
   );
