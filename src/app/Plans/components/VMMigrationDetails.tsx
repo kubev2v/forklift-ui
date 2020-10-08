@@ -6,9 +6,9 @@ import {
   Button,
   Card,
   CardBody,
+  Flex,
   Pagination,
   PageSection,
-  Text,
   Title,
 } from '@patternfly/react-core';
 import {
@@ -77,8 +77,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     { title: 'Start time', transforms: [sortable] },
     { title: 'End time', transforms: [sortable] },
     { title: 'Data copied', transforms: [sortable] },
-    { title: 'Status', transforms: [sortable] },
-    { title: '' },
+    {
+      title: 'Status',
+      transforms: [sortable],
+      columnTransforms: [classNamesTransform(alignment.textAlignCenter)],
+    },
+    { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
 
   const rows: IRow[] = [];
@@ -106,7 +110,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           migration.other.total / 1024
         )} GB`,
         {
-          title: <PipelineSummary status={migration.status2} />,
+          title: (
+            <Flex direction={{ default: 'column' }} alignItems={{ default: 'alignItemsCenter' }}>
+              <PipelineSummary status={migration.status2} />
+            </Flex>
+          ),
         },
 
         {

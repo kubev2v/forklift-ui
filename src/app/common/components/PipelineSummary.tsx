@@ -76,7 +76,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   }
 
   return (
-    <>
+    <FlexItem>
       <Text component="small">
         Step {status.step} of {status.pipeline.length}
       </Text>
@@ -86,7 +86,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
       >
         {sum}
       </Flex>
-    </>
+    </FlexItem>
   );
 };
 
