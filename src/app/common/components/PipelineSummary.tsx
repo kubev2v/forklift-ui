@@ -15,6 +15,7 @@ import {
 
 import { IVMStatus } from '@app/queries/types';
 import './PipelineSummary.css';
+import { MigrationVMStepsType } from '@app/common/constants';
 
 interface IPipelineSummaryProps {
   status: IVMStatus;
@@ -31,7 +32,8 @@ const Dash = (isReached: boolean): JSX.Element => {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
-  let sum: React.ReactNode;
+  let title: string;
+  let summary: React.ReactNode;
 
   const chain = (Face, times, color) => {
     return times < 1 ? null : (
@@ -50,15 +52,22 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   };
 
   if (status.completed) {
-    sum = chain(ResourcesFullIcon, status.pipeline.length, successColor);
+    title = MigrationVMStepsType.Completed;
+    summary = chain(ResourcesFullIcon, status.pipeline.length, successColor);
   } else if (status.started && !status.completed) {
+    if (status.error.phase) {
+      title =
+        MigrationVMStepsType.Error +
+        ' - ' +
+        MigrationVMStepsType[status.pipeline[status.step - 1].name];
+    } else title = MigrationVMStepsType[status.pipeline[status.step - 1].name];
     const full = chain(ResourcesFullIcon, status.step - 1, successColor);
     const empty = chain(
       ResourcesAlmostEmptyIcon,
       status.pipeline.length - status.step,
       disabledColor
     );
-    sum = (
+    summary = (
       <>
         {full}
         {full ? Dash(true) : null}
@@ -72,19 +81,18 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
       </>
     );
   } else {
-    sum = chain(ResourcesAlmostEmptyIcon, status.pipeline.length, disabledColor);
+    title = MigrationVMStepsType.NotStarted;
+    summary = chain(ResourcesAlmostEmptyIcon, status.pipeline.length, disabledColor);
   }
 
   return (
     <FlexItem>
-      <Text component="small">
-        Step {status.step} of {status.pipeline.length}
-      </Text>
+      <Text component="small">{title}</Text>
       <Flex
         spaceItems={{ default: 'spaceItemsNone' }}
         alignContent={{ default: 'alignContentCenter' }}
       >
-        {sum}
+        {summary}
       </Flex>
     </FlexItem>
   );
