@@ -10,7 +10,7 @@ interface ICommonProviderObject extends ICR {
       name: string;
     };
   };
-  status: {
+  status?: {
     conditions: IStatusCondition[];
     observedGeneration: number;
   };

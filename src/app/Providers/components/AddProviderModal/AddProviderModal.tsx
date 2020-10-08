@@ -13,6 +13,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import './AddProviderModal.css';
+import { useCreateProvider } from '@app/queries';
 
 interface IAddProviderModalProps {
   onClose: () => void;
@@ -55,6 +56,10 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
     providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
   const isFormValid =
     providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
+  // const createProvider = (provider) => {
+  //   useCreateProvider({ type: ProviderType.vsphere, name: 'test' });
+  // };
+  const { createProvider } = useCreateProvider();
 
   return (
     <Modal
@@ -70,6 +75,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           isDisabled={!isFormValid}
           onClick={() => {
             console.log('TODO: submit form!', formValues);
+            createProvider({ type: ProviderType.vsphere, name: 'test' });
             alert('TODO');
           }}
         >
