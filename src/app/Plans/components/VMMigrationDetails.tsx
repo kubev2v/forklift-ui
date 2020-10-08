@@ -80,7 +80,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Status',
       transforms: [sortable],
-      columnTransforms: [classNamesTransform(alignment.textAlignCenter)],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
