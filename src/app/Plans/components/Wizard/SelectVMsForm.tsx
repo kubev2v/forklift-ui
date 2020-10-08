@@ -176,7 +176,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   if (availableVMs.length === 0) {
     return (
       <TableEmptyState
-        icon={InfoCircleIcon}
         titleText="No VMs found"
         bodyText="No results match your filter. Go back and make a different selection."
       />
