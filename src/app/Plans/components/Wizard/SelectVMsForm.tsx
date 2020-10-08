@@ -142,10 +142,10 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           ),
         },
         {
-          title:
-            // <StatusIcon status={StatusType[vm.migrationAnalysis]} label={vm.migrationAnalysis} />
-            // TODO render analytics results here when available
-            'TBD',
+          title: (
+            // TODO render real analytics results here when available
+            <StatusIcon status={StatusType.Ok} label="Ready" />
+          ),
         },
         vm.name,
         datacenter?.name || '',
