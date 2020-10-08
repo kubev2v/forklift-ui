@@ -18,6 +18,7 @@ import { MigrationVMStepsType } from '@app/common/constants';
 import './PipelineSummary.css';
 
 interface IChainProps {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   Face: React.ComponentClass<any>;
   times: number;
   color: {
