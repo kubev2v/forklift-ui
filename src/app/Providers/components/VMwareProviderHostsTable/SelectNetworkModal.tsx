@@ -10,16 +10,39 @@ interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
   onClose: () => void;
 }
+// TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
+interface ITempHostNetwork {
+  name: string;
+  address: string;
+  bandwidth: string;
+  mtu: number;
+  isDefault?: boolean;
+}
+
+const MOCK_NETWORKS: ITempHostNetwork[] = [
+  {
+    name: 'storage_network',
+    address: '192.168.0.1/24',
+    bandwidth: '1 GB/s',
+    mtu: 1499,
+    isDefault: true,
+  },
+  { name: 'compute_network', address: '192.168.0.2/24', bandwidth: '2 GB/s', mtu: 1400 },
+  { name: 'other_network', address: '192.168.0.3/24', bandwidth: '3 GB/s', mtu: 1500 },
+];
+// End TODO
 
 const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   onClose,
 }: ISelectNetworkModalProps) => {
-  const networkOptions = selectedHosts.map((host) => ({
-    toString: () => `${formatHostNetwork(host.network)}`,
-    value: host.network.name,
-    props: { description: `${host.bandwidth}; MTU:${host.mtu}` },
+  // TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
+  const networkOptions = MOCK_NETWORKS.map((network) => ({
+    toString: () => formatHostNetwork(network),
+    value: network.name,
+    props: { description: `${network.bandwidth}; MTU:${network.mtu}` },
   }));
+  // End TODO
 
   // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
   //   or maybe roll our own simple validation? maybe use Yup?
@@ -72,7 +95,6 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               setSelectedNetwork((selection as OptionWithValue<string>).value)
             }
             placeholderText="Select a network..."
-            // description=<{Text>blah</Text>}
           />
         </FormGroup>
         <div>
