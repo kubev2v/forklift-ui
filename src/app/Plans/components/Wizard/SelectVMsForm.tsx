@@ -39,7 +39,7 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
   selectedTreeNodes: VMwareTree[];
-  sourceProvider: IVMwareProvider;
+  sourceProvider: IVMwareProvider | null;
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
