@@ -14,46 +14,63 @@ import {
 } from '@patternfly/react-tokens';
 
 import { IVMStatus } from '@app/queries/types';
-import './PipelineSummary.css';
 import { MigrationVMStepsType } from '@app/common/constants';
+import './PipelineSummary.css';
 
-interface IPipelineSummaryProps {
-  status: IVMStatus;
+interface IChainProps {
+  Face: React.ComponentClass<any>;
+  times: number;
+  color: {
+    name: string;
+    value: string;
+    var: string;
+  };
 }
 
-const Dash = (isReached: boolean): JSX.Element => {
+const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: IChainProps) => {
+  return times < 1 ? null : (
+    <>
+      <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+        <Face color={color.value} />
+      </FlexItem>
+      {times > 1 ? (
+        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+          {color === disabledColor ? <Dash isReached={false} /> : <Dash isReached={true} />}
+        </FlexItem>
+      ) : null}
+      <Chain Face={Face} times={times - 1} color={color} />
+    </>
+  );
+};
+
+interface IDashProps {
+  isReached: boolean;
+}
+
+const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) => {
   return (
     <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
       {isReached ? <div className="dash dashReached" /> : <div className="dash dashNotReached" />}
     </FlexItem>
   );
 };
+``;
+
+interface IPipelineSummaryProps {
+  status: IVMStatus;
+}
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
   let title: string;
-  let summary: JSX.Element;
-
-  const Chain = (Face, times, color) => {
-    return times < 1 ? null : (
-      <>
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <Face color={color.value} />
-        </FlexItem>
-        {times > 1 ? (
-          <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-            {color === disabledColor ? Dash(false) : Dash(true)}
-          </FlexItem>
-        ) : null}
-        {Chain(Face, times - 1, color)}
-      </>
-    );
-  };
+  let Summary: React.ReactNode;
 
   if (status.completed) {
     title = MigrationVMStepsType.Completed;
-    summary = Chain(ResourcesFullIcon, status.pipeline.length, successColor);
+    Summary = (
+      <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
+    );
   } else if (status.started && !status.completed) {
     if (status.error.phase) {
       title =
@@ -61,28 +78,32 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         ' - ' +
         MigrationVMStepsType[status.pipeline[status.step - 1].name];
     } else title = MigrationVMStepsType[status.pipeline[status.step - 1].name];
-    const full = Chain(ResourcesFullIcon, status.step - 1, successColor);
-    const empty = Chain(
-      ResourcesAlmostEmptyIcon,
-      status.pipeline.length - status.step,
-      disabledColor
+    const Full = <Chain Face={ResourcesFullIcon} times={status.step - 1} color={successColor} />;
+    const Empty = (
+      <Chain
+        Face={ResourcesAlmostEmptyIcon}
+        times={status.pipeline.length - status.step}
+        color={disabledColor}
+      />
     );
-    summary = (
+    Summary = (
       <>
-        {full}
-        {full ? Dash(true) : null}
+        {Full}
+        {Full ? <Dash isReached={true} /> : null}
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <ResourcesAlmostFullIcon
             color={status.error.phase ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
-        {empty ? Dash(false) : null}
-        {empty}
+        {Empty ? <Dash isReached={false} /> : null}
+        {Empty}
       </>
     );
   } else {
     title = MigrationVMStepsType.NotStarted;
-    summary = Chain(ResourcesAlmostEmptyIcon, status.pipeline.length, disabledColor);
+    Summary = (
+      <Chain Face={ResourcesAlmostEmptyIcon} times={status.pipeline.length} color={disabledColor} />
+    );
   }
 
   return (
@@ -93,7 +114,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         alignContent={{ default: 'alignContentCenter' }}
         flexWrap={{ default: 'nowrap' }}
       >
-        {summary}
+        {Summary}
       </Flex>
     </FlexItem>
   );
