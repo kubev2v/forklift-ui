@@ -37,21 +37,21 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
     queryFn: process.env.DATA_SOURCE !== 'mock' ? config.queryFn : () => mockPromise(mockData),
   });
 
-export const useMockableMutation = <
-  TResult = unknown,
-  TError = unknown,
-  TVariables = unknown,
-  TSnapshot = unknown
->(
-  mutationFn: MutationFunction<TResult, TVariables>,
-  config: MutationConfig<TResult, TError, TVariables, TSnapshot>
-): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
-  useMutation<TResult, TError, TVariables, TSnapshot>(
-    process.env.DATA_SOURCE !== 'mock'
-      ? mutationFn
-      : (): any => window.alert('Sorry, this feature is not available in mock mode.'),
-    config
-  );
+// export const useMockableMutation = <
+//   TResult = unknown,
+//   TError = unknown,
+//   TVariables = unknown,
+//   TSnapshot = unknown
+// >(
+//   // mutationFn: MutationFunction<TResult, TVariables>,
+//   config: MutationConfig<TResult, TError, TVariables, TSnapshot>
+// ): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
+//   useMutation<TResult, TError, TVariables, TSnapshot>(
+//     process.env.DATA_SOURCE !== 'mock'
+//       ? mutationFn
+//       : (): any => window.alert('Sorry, this feature is not available in mock mode.'),
+//     config
+//   );
 
 //   {
 //   // ...config,
