@@ -14,6 +14,7 @@ import {
   expandable,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import {
   ICommonTreeObject,
@@ -33,6 +34,7 @@ import { useVMwareTreeQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import TableEmptyState from '@app/common/components/TableEmptyState';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -169,6 +171,16 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   }
   if (treeQueriesStatus === QueryStatus.Error) {
     return <Alert variant="danger" title="Error loading VMware tree data" />;
+  }
+
+  if (availableVMs.length === 0) {
+    return (
+      <TableEmptyState
+        icon={InfoCircleIcon}
+        titleText="No VMs found"
+        bodyText="No results match your filter. Go back and make a different selection."
+      />
+    );
   }
 
   return (
