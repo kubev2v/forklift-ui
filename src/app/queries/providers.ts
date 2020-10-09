@@ -6,16 +6,16 @@ import {
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
-import { usePollingContext } from '@app/common/context';
+import KubeClient, { ClientFactory, NamespacedResource } from '@konveyor/lib-ui/dist/';
+
+import { usePollingContext, useNetworkContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedResultsByName, getClusterApiUrl } from './helpers';
+import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider, IVMwareProvider, ICommonProvider } from './types';
 import { useAuthorizedFetch, useAuthorizedMutate } from './fetchHelpers';
-import { any } from 'prop-types';
 import { ProviderType, VIRT_META } from '@app/common/constants';
 
-import { ClientFactory } from '@konveyor/lib-ui/dist/modules/kube-client';
 // import { ClientFactory } from '../../../client/client_factory';
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -37,32 +37,78 @@ interface IProviderValues {
 interface IProviderResult {
   test?: any;
 }
+export class VirtResource extends NamespacedResource {
+  private _gvk: KubeClient.IGroupVersionKindPlural;
+  constructor(kind: VirtResourceKind, namespace: string) {
+    super(namespace);
+
+    this._gvk = {
+      group: 'virt.konveyor.io',
+      version: 'v1alpha1',
+      kindPlural: kind,
+    };
+  }
+  gvk(): KubeClient.IGroupVersionKindPlural {
+    return this._gvk;
+  }
+}
+export enum VirtResourceKind {
+  Provider = 'providers',
+}
 
 export const useCreateProvider = () => {
+  const { currentUser } = useNetworkContext();
   // const client: IClusterClient = ClientFactory.cluster(state);
 
   const useProviderPost = async (values: IProviderValues) => {
     try {
-      // const response = await fetch(getClusterApiUrl(`/providers/${values.type}`), {
-      const user = { access_token: 'fdjklsafjklj', expiry_time: 43898230984902 };
-      const client: any = ClientFactory.cluster(user, getClusterApiUrl('/provider/namedfsf'));
-      const response = await fetch(getClusterApiUrl(`/provider/namekjkj33`), {
-        // mode: 'no-cors',
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
-          data: JSON.stringify(values),
-          // body: JSON.stringify(values),
+      // const vmwareProvider1: IVMwareProvider = {
+      const vmwareProvider1: any = {
+        apiVersion: 'virt.konveyor.io/v1alpha1',
+        namespace: 'openshift-migration',
+        name: 'VCenter1',
+        type: ProviderType.vsphere,
+        spec: {
+          type: ProviderType.vsphere,
+          url: 'vcenter.v2v.bos.redhat.com',
+          secret: {
+            namespace: 'openshift-migration',
+            name: 'boston',
+          },
         },
-      });
-      if (response.ok && response.json) {
-        return response.json();
-      } else {
-        return Promise.reject(response);
-      }
+      };
+      // const response = await fetch(getClusterApiUrl(`/providers/${values.type}`), {
+      const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
+
+      const user = {
+        access_token: currentUserString.access_token,
+        expiry_time: currentUserString.expiry_time,
+      };
+      const client = ClientFactory.cluster(user, VIRT_META.clusterApi);
+      client.create(
+        new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace),
+        vmwareProvider1
+      );
+
+      // const client: any = ClientFactory.cluster(user, getClusterApiUrl('/provider/namedfsf'));
+      // const response = await fetch(getClusterApiUrl(`/providers`), {
+      //   // mode: 'no-cors',
+      //   method: 'POST',
+      //   headers: {
+      //     Accept: 'application/json',
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${currentUser}`,
+      //     body: JSON.stringify(vmwareProvider1),
+      //     // body: JSON.stringify(values),
+      //   },
+      // });
+      // if (response.ok && response.json) {
+      //   return response.json();
+      // } else {
+      //   return Promise.reject(response);
+      // }
     } catch (error) {
+      console.error('Failed to add provider.');
       return Promise.reject(error);
     }
   };
