@@ -23,7 +23,8 @@ export interface IVMStatus {
   id: string;
   pipeline: IStep[];
   step: number;
-  completed: boolean;
+  started: string;
+  completed: string;
   error: IError;
 }
 
