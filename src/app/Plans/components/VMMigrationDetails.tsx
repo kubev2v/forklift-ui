@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardBody,
-  Flex,
   Pagination,
   PageSection,
   Title,
@@ -110,11 +109,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           migration.other.total / 1024
         )} GB`,
         {
-          title: (
-            <Flex direction={{ default: 'column' }}>
-              <PipelineSummary status={migration.status2} />
-            </Flex>
-          ),
+          title: <PipelineSummary status={migration.status2} />,
         },
 
         {

@@ -5,7 +5,6 @@ import {
   ResourcesAlmostFullIcon,
   ResourcesFullIcon,
 } from '@patternfly/react-icons';
-
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,
@@ -16,6 +15,18 @@ import {
 import { IVMStatus } from '@app/queries/types';
 import { MigrationVMStepsType } from '@app/common/constants';
 import './PipelineSummary.css';
+
+interface IDashProps {
+  isReached: boolean;
+}
+
+const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) => {
+  return (
+    <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+      {isReached ? <div className="dash dashReached" /> : <div className="dash dashNotReached" />}
+    </FlexItem>
+  );
+};
 
 interface IChainProps {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -44,18 +55,25 @@ const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: ICh
   );
 };
 
-interface IDashProps {
-  isReached: boolean;
+interface ISummaryProps {
+  title: string;
+  children: React.ReactNode;
 }
 
-const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) => {
-  return (
-    <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-      {isReached ? <div className="dash dashReached" /> : <div className="dash dashNotReached" />}
+const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: ISummaryProps) => (
+  <Flex direction={{ default: 'column' }}>
+    <FlexItem>
+      <Text component="small">{title}</Text>
+      <Flex
+        spaceItems={{ default: 'spaceItemsNone' }}
+        alignContent={{ default: 'alignContentCenter' }}
+        flexWrap={{ default: 'nowrap' }}
+      >
+        {children}
+      </Flex>
     </FlexItem>
-  );
-};
-``;
+  </Flex>
+);
 
 interface IPipelineSummaryProps {
   status: IVMStatus;
@@ -64,61 +82,43 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
-  let title: string;
-  let Summary: React.ReactNode;
-
   if (status.completed) {
-    title = MigrationVMStepsType.Completed;
-    Summary = (
-      <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
+    return (
+      <Summary title={MigrationVMStepsType.Completed}>
+        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
+      </Summary>
     );
   } else if (status.started && !status.completed) {
-    if (status.error.phase) {
-      title =
-        MigrationVMStepsType.Error +
-        ' - ' +
-        MigrationVMStepsType[status.pipeline[status.step - 1].name];
-    } else title = MigrationVMStepsType[status.pipeline[status.step - 1].name];
-    const Full = <Chain Face={ResourcesFullIcon} times={status.step - 1} color={successColor} />;
-    const Empty = (
-      <Chain
-        Face={ResourcesAlmostEmptyIcon}
-        times={status.pipeline.length - status.step}
-        color={disabledColor}
-      />
-    );
-    Summary = (
-      <>
-        {Full}
-        {Full ? <Dash isReached={true} /> : null}
+    let title = status.error.phase ? MigrationVMStepsType.Error + ' - ' : '';
+    title += MigrationVMStepsType[status.pipeline[status.step - 1].name];
+    return (
+      <Summary title={title}>
+        <Chain Face={ResourcesFullIcon} times={status.step - 1} color={successColor} />
+        {status.step > 0 ? <Dash isReached={true} /> : null}
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <ResourcesAlmostFullIcon
             color={status.error.phase ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
-        {Empty ? <Dash isReached={false} /> : null}
-        {Empty}
-      </>
+        {status.step > 0 ? <Dash isReached={false} /> : null}
+        <Chain
+          Face={ResourcesAlmostEmptyIcon}
+          times={status.pipeline.length - status.step}
+          color={disabledColor}
+        />
+      </Summary>
     );
   } else {
-    title = MigrationVMStepsType.NotStarted;
-    Summary = (
-      <Chain Face={ResourcesAlmostEmptyIcon} times={status.pipeline.length} color={disabledColor} />
+    return (
+      <Summary title={MigrationVMStepsType.NotStarted}>
+        <Chain
+          Face={ResourcesAlmostEmptyIcon}
+          times={status.pipeline.length}
+          color={disabledColor}
+        />
+      </Summary>
     );
   }
-
-  return (
-    <FlexItem>
-      <Text component="small">{title}</Text>
-      <Flex
-        spaceItems={{ default: 'spaceItemsNone' }}
-        alignContent={{ default: 'alignContentCenter' }}
-        flexWrap={{ default: 'nowrap' }}
-      >
-        {Summary}
-      </Flex>
-    </FlexItem>
-  );
 };
 
 export default PipelineSummary;
