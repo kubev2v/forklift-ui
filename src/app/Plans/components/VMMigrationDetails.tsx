@@ -20,6 +20,7 @@ import {
   IRow,
   wrappable,
   expandable,
+  cellWidth,
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -76,8 +77,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     { title: 'Start time', transforms: [sortable] },
     { title: 'End time', transforms: [sortable] },
     { title: 'Data copied', transforms: [sortable] },
-    { title: 'Status', transforms: [sortable] },
-    { title: '' },
+    {
+      title: 'Status',
+      transforms: [sortable, cellWidth(10)],
+    },
+    { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
 
   const rows: IRow[] = [];
@@ -105,7 +109,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           migration.other.total / 1024
         )} GB`,
         {
-          title: <PipelineSummary total={0} current={0} status={migration.other.status} />,
+          title: <PipelineSummary status={migration.status2} />,
         },
 
         {

@@ -245,15 +245,7 @@ export const vmStatus1: IVMStatus = {
   id: 'vm1-id',
   pipeline: [
     {
-      name: 'Step 1',
-      progress: {
-        total: 2,
-        completed: 2,
-      },
-      phase: 'Latest message from controller',
-    },
-    {
-      name: 'Step 2',
+      name: 'PreHook',
       progress: {
         total: 2,
         completed: 2,
@@ -261,7 +253,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 3',
+      name: 'DiskTransfer',
       progress: {
         total: 2,
         completed: 2,
@@ -269,7 +261,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 4',
+      name: 'Import',
       progress: {
         total: 2,
         completed: 2,
@@ -277,7 +269,7 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Copying data',
+      name: 'PostHook',
       progress: {
         total: 2,
         completed: 2,
@@ -285,8 +277,9 @@ export const vmStatus1: IVMStatus = {
       phase: '',
     },
   ],
-  step: 5,
-  completed: false,
+  step: 2,
+  started: '2020-10-10T16:04:10Z',
+  completed: '',
   error: {
     phase: '',
     reasons: [''],
@@ -294,10 +287,10 @@ export const vmStatus1: IVMStatus = {
 };
 
 export const vmStatus2: IVMStatus = {
-  id: 'vm1-id',
+  id: 'vm2-id',
   pipeline: [
     {
-      name: 'Step 1',
+      name: 'PreHook',
       progress: {
         total: 1,
         completed: 1,
@@ -305,7 +298,7 @@ export const vmStatus2: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 2',
+      name: 'DiskTransfer',
       progress: {
         total: 1,
         completed: 1,
@@ -313,54 +306,114 @@ export const vmStatus2: IVMStatus = {
       phase: '',
     },
     {
-      name: 'Step 3',
+      name: 'Import',
       progress: {
         total: 1,
-        completed: 1,
+        completed: 0,
       },
       phase: '',
     },
     {
-      name: 'Step 4',
+      name: 'PostHook',
       progress: {
         total: 1,
-        completed: 1,
-      },
-      phase: '',
-    },
-    {
-      name: 'Step 5',
-      progress: {
-        total: 1,
-        completed: 1,
-      },
-      phase: '',
-    },
-    {
-      name: 'Step 6',
-      progress: {
-        total: 1,
-        completed: 1,
-      },
-      phase: '',
-    },
-    {
-      name: 'Step 7',
-      progress: {
-        total: 1,
-        completed: 1,
+        completed: 0,
       },
       phase: '',
     },
   ],
-  step: 7,
-  completed: true,
+  step: 4,
+  started: '2020-10-10T16:04:10Z',
+  completed: '2020-10-10T16:04:10Z',
   error: {
     phase: '',
     reasons: [''],
   },
 };
-export const MOCK_VMSSTATUS: IVMStatus[] = [vmStatus2, vmStatus1];
+
+export const vmStatus3: IVMStatus = {
+  id: 'vm3-id',
+  pipeline: [
+    {
+      name: 'PreHook',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: 'Latest message from controller',
+    },
+    {
+      name: 'Data transfer',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Import',
+      progress: {
+        total: 3,
+        completed: 3,
+      },
+      phase: '',
+    },
+  ],
+  step: 0,
+  started: '',
+  completed: '',
+  error: {
+    phase: '',
+    reasons: [''],
+  },
+};
+
+export const vmStatus4: IVMStatus = {
+  id: 'vm4-id',
+  pipeline: [
+    {
+      name: 'PreHook',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: 'Latest message from controller',
+    },
+    {
+      name: 'DiskTransfer',
+      progress: {
+        total: 2,
+        completed: 2,
+      },
+      phase: '',
+    },
+    {
+      name: 'Import',
+      progress: {
+        total: 3,
+        completed: 3,
+      },
+      phase: '',
+    },
+    {
+      name: 'PostHook',
+      progress: {
+        total: 1,
+        completed: 0,
+      },
+      phase: '',
+    },
+  ],
+  step: 3,
+  started: '2020-10-10T16:04:10Z',
+  completed: '',
+  error: {
+    phase: 'Error',
+    reasons: [''],
+  },
+};
+
+export const MOCK_VMSSTATUS: IVMStatus[] = [vmStatus1, vmStatus2, vmStatus3];
 
 export const migration1: IMigration = {
   id: 'VM1',
@@ -402,7 +455,7 @@ export const migration3: IMigration = {
     end: '09 Aug 2019, 09:43:12',
   },
   status: { ready: false, storageReady: true, nbVMsDone: 1 },
-  status2: vmStatus2,
+  status2: vmStatus3,
   other: {
     copied: 87952,
     total: 87952,
@@ -418,7 +471,7 @@ export const migration4: IMigration = {
     end: '10 Aug 2019, 11:34:56',
   },
   status: { ready: false, storageReady: false, nbVMsDone: 2 },
-  status2: vmStatus2,
+  status2: vmStatus4,
   other: {
     copied: 87952,
     total: 87952,

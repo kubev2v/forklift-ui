@@ -26,6 +26,16 @@ export enum PlanStatusType {
   Error = 'Failed',
 }
 
+export enum MigrationVMStepsType {
+  PreHook = 'Pre Hook',
+  DiskTransfer = 'Copying data',
+  Import = 'Importing',
+  PostHook = 'Post Hook',
+  NotStarted = 'Not started',
+  Completed = 'Complete',
+  Error = 'Failed',
+}
+
 export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
   [ProviderType.openshift]: 'OpenShift Virtualization',
