@@ -16,6 +16,40 @@ interface ICommonProviderObject extends ICR {
   };
 }
 
+export interface INewSecret {
+  apiVersion: string;
+  data: {
+    user?: string;
+    password?: string;
+    thumbprint?: string;
+    token?: string;
+  };
+  kind: string;
+  metadata: {
+    // generateName: string;
+    name: string;
+    namespace: string;
+  };
+  type: string;
+}
+export interface INewProvider {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+  };
+  spec: {
+    type: ProviderType;
+    url: string; // TODO is this the "Endpoint" column?
+    secret: {
+      namespace: string;
+      name: string;
+    };
+  };
+  type: ProviderType;
+}
+
 export interface ICommonProvider {
   uid: string;
   version: string;

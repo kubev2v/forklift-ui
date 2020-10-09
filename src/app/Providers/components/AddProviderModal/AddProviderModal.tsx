@@ -56,9 +56,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
     providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
   const isFormValid =
     providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
-  // const createProvider = (provider) => {
-  //   useCreateProvider({ type: ProviderType.vsphere, name: 'test' });
-  // };
+
   const { createProvider } = useCreateProvider();
 
   return (
@@ -74,9 +72,9 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           variant="primary"
           isDisabled={!isFormValid}
           onClick={() => {
-            console.log('TODO: submit form!', formValues);
-            createProvider({ type: ProviderType.vsphere, name: 'test' });
-            alert('TODO');
+            createProvider(formValues);
+            //TODO: tie in onClose to success or error from query. handle error somehow
+            onClose();
           }}
         >
           Add

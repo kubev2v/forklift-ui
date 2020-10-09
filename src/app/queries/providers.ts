@@ -6,15 +6,31 @@ import {
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
-import KubeClient, { ClientFactory, NamespacedResource } from '@konveyor/lib-ui/dist/';
+import { ClientFactory } from '@konveyor/lib-ui/dist/';
 
 import { usePollingContext, useNetworkContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
-import { IProvidersByType, Provider, IVMwareProvider, ICommonProvider } from './types';
+import {
+  IProvidersByType,
+  Provider,
+  IVMwareProvider,
+  ICommonProvider,
+  IOpenShiftProvider,
+  INewProvider,
+  INewSecret,
+} from './types';
 import { useAuthorizedFetch, useAuthorizedMutate } from './fetchHelpers';
 import { ProviderType, VIRT_META } from '@app/common/constants';
+import {
+  VirtResource,
+  VirtResourceKind,
+  providerResource,
+  secretResource,
+  convertFormValuesToProvider,
+  convertFormValuesToSecret,
+} from '@app/client/helpers';
 
 // import { ClientFactory } from '../../../client/client_factory';
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
@@ -30,107 +46,58 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
 
   return sortIndexedResultsByName<Provider, IProvidersByType>(result);
 };
-interface IProviderValues {
-  type: string;
-  name: string;
-}
-interface IProviderResult {
-  test?: any;
-}
-export class VirtResource extends NamespacedResource {
-  private _gvk: KubeClient.IGroupVersionKindPlural;
-  constructor(kind: VirtResourceKind, namespace: string) {
-    super(namespace);
-
-    this._gvk = {
-      group: 'virt.konveyor.io',
-      version: 'v1alpha1',
-      kindPlural: kind,
-    };
-  }
-  gvk(): KubeClient.IGroupVersionKindPlural {
-    return this._gvk;
-  }
-}
-export enum VirtResourceKind {
-  Provider = 'providers',
-}
-
 export const useCreateProvider = () => {
   const { currentUser } = useNetworkContext();
   // const client: IClusterClient = ClientFactory.cluster(state);
 
-  const useProviderPost = async (values: IProviderValues) => {
+  const useProviderPost = async (values) => {
     try {
-      // const vmwareProvider1: IVMwareProvider = {
-      const vmwareProvider1: any = {
-        apiVersion: 'virt.konveyor.io/v1alpha1',
-        kind: 'Provider',
-        metadata: {
-          name: 'testing12',
-        },
-        namespace: 'openshift-migration',
-        spec: {
-          type: 'vsphere',
-          url: 'vcenter.v2v.bos.redhat.com',
-          secret: {
-            namespace: 'openshift-migration',
-            name: 'boston',
-          },
-        },
-      };
-
-      // const response = await fetch(getClusterApiUrl(`/providers/${values.type}`), {
       const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
-
       const user = {
         access_token: currentUserString.access_token,
         expiry_time: currentUserString.expiry_time,
       };
       const client = ClientFactory.cluster(user, VIRT_META.clusterApi);
-      client.create(
-        new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace),
-        vmwareProvider1
-      );
 
-      // const client: any = ClientFactory.cluster(user, getClusterApiUrl('/provider/namedfsf'));
-      // const response = await fetch(getClusterApiUrl(`/providers`), {
-      //   // mode: 'no-cors',
-      //   method: 'POST',
-      //   headers: {
-      //     Accept: 'application/json',
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${currentUser}`,
-      //     body: JSON.stringify(vmwareProvider1),
-      //     // body: JSON.stringify(values),
-      //   },
-      // });
-      // if (response.ok && response.json) {
-      //   return response.json();
-      // } else {
-      //   return Promise.reject(response);
-      // }
+      //TODO -- handle type requests differently
+      const secret: INewSecret = convertFormValuesToSecret(values);
+      const secretResult = await client.create(secretResource, secret);
+
+      //possibly move secret to a new query?
+
+      const provider: INewProvider = convertFormValuesToProvider(values);
+      const providerResult = await client.create(providerResource, provider);
+
+      return providerResult;
     } catch (error) {
       console.error('Failed to add provider.');
       return Promise.reject(error);
     }
   };
 
-  const [mutate] = useMutation(useProviderPost);
+  const [mutate, { isIdle, isLoading, isError, isSuccess, data, error }] = useMutation(
+    useProviderPost,
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('providers');
+      },
+    }
+  );
 
-  // return useAuthorizedMutate('url', 'data');
-  const createProvider = async (values: IProviderValues) => {
-    // Prevent the form from refreshing the page
-
+  const createProvider = async (values: any) => {
     try {
       await mutate(values);
-      // Todo was successfully created
     } catch (error) {
       // Uh oh, something went wrong
     }
   };
   return {
     createProvider,
+    isIdle,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
   };
 };
 
