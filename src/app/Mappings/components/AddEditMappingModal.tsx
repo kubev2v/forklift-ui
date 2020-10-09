@@ -1,24 +1,19 @@
 import * as React from 'react';
-import {
-  Modal,
-  Button,
-  Form,
-  FormGroup,
-  TextInput,
-  Grid,
-  GridItem,
-  Alert,
-} from '@patternfly/react-core';
+import * as yup from 'yup';
+import { Modal, Button, Form, FormGroup, Grid, GridItem, Alert } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { Mapping, MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { useFormField, useFormState } from '@app/common/hooks/useFormState';
+import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -26,11 +21,38 @@ interface IAddEditMappingModalProps {
   mappingType: MappingType;
 }
 
+const useMappingFormState = () => ({
+  mapping: useFormState({
+    name: useFormField('', yup.string().label('Mapping name').required()),
+    sourceProvider: useFormField<IVMwareProvider | null>(
+      null,
+      yup.mixed<IVMwareProvider>().label('Source provider').required()
+    ),
+    targetProvider: useFormField<IOpenShiftProvider | null>(
+      null,
+      yup.mixed<IOpenShiftProvider>().label('Target provider').required()
+    ),
+  }),
+  networkMapping: useFormState({
+    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
+    isSaveNewMapping: useFormField(false, yup.boolean().required()),
+    newMappingName: useFormField('', yup.string()),
+  }),
+  storageMapping: useFormState({
+    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
+    isSaveNewMapping: useFormField(false, yup.boolean().required()),
+    newMappingName: useFormField('', yup.string()),
+  }),
+});
+
+export type MappingFormState = ReturnType<typeof useMappingFormState>;
+
 const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
+  const forms = useMappingFormState();
   const providersQuery = useProvidersQuery();
   usePausedPollingEffect();
 
@@ -50,13 +72,9 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           toString: () => provider.name,
         }));
 
-  const [mappingName, setMappingName] = React.useState('');
-  const [sourceProvider, setSourceProvider] = React.useState<IVMwareProvider | null>(null);
-  const [targetProvider, setTargetProvider] = React.useState<IOpenShiftProvider | null>(null);
-
   const mappingResourceQueries = useMappingResourceQueries(
-    sourceProvider,
-    targetProvider,
+    forms.mapping.values.sourceProvider,
+    forms.mapping.values.targetProvider,
     mappingType
   );
 
@@ -68,7 +86,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   React.useEffect(() => {
     // If you change providers, reset the mapping selections.
     setBuilderItems([{ source: null, target: null }]);
-  }, [sourceProvider, targetProvider]);
+  }, [forms.mapping.values.sourceProvider, forms.mapping.values.targetProvider]);
 
   return (
     <Modal
@@ -82,12 +100,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           key="confirm"
           variant="primary"
           onClick={() => {
-            if (sourceProvider && targetProvider) {
+            if (forms.mapping.values.sourceProvider && forms.mapping.values.targetProvider) {
               const generatedMapping = getMappingFromBuilderItems({
                 mappingType,
-                mappingName,
-                sourceProvider,
-                targetProvider,
+                mappingName: forms.mapping.fields.name.value,
+                sourceProvider: forms.mapping.values.sourceProvider,
+                targetProvider: forms.mapping.values.targetProvider,
                 builderItems,
               });
               //TODO: Update when real api call & validation is implemented
@@ -113,27 +131,37 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           <>
             <Grid className={spacing.mbMd}>
               <GridItem sm={12} md={5} className={spacing.mbMd}>
-                <FormGroup label="Name" isRequired fieldId="mapping-name">
-                  <TextInput
-                    id="mapping-name"
-                    value={mappingName}
-                    type="text"
-                    onChange={setMappingName}
+                <Form>
+                  <ValidatedTextInput
+                    field={forms.mapping.fields.name}
+                    label="Name"
+                    isRequired
+                    fieldId="mapping-name"
                   />
-                </FormGroup>
+                </Form>
               </GridItem>
               <GridItem />
               <GridItem sm={12} md={5}>
-                <FormGroup label="Source provider" isRequired fieldId="source-provider">
+                <FormGroup
+                  label="Source provider"
+                  isRequired
+                  fieldId="source-provider"
+                  helperTextInvalid={forms.mapping.fields.sourceProvider.error}
+                  validated={forms.mapping.fields.sourceProvider.isValid ? 'default' : 'error'}
+                >
                   <SimpleSelect
                     id="source-provider"
                     aria-label="Source provider"
                     options={sourceProviderOptions}
                     value={[
-                      sourceProviderOptions.find((option) => option.value === sourceProvider),
+                      sourceProviderOptions.find(
+                        (option) => option.value === forms.mapping.fields.sourceProvider.value
+                      ),
                     ]}
                     onChange={(selection) =>
-                      setSourceProvider((selection as OptionWithValue<IVMwareProvider>).value)
+                      forms.mapping.fields.sourceProvider.setValue(
+                        (selection as OptionWithValue<IVMwareProvider>).value
+                      )
                     }
                     placeholderText="Select a source provider..."
                   />
@@ -147,10 +175,14 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     aria-label="Target provider"
                     options={targetProviderOptions}
                     value={[
-                      targetProviderOptions.find((option) => option.value === targetProvider),
+                      targetProviderOptions.find(
+                        (option) => option.value === forms.mapping.fields.targetProvider.value
+                      ),
                     ]}
                     onChange={(selection) =>
-                      setTargetProvider((selection as OptionWithValue<IOpenShiftProvider>).value)
+                      forms.mapping.fields.targetProvider.setValue(
+                        (selection as OptionWithValue<IOpenShiftProvider>).value
+                      )
                     }
                     placeholderText="Select a target provider..."
                   />
@@ -158,7 +190,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               </GridItem>
               <GridItem sm={1} />
             </Grid>
-            {sourceProvider && targetProvider ? (
+            {forms.mapping.isValid ? (
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (
