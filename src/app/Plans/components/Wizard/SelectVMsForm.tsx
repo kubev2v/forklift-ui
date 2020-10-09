@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text } from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Alert } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
   TableHeader,
@@ -14,48 +15,80 @@ import {
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
-import { IVM } from '@app/queries/types';
+import {
+  ICommonTreeObject,
+  IVMwareHostTree,
+  IVMwareProvider,
+  IVMwareVMTree,
+  VMwareTree,
+  VMwareTreeType,
+} from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { PlanWizardFormState } from './PlanWizard';
+import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
+import { useVMwareTreeQuery } from '@app/queries';
+import { getAggregateQueryStatus } from '@app/queries/helpers';
+import { QueryStatus } from 'react-query';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import TableEmptyState from '@app/common/components/TableEmptyState';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
-  vms: IVM[];
+  selectedTreeNodes: VMwareTree[];
+  sourceProvider: IVMwareProvider | null;
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   form,
-  vms,
+  selectedTreeNodes,
+  sourceProvider,
 }: ISelectVMsFormProps) => {
-  const getSortValues = (vm: IVM) => {
+  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
+  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
+  const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
+
+  const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
+    const availableVMs = getAvailableVMs(selectedTreeNodes);
+    const treePathInfoByVM = getVMTreePathInfoByVM(
+      availableVMs,
+      hostTreeQuery.data || null,
+      vmTreeQuery.data || null
+    );
+    return { availableVMs, treePathInfoByVM };
+  }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data]);
+
+  const getSortValues = (vm: ICommonTreeObject) => {
+    const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
       '', // Expand control column
       '', // Checkbox column
-      vm.migrationAnalysis,
+      'TBD', // Analytics column
       vm.name,
-      vm.datacenter,
-      vm.cluster,
-      vm.host,
-      vm.folderPath,
+      datacenter?.name || '',
+      cluster?.name || '',
+      host?.name || '',
+      folderPathStr || '',
       '', // Action column
     ];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(vms, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(availableVMs, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { isItemSelected, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<IVM>({
+  const { isItemSelected, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
+    ICommonTreeObject
+  >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
   const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
-    IVM
+    ICommonTreeObject
   >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
@@ -78,21 +111,22 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       cellFormatters: [expandable],
     },
     {
-      title: 'Migration Analysis',
+      title: 'Migration analysis',
       transforms: [sortable, wrappable],
     },
-    { title: 'VM Name', transforms: [sortable, wrappable] },
+    { title: 'VM name', transforms: [sortable, wrappable] },
     { title: 'Datacenter', transforms: [sortable] },
     { title: 'Cluster', transforms: [sortable] },
     { title: 'Host', transforms: [sortable] },
-    { title: 'Folder Path', transforms: [sortable, wrappable] },
+    { title: 'Folder path', transforms: [sortable, wrappable] },
   ];
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((vm: IVM) => {
+  currentPageItems.forEach((vm: ICommonTreeObject) => {
     const isSelected = isItemSelected(vm);
     const isExpanded = isVMExpanded(vm);
+    const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
       isOpen: isExpanded,
@@ -111,28 +145,48 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         },
         {
           title: (
-            <StatusIcon status={StatusType[vm.migrationAnalysis]} label={vm.migrationAnalysis} />
+            // TODO render real analytics results here when available
+            <StatusIcon status={StatusType.Ok} label="Ready" />
           ),
         },
         vm.name,
-        vm.datacenter,
-        vm.cluster,
-        vm.host,
-        vm.folderPath,
+        datacenter?.name || '',
+        cluster?.name || '',
+        host?.name || '',
+        folderPathStr || '',
       ],
     });
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
         fullWidth: true,
-        cells: [vm.analysisDescription],
+        cells: [
+          // vm.analysisDescription
+          'TODO: Analytics description here',
+        ],
       });
     }
   });
 
+  if (treeQueriesStatus === QueryStatus.Loading) {
+    return <LoadingEmptyState />;
+  }
+  if (treeQueriesStatus === QueryStatus.Error) {
+    return <Alert variant="danger" title="Error loading VMware tree data" />;
+  }
+
+  if (availableVMs.length === 0) {
+    return (
+      <TableEmptyState
+        titleText="No VMs found"
+        bodyText="No results match your filter. Go back and make a different selection."
+      />
+    );
+  }
+
   return (
     <>
-      <TextContent>
+      <TextContent className={spacing.mbMd}>
         <Text component="p">
           Select VMs for migration. The Migration analysis column shows the risk associated with
           migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
