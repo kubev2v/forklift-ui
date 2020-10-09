@@ -5,6 +5,7 @@ export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
   selfSignedCertUrl: string;
   saveLoginToken: (user: string, history: any) => void;
+  currentUser: string;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
@@ -15,6 +16,7 @@ const NetworkContext = React.createContext<INetworkContext>({
   saveLoginToken: () => {
     console.error('saveLoginToken was called without a NetworkContextProvider in the tree');
   },
+  currentUser: '',
 });
 
 interface INetworkContextProviderProps {
@@ -28,7 +30,7 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
 
   const saveLoginToken = (user, history) => {
-    setCurrentUser(user);
+    setCurrentUser(JSON.stringify(user));
     history.push('/');
   };
 
@@ -38,6 +40,7 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
         selfSignedCertUrl,
         setSelfSignedCertUrl,
         saveLoginToken,
+        currentUser: currentUser || '',
       }}
     >
       {children}
