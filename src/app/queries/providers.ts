@@ -65,11 +65,13 @@ export const useCreateProvider = () => {
       // const vmwareProvider1: IVMwareProvider = {
       const vmwareProvider1: any = {
         apiVersion: 'virt.konveyor.io/v1alpha1',
+        kind: 'Provider',
+        metadata: {
+          name: 'testing12',
+        },
         namespace: 'openshift-migration',
-        name: 'VCenter1',
-        type: ProviderType.vsphere,
         spec: {
-          type: ProviderType.vsphere,
+          type: 'vsphere',
           url: 'vcenter.v2v.bos.redhat.com',
           secret: {
             namespace: 'openshift-migration',
@@ -77,6 +79,7 @@ export const useCreateProvider = () => {
           },
         },
       };
+
       // const response = await fetch(getClusterApiUrl(`/providers/${values.type}`), {
       const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
 
