@@ -29,7 +29,7 @@ const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) =>
 };
 
 interface IChainProps {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   Face: React.ComponentClass<any>;
   times: number;
   color: {
