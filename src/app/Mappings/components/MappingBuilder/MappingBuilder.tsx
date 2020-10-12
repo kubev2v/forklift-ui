@@ -10,7 +10,6 @@ import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import AddTooltip from '@app/common/components/AddTooltip';
 
 import './MappingBuilder.css';
-// import AddTooltip from '@app/common/components/AddTooltip';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;

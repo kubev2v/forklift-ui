@@ -3,7 +3,6 @@ import {
   Checkbox,
   Grid,
   GridItem,
-  Radio,
   TextContent,
   Text,
   Form,
@@ -11,16 +10,22 @@ import {
   Flex,
   FlexItem,
   Alert,
+  Select,
+  SelectOption,
+  SelectGroup,
+  SelectOptionObject,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingType, Mapping, IVMwareProvider, IOpenShiftProvider } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
+
+import './MappingForm.css';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -43,76 +48,95 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingType
   );
 
+  const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
+
+  const newMappingOption = {
+    toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
+    value: 'new',
+  };
+
+  const [isCreateMappingSelected, setIsCreateMappingSelected] = React.useState(false);
+  const [selectedExistingMapping, setSelectedExistingMapping] = React.useState<Mapping | null>(
+    null
+  );
+
   const mappingOptions = Object.values(mappingList).map((mapping) => ({
     toString: () => mapping.name,
     value: mapping,
   })) as OptionWithValue<Mapping>[];
-
-  const [isCreateMappingChecked, toggleCreateMapping] = React.useReducer(
-    (isCreateMappingChecked) => !isCreateMappingChecked,
-    false
-  );
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
     { source: null, target: null },
   ]);
 
+  const populateMappingBuilder = (mapping?: Mapping) => {};
+
+  if (mappingResourceQueries.isLoading) {
+    return <LoadingEmptyState />;
+  }
+  if (mappingResourceQueries.isError) {
+    return <Alert variant="danger" title="Error loading mapping resources" />;
+  }
+
   return (
     <Form>
       <TextContent>
         <Text component="p">
-          Select an existing {mappingType.toLowerCase()} mapping between your source and target
+          Start with an existing {mappingType.toLowerCase()} mapping between your source and target
           providers, or create a new one.
         </Text>
       </TextContent>
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
-        <Radio
-          id="existing-mapping"
-          label={`Use an existing ${mappingType.toLowerCase()} mapping`}
-          name="radio-existing"
-          onChange={toggleCreateMapping}
-          isChecked={!isCreateMappingChecked}
-        />
-        {!isCreateMappingChecked && (
-          <FlexItem>
-            <FormGroup isRequired fieldId="mappingSelect">
-              <SimpleSelect
-                id="mappingSelect"
-                aria-label="Select mapping"
-                options={mappingOptions}
-                value={[mappingOptions.find((option) => option.value === form.values.mapping)]}
-                onChange={(selection) =>
-                  form.fields.mapping.setValue((selection as OptionWithValue<Mapping>).value)
+        <FlexItem>
+          <FormGroup isRequired fieldId="mappingSelect">
+            <Select
+              id="mappingSelect"
+              aria-label="Select mapping"
+              placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
+              isGrouped
+              isOpen={isMappingSelectOpen}
+              onToggle={setIsMappingSelectOpen}
+              onSelect={(_event, selection: SelectOptionObject) => {
+                const sel = selection as OptionWithValue<Mapping | 'new'>;
+                if (sel.value === 'new') {
+                  setIsCreateMappingSelected(true);
+                  setSelectedExistingMapping(null);
+                  populateMappingBuilder();
+                } else {
+                  setIsCreateMappingSelected(false);
+                  setSelectedExistingMapping(sel.value as Mapping);
+                  populateMappingBuilder(sel.value as Mapping);
                 }
-                placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
-              />
-            </FormGroup>
-          </FlexItem>
-        )}
-        <Radio
-          id="create-mapping"
-          label={`Create a new ${mappingType.toLowerCase()} mapping`}
-          name="radio-new"
-          onChange={toggleCreateMapping}
-          isChecked={isCreateMappingChecked}
-        />
-        {isCreateMappingChecked && (
+                setIsMappingSelectOpen(false);
+              }}
+              selections={
+                isCreateMappingSelected
+                  ? [newMappingOption]
+                  : selectedExistingMapping
+                  ? [mappingOptions.find((option) => option.value === selectedExistingMapping)]
+                  : []
+              }
+            >
+              <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
+              <SelectGroup label="Existing mappings">
+                {mappingOptions.map((option) => (
+                  <SelectOption key={option.toString()} value={option} />
+                ))}
+              </SelectGroup>
+            </Select>
+          </FormGroup>
+        </FlexItem>
+
+        {(isCreateMappingSelected || selectedExistingMapping) && (
           <>
-            {mappingResourceQueries.isLoading ? (
-              <LoadingEmptyState />
-            ) : mappingResourceQueries.isError ? (
-              <Alert variant="danger" title="Error loading mapping resources" />
-            ) : (
-              // TODO the result of the MappingBuilder is not currently saved to form state. When in this mode we need to sync it with form.fields.mapping
-              <MappingBuilder
-                mappingType={mappingType}
-                availableSources={mappingResourceQueries.availableSources}
-                availableTargets={mappingResourceQueries.availableTargets}
-                builderItems={builderItems}
-                setBuilderItems={setBuilderItems}
-              />
-            )}
+            <MappingBuilder
+              mappingType={mappingType}
+              availableSources={mappingResourceQueries.availableSources}
+              availableTargets={mappingResourceQueries.availableTargets}
+              builderItems={builderItems}
+              setBuilderItems={setBuilderItems}
+            />
             <Checkbox
               label="Save mapping to use again"
               aria-label="save mapping checkbox"
