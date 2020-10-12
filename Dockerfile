@@ -3,7 +3,9 @@ FROM registry.access.redhat.com/ubi8/nodejs-12 as builder
 
 COPY . /virt-ui
 WORKDIR /virt-ui
-RUN npm install -g yarn && yarn && yarn build
+RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
+    dnf -y install yarn && yarn && yarn build
+
 
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-12
