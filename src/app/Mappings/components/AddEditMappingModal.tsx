@@ -6,13 +6,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { Mapping, MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { useFormField, useFormState } from '@app/common/hooks/useFormState';
+import { useFormField, useFormState, getFormGroupProps } from '@app/common/hooks/useFormState';
 import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 
 interface IAddEditMappingModalProps {
@@ -21,8 +21,12 @@ interface IAddEditMappingModalProps {
   mappingType: MappingType;
 }
 
-const useMappingFormState = () => ({
-  mapping: useFormState({
+const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
+  title,
+  onClose,
+  mappingType,
+}: IAddEditMappingModalProps) => {
+  const form = useFormState({
     name: useFormField('', yup.string().label('Mapping name').required()),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
@@ -32,27 +36,7 @@ const useMappingFormState = () => ({
       null,
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
-  }),
-  networkMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
-  storageMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
-});
-
-export type MappingFormState = ReturnType<typeof useMappingFormState>;
-
-const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
-  title,
-  onClose,
-  mappingType,
-}: IAddEditMappingModalProps) => {
-  const forms = useMappingFormState();
+  });
   const providersQuery = useProvidersQuery();
   usePausedPollingEffect();
 
@@ -73,8 +57,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         }));
 
   const mappingResourceQueries = useMappingResourceQueries(
-    forms.mapping.values.sourceProvider,
-    forms.mapping.values.targetProvider,
+    form.values.sourceProvider,
+    form.values.targetProvider,
     mappingType
   );
 
@@ -86,7 +70,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   React.useEffect(() => {
     // If you change providers, reset the mapping selections.
     setBuilderItems([{ source: null, target: null }]);
-  }, [forms.mapping.values.sourceProvider, forms.mapping.values.targetProvider]);
+  }, [form.values.sourceProvider, form.values.targetProvider]);
 
   return (
     <Modal
@@ -100,12 +84,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           key="confirm"
           variant="primary"
           onClick={() => {
-            if (forms.mapping.values.sourceProvider && forms.mapping.values.targetProvider) {
+            if (form.values.sourceProvider && form.values.targetProvider) {
               const generatedMapping = getMappingFromBuilderItems({
                 mappingType,
-                mappingName: forms.mapping.fields.name.value,
-                sourceProvider: forms.mapping.values.sourceProvider,
-                targetProvider: forms.mapping.values.targetProvider,
+                mappingName: form.fields.name.value,
+                sourceProvider: form.values.sourceProvider,
+                targetProvider: form.values.targetProvider,
                 builderItems,
               });
               //TODO: Update when real api call & validation is implemented
@@ -133,7 +117,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={12} md={5} className={spacing.mbMd}>
                 <Form>
                   <ValidatedTextInput
-                    field={forms.mapping.fields.name}
+                    field={form.fields.name}
                     label="Name"
                     isRequired
                     fieldId="mapping-name"
@@ -146,8 +130,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   label="Source provider"
                   isRequired
                   fieldId="source-provider"
-                  helperTextInvalid={forms.mapping.fields.sourceProvider.error}
-                  validated={forms.mapping.fields.sourceProvider.isValid ? 'default' : 'error'}
+                  validated={form.fields.sourceProvider.isValid ? 'default' : 'error'}
+                  {...getFormGroupProps(form.fields.sourceProvider)}
                 >
                   <SimpleSelect
                     id="source-provider"
@@ -155,11 +139,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     options={sourceProviderOptions}
                     value={[
                       sourceProviderOptions.find(
-                        (option) => option.value === forms.mapping.fields.sourceProvider.value
+                        (option) => option.value === form.fields.sourceProvider.value
                       ),
                     ]}
                     onChange={(selection) =>
-                      forms.mapping.fields.sourceProvider.setValue(
+                      form.fields.sourceProvider.setValue(
                         (selection as OptionWithValue<IVMwareProvider>).value
                       )
                     }
@@ -169,18 +153,23 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               </GridItem>
               <GridItem sm={1} />
               <GridItem sm={12} md={5}>
-                <FormGroup label="Target provider" isRequired fieldId="target-provider">
+                <FormGroup
+                  label="Target provider"
+                  isRequired
+                  fieldId="target-provider"
+                  {...getFormGroupProps(form.fields.sourceProvider)}
+                >
                   <SimpleSelect
                     id="target-provider"
                     aria-label="Target provider"
                     options={targetProviderOptions}
                     value={[
                       targetProviderOptions.find(
-                        (option) => option.value === forms.mapping.fields.targetProvider.value
+                        (option) => option.value === form.fields.targetProvider.value
                       ),
                     ]}
                     onChange={(selection) =>
-                      forms.mapping.fields.targetProvider.setValue(
+                      form.fields.targetProvider.setValue(
                         (selection as OptionWithValue<IOpenShiftProvider>).value
                       )
                     }
@@ -190,7 +179,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               </GridItem>
               <GridItem sm={1} />
             </Grid>
-            {forms.mapping.isValid ? (
+            {form.isValid ? (
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (

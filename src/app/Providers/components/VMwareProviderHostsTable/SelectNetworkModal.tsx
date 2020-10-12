@@ -96,7 +96,6 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           label="Network"
           isRequired
           fieldId="network"
-          helperTextInvalid={form.fields.selectedNetwork.error}
           validated={form.fields.selectedNetwork.isValid ? 'default' : 'error'}
           className="extraSelectMargin"
           {...getFormGroupProps(form.fields.selectedNetwork)}
