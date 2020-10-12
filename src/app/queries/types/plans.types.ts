@@ -1,4 +1,3 @@
-import { IHook } from '../types/hooks.types';
 import { ICR, IStatusCondition } from '../types/common.types';
 import { Mapping } from '../types/mappings.types';
 import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
@@ -30,10 +29,6 @@ export interface IVMStatus {
 
 export interface IPlanVM {
   id: string;
-  hooks: {
-    before: IHook;
-    after: IHook;
-  };
   host: IHost;
 }
 

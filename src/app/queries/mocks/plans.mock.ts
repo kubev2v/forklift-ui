@@ -5,22 +5,6 @@ import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 // if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 const vm1: IPlanVM = {
   id: 'vm1-id',
-  hooks: {
-    before: {
-      type: 'string',
-      image: 'string',
-      envVars: 'string',
-      targetVM: 'string',
-      xtraVars: 'string',
-    },
-    after: {
-      type: 'string',
-      image: 'string',
-      envVars: 'string',
-      targetVM: 'string',
-      xtraVars: 'string',
-    },
-  },
   host: {
     name: 'string',
     network: {
@@ -35,22 +19,6 @@ const vm1: IPlanVM = {
 
 const vm2: IPlanVM = {
   id: 'vm2-id',
-  hooks: {
-    before: {
-      type: 'string',
-      image: 'string',
-      envVars: 'string',
-      targetVM: 'string',
-      xtraVars: 'string',
-    },
-    after: {
-      type: 'string',
-      image: 'string',
-      envVars: 'string',
-      targetVM: 'string',
-      xtraVars: 'string',
-    },
-  },
   host: {
     name: 'string',
     network: {

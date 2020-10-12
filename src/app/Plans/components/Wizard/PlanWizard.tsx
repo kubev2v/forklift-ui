@@ -73,7 +73,6 @@ const PlanWizard: React.FunctionComponent = () => {
     SelectVMs,
     NetworkMapping,
     StorageMapping,
-    Hooks,
     Review,
   }
 
@@ -164,17 +163,6 @@ const PlanWizard: React.FunctionComponent = () => {
       ),
       enableNext: forms.storageMapping.isValid,
       canJumpTo: stepIdReached >= StepId.StorageMapping,
-    },
-    {
-      id: StepId.Hooks,
-      name: 'Hooks',
-      component: (
-        <WizardStepContainer title="Hooks">
-          <div>TODO: Hooks</div>
-        </WizardStepContainer>
-      ),
-      enableNext: true,
-      canJumpTo: stepIdReached >= StepId.Hooks,
     },
     {
       id: StepId.Review,
