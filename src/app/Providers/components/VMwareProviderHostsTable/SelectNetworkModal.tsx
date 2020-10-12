@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IHost, IHostNetwork } from '@app/queries/types';
+import { IHost } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
 import './SelectNetworkModal.css';
 
@@ -10,23 +10,39 @@ interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
   onClose: () => void;
 }
+// TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
+interface ITempHostNetwork {
+  name: string;
+  address: string;
+  bandwidth: string;
+  mtu: number;
+  isDefault?: boolean;
+}
 
-// TODO replace the mock data with real data
-const MOCK_NETWORKS: IHostNetwork[] = [
-  { name: 'storage_network', address: '192.168.0.1/24' },
-  { name: 'compute_network', address: '192.168.0.2/24' },
-  { name: 'other_network', address: '192.168.0.3/24' },
+const MOCK_NETWORKS: ITempHostNetwork[] = [
+  {
+    name: 'storage_network',
+    address: '192.168.0.1/24',
+    bandwidth: '1 GB/s',
+    mtu: 1499,
+    isDefault: true,
+  },
+  { name: 'compute_network', address: '192.168.0.2/24', bandwidth: '2 GB/s', mtu: 1400 },
+  { name: 'other_network', address: '192.168.0.3/24', bandwidth: '3 GB/s', mtu: 1500 },
 ];
+// End TODO
 
 const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   onClose,
 }: ISelectNetworkModalProps) => {
-  console.log('TODO: generate options for selected hosts: ', selectedHosts);
+  // TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
   const networkOptions = MOCK_NETWORKS.map((network) => ({
     toString: () => formatHostNetwork(network),
     value: network.name,
+    props: { description: `${network.bandwidth}; MTU:${network.mtu}` },
   }));
+  // End TODO
 
   // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
   //   or maybe roll our own simple validation? maybe use Yup?
