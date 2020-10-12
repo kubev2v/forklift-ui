@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Alert, Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
 import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { IVMwareProvider, IHost } from '@app/queries/types';
+import { IHost } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 
@@ -16,6 +16,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   providerId,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
+  console.log(hosts);
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
@@ -25,13 +26,11 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   const getSortValues = (host: IHost) => {
     const { name, network, bandwidth, mtu } = host;
-    // First cell is the generated checkbox from using onSelect.
-    return ['', name, 'network', 'bandwidth', 'mtu'];
-    //TODO update when api data is available
-    // return ['', name, formatHostNetwork(network), bandwidth, mtu];
+    return ['', name, formatHostNetwork(network), bandwidth, mtu];
   };
+
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
-  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  const { paginationProps } = usePaginationState(sortedItems, 10);
   const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>({
     items: sortedItems,
   });
@@ -41,9 +40,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     return {
       meta: { host },
       selected: selectedItems.includes(host),
-      cells: [name, 'network N/A', 'bandwidth N/A', 'mtu N/A'],
-      //TODO: update when api info is available
-      // cells: [name, formatHostNetwork(host.metadata.network), bandwidth, mtu],
+      cells: [name, formatHostNetwork(host.network), host.bandwidth, host.mtu],
     };
   });
 
