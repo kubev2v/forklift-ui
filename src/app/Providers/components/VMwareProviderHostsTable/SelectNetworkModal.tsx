@@ -1,9 +1,13 @@
 import * as React from 'react';
-import { Modal, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
+import * as yup from 'yup';
+import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
+
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IHost } from '@app/queries/types';
+import { IHost, IHostNetwork } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
+import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
+import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
 import './SelectNetworkModal.css';
 
 interface ISelectNetworkModalProps {
@@ -36,7 +40,14 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   onClose,
 }: ISelectNetworkModalProps) => {
+  const form = useFormState({
+    adminUserId: useFormField('', yup.string().label('User Id').min(2).max(20).required()),
+    adminPassword: useFormField('', yup.string().label('Password').max(20).required()),
+    selectedNetwork: useFormField(null, yup.mixed<IHostNetwork>().label('Host network').required()),
+  });
+
   // TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
+  console.log('TODO: generate options for selected hosts: ', selectedHosts);
   const networkOptions = MOCK_NETWORKS.map((network) => ({
     toString: () => formatHostNetwork(network),
     value: network.name,
@@ -44,11 +55,13 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   }));
   // End TODO
 
-  // TODO add a library like Formik, react-final-form, react-hook-form and use it for validation?
-  //   or maybe roll our own simple validation? maybe use Yup?
-  const [adminUserId, setAdminUserId] = React.useState<string>('');
-  const [adminPassword, setAdminPassword] = React.useState<string>('');
-  const [selectedNetwork, setSelectedNetwork] = React.useState<string>(networkOptions[0].value); // TODO use actual pre-selected network
+  const add = () => {
+    alert('TODO');
+    if (form.isValid) {
+      console.log('TODO: submit form!', form.values);
+      onClose();
+    }
+  };
 
   return (
     <Modal
@@ -58,7 +71,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
       isOpen
       onClose={onClose}
       actions={[
-        <Button key="confirm" variant="primary" onClick={() => alert('TODO')}>
+        <Button key="confirm" variant="primary" isDisabled={!form.isValid} onClick={add}>
           Add
         </Button>,
         <Button key="cancel" variant="link" onClick={onClose}>
@@ -67,32 +80,37 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
       ]}
     >
       <Form>
-        <FormGroup label="Host admin userid" isRequired fieldId="admin-userid">
-          <TextInput id="admin-userid" value={adminUserId} type="text" onChange={setAdminUserId} />
-        </FormGroup>
-        <FormGroup label="Host admin password" isRequired fieldId="admin-password">
-          <TextInput
-            id="admin-password"
-            value={adminPassword}
-            type="password"
-            onChange={setAdminPassword}
-          />
-        </FormGroup>
+        <ValidatedTextInput
+          field={form.fields.adminUserId}
+          label="Host admin userid"
+          isRequired
+          fieldId="admin-userid"
+        />
+        <ValidatedTextInput
+          field={form.fields.adminPassword}
+          label="Host admin password"
+          isRequired
+          fieldId="admin-password"
+        />
         <FormGroup
           label="Network"
           isRequired
           fieldId="network"
-          helperTextInvalid="TODO"
-          validated="default" // TODO add state/validation/errors to this and other FormGroups
+          validated={form.fields.selectedNetwork.isValid ? 'default' : 'error'}
           className="extraSelectMargin"
+          {...getFormGroupProps(form.fields.selectedNetwork)}
         >
           <SimpleSelect
             id="network"
             aria-label="Network"
             options={networkOptions}
-            value={[networkOptions.find((option) => option.value === selectedNetwork)]}
+            value={[
+              networkOptions.find((option) => option.value === form.fields.selectedNetwork.value),
+            ]}
             onChange={(selection) =>
-              setSelectedNetwork((selection as OptionWithValue<string>).value)
+              form.fields.selectedNetwork.setValue(
+                (selection as OptionWithValue<IHostNetwork>).value
+              )
             }
             placeholderText="Select a network..."
           />
