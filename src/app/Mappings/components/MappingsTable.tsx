@@ -104,7 +104,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <CreateMappingButton label="Add mapping" onClick={toggleAddEditModal} />
+          <CreateMappingButton label="Create mapping" onClick={toggleAddEditModal} />
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
