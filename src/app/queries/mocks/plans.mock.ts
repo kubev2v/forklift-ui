@@ -256,7 +256,7 @@ export const vmStatus1: IVMStatus = {
       name: 'DiskTransfer',
       progress: {
         total: 2,
-        completed: 2,
+        completed: 1,
       },
       phase: '',
     },
@@ -264,7 +264,7 @@ export const vmStatus1: IVMStatus = {
       name: 'Import',
       progress: {
         total: 2,
-        completed: 2,
+        completed: 0,
       },
       phase: '',
     },
@@ -272,7 +272,7 @@ export const vmStatus1: IVMStatus = {
       name: 'PostHook',
       progress: {
         total: 2,
-        completed: 2,
+        completed: 0,
       },
       phase: '',
     },
@@ -391,7 +391,7 @@ export const vmStatus4: IVMStatus = {
       name: 'Import',
       progress: {
         total: 3,
-        completed: 3,
+        completed: 1,
       },
       phase: '',
     },
