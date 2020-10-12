@@ -10,7 +10,6 @@ import ProvidersPage from '@app/Providers/ProvidersPage';
 import PlansPage from '@app/Plans/PlansPage';
 import NetworkMappingsPage from '@app/Mappings/Network/NetworkMappingsPage';
 import StorageMappingsPage from '@app/Mappings/Storage/StorageMappingsPage';
-import HooksPage from '@app/Hooks/HooksPage';
 import { HostsPage } from './Providers/HostsPage';
 import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
@@ -123,14 +122,6 @@ export const routes: AppRouteConfig[] = [
         isProtected: true,
       },
     ],
-  },
-  {
-    component: HooksPage,
-    exact: true,
-    label: 'Hooks',
-    path: '/hooks',
-    title: `${APP_TITLE} | Hooks`,
-    isProtected: true,
   },
 ];
 
