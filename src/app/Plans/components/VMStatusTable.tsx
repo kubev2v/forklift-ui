@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Flex, Text } from '@patternfly/react-core';
+import { Flex, FlexItem, Text } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, ICell, IRow, cellWidth } from '@patternfly/react-table';
-import { ResourcesAlmostFullIcon } from '@patternfly/react-icons';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
+import Step from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
 
 interface IVMStatusTableProps {
@@ -22,15 +21,23 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
     { title: 'State' },
   ];
 
-  const rows: IRow[] = vmstatus.pipeline.map((step: IStep) => {
+  const rows: IRow[] = vmstatus.pipeline.map((step: IStep, index) => {
     return {
       meta: { step },
       cells: [
         {
           title: (
-            <Flex>
-              <ResourcesAlmostFullIcon className={spacing.mlSm} height="0.8em" width="0.8em" />
-              <Text>{step.name}</Text>
+            <Flex
+              spaceItems={{ default: 'spaceItemsSm' }}
+              alignContent={{ default: 'alignContentFlexStart' }}
+              flexWrap={{ default: 'nowrap' }}
+            >
+              <FlexItem>
+                <Step status={vmstatus} step={step} index={index} />
+              </FlexItem>
+              <FlexItem>
+                <Text>{step.name}</Text>
+              </FlexItem>
             </Flex>
           ),
         },
