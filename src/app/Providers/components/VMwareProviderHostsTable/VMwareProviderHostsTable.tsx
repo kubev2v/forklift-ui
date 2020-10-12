@@ -16,6 +16,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   providerId,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
+  console.log(hosts);
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable] },
