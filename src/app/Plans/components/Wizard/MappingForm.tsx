@@ -26,6 +26,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
 import './MappingForm.css';
+import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -49,17 +50,15 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   );
 
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
-
-  const newMappingOption = {
-    toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
-    value: 'new',
-  };
-
   const [isCreateMappingSelected, setIsCreateMappingSelected] = React.useState(false);
   const [selectedExistingMapping, setSelectedExistingMapping] = React.useState<Mapping | null>(
     null
   );
 
+  const newMappingOption = {
+    toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
+    value: 'new',
+  };
   const mappingOptions = Object.values(mappingList).map((mapping) => ({
     toString: () => mapping.name,
     value: mapping,
@@ -70,7 +69,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     { source: null, target: null },
   ]);
 
-  const populateMappingBuilder = (mapping?: Mapping) => {};
+  const populateMappingBuilder = (mapping?: Mapping) => {
+    const newBuilderItems: IMappingBuilderItem[] = !mapping
+      ? []
+      : getBuilderItemsFromMapping(mapping, mappingResourceQueries.availableSources);
+    console.log({ mapping, newBuilderItems });
+    // TODO add more items for unmapped sources if necessary
+    setBuilderItems(newBuilderItems);
+  };
 
   if (mappingResourceQueries.isLoading) {
     return <LoadingEmptyState />;
