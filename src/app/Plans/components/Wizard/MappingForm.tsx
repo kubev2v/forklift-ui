@@ -24,9 +24,10 @@ import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/Ma
 import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
+import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
+import { usePausedPollingEffect } from '@app/common/context';
 
 import './MappingForm.css';
-import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -43,6 +44,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   mappingType,
   mappingList,
 }: IMappingFormProps) => {
+  usePausedPollingEffect(); // Polling can interfere with mapping builder state
+
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
@@ -73,7 +76,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
       : getBuilderItemsFromMapping(mapping, mappingResourceQueries.availableSources);
-    console.log({ mapping, newBuilderItems });
     // TODO add more items for unmapped sources if necessary
     setBuilderItems(newBuilderItems);
   };
