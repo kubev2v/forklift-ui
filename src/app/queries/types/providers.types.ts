@@ -53,9 +53,9 @@ export interface IHostNetwork {
 // TODO this structure is speculative. Check with Jeff.
 export interface IHost {
   name: string;
-  network?: IHostNetwork;
-  bandwidth?: string;
-  mtu?: number;
+  network: IHostNetwork;
+  bandwidth: string;
+  mtu: number;
 }
 
 export interface IProvidersByType {
