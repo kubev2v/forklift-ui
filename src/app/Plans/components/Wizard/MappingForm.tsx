@@ -125,7 +125,13 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               }
             >
               <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
-              <SelectGroup label="Existing mappings">
+              <SelectGroup
+                label={
+                  mappingOptions.length > 0
+                    ? 'Existing mappings'
+                    : 'No existing mappings match your selected providers' // TODO actually filter mappings by providers
+                }
+              >
                 {mappingOptions.map((option) => (
                   <SelectOption key={option.toString()} value={option} />
                 ))}

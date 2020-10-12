@@ -28,7 +28,7 @@ import {
   MappingType,
   VMwareTree,
 } from '@app/queries/types';
-import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
+import { fetchMockStorage } from '@app/queries/mocks/helpers';
 
 const usePlanWizardFormState = () => ({
   general: useFormState({
@@ -139,7 +139,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
-            mappingList={MOCK_NETWORK_MAPPINGS}
+            mappingList={fetchMockStorage(MappingType.Network)} // TODO replace me with real mappings
           />
         </WizardStepContainer>
       ),
@@ -157,7 +157,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
-            mappingList={MOCK_STORAGE_MAPPINGS}
+            mappingList={fetchMockStorage(MappingType.Storage)} // TODO replace me with real mappings
           />
         </WizardStepContainer>
       ),
