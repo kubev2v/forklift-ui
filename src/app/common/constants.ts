@@ -3,7 +3,7 @@ import { IVirtMetaVars } from './types';
 export const APP_TITLE = 'Migration Toolkit for Virtualization';
 
 export const CLOUD_MA_LINK = {
-  href: '#', // TODO
+  href: 'https://cloud.redhat.com/migrations/migration-analytics',
   label: 'cloud.redhat.com',
 };
 
