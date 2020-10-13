@@ -71,10 +71,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   );
 
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
-  const [isCreateMappingSelected, setIsCreateMappingSelected] = React.useState(false);
-  const [selectedExistingMapping, setSelectedExistingMapping] = React.useState<Mapping | null>(
-    null
-  );
 
   const newMappingOption = {
     toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
@@ -84,9 +80,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     toString: () => mapping.name,
     value: mapping,
   })) as OptionWithValue<Mapping>[];
-
-  // TODO add support for prefilling builderItems for editing an API mapping
-  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([]);
 
   const populateMappingBuilder = (mapping?: Mapping) => {
     let newBuilderItems: IMappingBuilderItem[] = !mapping
@@ -101,7 +94,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         (source): IMappingBuilderItem => ({ source, target: null, highlight: !!mapping })
       ),
     ];
-    setBuilderItems(newBuilderItems);
+    form.fields.builderItems.setValue(newBuilderItems);
   };
 
   if (mappingResourceQueries.isLoading) {
@@ -132,21 +125,25 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               onSelect={(_event, selection: SelectOptionObject) => {
                 const sel = selection as OptionWithValue<Mapping | 'new'>;
                 if (sel.value === 'new') {
-                  setIsCreateMappingSelected(true);
-                  setSelectedExistingMapping(null);
+                  form.fields.isCreateMappingSelected.setValue(true);
+                  form.fields.selectedExistingMapping.setValue(null);
                   populateMappingBuilder();
                 } else {
-                  setIsCreateMappingSelected(false);
-                  setSelectedExistingMapping(sel.value as Mapping);
-                  populateMappingBuilder(sel.value as Mapping);
+                  form.fields.isCreateMappingSelected.setValue(false);
+                  form.fields.selectedExistingMapping.setValue(sel.value);
+                  populateMappingBuilder(sel.value);
                 }
                 setIsMappingSelectOpen(false);
               }}
               selections={
-                isCreateMappingSelected
+                form.values.isCreateMappingSelected
                   ? [newMappingOption]
-                  : selectedExistingMapping
-                  ? [mappingOptions.find((option) => option.value === selectedExistingMapping)]
+                  : form.values.selectedExistingMapping
+                  ? [
+                      mappingOptions.find(
+                        (option) => option.value.name === form.values.selectedExistingMapping?.name
+                      ),
+                    ]
                   : []
               }
             >
@@ -166,14 +163,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
           </FormGroup>
         </FlexItem>
 
-        {(isCreateMappingSelected || selectedExistingMapping) && (
+        {(form.values.isCreateMappingSelected || form.values.selectedExistingMapping) && (
           <>
             <MappingBuilder
               mappingType={mappingType}
               availableSources={mappingResourceQueries.availableSources}
               availableTargets={mappingResourceQueries.availableTargets}
-              builderItems={builderItems}
-              setBuilderItems={setBuilderItems}
+              builderItems={form.values.builderItems}
+              setBuilderItems={form.fields.builderItems.setValue}
               isWizardMode
             />
             <Checkbox

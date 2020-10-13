@@ -29,6 +29,19 @@ import {
   VMwareTree,
 } from '@app/queries/types';
 import { usePausedPollingEffect } from '@app/common/context';
+import { IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
+
+const useMappingFormState = () =>
+  useFormState({
+    isCreateMappingSelected: useFormField(false, yup.boolean().required()),
+    selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
+    builderItems: useFormField<IMappingBuilderItem[]>(
+      [],
+      yup.array<IMappingBuilderItem>().required()
+    ),
+    isSaveNewMapping: useFormField(false, yup.boolean().required()),
+    newMappingName: useFormField('', yup.string()),
+  });
 
 const usePlanWizardFormState = () => ({
   general: useFormState({
@@ -49,16 +62,8 @@ const usePlanWizardFormState = () => ({
   selectVMs: useFormState({
     selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
   }),
-  networkMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
-  storageMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
+  networkMapping: useMappingFormState(),
+  storageMapping: useMappingFormState(),
 });
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
