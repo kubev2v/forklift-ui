@@ -31,6 +31,8 @@ import {
   convertFormValuesToProvider,
   convertFormValuesToSecret,
 } from '@app/client/helpers';
+import { OpenshiftFormState } from '@app/Providers/components/AddProviderModal/useOpenshiftFormState';
+import { VMwareFormState } from '@app/Providers/components/AddProviderModal/useVMwareFormState';
 
 // import { ClientFactory } from '../../../client/client_factory';
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
@@ -49,8 +51,9 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
 export const useCreateProvider = () => {
   const { currentUser } = useNetworkContext();
   // const client: IClusterClient = ClientFactory.cluster(state);
-
-  const useProviderPost = async (values) => {
+  const useProviderPost = async (
+    values: OpenshiftFormState['values'] | VMwareFormState['values']
+  ) => {
     try {
       const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
       const user = {
@@ -60,8 +63,11 @@ export const useCreateProvider = () => {
       const client = ClientFactory.cluster(user, VIRT_META.clusterApi);
 
       //TODO -- handle type requests differently
-      const secret: INewSecret = convertFormValuesToSecret(values);
-      const secretResult = await client.create(secretResource, secret);
+      const secret: INewSecret | undefined = convertFormValuesToSecret(values);
+      if (secret) {
+        const secretResult = await client.create(secretResource, secret);
+        //will need result if we ever go to generated names
+      }
 
       //possibly move secret to a new query?
 
@@ -79,14 +85,18 @@ export const useCreateProvider = () => {
     useProviderPost,
     {
       onSuccess: () => {
+        console.log('did we succeed');
         queryCache.invalidateQueries('providers');
+      },
+      onError: () => {
+        console.log('did we fail');
       },
     }
   );
 
-  const createProvider = async (values: any) => {
+  const createProvider = async (formValues) => {
     try {
-      await mutate(values);
+      await mutate(formValues);
     } catch (error) {
       // Uh oh, something went wrong
     }
