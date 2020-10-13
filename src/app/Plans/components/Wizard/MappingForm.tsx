@@ -185,6 +185,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               id="save-mapping-check"
               isChecked={form.values.isSaveNewMapping}
               onChange={() => form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)}
+              className={spacing.mtMd}
             />
             {form.values.isSaveNewMapping && (
               <Grid className={spacing.mbMd}>
