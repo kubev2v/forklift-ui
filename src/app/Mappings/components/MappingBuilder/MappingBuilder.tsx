@@ -96,13 +96,19 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
               </>
             ) : null}
             <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
-              <MappingSourceSelect
-                id={`mapping-sources-for-${key}`}
-                builderItems={builderItems}
-                itemIndex={itemIndex}
-                setBuilderItems={setBuilderItems}
-                availableSources={availableSources}
-              />
+              {isWizardMode && item.source ? (
+                <Bullseye style={{ justifyContent: 'left' }} className={spacing.plSm}>
+                  {item.source.name}
+                </Bullseye>
+              ) : (
+                <MappingSourceSelect
+                  id={`mapping-sources-for-${key}`}
+                  builderItems={builderItems}
+                  itemIndex={itemIndex}
+                  setBuilderItems={setBuilderItems}
+                  availableSources={availableSources}
+                />
+              )}
             </GridItem>
             <GridItem span={isWizardMode ? 2 : 1}>
               <Bullseye>
