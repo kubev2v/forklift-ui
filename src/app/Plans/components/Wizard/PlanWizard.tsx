@@ -21,9 +21,9 @@ import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import {
-  ICommonTreeObject,
   IOpenShiftProvider,
   IVMwareProvider,
+  IVMwareVM,
   Mapping,
   MappingType,
   VMwareTree,
@@ -47,7 +47,7 @@ const usePlanWizardFormState = () => ({
     selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
   }),
   selectVMs: useFormState({
-    selectedVMs: useFormField<ICommonTreeObject[]>([], yup.array<ICommonTreeObject>().required()),
+    selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
   }),
   networkMapping: useFormState({
     mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),

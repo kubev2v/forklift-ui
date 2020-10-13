@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
-import { ICommonTreeObject, IVMwareHostTree, IVMwareVMTree, VMwareTree } from '@app/queries/types';
+import {
+  ICommonTreeObject,
+  IVMwareHostTree,
+  IVMwareVM,
+  IVMwareVMTree,
+  VMwareTree,
+} from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 
 // Helper for filterAndConvertVMwareTree
@@ -94,10 +100,16 @@ export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
     )
   );
 
-export const getAvailableVMs = (selectedTreeNodes: VMwareTree[]): ICommonTreeObject[] =>
-  getAllVMNodes(selectedTreeNodes)
+export const getAvailableVMs = (
+  selectedTreeNodes: VMwareTree[],
+  allVMs: IVMwareVM[]
+): IVMwareVM[] => {
+  const treeVMs = getAllVMNodes(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
+  const vmSelfLinks = treeVMs.map((object) => object.selfLink);
+  return allVMs.filter((vm) => vmSelfLinks.includes(vm.selfLink));
+};
 
 // Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
 export const findVMTreePath = (node: VMwareTree, vmSelfLink: string): VMwareTree[] | null => {
@@ -120,7 +132,7 @@ export interface IVMTreePathInfo {
 
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
 export const findVMTreePathInfo = (
-  vm: ICommonTreeObject,
+  vm: IVMwareVM,
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
 ): IVMTreePathInfo => {
@@ -153,7 +165,7 @@ export interface IVMTreePathInfoByVM {
 }
 
 export const getVMTreePathInfoByVM = (
-  vms: ICommonTreeObject[],
+  vms: IVMwareVM[],
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
 ): IVMTreePathInfoByVM =>

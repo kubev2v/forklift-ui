@@ -30,3 +30,8 @@ export interface IStatusCondition {
   message: string;
   lastTransitionTime: string; // ISO timestamp
 }
+
+export interface IVMwareObjRef {
+  Kind: string;
+  ID: string;
+}

@@ -4,7 +4,6 @@ import { VMwareTree } from './types/tree.types';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
 // TODO what about usePaginatedQuery, useInfiniteQuery?
-// TODO what about alternate param signatures for useQuery?
 
 const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => {
   return new Promise((resolve, reject) => {
