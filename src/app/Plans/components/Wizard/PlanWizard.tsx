@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { Link, Prompt, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useFormField, useFormState } from '@konveyor/lib-ui';
 
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
@@ -28,7 +29,6 @@ import {
   VMwareTree,
 } from '@app/queries/types';
 import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
-import { useFormField, useFormState } from '@app/common/hooks/useFormState';
 
 const usePlanWizardFormState = () => ({
   general: useFormState({

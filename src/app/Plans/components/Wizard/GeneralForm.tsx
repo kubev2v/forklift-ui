@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Alert, Form, FormGroup, TextArea, Title } from '@patternfly/react-core';
+import { ValidatedTextInput } from '@konveyor/lib-ui';
+
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { PlanWizardFormState } from './PlanWizard';
 
 interface IGeneralFormProps {

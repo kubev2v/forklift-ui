@@ -13,6 +13,7 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { ValidatedTextInput } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingType, Mapping, IVMwareProvider, IOpenShiftProvider } from '@app/queries/types';
@@ -20,7 +21,6 @@ import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/Ma
 import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
-import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];

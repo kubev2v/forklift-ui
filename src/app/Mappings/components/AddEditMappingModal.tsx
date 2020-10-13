@@ -2,6 +2,12 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup, Grid, GridItem, Alert } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import {
+  useFormField,
+  useFormState,
+  getFormGroupProps,
+  ValidatedTextInput,
+} from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
@@ -9,11 +15,10 @@ import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
-import './AddEditMappingModal.css';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { useFormField, useFormState, getFormGroupProps } from '@app/common/hooks/useFormState';
-import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
+
+import './AddEditMappingModal.css';
 
 interface IAddEditMappingModalProps {
   title: string;

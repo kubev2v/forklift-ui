@@ -2,12 +2,17 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
+import {
+  useFormState,
+  useFormField,
+  getFormGroupProps,
+  ValidatedTextInput,
+} from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostNetwork } from '@app/queries/types';
 import { formatHostNetwork } from './helpers';
-import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
-import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
+
 import './SelectNetworkModal.css';
 
 interface ISelectNetworkModalProps {

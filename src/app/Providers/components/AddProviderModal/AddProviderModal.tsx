@@ -2,10 +2,15 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
+import {
+  useFormState,
+  useFormField,
+  getFormGroupProps,
+  ValidatedTextInput,
+} from '@konveyor/lib-ui';
+
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import ValidatedTextInput from '@app/common/components/ValidatedTextInput';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import { useFormState, useFormField, getFormGroupProps } from '@app/common/hooks/useFormState';
 import { usePausedPollingEffect } from '@app/common/context';
 import './AddProviderModal.css';
 
