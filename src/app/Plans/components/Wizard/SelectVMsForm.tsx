@@ -26,7 +26,6 @@ import {
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { PlanWizardFormState } from './PlanWizard';
 import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
@@ -34,6 +33,8 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
+import VMConcernsIcon from './VMConcernsIcon';
+import VMConcernsDescription from './VMConcernsDescription';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -145,10 +146,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           ),
         },
         {
-          title: (
-            // TODO render real analytics results here when available
-            <StatusIcon status={StatusType.Ok} label="Ready" />
-          ),
+          title: <VMConcernsIcon vm={vm} />,
         },
         vm.name,
         datacenter?.name || '',
@@ -161,10 +159,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       rows.push({
         parent: rows.length - 1,
         fullWidth: true,
-        cells: [
-          // vm.analysisDescription
-          'TODO: Analytics description here',
-        ],
+        cells: [{ title: <VMConcernsDescription vm={vm} /> }],
       });
     }
   });
