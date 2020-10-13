@@ -31,7 +31,6 @@ import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
-import { usePausedPollingEffect } from '@app/common/context';
 
 import './MappingForm.css';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
@@ -52,8 +51,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   mappingType,
   selectedVMs,
 }: IMappingFormProps) => {
-  usePausedPollingEffect(); // Polling can interfere with mapping builder state
-
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,

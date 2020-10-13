@@ -28,6 +28,7 @@ import {
   MappingType,
   VMwareTree,
 } from '@app/queries/types';
+import { usePausedPollingEffect } from '@app/common/context';
 
 const usePlanWizardFormState = () => ({
   general: useFormState({
@@ -63,6 +64,7 @@ const usePlanWizardFormState = () => ({
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
 const PlanWizard: React.FunctionComponent = () => {
+  usePausedPollingEffect(); // Polling can interfere with form state
   const history = useHistory();
   const forms = usePlanWizardFormState();
 
