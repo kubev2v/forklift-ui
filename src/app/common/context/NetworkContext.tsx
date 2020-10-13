@@ -30,6 +30,7 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
 
   const saveLoginToken = (user, history) => {
+    debugger;
     setCurrentUser(JSON.stringify(user));
     history.push('/');
   };

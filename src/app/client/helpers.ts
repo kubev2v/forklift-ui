@@ -25,13 +25,13 @@ export enum VirtResourceKind {
   Provider = 'providers',
 }
 
-export const secretResource = new CoreNamespacedResource(
-  CoreNamespacedResourceKind.Secret,
-  VIRT_META.namespace
-  //are we moving the secrets to the config namespace?
-);
+// export const secretResource = new CoreNamespacedResource(
+//   CoreNamespacedResourceKind.Secret,
+//   VIRT_META.namespace
+//   //are we moving the secrets to the config namespace?
+// );
 
-export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace);
+// export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace);
 
 export function convertFormValuesToSecret(values): INewSecret {
   // btoa => to base64, atob => from base64
