@@ -74,6 +74,14 @@ const PlanWizard: React.FunctionComponent = () => {
   const history = useHistory();
   const forms = usePlanWizardFormState();
 
+  const onProviderChange = () => {
+    // If you change providers, reset all subsequent forms.
+    forms.filterVMs.reset();
+    forms.selectVMs.reset();
+    forms.networkMapping.reset();
+    forms.storageMapping.reset();
+  };
+
   enum StepId {
     General = 1,
     FilterVMs,
@@ -96,7 +104,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm form={forms.general} />
+          <GeneralForm form={forms.general} onProviderChange={onProviderChange} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,

@@ -10,9 +10,13 @@ import { PlanWizardFormState } from './PlanWizard';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
+  onProviderChange: () => void;
 }
 
-const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGeneralFormProps) => {
+const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
+  form,
+  onProviderChange,
+}: IGeneralFormProps) => {
   const providersQuery = useProvidersQuery();
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
@@ -74,11 +78,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
               (option) => option.value === form.fields.sourceProvider.value
             ),
           ]}
-          onChange={(selection) =>
+          onChange={(selection) => {
             form.fields.sourceProvider.setValue(
               (selection as OptionWithValue<IVMwareProvider>).value
-            )
-          }
+            );
+            onProviderChange();
+          }}
           placeholderText="Select a provider"
         />
       </FormGroup>
@@ -99,11 +104,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
               (option) => option.value === form.fields.targetProvider.value
             ),
           ]}
-          onChange={(selection) =>
+          onChange={(selection) => {
             form.fields.targetProvider.setValue(
               (selection as OptionWithValue<IOpenShiftProvider>).value
-            )
-          }
+            );
+            onProviderChange();
+          }}
           placeholderText="Select a provider"
         />
       </FormGroup>
