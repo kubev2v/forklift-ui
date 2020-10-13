@@ -24,6 +24,7 @@ interface IMappingBuilderProps {
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
   isWizardMode?: boolean;
+  hasItemsAddedMessage?: boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -33,6 +34,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   builderItems,
   setBuilderItems,
   isWizardMode = false,
+  hasItemsAddedMessage = false,
 }: IMappingBuilderProps) => {
   const messageSelectBoth = 'You must select a source and target before adding another mapping.';
   const messageExhausted = `All source ${
@@ -64,6 +66,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
+  }
+  if (hasItemsAddedMessage) {
+    instructionText = `${instructionText} Sources missing from your selected mapping have been added.`;
   }
 
   return (

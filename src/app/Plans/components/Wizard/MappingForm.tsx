@@ -172,6 +172,12 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               builderItems={form.values.builderItems}
               setBuilderItems={form.fields.builderItems.setValue}
               isWizardMode
+              hasItemsAddedMessage={
+                form.values.selectedExistingMapping
+                  ? form.values.selectedExistingMapping.items.length <
+                    form.values.builderItems.length
+                  : false
+              }
             />
             <Checkbox
               label="Save mapping to use again"
