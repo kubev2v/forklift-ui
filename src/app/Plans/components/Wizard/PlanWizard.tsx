@@ -29,20 +29,21 @@ import {
   VMwareTree,
 } from '@app/queries/types';
 import { usePausedPollingEffect } from '@app/common/context';
-import { IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
+import {
+  IMappingBuilderItem,
+  mappingBuilderItemsSchema,
+} from '@app/Mappings/components/MappingBuilder';
 
 const useMappingFormState = () =>
   useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
-    builderItems: useFormField<IMappingBuilderItem[]>(
-      [],
-      yup.array<IMappingBuilderItem>().required()
-    ),
+    builderItems: useFormField<IMappingBuilderItem[]>([], mappingBuilderItemsSchema),
     isSaveNewMapping: useFormField(false, yup.boolean().required()),
     newMappingName: useFormField('', yup.string()),
   });
 
+// TODO add support for prefilling forms for editing an API plan
 const usePlanWizardFormState = () => ({
   general: useFormState({
     planName: useFormField('', yup.string().label('Plan name').required()),

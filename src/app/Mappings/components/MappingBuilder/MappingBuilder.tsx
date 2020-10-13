@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as yup from 'yup';
 import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patternfly/react-core';
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -16,6 +17,13 @@ export interface IMappingBuilderItem {
   target: MappingTarget | null;
   highlight: boolean; // Highlight items that were automatically added for missing sources in the wizard
 }
+
+export const mappingBuilderItemsSchema = yup
+  .array<IMappingBuilderItem>()
+  .required()
+  .test('no-empty-selections', 'All sources must be mapped to a target.', (builderItems) =>
+    builderItems ? builderItems.every((item) => item.source && item.target) : false
+  );
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
