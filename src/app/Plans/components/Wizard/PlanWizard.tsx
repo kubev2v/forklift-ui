@@ -138,6 +138,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
+            selectedVMs={forms.selectVMs.values.selectedVMs}
           />
         </WizardStepContainer>
       ),
@@ -155,6 +156,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
+            selectedVMs={forms.selectVMs.values.selectedVMs}
           />
         </WizardStepContainer>
       ),

@@ -19,7 +19,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
 
 import { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingType, Mapping, IVMwareProvider, IOpenShiftProvider } from '@app/queries/types';
+import {
+  MappingType,
+  Mapping,
+  IVMwareProvider,
+  IOpenShiftProvider,
+  IVMwareVM,
+} from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -29,12 +35,14 @@ import { usePausedPollingEffect } from '@app/common/context';
 
 import './MappingForm.css';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
+import { filterSourcesBySelectedVMs } from './helpers';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
   sourceProvider: IVMwareProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
+  selectedVMs: IVMwareVM[];
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
@@ -42,12 +50,19 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   sourceProvider,
   targetProvider,
   mappingType,
+  selectedVMs,
 }: IMappingFormProps) => {
   usePausedPollingEffect(); // Polling can interfere with mapping builder state
 
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
+    mappingType
+  );
+
+  const requiredSources = filterSourcesBySelectedVMs(
+    mappingResourceQueries.availableSources,
+    selectedVMs,
     mappingType
   );
 
@@ -74,15 +89,21 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   })) as OptionWithValue<Mapping>[];
 
   // TODO add support for prefilling builderItems for editing an API mapping
-  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
-    { source: null, target: null },
-  ]);
+  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([]);
 
   const populateMappingBuilder = (mapping?: Mapping) => {
-    const newBuilderItems: IMappingBuilderItem[] = !mapping
+    let newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
       : getBuilderItemsFromMapping(mapping, mappingResourceQueries.availableSources);
-    // TODO add more items for unmapped sources if necessary
+    const missingSources = requiredSources.filter(
+      (source) => !newBuilderItems.some((item) => item.source?.selfLink === source.selfLink)
+    );
+    newBuilderItems = [
+      ...newBuilderItems,
+      ...missingSources.map(
+        (source): IMappingBuilderItem => ({ source, target: null, highlight: !!mapping })
+      ),
+    ];
     setBuilderItems(newBuilderItems);
   };
 

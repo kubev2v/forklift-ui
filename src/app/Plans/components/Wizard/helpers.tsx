@@ -5,6 +5,8 @@ import {
   IVMwareHostTree,
   IVMwareVM,
   IVMwareVMTree,
+  MappingSource,
+  MappingType,
   VMwareTree,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
@@ -176,3 +178,24 @@ export const getVMTreePathInfoByVM = (
     }),
     {}
   );
+
+export const filterSourcesBySelectedVMs = (
+  availableSources: MappingSource[],
+  selectedVMs: IVMwareVM[],
+  mappingType: MappingType
+): MappingSource[] => {
+  const sourceIds = Array.from(
+    new Set(
+      selectedVMs.flatMap((vm) => {
+        if (mappingType === MappingType.Network) {
+          return vm.networks.map((network) => network.ID);
+        }
+        if (mappingType === MappingType.Storage) {
+          return vm.disks.map((disk) => disk.datastore.ID);
+        }
+        return [];
+      })
+    )
+  );
+  return availableSources.filter((source) => sourceIds.includes(source.id));
+};

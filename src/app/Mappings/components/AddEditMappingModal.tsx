@@ -69,12 +69,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
 
   // TODO add support for prefilling builderItems for editing an API mapping
   const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
-    { source: null, target: null },
+    { source: null, target: null, highlight: false },
   ]);
 
   React.useEffect(() => {
     // If you change providers, reset the mapping selections.
-    setBuilderItems([{ source: null, target: null }]);
+    setBuilderItems([{ source: null, target: null, highlight: false }]);
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
   return (

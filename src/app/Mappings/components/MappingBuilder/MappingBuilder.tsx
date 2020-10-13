@@ -14,6 +14,7 @@ import './MappingBuilder.css';
 export interface IMappingBuilderItem {
   source: MappingSource | null;
   target: MappingTarget | null;
+  highlight: boolean; // Highlight items that were automatically added for missing sources in the wizard
 }
 
 interface IMappingBuilderProps {
@@ -43,9 +44,10 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     return messageSelectBoth;
   };
 
-  const reset = () => setBuilderItems([{ source: null, target: null }]);
+  const reset = () => setBuilderItems([{ source: null, target: null, highlight: false }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
-  const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
+  const addEmptyItem = () =>
+    setBuilderItems([...builderItems, { source: null, target: null, highlight: false }]);
   const removeItem = (itemIndex: number) => {
     if (builderItems.length > 1) {
       setBuilderItems(builderItems.filter((_item, index) => index !== itemIndex));
