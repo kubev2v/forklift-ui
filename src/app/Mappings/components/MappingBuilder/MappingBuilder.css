@@ -1,3 +1,12 @@
+.mapping-item.highlighted .mapping-builder-box.target-select {
+  border-color: var(--pf-global--warning-color--100);
+}
+
+.mapping-item.highlighted .mapping-builder-box.target-select,
+.mapping-item.highlighted .mapping-builder-box.target-select .pf-c-select__toggle {
+  background-color: var(--pf-global--palette--gold-50);
+}
+
 .mapping-builder-box {
   border: 1px solid #000000;
 }

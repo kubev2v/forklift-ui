@@ -14,10 +14,10 @@ export const getBuilderItemsFromMapping = (
   allSources: MappingSource[]
 ): IMappingBuilderItem[] =>
   (mapping.items as MappingItem[])
-    .map((item: MappingItem) => {
+    .map((item: MappingItem): IMappingBuilderItem | null => {
       const source = getMappingSourceById(allSources, item.source.id);
       if (source) {
-        return { source, target: item.target } as IMappingBuilderItem;
+        return { source, target: item.target, highlight: false };
       }
       return null;
     })

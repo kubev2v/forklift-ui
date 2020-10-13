@@ -20,7 +20,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 }: IMappingTargetSelectProps) => {
   const setTarget = (target: MappingTarget) => {
     const newItems = [...builderItems];
-    newItems[itemIndex] = { ...builderItems[itemIndex], target };
+    newItems[itemIndex] = { ...builderItems[itemIndex], target, highlight: false };
     setBuilderItems(newItems);
   };
 

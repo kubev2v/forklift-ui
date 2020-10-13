@@ -177,6 +177,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               availableTargets={mappingResourceQueries.availableTargets}
               builderItems={builderItems}
               setBuilderItems={setBuilderItems}
+              isWizardMode
             />
             <Checkbox
               label="Save mapping to use again"

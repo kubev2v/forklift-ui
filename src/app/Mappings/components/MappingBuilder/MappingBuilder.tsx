@@ -23,6 +23,7 @@ interface IMappingBuilderProps {
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
+  isWizardMode?: boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -31,6 +32,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   availableTargets,
   builderItems,
   setBuilderItems,
+  isWizardMode = false,
 }: IMappingBuilderProps) => {
   const messageSelectBoth = 'You must select a source and target before adding another mapping.';
   const messageExhausted = `All source ${
@@ -72,7 +74,10 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
       {builderItems.map((item, itemIndex) => {
         const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
         return (
-          <Grid key={key}>
+          <Grid
+            key={key}
+            className={`mapping-item ${isWizardMode && item.highlight ? 'highlighted' : ''}`}
+          >
             {itemIndex === 0 ? (
               <>
                 <GridItem span={5} className={spacing.pbSm}>
@@ -93,7 +98,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <GridItem span={1} />
               </>
             ) : null}
-            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box source-select ${spacing.pSm}`}>
               <MappingSourceSelect
                 id={`mapping-sources-for-${key}`}
                 builderItems={builderItems}
@@ -107,7 +112,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box target-select ${spacing.pSm}`}>
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 builderItems={builderItems}
