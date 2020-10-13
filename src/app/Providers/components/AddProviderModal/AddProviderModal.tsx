@@ -14,6 +14,8 @@ import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import './AddProviderModal.css';
 import { useCreateProvider } from '@app/queries';
+import { useVMwareFormState, VMwareFormState } from './useVMwareFormState';
+import { useOpenshiftFormState, OpenshiftFormState } from './useOpenshiftFormState';
 
 interface IAddProviderModalProps {
   onClose: () => void;
@@ -29,30 +31,17 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
 }: IAddProviderModalProps) => {
   usePausedPollingEffect();
 
-  // TODO determine the actual validation criteria for this form -- these are for testing
-
   const providerTypeField = useFormField<ProviderType | null>(
     null,
     yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
   );
+  const vmwareForm = useVMwareFormState(providerTypeField);
+  const openshiftForm = useOpenshiftFormState(providerTypeField);
 
-  const vmwareForm = useFormState({
-    providerType: providerTypeField,
-    name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
-    hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
-    username: useFormField('', yup.string().label('Username').max(20).required()),
-    password: useFormField('', yup.string().label('Password').max(20).required()),
-  });
-
-  const openshiftForm = useFormState({
-    providerType: providerTypeField,
-    clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
-    url: useFormField('', yup.string().label('URL').max(40).required()),
-    saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
-  });
+  // TODO determine the actual validation criteria for this form -- these are for testing
 
   const providerType = providerTypeField.value;
-  const formValues =
+  const formValues: VMwareFormState['values'] | OpenshiftFormState['values'] =
     providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
   const isFormValid =
     providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
