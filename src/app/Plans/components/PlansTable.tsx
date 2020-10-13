@@ -32,6 +32,8 @@ import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
 import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
+import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
+import { useFilterState } from '@app/common/hooks/useFilterState';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -42,6 +44,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   migrations,
 }: IPlansTableProps) => {
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'name',
+      title: 'Name',
+      type: FilterType.search,
+      placeholderText: 'Filter by name...',
+      getItemValue: (item) => {
+        return item.metadata.name;
+      },
+    },
+  ];
+
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
   const getSortValues = (plan: IPlan) => {
     return [
       plan.metadata.name,
@@ -53,7 +68,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     ];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(plans, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
@@ -169,6 +184,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   return (
     <>
       <Level>
+        <LevelItem>
+          <FilterToolbar
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+          />
+        </LevelItem>
         <LevelItem>
           <CreatePlanButton variant="secondary" label="Create" />
         </LevelItem>

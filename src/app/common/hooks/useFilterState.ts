@@ -22,14 +22,8 @@ export const useFilterState = <T>(
       if (filterCategory?.getItemValue) {
         itemValue = filterCategory.getItemValue(item);
       }
-      return values.every((filterValue) => {
-        if (!itemValue) return false;
-        const lowerCaseItemValue = String(itemValue).toLowerCase();
-        const lowerCaseFilterValue = String(filterValue).toLowerCase();
-        return lowerCaseItemValue.indexOf(lowerCaseFilterValue) !== -1;
-      });
+      return values.every((filterValue) => (itemValue ? itemValue.includes(filterValue) : false));
     })
   );
-
   return { filterValues, setFilterValues, filteredItems };
 };
