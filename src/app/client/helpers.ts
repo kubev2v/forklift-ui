@@ -85,24 +85,25 @@ export function convertFormValuesToSecret(
   }
 }
 
-export const convertFormValuesToProvider = (formValues): INewProvider => {
+export const convertFormValuesToProvider = (
+  values: OpenshiftFormState['values'] | VMwareFormState['values']
+): INewProvider => {
   return {
     apiVersion: 'virt.konveyor.io/v1alpha1',
     kind: 'Provider',
     metadata: {
-      name: formValues.name,
+      name: values['clusterName'],
       namespace: 'openshift-migration',
     },
     spec: {
-      type: formValues.providerType,
-      url: formValues.url || formValues.hostname,
+      type: values.providerType,
+      url: values['url'] || values['hostname'],
       secret: {
         namespace: VIRT_META.namespace,
-        name: formValues.name,
+        name: values['clusterName'] || values['name'],
         // this wont work when we move to generate-name ...
         // we will need to pull in secrets & find before this request
       },
     },
-    type: formValues.providerType,
   };
 };

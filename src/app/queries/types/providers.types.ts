@@ -40,14 +40,13 @@ export interface INewProvider {
     namespace: string;
   };
   spec: {
-    type: ProviderType;
+    type: ProviderType | null;
     url: string; // TODO is this the "Endpoint" column?
     secret: {
       namespace: string;
       name: string;
     };
   };
-  type: ProviderType;
 }
 
 export interface ICommonProvider {
