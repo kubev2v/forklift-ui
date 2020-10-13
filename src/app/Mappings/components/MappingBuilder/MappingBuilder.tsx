@@ -74,10 +74,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
       {builderItems.map((item, itemIndex) => {
         const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
         return (
-          <Grid
-            key={key}
-            className={`mapping-item ${isWizardMode && item.highlight ? 'highlighted' : ''}`}
-          >
+          <Grid key={key}>
             {itemIndex === 0 ? (
               <>
                 <GridItem span={5} className={spacing.pbSm}>
@@ -87,7 +84,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                     </span>
                   </label>
                 </GridItem>
-                <GridItem span={1} />
+                <GridItem span={isWizardMode ? 2 : 1} />
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
                     <span className="pf-c-form__label-text">
@@ -95,10 +92,10 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                     </span>
                   </label>
                 </GridItem>
-                <GridItem span={1} />
+                {isWizardMode ? null : <GridItem span={1} />}
               </>
             ) : null}
-            <GridItem span={5} className={`mapping-builder-box source-select ${spacing.pSm}`}>
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingSourceSelect
                 id={`mapping-sources-for-${key}`}
                 builderItems={builderItems}
@@ -107,12 +104,17 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 availableSources={availableSources}
               />
             </GridItem>
-            <GridItem span={1}>
+            <GridItem span={isWizardMode ? 2 : 1}>
               <Bullseye>
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem span={5} className={`mapping-builder-box target-select ${spacing.pSm}`}>
+            <GridItem
+              span={5}
+              className={`mapping-builder-box ${spacing.pSm} ${
+                isWizardMode && item.highlight ? 'highlighted' : ''
+              }`}
+            >
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 builderItems={builderItems}
@@ -121,51 +123,55 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 availableTargets={availableTargets}
               />
             </GridItem>
-            <GridItem span={1}>
-              <Bullseye>
-                <Button
-                  variant="plain"
-                  aria-label="Remove mapping"
-                  onClick={() => removeItem(itemIndex)}
-                  isDisabled={isReset}
-                >
-                  <TrashIcon />
-                </Button>
-              </Bullseye>
-            </GridItem>
+            {isWizardMode ? null : (
+              <GridItem span={1}>
+                <Bullseye>
+                  <Button
+                    variant="plain"
+                    aria-label="Remove mapping"
+                    onClick={() => removeItem(itemIndex)}
+                    isDisabled={isReset}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </Bullseye>
+              </GridItem>
+            )}
           </Grid>
         );
       })}
-      <Flex
-        justifyContent={{ default: 'justifyContentCenter' }}
-        spaceItems={{ default: 'spaceItemsMd' }}
-      >
-        <AddTooltip
-          isTooltipEnabled={
-            !builderItems.every((item) => item.source && item.target) ||
-            builderItems.length === availableSources.length
-          }
-          content={getTooltipContent()}
-          position="bottom"
+      {isWizardMode ? null : (
+        <Flex
+          justifyContent={{ default: 'justifyContentCenter' }}
+          spaceItems={{ default: 'spaceItemsMd' }}
         >
-          <div>
-            <Button
-              isDisabled={
-                !builderItems.every((item) => item.source && item.target) ||
-                builderItems.length === availableSources.length
-              }
-              variant="secondary"
-              icon={<PlusCircleIcon />}
-              onClick={addEmptyItem}
-            >
-              Add
-            </Button>
-          </div>
-        </AddTooltip>
-        <Button variant="secondary" onClick={reset} isDisabled={isReset}>
-          Remove all
-        </Button>
-      </Flex>
+          <AddTooltip
+            isTooltipEnabled={
+              !builderItems.every((item) => item.source && item.target) ||
+              builderItems.length === availableSources.length
+            }
+            content={getTooltipContent()}
+            position="bottom"
+          >
+            <div>
+              <Button
+                isDisabled={
+                  !builderItems.every((item) => item.source && item.target) ||
+                  builderItems.length === availableSources.length
+                }
+                variant="secondary"
+                icon={<PlusCircleIcon />}
+                onClick={addEmptyItem}
+              >
+                Add
+              </Button>
+            </div>
+          </AddTooltip>
+          <Button variant="secondary" onClick={reset} isDisabled={isReset}>
+            Remove all
+          </Button>
+        </Flex>
+      )}
     </>
   );
 };

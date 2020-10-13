@@ -1,9 +1,9 @@
-.mapping-item.highlighted .mapping-builder-box.target-select {
+.mapping-builder-box.highlighted {
   border-color: var(--pf-global--warning-color--100);
 }
 
-.mapping-item.highlighted .mapping-builder-box.target-select,
-.mapping-item.highlighted .mapping-builder-box.target-select .pf-c-select__toggle {
+.mapping-builder-box.highlighted,
+.mapping-builder-box.highlighted .pf-c-select__toggle {
   background-color: var(--pf-global--palette--gold-50);
 }
 
