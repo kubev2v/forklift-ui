@@ -28,13 +28,13 @@ import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuil
 import { usePausedPollingEffect } from '@app/common/context';
 
 import './MappingForm.css';
+import { fetchMockStorage } from '@app/queries/mocks/helpers';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
   sourceProvider: IVMwareProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
-  mappingList: Mapping[];
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
@@ -42,7 +42,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   sourceProvider,
   targetProvider,
   mappingType,
-  mappingList,
 }: IMappingFormProps) => {
   usePausedPollingEffect(); // Polling can interfere with mapping builder state
 
@@ -50,6 +49,13 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     sourceProvider,
     targetProvider,
     mappingType
+  );
+
+  const mappingsQueryData = fetchMockStorage(mappingType) as Mapping[] | undefined; // TODO replace this with a real query
+  const filteredMappings = (mappingsQueryData || []).filter(
+    // TODO this probably needs to use type/id, whatever we end up having for real mapping provider references
+    ({ provider: { source, target } }) =>
+      source.selfLink === sourceProvider?.selfLink && target.selfLink === targetProvider?.selfLink
   );
 
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
@@ -62,7 +68,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
     value: 'new',
   };
-  const mappingOptions = Object.values(mappingList).map((mapping) => ({
+  const mappingOptions = Object.values(filteredMappings).map((mapping) => ({
     toString: () => mapping.name,
     value: mapping,
   })) as OptionWithValue<Mapping>[];
@@ -131,7 +137,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 label={
                   mappingOptions.length > 0
                     ? 'Existing mappings'
-                    : 'No existing mappings match your selected providers' // TODO actually filter mappings by providers
+                    : 'No existing mappings match your selected providers'
                 }
               >
                 {mappingOptions.map((option) => (
