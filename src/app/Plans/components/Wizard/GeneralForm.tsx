@@ -71,7 +71,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
           options={sourceProvidersOptions}
           value={[
             sourceProvidersOptions.find(
-              (option) => option.value === form.fields.sourceProvider.value
+              (option) => option.value.name === form.values.sourceProvider?.name
             ),
           ]}
           onChange={(selection) =>
@@ -96,7 +96,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
           options={targetProvidersOptions}
           value={[
             targetProvidersOptions.find(
-              (option) => option.value === form.fields.targetProvider.value
+              (option) => option.value.name === form.values.targetProvider?.name
             ),
           ]}
           onChange={(selection) =>
