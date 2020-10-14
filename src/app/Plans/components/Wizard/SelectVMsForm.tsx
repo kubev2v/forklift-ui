@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Alert } from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -207,7 +207,23 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         <TableHeader />
         <TableBody />
       </Table>
-      <Pagination {...paginationProps} widgetId="vms-table-pagination-bottom" variant="bottom" />
+      <Level>
+        <LevelItem>
+          <TextContent>
+            <Text
+              component="small"
+              className={spacing.mlLg}
+            >{`${form.values.selectedVMs.length} selected`}</Text>
+          </TextContent>
+        </LevelItem>
+        <LevelItem>
+          <Pagination
+            {...paginationProps}
+            widgetId="vms-table-pagination-bottom"
+            variant="bottom"
+          />
+        </LevelItem>
+      </Level>
     </>
   );
 };
