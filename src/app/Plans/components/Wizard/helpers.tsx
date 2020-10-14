@@ -5,11 +5,14 @@ import {
   IVMwareHostTree,
   IVMwareVM,
   IVMwareVMTree,
+  Mapping,
   MappingSource,
   MappingType,
   VMwareTree,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
+import { getMappingFromBuilderItems } from '@app/Mappings/components/MappingBuilder/helpers';
+import { PlanWizardFormState } from './PlanWizard';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -198,4 +201,31 @@ export const filterSourcesBySelectedVMs = (
     )
   );
   return availableSources.filter((source) => sourceIds.includes(source.id));
+};
+
+export const generateMappings = (
+  forms: PlanWizardFormState
+): { networkMapping: Mapping | null; storageMapping: Mapping | null } => {
+  const { sourceProvider, targetProvider } = forms.general.values;
+  const networkMapping =
+    sourceProvider && targetProvider
+      ? getMappingFromBuilderItems({
+          mappingType: MappingType.Network,
+          mappingName: forms.networkMapping.values.newMappingName || '',
+          sourceProvider,
+          targetProvider,
+          builderItems: forms.networkMapping.values.builderItems,
+        })
+      : null;
+  const storageMapping =
+    sourceProvider && targetProvider
+      ? getMappingFromBuilderItems({
+          mappingType: MappingType.Storage,
+          mappingName: forms.storageMapping.values.newMappingName || '',
+          sourceProvider,
+          targetProvider,
+          builderItems: forms.storageMapping.values.builderItems,
+        })
+      : null;
+  return { networkMapping, storageMapping };
 };

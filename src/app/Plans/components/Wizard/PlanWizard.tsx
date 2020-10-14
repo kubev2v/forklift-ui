@@ -34,6 +34,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
+import { generateMappings } from './helpers';
 
 const useMappingFormState = () => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -94,6 +95,8 @@ const PlanWizard: React.FunctionComponent = () => {
     isFirstRender.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
+
+  const { networkMapping, storageMapping } = generateMappings(forms);
 
   enum StepId {
     General = 1,
@@ -197,7 +200,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Review',
       component: (
         <WizardStepContainer title="Review the migration plan">
-          <Review forms={forms} />
+          <Review forms={forms} networkMapping={networkMapping} storageMapping={storageMapping} />
         </WizardStepContainer>
       ),
       nextButtonText: 'Finish',
