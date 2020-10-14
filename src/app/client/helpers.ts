@@ -3,11 +3,13 @@ import KubeClient, {
   NamespacedResource,
   CoreNamespacedResourceKind,
   CoreNamespacedResource,
+  ClusterClient,
 } from '@konveyor/lib-ui/dist/';
 import { VIRT_META, ProviderType } from '@app/common/constants';
 import { INewProvider, INewSecret } from '@app/queries/types';
 import { VMwareFormState } from '@app/Providers/components/AddProviderModal/useVMwareFormState';
 import { OpenshiftFormState } from '@app/Providers/components/AddProviderModal/useOpenshiftFormState';
+import { useNetworkContext } from '@app/common/context';
 export class VirtResource extends NamespacedResource {
   private _gvk: KubeClient.IGroupVersionKindPlural;
   constructor(kind: VirtResourceKind, namespace: string) {
@@ -75,10 +77,6 @@ export function convertFormValuesToSecret(
         // generateName: `${name}-`, // want to use this when it is available
         name: values['name'],
         namespace: VIRT_META.namespace,
-        // labels: {
-        //   createdForResourceType,
-        //   createdForResource,
-        // },
       },
       type: 'Opaque',
     };
@@ -92,7 +90,7 @@ export const convertFormValuesToProvider = (
     apiVersion: 'virt.konveyor.io/v1alpha1',
     kind: 'Provider',
     metadata: {
-      name: values['clusterName'],
+      name: values['clusterName'] || values['name'],
       namespace: 'openshift-migration',
     },
     spec: {
@@ -106,4 +104,62 @@ export const convertFormValuesToProvider = (
       },
     },
   };
+};
+
+export const getTokenSecretLabelSelector = (
+  createdForResourceType: string,
+  createdForResource: string
+) => {
+  return {
+    labelSelector: `createdForResourceType=${createdForResourceType},createdForResource=${createdForResource}`,
+  };
+};
+
+export const useCheckIfResourceExists = async (
+  client: ClusterClient,
+  resourceKind: VirtResourceKind | CoreNamespacedResourceKind,
+  resource: VirtResource,
+  resourceName: string
+): Promise<any> => {
+  try {
+    await Promise.allSettled([
+      client.list(secretResource, getTokenSecretLabelSelector(resourceKind, resourceName)),
+      client.get(resource, resourceName),
+    ]).then((results) => {
+      console.log('results', results);
+      const alreadyExists = Object.keys(results).reduce((exists: Array<any>, result) => {
+        return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
+          ? [
+              ...exists,
+              {
+                kind: results[result].value.data.kind,
+                name:
+                  results[result].value.data.items && results[result].value.data.items.length > 0
+                    ? results[result].value.data.items[0].metadata.name
+                    : results[result].value.data.metadata.name,
+              },
+            ]
+          : exists;
+      }, []);
+      if (alreadyExists.length > 0) {
+        throw new Error(
+          alreadyExists.reduce((msg, v) => {
+            return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+          }, 'Some cluster objects already exist ')
+        );
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const useClientInstance = () => {
+  const { currentUser } = useNetworkContext();
+  const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
+  const user = {
+    access_token: currentUserString.access_token,
+    expiry_time: currentUserString.expiry_time,
+  };
+  return ClientFactory.cluster(user, VIRT_META.clusterApi);
 };
