@@ -66,13 +66,13 @@ export const useCreateProvider = () => {
     );
 
     try {
-      const secret: INewSecret | undefined = convertFormValuesToSecret(values);
+      const secret: INewSecret | undefined = convertFormValuesToSecret(
+        values,
+        VirtResourceKind.Provider
+      );
       if (secret) {
-        const secretResult = await client.create(secretResource, secret);
-        //will need result if we ever go to generated names
+        await client.create(secretResource, secret);
       }
-
-      //possibly move secret to a new query?
 
       const providerResult = await client.create(providerResource, provider);
 

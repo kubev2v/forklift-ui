@@ -26,9 +26,12 @@ export interface INewSecret {
   };
   kind: string;
   metadata: {
-    // generateName: string;
-    name: string;
+    generateName: string;
     namespace: string;
+    labels: {
+      createdForResourceType: string;
+      createdForResource: string;
+    };
   };
   type: string;
 }

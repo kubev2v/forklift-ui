@@ -38,7 +38,8 @@ export const secretResource = new CoreNamespacedResource(
 export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace);
 
 export function convertFormValuesToSecret(
-  values: VMwareFormState['values'] | OpenshiftFormState['values']
+  values: VMwareFormState['values'] | OpenshiftFormState['values'],
+  createdForResourceType: VirtResourceKind
 ): INewSecret | undefined {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(values['saToken']);
@@ -50,13 +51,12 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        // generateName: `${name}-`, // want to use this when it is available
-        name: values['clusterName'],
+        generateName: `${values['clusterName']}-`,
         namespace: VIRT_META.namespace,
-        // labels: {
-        //   createdForResourceType,
-        //   createdForResource,
-        // },
+        labels: {
+          createdForResourceType,
+          createdForResource: values['clusterName'],
+        },
       },
       type: 'Opaque',
     };
@@ -70,13 +70,16 @@ export function convertFormValuesToSecret(
       data: {
         user: values['username'],
         password: encodedPassword,
-        thumbprint: encodedThumbprint, //values.thumbprint//
+        thumbprint: encodedThumbprint, //values.thumbprint?//
       },
       kind: 'Secret',
       metadata: {
-        // generateName: `${name}-`, // want to use this when it is available
-        name: values['name'],
+        generateName: `${values['name']}-`,
         namespace: VIRT_META.namespace,
+        labels: {
+          createdForResourceType,
+          createdForResource: values['name'],
+        },
       },
       type: 'Opaque',
     };
