@@ -32,8 +32,11 @@ export const authorizedFetch = async <T>(url: string, fetchContext: IFetchContex
     // error was produced due to a self signed cert error.
     // It's an extremely barren object.
     if (error instanceof TypeError) {
-      setSelfSignedCertUrl(url);
-      history.push('/cert-error');
+      console.log('this is error', error);
+      //TODO handle other CORS issues. commenting out for now
+
+      // setSelfSignedCertUrl(url);
+      // history.push('/cert-error');
     }
     return Promise.reject(error);
   }

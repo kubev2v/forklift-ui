@@ -30,6 +30,10 @@ import {
   secretResource,
   convertFormValuesToProvider,
   convertFormValuesToSecret,
+  getTokenSecretLabelSelector,
+  checkIfResourceExists,
+  useClientInstance,
+  useCheckIfResourceExists,
 } from '@app/client/helpers';
 import { OpenshiftFormState } from '@app/Providers/components/AddProviderModal/useOpenshiftFormState';
 import { VMwareFormState } from '@app/Providers/components/AddProviderModal/useVMwareFormState';
@@ -49,20 +53,19 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   return sortIndexedResultsByName<Provider, IProvidersByType>(result);
 };
 export const useCreateProvider = () => {
-  const { currentUser } = useNetworkContext();
-  // const client: IClusterClient = ClientFactory.cluster(state);
+  const client = useClientInstance();
   const useProviderPost = async (
     values: OpenshiftFormState['values'] | VMwareFormState['values']
   ) => {
-    try {
-      const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
-      const user = {
-        access_token: currentUserString.access_token,
-        expiry_time: currentUserString.expiry_time,
-      };
-      const client = ClientFactory.cluster(user, VIRT_META.clusterApi);
+    const provider: INewProvider = convertFormValuesToProvider(values);
+    useCheckIfResourceExists(
+      client,
+      VirtResourceKind.Provider,
+      providerResource,
+      provider.metadata.name
+    );
 
-      //TODO -- handle type requests differently
+    try {
       const secret: INewSecret | undefined = convertFormValuesToSecret(values);
       if (secret) {
         const secretResult = await client.create(secretResource, secret);
@@ -71,7 +74,6 @@ export const useCreateProvider = () => {
 
       //possibly move secret to a new query?
 
-      const provider: INewProvider = convertFormValuesToProvider(values);
       const providerResult = await client.create(providerResource, provider);
 
       return providerResult;
