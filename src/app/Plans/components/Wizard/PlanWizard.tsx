@@ -27,6 +27,7 @@ import {
   Mapping,
   MappingType,
   VMwareTree,
+  VMwareTreeType,
 } from '@app/queries/types';
 import { usePausedPollingEffect } from '@app/common/context';
 import {
@@ -58,6 +59,7 @@ const usePlanWizardFormState = () => ({
     ),
   }),
   filterVMs: useFormState({
+    treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
     selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
   }),
   selectVMs: useFormState({
@@ -74,13 +76,18 @@ const PlanWizard: React.FunctionComponent = () => {
   const history = useHistory();
   const forms = usePlanWizardFormState();
 
-  const onProviderChange = () => {
-    // If you change providers, reset all subsequent forms.
-    forms.filterVMs.reset();
-    forms.selectVMs.reset();
-    forms.networkMapping.reset();
-    forms.storageMapping.reset();
-  };
+  const isFirstRender = React.useRef(true);
+  React.useEffect(() => {
+    // When providers change, reset all subsequent forms
+    if (!isFirstRender.current) {
+      forms.filterVMs.reset();
+      forms.selectVMs.reset();
+      forms.networkMapping.reset();
+      forms.storageMapping.reset();
+    }
+    isFirstRender.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
 
   enum StepId {
     General = 1,
@@ -104,7 +111,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General Settings">
-          <GeneralForm form={forms.general} onProviderChange={onProviderChange} />
+          <GeneralForm form={forms.general} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
