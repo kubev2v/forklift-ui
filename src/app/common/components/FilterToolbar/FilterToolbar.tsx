@@ -12,6 +12,7 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 
 import { FilterControl } from './FilterControl';
+import { IPlan } from '@app/queries/types';
 
 export enum FilterType {
   select = 'select',
@@ -24,18 +25,18 @@ export interface OptionPropsWithKey extends SelectOptionProps {
   key: string;
 }
 
-export interface IBasicFilterCategory {
+export interface IBasicFilterCategory<T> {
   key: string;
   title: string;
   type: FilterType; // If we want to support arbitrary filter types, this could be a React node that consumes context instead of an enum
-  getItemValue?: (item: any) => any;
+  getItemValue?: (item: T) => T;
 }
 
-export interface ISelectFilterCategory extends IBasicFilterCategory {
+export interface ISelectFilterCategory extends IBasicFilterCategory<IPlan> {
   selectOptions: OptionPropsWithKey[];
 }
 
-export interface ISearchFilterCategory extends IBasicFilterCategory {
+export interface ISearchFilterCategory extends IBasicFilterCategory<IPlan> {
   placeholderText: string;
 }
 
