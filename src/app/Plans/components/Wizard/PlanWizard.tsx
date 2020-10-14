@@ -35,14 +35,20 @@ import {
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
 
-const useMappingFormState = () =>
-  useFormState({
+const useMappingFormState = () => {
+  const isSaveNewMapping = useFormField(false, yup.boolean().required());
+  const newMappingNameSchema = yup.string().label('Name');
+  return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
     builderItems: useFormField<IMappingBuilderItem[]>([], mappingBuilderItemsSchema),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
+    isSaveNewMapping,
+    newMappingName: useFormField(
+      '',
+      isSaveNewMapping.value ? newMappingNameSchema.required() : newMappingNameSchema
+    ),
   });
+};
 
 // TODO add support for prefilling forms for editing an API plan
 const usePlanWizardFormState = () => ({
