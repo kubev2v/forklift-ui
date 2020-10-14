@@ -84,17 +84,35 @@ const PlanWizard: React.FunctionComponent = () => {
   const forms = usePlanWizardFormState();
 
   const isFirstRender = React.useRef(true);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+
+  // When providers change, reset dependent forms (filter selections)
   React.useEffect(() => {
-    // When providers change, reset all subsequent forms
     if (!isFirstRender.current) {
       forms.filterVMs.reset();
+    }
+    isFirstRender.current = false;
+  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
+
+  // When filter selections change, reset dependent forms (VM selections)
+  React.useEffect(() => {
+    if (!isFirstRender.current) {
       forms.selectVMs.reset();
+    }
+    isFirstRender.current = false;
+  }, [forms.filterVMs.values.selectedTreeNodes]);
+
+  // When VM selections change, reset dependent forms (mappings)
+  React.useEffect(() => {
+    if (!isFirstRender.current) {
       forms.networkMapping.reset();
       forms.storageMapping.reset();
     }
     isFirstRender.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
+  }, [forms.selectVMs.values.selectedVMs]);
+
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const { networkMapping, storageMapping } = generateMappings(forms);
 
