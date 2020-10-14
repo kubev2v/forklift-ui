@@ -95,6 +95,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
       ),
     ];
     form.fields.builderItems.setValue(newBuilderItems);
+    form.fields.isSaveNewMapping.setValue(false);
   };
 
   const hasAddedItems = form.values.selectedExistingMapping
