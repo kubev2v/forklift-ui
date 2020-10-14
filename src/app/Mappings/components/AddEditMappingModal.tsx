@@ -145,7 +145,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     options={sourceProviderOptions}
                     value={[
                       sourceProviderOptions.find(
-                        (option) => option.value === form.fields.sourceProvider.value
+                        (option) => option.value.name === form.values.sourceProvider?.name
                       ),
                     ]}
                     onChange={(selection) =>
@@ -171,7 +171,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     options={targetProviderOptions}
                     value={[
                       targetProviderOptions.find(
-                        (option) => option.value === form.fields.targetProvider.value
+                        (option) => option.value.name === form.values.targetProvider?.name
                       ),
                     ]}
                     onChange={(selection) =>
