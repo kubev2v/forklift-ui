@@ -8,7 +8,6 @@ import {
   PageSection,
   Title,
   Wizard,
-  WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
