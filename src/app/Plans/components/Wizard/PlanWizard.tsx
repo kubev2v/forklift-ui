@@ -83,6 +83,22 @@ const PlanWizard: React.FunctionComponent = () => {
   const history = useHistory();
   const forms = usePlanWizardFormState();
 
+  enum StepId {
+    General = 1,
+    FilterVMs,
+    SelectVMs,
+    NetworkMapping,
+    StorageMapping,
+    Review,
+  }
+
+  let stepIdReached = StepId.General;
+  if (forms.general.isValid) stepIdReached = StepId.FilterVMs;
+  if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
+  if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
+  if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
+  if (forms.storageMapping.isValid) stepIdReached = StepId.Review;
+
   const isFirstRender = React.useRef(true);
 
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -115,22 +131,6 @@ const PlanWizard: React.FunctionComponent = () => {
   /* eslint-enable react-hooks/exhaustive-deps */
 
   const { networkMapping, storageMapping } = generateMappings(forms);
-
-  enum StepId {
-    General = 1,
-    FilterVMs,
-    SelectVMs,
-    NetworkMapping,
-    StorageMapping,
-    Review,
-  }
-
-  const [stepIdReached, setStepIdReached] = React.useState(StepId.General);
-  const onMove: WizardStepFunctionType = ({ id }) => {
-    if (id !== undefined && id > stepIdReached) {
-      setStepIdReached(id as StepId);
-    }
-  };
 
   const steps = [
     {
@@ -253,8 +253,6 @@ const PlanWizard: React.FunctionComponent = () => {
         <Wizard
           className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
           steps={steps}
-          onNext={onMove}
-          onBack={onMove}
           onSubmit={(event) => event.preventDefault()}
           onSave={() => alert('TODO: create plan CR')}
           onClose={() => history.push('/plans')}
