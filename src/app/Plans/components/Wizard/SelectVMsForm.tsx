@@ -187,9 +187,8 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     <>
       <TextContent className={spacing.mbMd}>
         <Text component="p">
-          Select VMs for migration. The Migration analysis column shows the risk associated with
-          migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
-          indicate the reason for that risk assement.
+          Select VMs for migration. The Migration assessment column highlights conditions related to
+          migrating a particular VM, as determined by Red Hat&apos;s migration analytics service.
         </Text>
       </TextContent>
       <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
