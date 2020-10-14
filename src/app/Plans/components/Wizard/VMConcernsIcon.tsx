@@ -2,6 +2,7 @@ import * as React from 'react';
 import { IVMwareVM } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { InfoCircleIcon } from '@patternfly/react-icons';
+import { getMostSevereVMConcern } from './helpers';
 
 interface IVMConcernsIconProps {
   vm: IVMwareVM;
@@ -10,16 +11,17 @@ interface IVMConcernsIconProps {
 const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
-  if (!vm.concerns || vm.concerns.length === 0) {
+  const worstConcern = getMostSevereVMConcern(vm);
+  if (!worstConcern) {
     return <StatusIcon status={StatusType.Ok} label="Ok" />;
   }
-  if (vm.concerns.some((concern) => concern.severity === 'Critical')) {
-    return <StatusIcon status={StatusType.Error} label="Error" />;
+  if (worstConcern.severity === 'Critical') {
+    return <StatusIcon status={StatusType.Error} label="Critical" />;
   }
-  if (
-    !vm.concerns.some((concern) => concern.severity === 'Warning') &&
-    vm.concerns.some((concern) => concern.severity === 'Info' || concern.severity === 'Advisory')
-  ) {
+  if (worstConcern.severity === 'Warning') {
+    return <StatusIcon status={StatusType.Warning} label="Warning" />;
+  }
+  if (worstConcern.severity === 'Advisory' || worstConcern.severity === 'Info') {
     // TODO we should add an Info status type to StatusIcon
     return (
       <>
@@ -28,7 +30,7 @@ const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
       </>
     );
   }
-  return <StatusIcon status={StatusType.Warning} label="Warning" />;
+  return null;
 };
 
 export default VMConcernsIcon;

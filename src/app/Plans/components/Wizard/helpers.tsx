@@ -4,6 +4,7 @@ import {
   ICommonTreeObject,
   IVMwareHostTree,
   IVMwareVM,
+  IVMwareVMConcern,
   IVMwareVMTree,
   Mapping,
   MappingSource,
@@ -201,6 +202,22 @@ export const filterSourcesBySelectedVMs = (
     )
   );
   return availableSources.filter((source) => sourceIds.includes(source.id));
+};
+
+export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null => {
+  if (!vm.concerns || vm.concerns.length === 0) {
+    return null;
+  }
+  const critical = vm.concerns.find((concern) => concern.severity === 'Critical');
+  const warning = vm.concerns.find((concern) => concern.severity === 'Warning');
+  const info = vm.concerns.find(
+    (concern) => concern.severity === 'Info' || concern.severity === 'Advisory'
+  );
+  if (critical) return critical;
+  if (warning) return warning;
+  if (info) return info;
+  // Default to warning if an unexpected severity is found
+  return { severity: 'Warning', name: 'Unknown' };
 };
 
 export const generateMappings = (
