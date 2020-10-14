@@ -10,21 +10,21 @@ const exampleStorageClasses: IStorageClass[] = [
     version: '1',
     namespace: 'foo',
     name: 'standard',
-    selfLink: '/foo',
+    selfLink: '/foo/sc/1',
   },
   {
     uid: 'foo-sc-uid-2',
     version: '1',
     namespace: 'foo',
     name: 'large',
-    selfLink: '/foo',
+    selfLink: '/foo/sc/2',
   },
   {
     uid: 'foo-sc-uid-3',
     version: '1',
     namespace: 'foo',
     name: 'small',
-    selfLink: '/foo',
+    selfLink: '/foo/sc/3',
   },
 ];
 

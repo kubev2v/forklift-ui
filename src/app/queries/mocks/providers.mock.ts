@@ -9,11 +9,11 @@ export let MOCK_PROVIDERS: IProvidersByType = {
 // TODO put this condition back when we don't directly import mocks into components anymore
 // if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 const vmwareProvider1: IVMwareProvider = {
-  uid: 'foo-uid',
+  uid: '1',
   version: '12345',
   namespace: 'openshift-migration',
   name: 'VCenter1',
-  selfLink: '/foo/bar',
+  selfLink: '/foo/vmwareprovider/1',
   type: ProviderType.vsphere,
   object: {
     apiVersion: '12345',
@@ -59,7 +59,9 @@ const vmwareProvider1: IVMwareProvider = {
 
 const vmwareProvider2: IVMwareProvider = {
   ...vmwareProvider1,
+  uid: '2',
   name: 'VCenter2',
+  selfLink: '/foo/vmwareprovider/2',
   object: {
     ...vmwareProvider1.object,
     metadata: {
@@ -71,7 +73,9 @@ const vmwareProvider2: IVMwareProvider = {
 
 const vmwareProvider3: IVMwareProvider = {
   ...vmwareProvider1,
+  uid: '3',
   name: 'VCenter3',
+  selfLink: '/foo/vmwareprovider/3',
   object: {
     ...vmwareProvider1.object,
     metadata: {
@@ -83,7 +87,9 @@ const vmwareProvider3: IVMwareProvider = {
 
 const openshiftProvider1: IOpenShiftProvider = {
   ...vmwareProvider1,
+  uid: '1',
   name: 'OCPv_1',
+  selfLink: '/foo/openshiftprovider/1',
   object: {
     ...vmwareProvider1.object,
     metadata: {
@@ -103,7 +109,9 @@ const openshiftProvider1: IOpenShiftProvider = {
 
 const openshiftProvider2: IOpenShiftProvider = {
   ...openshiftProvider1,
+  uid: '2',
   name: 'OCPv_2',
+  selfLink: '/foo/openshiftprovider/2',
   object: {
     ...openshiftProvider1.object,
     metadata: {
@@ -115,7 +123,9 @@ const openshiftProvider2: IOpenShiftProvider = {
 
 const openshiftProvider3: IOpenShiftProvider = {
   ...openshiftProvider1,
+  uid: '3',
   name: 'OCPv_3',
+  selfLink: '/foo/openshiftprovider/3',
   object: {
     ...openshiftProvider1.object,
     metadata: {
