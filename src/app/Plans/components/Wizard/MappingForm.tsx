@@ -97,6 +97,10 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     form.fields.builderItems.setValue(newBuilderItems);
   };
 
+  const hasAddedItems = form.values.selectedExistingMapping
+    ? form.values.selectedExistingMapping.items.length < form.values.builderItems.length
+    : false;
+
   if (mappingResourceQueries.isLoading) {
     return <LoadingEmptyState />;
   }
@@ -172,32 +176,33 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               builderItems={form.values.builderItems}
               setBuilderItems={form.fields.builderItems.setValue}
               isWizardMode
-              hasItemsAddedMessage={
-                form.values.selectedExistingMapping
-                  ? form.values.selectedExistingMapping.items.length <
-                    form.values.builderItems.length
-                  : false
-              }
+              hasItemsAddedMessage={hasAddedItems}
             />
-            <Checkbox
-              label="Save mapping to use again"
-              aria-label="save mapping checkbox"
-              id="save-mapping-check"
-              isChecked={form.values.isSaveNewMapping}
-              onChange={() => form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)}
-              className={spacing.mtMd}
-            />
-            {form.values.isSaveNewMapping && (
-              <Grid className={spacing.mbMd}>
-                <GridItem sm={12} md={5} className={spacing.mbMd}>
-                  <ValidatedTextInput
-                    field={form.fields.newMappingName}
-                    label="Name"
-                    fieldId="new-mapping-name"
-                  />
-                </GridItem>
-              </Grid>
-            )}
+            {form.values.isCreateMappingSelected || hasAddedItems ? (
+              <>
+                <Checkbox
+                  label="Save mapping to use again"
+                  aria-label="save mapping checkbox"
+                  id="save-mapping-check"
+                  isChecked={form.values.isSaveNewMapping}
+                  onChange={() =>
+                    form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)
+                  }
+                  className={spacing.mtMd}
+                />
+                {form.values.isSaveNewMapping && (
+                  <Grid className={spacing.mbMd}>
+                    <GridItem sm={12} md={5} className={spacing.mbMd}>
+                      <ValidatedTextInput
+                        field={form.fields.newMappingName}
+                        label="Name"
+                        fieldId="new-mapping-name"
+                      />
+                    </GridItem>
+                  </Grid>
+                )}
+              </>
+            ) : null}
           </>
         )}
       </Flex>
