@@ -50,7 +50,7 @@ const NetworkMappingsPage: React.FunctionComponent = () => {
         {sufficientProvidersQuery.isLoading || isFetchingInitialNetworkMappings ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
-          <Alert variant="danger" title="Error loading providers" />
+          <Alert variant="danger" isInline title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
