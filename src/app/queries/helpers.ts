@@ -44,17 +44,14 @@ export const useMockableMutation = <
   TSnapshot = unknown
 >(
   mutationFn: MutationFunction<TResult, TVariables>,
-  config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined,
-  mutationDescription: string
+  config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined
 ): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
   useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
       ? mutationFn
       : async () => {
           await mockPromise(undefined);
-          throw new Error(
-            `This operation is not available in mock/preview mode: ${mutationDescription}`
-          );
+          throw new Error('This operation is not available in mock/preview mode');
         },
     config
   );
