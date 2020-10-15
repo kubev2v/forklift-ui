@@ -33,10 +33,9 @@ export const authorizedFetch = async <T>(url: string, fetchContext: IFetchContex
     // It's an extremely barren object.
     if (error instanceof TypeError) {
       console.log('this is error', error);
-      //TODO handle other CORS issues. commenting out for now
-
-      // setSelfSignedCertUrl(url);
-      // history.push('/cert-error');
+      //TODO handle other CORS issues.
+      setSelfSignedCertUrl(url);
+      history.push('/cert-error');
     }
     return Promise.reject(error);
   }
