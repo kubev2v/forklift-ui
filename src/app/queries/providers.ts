@@ -2,7 +2,12 @@ import { queryCache, QueryResult, useMutation, MutationResultPair } from 'react-
 
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
+import {
+  useMockableQuery,
+  getApiUrl,
+  sortIndexedResultsByName,
+  useMockableMutation,
+} from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider, INewProvider, INewSecret } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
@@ -69,16 +74,20 @@ export const useCreateProviderMutation = (
     }
   };
 
-  return useMutation<INewProvider, unknown, AddProviderFormValues>(postProvider, {
-    onSuccess: (data) => {
-      console.log('did we succeed', { data });
-      queryCache.invalidateQueries('providers');
-      onSuccess();
+  return useMockableMutation<INewProvider, unknown, AddProviderFormValues>(
+    postProvider,
+    {
+      onSuccess: (data) => {
+        console.log('did we succeed', { data });
+        queryCache.invalidateQueries('providers');
+        onSuccess();
+      },
+      onError: (error) => {
+        console.log('did we fail', { error });
+      },
     },
-    onError: (error) => {
-      console.log('did we fail', { error });
-    },
-  });
+    'create provider'
+  );
 };
 
 export const useHasSufficientProvidersQuery = (): {
