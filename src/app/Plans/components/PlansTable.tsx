@@ -72,6 +72,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         return item.spec.provider.destinationProvider.name;
       },
     },
+    {
+      key: 'status',
+      title: 'Status',
+      type: FilterType.search,
+      placeholderText: 'Filter state...',
+      getItemValue: (item) => {
+        const res = item.status.conditions.find(
+          (condition) =>
+            condition.type === PlanStatusConditionsType.Ready ||
+            condition.type === PlanStatusConditionsType.Execute ||
+            condition.type === PlanStatusConditionsType.Finished ||
+            condition.type === PlanStatusConditionsType.Error
+        );
+
+        return res ? PlanStatusConditionsType[res.type] : '';
+      },
+    },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
