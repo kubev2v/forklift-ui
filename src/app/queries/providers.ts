@@ -15,8 +15,8 @@ import {
   checkIfResourceExists,
   useClientInstance,
 } from '@app/client/helpers';
-import { OpenshiftFormState } from '@app/Providers/components/AddProviderModal/useOpenshiftFormState';
-import { VMwareFormState } from '@app/Providers/components/AddProviderModal/useVMwareFormState';
+import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
+import { ProviderType } from '@app/common/constants';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -33,16 +33,17 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
 };
 
 export const useCreateProviderMutation = (
+  providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
   INewProvider, // TODO: is INewProvider really the TResult type var here? inspect the network response body to see?
   unknown, // TODO: replace `unknown` for TError? we should have a real type here
-  OpenshiftFormState['values'] | VMwareFormState['values'],
+  AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
   const client = useClientInstance();
-  const postProvider = async (values: OpenshiftFormState['values'] | VMwareFormState['values']) => {
-    const provider: INewProvider = convertFormValuesToProvider(values);
+  const postProvider = async (values: AddProviderFormValues) => {
+    const provider: INewProvider = convertFormValuesToProvider(values, providerType);
     try {
       checkIfResourceExists(
         client,
@@ -68,11 +69,7 @@ export const useCreateProviderMutation = (
     }
   };
 
-  return useMutation<
-    INewProvider,
-    unknown,
-    OpenshiftFormState['values'] | VMwareFormState['values']
-  >(postProvider, {
+  return useMutation<INewProvider, unknown, AddProviderFormValues>(postProvider, {
     onSuccess: (data) => {
       console.log('did we succeed', { data });
       queryCache.invalidateQueries('providers');

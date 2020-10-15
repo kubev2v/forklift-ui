@@ -7,9 +7,13 @@ import KubeClient, {
 } from '@konveyor/lib-ui/dist/';
 import { VIRT_META, ProviderType } from '@app/common/constants';
 import { INewProvider, INewSecret } from '@app/queries/types';
-import { VMwareFormState } from '@app/Providers/components/AddProviderModal/useVMwareFormState';
-import { OpenshiftFormState } from '@app/Providers/components/AddProviderModal/useOpenshiftFormState';
 import { useNetworkContext } from '@app/common/context';
+import {
+  AddProviderFormValues,
+  OpenshiftProviderFormValues,
+  VMwareProviderFormValues,
+} from '@app/Providers/components/AddProviderModal/AddProviderModal';
+
 export class VirtResource extends NamespacedResource {
   private _gvk: KubeClient.IGroupVersionKindPlural;
   constructor(kind: VirtResourceKind, namespace: string) {
@@ -38,12 +42,13 @@ export const secretResource = new CoreNamespacedResource(
 export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace);
 
 export function convertFormValuesToSecret(
-  values: VMwareFormState['values'] | OpenshiftFormState['values'],
+  values: AddProviderFormValues,
   createdForResourceType: VirtResourceKind
 ): INewSecret | undefined {
-  // btoa => to base64, atob => from base64
-  const encodedToken = btoa(values['saToken']);
   if (values.providerType === ProviderType.openshift) {
+    const openshiftValues = values as OpenshiftProviderFormValues;
+    // btoa => to base64, atob => from base64
+    const encodedToken = btoa(openshiftValues.saToken);
     return {
       apiVersion: 'v1',
       data: {
@@ -51,34 +56,35 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        generateName: `${values['clusterName']}-`,
+        generateName: `${openshiftValues.clusterName}-`,
         namespace: VIRT_META.namespace,
         labels: {
           createdForResourceType,
-          createdForResource: values['clusterName'],
+          createdForResource: openshiftValues.clusterName,
         },
       },
       type: 'Opaque',
     };
   }
   if (values.providerType === 'vsphere') {
+    const vmwareValues = values as VMwareProviderFormValues;
     const testThumbprint = 'fjdasfjasdlj';
     const encodedThumbprint = btoa(testThumbprint);
-    const encodedPassword = btoa(values['password']);
+    const encodedPassword = btoa(vmwareValues.password);
     return {
       apiVersion: 'v1',
       data: {
-        user: values['username'],
+        user: vmwareValues.username,
         password: encodedPassword,
         thumbprint: encodedThumbprint, //values.thumbprint?//
       },
       kind: 'Secret',
       metadata: {
-        generateName: `${values['name']}-`,
+        generateName: `${vmwareValues.name}-`,
         namespace: VIRT_META.namespace,
         labels: {
           createdForResourceType,
-          createdForResource: values['name'],
+          createdForResource: vmwareValues.name,
         },
       },
       type: 'Opaque',
@@ -88,21 +94,33 @@ export function convertFormValuesToSecret(
 }
 
 export const convertFormValuesToProvider = (
-  values: OpenshiftFormState['values'] | VMwareFormState['values']
+  values: AddProviderFormValues,
+  providerType: ProviderType | null
 ): INewProvider => {
+  let name: string;
+  let url: string;
+  if (providerType === 'vsphere') {
+    const vmwareValues = values as VMwareProviderFormValues;
+    name = vmwareValues.name;
+    url = vmwareValues.hostname;
+  } else {
+    const openshiftValues = values as OpenshiftProviderFormValues;
+    name = openshiftValues.clusterName;
+    url = openshiftValues.url;
+  }
   return {
     apiVersion: 'virt.konveyor.io/v1alpha1',
     kind: 'Provider',
     metadata: {
-      name: values['clusterName'] || values['name'],
+      name,
       namespace: 'openshift-migration',
     },
     spec: {
       type: values.providerType,
-      url: values['url'] || values['hostname'],
+      url,
       secret: {
         namespace: VIRT_META.namespace,
-        name: values['clusterName'] || values['name'],
+        name,
         // this wont work when we move to generate-name ...
         // we will need to pull in secrets & find before this request
       },
