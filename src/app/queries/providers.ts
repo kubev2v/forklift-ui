@@ -42,7 +42,7 @@ export const useCreateProviderMutation = (
   onSuccess: () => void
 ): MutationResultPair<
   INewProvider, // TODO: is INewProvider really the TResult type var here? inspect the network response body to see?
-  unknown, // TODO: replace `unknown` for TError? we should have a real type here
+  Error, // TODO is there a more specific exception type we may encounter with real network/API errors?
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
@@ -74,20 +74,13 @@ export const useCreateProviderMutation = (
     }
   };
 
-  return useMockableMutation<INewProvider, unknown, AddProviderFormValues>(
-    postProvider,
-    {
-      onSuccess: (data) => {
-        console.log('did we succeed', { data });
-        queryCache.invalidateQueries('providers');
-        onSuccess();
-      },
-      onError: (error) => {
-        console.log('did we fail', { error });
-      },
+  return useMockableMutation<INewProvider, Error, AddProviderFormValues>(postProvider, {
+    onSuccess: (data) => {
+      console.log('did we succeed', { data });
+      queryCache.invalidateQueries('providers');
+      onSuccess();
     },
-    'create provider'
-  );
+  });
 };
 
 export const useHasSufficientProvidersQuery = (): {
