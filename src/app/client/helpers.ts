@@ -84,6 +84,7 @@ export function convertFormValuesToSecret(
       type: 'Opaque',
     };
   }
+  return undefined;
 }
 
 export const convertFormValuesToProvider = (
@@ -112,52 +113,47 @@ export const convertFormValuesToProvider = (
 export const getTokenSecretLabelSelector = (
   createdForResourceType: string,
   createdForResource: string
-) => {
+): { labelSelector: string } => {
   return {
     labelSelector: `createdForResourceType=${createdForResourceType},createdForResource=${createdForResource}`,
   };
 };
 
-export const useCheckIfResourceExists = async (
+export const checkIfResourceExists = async (
   client: ClusterClient,
   resourceKind: VirtResourceKind | CoreNamespacedResourceKind,
   resource: VirtResource,
   resourceName: string
-): Promise<any> => {
-  try {
-    await Promise.allSettled([
-      client.list(secretResource, getTokenSecretLabelSelector(resourceKind, resourceName)),
-      client.get(resource, resourceName),
-    ]).then((results) => {
-      console.log('results', results);
-      const alreadyExists = Object.keys(results).reduce((exists: Array<any>, result) => {
-        return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
-          ? [
-              ...exists,
-              {
-                kind: results[result].value.data.kind,
-                name:
-                  results[result].value.data.items && results[result].value.data.items.length > 0
-                    ? results[result].value.data.items[0].metadata.name
-                    : results[result].value.data.metadata.name,
-              },
-            ]
-          : exists;
-      }, []);
-      if (alreadyExists.length > 0) {
-        throw new Error(
-          alreadyExists.reduce((msg, v) => {
-            return msg + `- kind: "${v.kind}", name: "${v.name}"`;
-          }, 'Some cluster objects already exist ')
-        );
-      }
-    });
-  } catch (err) {
-    console.log(err);
+): Promise<void> => {
+  const results = await Promise.allSettled([
+    client.list(secretResource, getTokenSecretLabelSelector(resourceKind, resourceName)),
+    client.get(resource, resourceName),
+  ]);
+  console.log('results', results);
+  const alreadyExists = Object.keys(results).reduce((exists: Array<any>, result) => {
+    return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
+      ? [
+          ...exists,
+          {
+            kind: results[result].value.data.kind,
+            name:
+              results[result].value.data.items && results[result].value.data.items.length > 0
+                ? results[result].value.data.items[0].metadata.name
+                : results[result].value.data.metadata.name,
+          },
+        ]
+      : exists;
+  }, []);
+  if (alreadyExists.length > 0) {
+    throw new Error(
+      alreadyExists.reduce((msg, v) => {
+        return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+      }, 'Some cluster objects already exist ')
+    );
   }
 };
 
-export const useClientInstance = () => {
+export const useClientInstance = (): KubeClient.ClusterClient => {
   const { currentUser } = useNetworkContext();
   const currentUserString = currentUser !== null ? JSON.parse(currentUser || '{}') : {};
   const user = {
