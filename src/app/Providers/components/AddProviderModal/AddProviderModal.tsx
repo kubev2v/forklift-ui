@@ -83,8 +83,6 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           isDisabled={!isFormValid || createProviderResult.isLoading}
           onClick={() => {
             createProvider(formValues);
-            //TODO: tie in onClose to success or error from query. handle error somehow
-            onClose();
           }}
         >
           Add
