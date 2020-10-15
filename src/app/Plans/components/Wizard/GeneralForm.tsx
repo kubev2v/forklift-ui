@@ -21,7 +21,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
     return <LoadingEmptyState />;
   }
   if (providersQuery.isError) {
-    return <Alert variant="danger" title="Error loading providers" />;
+    return <Alert variant="danger" isInline title="Error loading providers" />;
   }
 
   const sourceProvidersOptions = Object.values(vmwareProviders).map((provider) => ({

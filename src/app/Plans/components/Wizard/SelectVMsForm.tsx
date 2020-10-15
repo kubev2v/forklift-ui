@@ -172,7 +172,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     return <LoadingEmptyState />;
   }
   if (treeQueriesStatus === QueryStatus.Error) {
-    return <Alert variant="danger" title="Error loading VMware tree data" />;
+    return <Alert variant="danger" isInline title="Error loading VMware tree data" />;
   }
 
   if (availableVMs.length === 0) {

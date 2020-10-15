@@ -173,7 +173,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         ) : null}
         {createProviderResult.isLoading ? <Spinner size="md" /> : null}
         {createProviderResult.isError ? (
-          <Alert isInline variant="danger" title="Error creating provider">
+          <Alert variant="danger" isInline title="Error creating provider">
             {createProviderResult.error?.message}
           </Alert>
         ) : null}

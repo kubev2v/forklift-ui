@@ -70,7 +70,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       {treeQuery.isLoading ? (
         <LoadingEmptyState />
       ) : treeQuery.isError ? (
-        <Alert variant="danger" title="Error loading VMware tree data" />
+        <Alert variant="danger" isInline title="Error loading VMware tree data" />
       ) : (
         <TreeView
           data={filterAndConvertVMwareTree(

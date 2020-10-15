@@ -115,7 +115,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         {providersQuery.isLoading ? (
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
-          <Alert variant="danger" title="Error loading providers" />
+          <Alert variant="danger" isInline title="Error loading providers" />
         ) : (
           <>
             <Grid className={spacing.mbMd}>
@@ -188,7 +188,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (
-                <Alert variant="danger" title="Error loading mapping resources" />
+                <Alert variant="danger" isInline title="Error loading mapping resources" />
               ) : (
                 <MappingBuilder
                   mappingType={mappingType}

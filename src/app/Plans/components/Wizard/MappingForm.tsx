@@ -102,7 +102,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             {mappingResourceQueries.isLoading ? (
               <LoadingEmptyState />
             ) : mappingResourceQueries.isError ? (
-              <Alert variant="danger" title="Error loading mapping resources" />
+              <Alert variant="danger" isInline title="Error loading mapping resources" />
             ) : (
               // TODO the result of the MappingBuilder is not currently saved to form state. When in this mode we need to sync it with form.fields.mapping
               <MappingBuilder

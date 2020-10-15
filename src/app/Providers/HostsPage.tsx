@@ -58,7 +58,7 @@ export const HostsPage: React.FunctionComponent = () => {
           {hostsQuery.isLoading ? (
             <LoadingEmptyState />
           ) : hostsQuery.isError || !match?.params.providerId ? (
-            <Alert variant="danger" title="Error loading hosts" />
+            <Alert variant="danger" isInline title="Error loading hosts" />
           ) : (
             <CardBody>
               {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (

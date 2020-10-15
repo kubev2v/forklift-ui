@@ -83,7 +83,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         {providersQuery.isLoading ? (
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
-          <Alert variant="danger" title="Error loading providers" />
+          <Alert variant="danger" isInline title="Error loading providers" />
         ) : (
           <Card>
             <CardBody>
