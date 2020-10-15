@@ -54,6 +54,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         return item.metadata.name;
       },
     },
+    {
+      key: 'sourceProvider',
+      title: 'Source provider',
+      type: FilterType.search,
+      placeholderText: 'Filter by name...',
+      getItemValue: (item) => {
+        return item.spec.provider.sourceProvider.name;
+      },
+    },
+    {
+      key: 'targetProvider',
+      title: 'Target provider',
+      type: FilterType.search,
+      placeholderText: 'Filter by name...',
+      getItemValue: (item) => {
+        return item.spec.provider.destinationProvider.name;
+      },
+    },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
