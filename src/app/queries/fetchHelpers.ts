@@ -14,12 +14,17 @@ export const useFetchContext = (): IFetchContext => ({
   setSelfSignedCertUrl: useNetworkContext().setSelfSignedCertUrl,
 });
 
-export const authorizedFetch = async <T>(url: string, fetchContext: IFetchContext): Promise<T> => {
+export const authorizedFetch = async <T>(
+  url: string,
+  fetchContext: IFetchContext,
+  extraHeaders: RequestInit['headers'] = {}
+): Promise<T> => {
   const { history, setSelfSignedCertUrl } = fetchContext;
   try {
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
+        ...extraHeaders,
       },
     });
     if (response.ok && response.json) {
@@ -45,41 +50,14 @@ export const authorizedPost = async <T, TData>(
   url: string,
   fetchContext: IFetchContext,
   data?: TData
-): Promise<T> => {
-  const { history, setSelfSignedCertUrl } = fetchContext;
-  try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
-        body: JSON.stringify(data),
-      },
-    });
-    if (response.ok && response.json) {
-      return response.json();
-    } else {
-      return Promise.reject(response);
-    }
-  } catch (error) {
-    // HACK: Doing our best to determine whether or not the
-    // error was produced due to a self signed cert error.
-    // It's an extremely barren object.
-    if (error instanceof TypeError) {
-      setSelfSignedCertUrl(url);
-      history.push('/cert-error');
-    }
-    return Promise.reject(error);
-  }
-};
+): Promise<T> => authorizedFetch(url, fetchContext, { body: JSON.stringify(data) });
 
 export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
   const fetchContext = useFetchContext();
   return () => authorizedFetch(url, fetchContext);
 };
 
-export const useAuthorizedMutate = <T, TData>(
-  url: string,
-  data: TData
-): MutateFunction<T, TData> => {
+export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFunction<T, TData> => {
   const fetchContext = useFetchContext();
   return () => authorizedPost(url, fetchContext, data);
 };
