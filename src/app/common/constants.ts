@@ -44,4 +44,19 @@ export const PROVIDER_TYPE_NAMES = {
 export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
 export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
-export const VIRT_META: IVirtMetaVars = window['_virt_meta'];
+export const VIRT_META: IVirtMetaVars =
+  process.env.DATA_SOURCE !== 'mock'
+    ? window['_virt_meta']
+    : {
+        clusterApi: '/mock/api',
+        devServerPort: 'mock-port',
+        oauth: {
+          clientId: 'mock-client-id',
+          redirectUri: '/mock/redirect/uri',
+          userScope: '/mock/user-scope',
+          clientSecret: 'mock-client-secret',
+        },
+        namespace: 'mock-namespace',
+        configNamespace: 'mock-namespace',
+        inventoryApi: '/mock/api',
+      };
