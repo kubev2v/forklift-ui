@@ -39,7 +39,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
       vmCount,
       networkCount,
       datastoreCount,
-      provider.object.status.conditions[0].type, // TODO maybe surface the most serious status condition?
+      provider.object.status?.conditions[0].type || '', // TODO maybe surface the most serious status condition?
       '',
     ];
   };
