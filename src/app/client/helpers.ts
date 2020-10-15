@@ -148,24 +148,27 @@ export const checkIfResourceExists = async (
     client.get(resource, resourceName),
   ]);
   console.log('results', results);
-  const alreadyExists = Object.keys(results).reduce((exists: Array<any>, result) => {
-    return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
-      ? [
-          ...exists,
-          {
-            kind: results[result].value.data.kind,
-            name:
-              results[result].value.data.items && results[result].value.data.items.length > 0
-                ? results[result].value.data.items[0].metadata.name
-                : results[result].value.data.metadata.name,
-          },
-        ]
-      : exists;
-  }, []);
+  const alreadyExists = Object.keys(results).reduce(
+    (exists: { kind: string; name: string }[], result) => {
+      return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
+        ? [
+            ...exists,
+            {
+              kind: results[result].value.data.kind,
+              name:
+                results[result].value.data.items && results[result].value.data.items.length > 0
+                  ? results[result].value.data.items[0].metadata.name
+                  : results[result].value.data.metadata.name,
+            },
+          ]
+        : exists;
+    },
+    []
+  );
   if (alreadyExists.length > 0) {
     throw new Error(
       alreadyExists.reduce((msg, v) => {
-        return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+        return `${msg} - kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some cluster objects already exist ')
     );
   }
