@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortIndexedResultsByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortIndexedResultsByName } from './helpers';
 import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingType } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 import { authorizedFetch, useFetchContext } from './fetchHelpers';
@@ -21,7 +21,7 @@ export const useStorageClassesQuery = (
         const storageClassLists: IStorageClass[][] = await Promise.all(
           (providers || []).map((provider) =>
             authorizedFetch<IStorageClass[]>(
-              getApiUrl(`${provider?.selfLink || ''}/storageclasses`),
+              getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses`),
               fetchContext
             )
           )

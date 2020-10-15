@@ -4,7 +4,7 @@ import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import {
   useMockableQuery,
-  getApiUrl,
+  getInventoryApiUrl,
   sortIndexedResultsByName,
   useMockableMutation,
 } from './helpers';
@@ -28,7 +28,7 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'providers',
-      queryFn: useAuthorizedFetch(getApiUrl('/providers?detail=true')),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=true')),
       config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
     },
     MOCK_PROVIDERS

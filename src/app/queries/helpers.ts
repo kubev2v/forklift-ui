@@ -55,7 +55,7 @@ export const useMockableMutation = <
     config
   );
 
-export const getApiUrl = (relativePath: string): string =>
+export const getInventoryApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {

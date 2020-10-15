@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortResultsByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortResultsByName } from './helpers';
 import { MOCK_HOSTS } from './mocks/hosts.mock';
 import { IHost } from './types';
 import { useProvidersQuery } from '.';
@@ -19,7 +19,7 @@ export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
     {
       queryKey: providers && HOSTS_QUERY_KEY,
       queryFn: useAuthorizedFetch(
-        getApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)
+        getInventoryApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)
       ),
       config: {
         enabled: !!currentProvider,
