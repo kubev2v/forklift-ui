@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
+import { Modal, Button, Form, FormGroup, Alert, Spinner } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import {
   useFormState,
@@ -80,7 +80,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         <Button
           key="confirm"
           variant="primary"
-          isDisabled={!isFormValid}
+          isDisabled={!isFormValid || createProviderResult.isLoading}
           onClick={() => {
             createProvider(formValues);
             //TODO: tie in onClose to success or error from query. handle error somehow
@@ -172,6 +172,12 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               Check connection
             </Button>
           </div>
+        ) : null}
+        {createProviderResult.isLoading ? <Spinner size="md" /> : null}
+        {createProviderResult.isError ? (
+          <Alert isInline variant="danger" title="Error creating provider">
+            {JSON.stringify(createProviderResult.error)}
+          </Alert>
         ) : null}
       </Form>
     </Modal>
