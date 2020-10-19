@@ -220,14 +220,18 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <FilterToolbar
-            filterCategories={filterCategories}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-          />
-        </LevelItem>
-        <LevelItem>
-          <CreatePlanButton variant="secondary" label="Create" />
+          <Flex>
+            <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
+              <FilterToolbar
+                filterCategories={filterCategories}
+                filterValues={filterValues}
+                setFilterValues={setFilterValues}
+              />
+            </FlexItem>
+            <FlexItem>
+              <CreatePlanButton variant="secondary" label="Create" />
+            </FlexItem>
+          </Flex>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />
