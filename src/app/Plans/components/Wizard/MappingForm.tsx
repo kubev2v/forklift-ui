@@ -170,34 +170,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
         {(form.values.isCreateMappingSelected || form.values.selectedExistingMapping) && (
           <>
-            {mappingResourceQueries.isLoading ? (
-              <LoadingEmptyState />
-            ) : mappingResourceQueries.isError ? (
-              <Alert variant="danger" isInline title="Error loading mapping resources" />
-            ) : (
-              // TODO the result of the MappingBuilder is not currently saved to form state. When in this mode we need to sync it with form.fields.mapping
-              <MappingBuilder
-                mappingType={mappingType}
-                availableSources={mappingResourceQueries.availableSources}
-                availableTargets={mappingResourceQueries.availableTargets}
-                builderItems={form.values.builderItems}
-                setBuilderItems={form.fields.builderItems.setValue}
-                isWizardMode
-                hasItemsAddedMessage={hasAddedItems}
-                // <MappingBuilder
-                //   mappingType={mappingType}
-                //   availableSources={mappingResourceQueries.availableSources}
-                //   availableTargets={mappingResourceQueries.availableTargets}
-                //   builderItems={builderItems}
-                //   setBuilderItems={setBuilderItems}
-              />
-            )}
-            <Checkbox
-              label="Save mapping to use again"
-              aria-label="save mapping checkbox"
-              id="save-mapping-check"
-              isChecked={form.values.isSaveNewMapping}
-              onChange={() => form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)}
+            <MappingBuilder
+              mappingType={mappingType}
+              availableSources={mappingResourceQueries.availableSources}
+              availableTargets={mappingResourceQueries.availableTargets}
+              builderItems={form.values.builderItems}
+              setBuilderItems={form.fields.builderItems.setValue}
+              isWizardMode
+              hasItemsAddedMessage={hasAddedItems}
             />
             {form.values.isCreateMappingSelected || hasAddedItems ? (
               <>
