@@ -80,12 +80,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       getItemValue: (item) => {
         const res = item.status.conditions.find(
           (condition) =>
-            condition.type === PlanStatusConditionsType.Ready ||
-            condition.type === PlanStatusConditionsType.Execute ||
-            condition.type === PlanStatusConditionsType.Finished ||
-            condition.type === PlanStatusConditionsType.Error
+            condition.type === PlanStatusType.Ready ||
+            condition.type === PlanStatusType.Execute ||
+            condition.type === PlanStatusType.Finished ||
+            condition.type === PlanStatusType.Error
         );
-
         return res ? PlanStatusConditionsType[res.type] : '';
       },
     },
