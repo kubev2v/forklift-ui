@@ -220,7 +220,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       <Level>
         <LevelItem>
           <Flex>
-            <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
+            <FlexItem
+              alignSelf={{ default: 'alignSelfFlexStart' }}
+              spacer={{ default: 'spacerNone' }}
+            >
               <FilterToolbar
                 filterCategories={filterCategories}
                 filterValues={filterValues}
