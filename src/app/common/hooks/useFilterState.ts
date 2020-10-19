@@ -10,7 +10,7 @@ export interface IFilterStateHook<T> {
 
 export const useFilterState = (
   items: IPlan[],
-  filterCategories: FilterCategory[]
+  filterCategories: FilterCategory<IPlan>[]
 ): IFilterStateHook<IPlan> => {
   const [filterValues, setFilterValues] = React.useState<IFilterValues>({});
 

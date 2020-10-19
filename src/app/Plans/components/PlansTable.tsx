@@ -44,7 +44,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   migrations,
 }: IPlansTableProps) => {
-  const filterCategories: FilterCategory[] = [
+  const filterCategories: FilterCategory<IPlan>[] = [
     {
       key: 'name',
       title: 'Name',

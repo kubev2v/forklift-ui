@@ -2,9 +2,10 @@ import * as React from 'react';
 import { ToolbarFilter, Select, SelectOption, SelectOptionObject } from '@patternfly/react-core';
 import { IFilterControlProps } from './FilterControl';
 import { ISelectFilterCategory } from './FilterToolbar';
+import { IPlan } from '@app/queries/types';
 
 export interface ISelectFilterControlProps extends IFilterControlProps {
-  category: ISelectFilterCategory;
+  category: ISelectFilterCategory<IPlan>;
 }
 
 const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = ({

@@ -9,9 +9,10 @@ import {
 } from './FilterToolbar';
 import SelectFilterControl from './SelectFilterControl';
 import SearchFilterControl from './SearchFilterControl';
+import { IPlan } from '@app/queries/types';
 
 export interface IFilterControlProps {
-  category: FilterCategory;
+  category: FilterCategory<IPlan>;
   filterValue: FilterValue;
   setFilterValue: (newValue: FilterValue) => void;
   showToolbarItem: boolean;
@@ -22,10 +23,10 @@ export const FilterControl: React.FunctionComponent<IFilterControlProps> = ({
   ...props
 }: IFilterControlProps) => {
   if (category.type === FilterType.select) {
-    return <SelectFilterControl category={category as ISelectFilterCategory} {...props} />;
+    return <SelectFilterControl category={category as ISelectFilterCategory<IPlan>} {...props} />;
   }
   if (category.type === FilterType.search) {
-    return <SearchFilterControl category={category as ISearchFilterCategory} {...props} />;
+    return <SearchFilterControl category={category as ISearchFilterCategory<IPlan>} {...props} />;
   }
   return null;
 };

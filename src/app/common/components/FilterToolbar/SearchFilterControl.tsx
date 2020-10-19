@@ -9,9 +9,10 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import { IFilterControlProps } from './FilterControl';
 import { ISearchFilterCategory } from './FilterToolbar';
+import { IPlan } from '@app/queries/types';
 
 export interface ISearchFilterControlProps extends IFilterControlProps {
-  category: ISearchFilterCategory;
+  category: ISearchFilterCategory<IPlan>;
 }
 
 const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = ({
