@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Alert, Form, FormGroup, TextArea, Title } from '@patternfly/react-core';
-import { ValidatedTextInput } from '@konveyor/lib-ui';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
@@ -35,7 +36,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
   })) as OptionWithValue<IOpenShiftProvider>[];
 
   return (
-    <Form>
+    <Form className={spacing.pbXl}>
       <Title headingLevel="h2" size="md">
         Give your plan a name and a description
       </Title>
@@ -62,8 +63,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
         label="Source provider"
         isRequired
         fieldId="source-provider"
-        helperTextInvalid={form.fields.sourceProvider.error}
-        validated={form.fields.sourceProvider.isValid ? 'default' : 'error'}
+        {...getFormGroupProps(form.fields.sourceProvider)}
       >
         <SimpleSelect
           id="source-provider"
@@ -87,8 +87,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
         label="Target provider"
         isRequired
         fieldId="target-provider"
-        helperTextInvalid={form.fields.targetProvider.error}
-        validated={form.fields.targetProvider.isValid ? 'default' : 'error'}
+        {...getFormGroupProps(form.fields.targetProvider)}
       >
         <SimpleSelect
           id="target-provider"
@@ -105,6 +104,25 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
             )
           }
           placeholderText="Select a provider"
+        />
+      </FormGroup>
+
+      <FormGroup
+        label="Target namespace"
+        isRequired
+        fieldId="target-namespace"
+        {...getFormGroupProps(form.fields.targetNamespace)}
+      >
+        <SimpleSelect
+          variant="typeahead"
+          isCreatable
+          id="target-namespace"
+          aria-label="Target namespace"
+          options={['mock-namespace-1', 'mock-namespace-2']}
+          value={form.values.targetNamespace}
+          onChange={(selection) => form.fields.targetNamespace.setValue(selection as string)}
+          placeholderText="Select a namespace"
+          isDisabled={!form.values.targetProvider}
         />
       </FormGroup>
     </Form>
