@@ -13,7 +13,7 @@ MOCK_VMWARE_NETWORKS = [
       ID: 'group-123',
     },
     name: 'vmware-network-1',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/vmwarenetwork/1',
   },
   {
     id: '2',
@@ -22,7 +22,7 @@ MOCK_VMWARE_NETWORKS = [
       ID: 'group-123',
     },
     name: 'vmware-network-2',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/vmwarenetwork/2',
   },
   {
     id: '3',
@@ -31,7 +31,7 @@ MOCK_VMWARE_NETWORKS = [
       ID: 'group-123',
     },
     name: 'vmware-network-3',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/vmwarenetwork/3',
   },
   {
     id: '4',
@@ -40,7 +40,7 @@ MOCK_VMWARE_NETWORKS = [
       ID: 'group-123',
     },
     name: 'vmware-network-4',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/vmwarenetwork/4',
   },
   {
     id: '5',
@@ -49,7 +49,7 @@ MOCK_VMWARE_NETWORKS = [
       ID: 'group-123',
     },
     name: 'vmware-network-5',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/vmwarenetwork/5',
   },
 ];
 
@@ -59,35 +59,35 @@ MOCK_OPENSHIFT_NETWORKS = [
     version: '12345',
     namespace: 'foo-namespace',
     name: 'ocp-network-1',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/openshiftnetwork/1',
   },
   {
     uid: 'foo-network-uid-2',
     version: '12345',
     namespace: 'foo-namespace',
     name: 'ocp-network-2',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/openshiftnetwork/2',
   },
   {
     uid: 'foo-network-uid-3',
     version: '12345',
     namespace: 'foo-namespace',
     name: 'ocp-network-3',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/openshiftnetwork/3',
   },
   {
     uid: 'foo-network-uid-4',
     version: '12345',
     namespace: 'foo-namespace',
     name: 'ocp-network-4',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/openshiftnetwork/4',
   },
   {
     uid: 'foo-network-uid-5',
     version: '12345',
     namespace: 'foo-namespace',
     name: 'ocp-network-5',
-    selfLink: '/foo/bar',
+    selfLink: '/foo/openshiftnetwork/5',
   },
 ];
 // }

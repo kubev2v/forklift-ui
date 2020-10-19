@@ -1,3 +1,5 @@
+import { IVMwareObjRef } from './common.types';
+
 export enum VMwareTreeType {
   Host = 'Host',
   VM = 'VM',
@@ -5,10 +7,7 @@ export enum VMwareTreeType {
 
 export interface ICommonTreeObject {
   id: string;
-  parent: {
-    Kind: string;
-    ID: string;
-  } | null;
+  parent: IVMwareObjRef | null;
   name: string;
   selfLink: string;
 }

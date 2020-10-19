@@ -25,5 +25,5 @@ export const fetchMockStorage = (mappingType: string): Mapping[] => {
     mappingType === MappingType.Network ? 'networkMappingsObject' : 'storageMappingsObject';
   const mappingsItem = localStorage.getItem(mappingsKey);
   const returnVal = JSON.parse(mappingsItem || '{}').mappings;
-  return returnVal;
+  return returnVal || [];
 };

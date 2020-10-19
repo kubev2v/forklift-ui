@@ -10,13 +10,15 @@ import {
 } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingBuilder, IMappingBuilderItem } from './MappingBuilder';
+import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
 import { updateMockStorage } from '@app/queries/mocks/helpers';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+
+import './AddEditMappingModal.css';
 
 import './AddEditMappingModal.css';
 
@@ -31,6 +33,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
+  // TODO add support for prefilling form for editing an API mapping
   const form = useFormState({
     name: useFormField('', yup.string().label('Mapping name').required()),
     sourceProvider: useFormField<IVMwareProvider | null>(
@@ -40,6 +43,10 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     targetProvider: useFormField<IOpenShiftProvider | null>(
       null,
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
+    ),
+    builderItems: useFormField<IMappingBuilderItem[]>(
+      [{ source: null, target: null, highlight: false }],
+      mappingBuilderItemsSchema
     ),
   });
   const providersQuery = useProvidersQuery();
@@ -67,14 +74,10 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     mappingType
   );
 
-  // TODO add support for prefilling builderItems for editing an API mapping
-  const [builderItems, setBuilderItems] = React.useState<IMappingBuilderItem[]>([
-    { source: null, target: null },
-  ]);
-
   React.useEffect(() => {
     // If you change providers, reset the mapping selections.
-    setBuilderItems([{ source: null, target: null }]);
+    form.fields.builderItems.setValue([{ source: null, target: null, highlight: false }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
   return (
@@ -92,17 +95,17 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             if (form.values.sourceProvider && form.values.targetProvider) {
               const generatedMapping = getMappingFromBuilderItems({
                 mappingType,
-                mappingName: form.fields.name.value,
+                mappingName: form.values.name,
                 sourceProvider: form.values.sourceProvider,
                 targetProvider: form.values.targetProvider,
-                builderItems,
+                builderItems: form.values.builderItems,
               });
               //TODO: Update when real api call & validation is implemented
               updateMockStorage(generatedMapping);
               onClose();
             }
           }}
-          isDisabled={!builderItems.every((item) => item.source && item.target)}
+          isDisabled={!form.isValid}
         >
           Create
         </Button>,
@@ -120,14 +123,12 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           <>
             <Grid className={spacing.mbMd}>
               <GridItem sm={12} md={5} className={spacing.mbMd}>
-                <Form>
-                  <ValidatedTextInput
-                    field={form.fields.name}
-                    label="Name"
-                    isRequired
-                    fieldId="mapping-name"
-                  />
-                </Form>
+                <ValidatedTextInput
+                  field={form.fields.name}
+                  label="Name"
+                  isRequired
+                  fieldId="mapping-name"
+                />
               </GridItem>
               <GridItem />
               <GridItem sm={12} md={5}>
@@ -144,7 +145,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     options={sourceProviderOptions}
                     value={[
                       sourceProviderOptions.find(
-                        (option) => option.value === form.fields.sourceProvider.value
+                        (option) => option.value.name === form.values.sourceProvider?.name
                       ),
                     ]}
                     onChange={(selection) =>
@@ -170,7 +171,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     options={targetProviderOptions}
                     value={[
                       targetProviderOptions.find(
-                        (option) => option.value === form.fields.targetProvider.value
+                        (option) => option.value.name === form.values.targetProvider?.name
                       ),
                     ]}
                     onChange={(selection) =>
@@ -184,7 +185,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               </GridItem>
               <GridItem sm={1} />
             </Grid>
-            {form.isValid ? (
+            {form.values.sourceProvider && form.values.targetProvider ? (
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (
@@ -194,8 +195,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   mappingType={mappingType}
                   availableSources={mappingResourceQueries.availableSources}
                   availableTargets={mappingResourceQueries.availableTargets}
-                  builderItems={builderItems}
-                  setBuilderItems={setBuilderItems}
+                  builderItems={form.values.builderItems}
+                  setBuilderItems={form.fields.builderItems.setValue}
                 />
               )
             ) : null}

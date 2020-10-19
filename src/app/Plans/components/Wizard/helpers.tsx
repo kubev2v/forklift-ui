@@ -1,7 +1,19 @@
 import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
-import { ICommonTreeObject, IVMwareHostTree, IVMwareVMTree, VMwareTree } from '@app/queries/types';
+import {
+  ICommonTreeObject,
+  IVMwareHostTree,
+  IVMwareVM,
+  IVMwareVMConcern,
+  IVMwareVMTree,
+  Mapping,
+  MappingSource,
+  MappingType,
+  VMwareTree,
+} from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
+import { getMappingFromBuilderItems } from '@app/Mappings/components/MappingBuilder/helpers';
+import { PlanWizardFormState } from './PlanWizard';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -94,10 +106,16 @@ export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
     )
   );
 
-export const getAvailableVMs = (selectedTreeNodes: VMwareTree[]): ICommonTreeObject[] =>
-  getAllVMNodes(selectedTreeNodes)
+export const getAvailableVMs = (
+  selectedTreeNodes: VMwareTree[],
+  allVMs: IVMwareVM[]
+): IVMwareVM[] => {
+  const treeVMs = getAllVMNodes(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
+  const vmSelfLinks = treeVMs.map((object) => object.selfLink);
+  return allVMs.filter((vm) => vmSelfLinks.includes(vm.selfLink));
+};
 
 // Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
 export const findVMTreePath = (node: VMwareTree, vmSelfLink: string): VMwareTree[] | null => {
@@ -120,7 +138,7 @@ export interface IVMTreePathInfo {
 
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
 export const findVMTreePathInfo = (
-  vm: ICommonTreeObject,
+  vm: IVMwareVM,
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
 ): IVMTreePathInfo => {
@@ -153,7 +171,7 @@ export interface IVMTreePathInfoByVM {
 }
 
 export const getVMTreePathInfoByVM = (
-  vms: ICommonTreeObject[],
+  vms: IVMwareVM[],
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
 ): IVMTreePathInfoByVM =>
@@ -164,3 +182,67 @@ export const getVMTreePathInfoByVM = (
     }),
     {}
   );
+
+export const filterSourcesBySelectedVMs = (
+  availableSources: MappingSource[],
+  selectedVMs: IVMwareVM[],
+  mappingType: MappingType
+): MappingSource[] => {
+  const sourceIds = Array.from(
+    new Set(
+      selectedVMs.flatMap((vm) => {
+        if (mappingType === MappingType.Network) {
+          return vm.networks.map((network) => network.ID);
+        }
+        if (mappingType === MappingType.Storage) {
+          return vm.disks.map((disk) => disk.datastore.ID);
+        }
+        return [];
+      })
+    )
+  );
+  return availableSources.filter((source) => sourceIds.includes(source.id));
+};
+
+export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null => {
+  if (!vm.concerns || vm.concerns.length === 0) {
+    return null;
+  }
+  const critical = vm.concerns.find((concern) => concern.severity === 'Critical');
+  const warning = vm.concerns.find((concern) => concern.severity === 'Warning');
+  const info = vm.concerns.find(
+    (concern) => concern.severity === 'Info' || concern.severity === 'Advisory'
+  );
+  if (critical) return critical;
+  if (warning) return warning;
+  if (info) return info;
+  // Default to warning if an unexpected severity is found
+  return { severity: 'Warning', name: 'Unknown' };
+};
+
+export const generateMappings = (
+  forms: PlanWizardFormState
+): { networkMapping: Mapping | null; storageMapping: Mapping | null } => {
+  const { sourceProvider, targetProvider } = forms.general.values;
+  const networkMapping =
+    sourceProvider && targetProvider
+      ? getMappingFromBuilderItems({
+          mappingType: MappingType.Network,
+          mappingName: forms.networkMapping.values.newMappingName || '',
+          sourceProvider,
+          targetProvider,
+          builderItems: forms.networkMapping.values.builderItems,
+        })
+      : null;
+  const storageMapping =
+    sourceProvider && targetProvider
+      ? getMappingFromBuilderItems({
+          mappingType: MappingType.Storage,
+          mappingName: forms.storageMapping.values.newMappingName || '',
+          sourceProvider,
+          targetProvider,
+          builderItems: forms.storageMapping.values.builderItems,
+        })
+      : null;
+  return { networkMapping, storageMapping };
+};

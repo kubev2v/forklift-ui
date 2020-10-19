@@ -8,7 +8,6 @@ import {
   PageSection,
   Title,
   Wizard,
-  WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, useHistory } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -21,15 +20,37 @@ import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import {
-  ICommonTreeObject,
   IOpenShiftProvider,
   IVMwareProvider,
+  IVMwareVM,
   Mapping,
   MappingType,
   VMwareTree,
+  VMwareTreeType,
 } from '@app/queries/types';
-import { MOCK_STORAGE_MAPPINGS, MOCK_NETWORK_MAPPINGS } from '@app/queries/mocks/mappings.mock';
+import { usePausedPollingEffect } from '@app/common/context';
+import {
+  IMappingBuilderItem,
+  mappingBuilderItemsSchema,
+} from '@app/Mappings/components/MappingBuilder';
+import { generateMappings } from './helpers';
 
+const useMappingFormState = () => {
+  const isSaveNewMapping = useFormField(false, yup.boolean().required());
+  const newMappingNameSchema = yup.string().label('Name');
+  return useFormState({
+    isCreateMappingSelected: useFormField(false, yup.boolean().required()),
+    selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
+    builderItems: useFormField<IMappingBuilderItem[]>([], mappingBuilderItemsSchema),
+    isSaveNewMapping,
+    newMappingName: useFormField(
+      '',
+      isSaveNewMapping.value ? newMappingNameSchema.required() : newMappingNameSchema
+    ),
+  });
+};
+
+// TODO add support for prefilling forms for editing an API plan
 const usePlanWizardFormState = () => ({
   general: useFormState({
     planName: useFormField('', yup.string().label('Plan name').required()),
@@ -44,26 +65,20 @@ const usePlanWizardFormState = () => ({
     ),
   }),
   filterVMs: useFormState({
+    treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
     selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
   }),
   selectVMs: useFormState({
-    selectedVMs: useFormField<ICommonTreeObject[]>([], yup.array<ICommonTreeObject>().required()),
+    selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
   }),
-  networkMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
-  storageMapping: useFormState({
-    mapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>().required()),
-    isSaveNewMapping: useFormField(false, yup.boolean().required()),
-    newMappingName: useFormField('', yup.string()),
-  }),
+  networkMapping: useMappingFormState(),
+  storageMapping: useMappingFormState(),
 });
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
 const PlanWizard: React.FunctionComponent = () => {
+  usePausedPollingEffect(); // Polling can interfere with form state
   const history = useHistory();
   const forms = usePlanWizardFormState();
 
@@ -76,12 +91,45 @@ const PlanWizard: React.FunctionComponent = () => {
     Review,
   }
 
-  const [stepIdReached, setStepIdReached] = React.useState(StepId.General);
-  const onMove: WizardStepFunctionType = ({ id }) => {
-    if (id !== undefined && id > stepIdReached) {
-      setStepIdReached(id as StepId);
+  let stepIdReached = StepId.General;
+  if (forms.general.isValid) stepIdReached = StepId.FilterVMs;
+  if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
+  if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
+  if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
+  if (forms.storageMapping.isValid) stepIdReached = StepId.Review;
+
+  const isFirstRender = React.useRef(true);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+
+  // When providers change, reset dependent forms (filter selections)
+  React.useEffect(() => {
+    if (!isFirstRender.current) {
+      forms.filterVMs.reset();
     }
-  };
+    isFirstRender.current = false;
+  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
+
+  // When filter selections change, reset dependent forms (VM selections)
+  React.useEffect(() => {
+    if (!isFirstRender.current) {
+      forms.selectVMs.reset();
+    }
+    isFirstRender.current = false;
+  }, [forms.filterVMs.values.selectedTreeNodes]);
+
+  // When VM selections change, reset dependent forms (mappings)
+  React.useEffect(() => {
+    if (!isFirstRender.current) {
+      forms.networkMapping.reset();
+      forms.storageMapping.reset();
+    }
+    isFirstRender.current = false;
+  }, [forms.selectVMs.values.selectedVMs]);
+
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+  const { networkMapping, storageMapping } = generateMappings(forms);
 
   const steps = [
     {
@@ -139,7 +187,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
-            mappingList={MOCK_NETWORK_MAPPINGS}
+            selectedVMs={forms.selectVMs.values.selectedVMs}
           />
         </WizardStepContainer>
       ),
@@ -157,7 +205,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
-            mappingList={MOCK_STORAGE_MAPPINGS}
+            selectedVMs={forms.selectVMs.values.selectedVMs}
           />
         </WizardStepContainer>
       ),
@@ -169,7 +217,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Review',
       component: (
         <WizardStepContainer title="Review the migration plan">
-          <Review forms={forms} />
+          <Review forms={forms} networkMapping={networkMapping} storageMapping={storageMapping} />
         </WizardStepContainer>
       ),
       nextButtonText: 'Finish',
@@ -204,8 +252,6 @@ const PlanWizard: React.FunctionComponent = () => {
         <Wizard
           className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
           steps={steps}
-          onNext={onMove}
-          onBack={onMove}
           onSubmit={(event) => event.preventDefault()}
           onSave={() => alert('TODO: create plan CR')}
           onClose={() => history.push('/plans')}

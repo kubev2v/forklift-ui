@@ -26,14 +26,17 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
 
   // Don't allow selection of sources already selected in other groups
   const filteredSources = availableSources.filter(
-    (source) => !builderItems.some((item, index) => item.source === source && index !== itemIndex)
+    (source) =>
+      !builderItems.some(
+        (item, index) => item.source?.selfLink === source.selfLink && index !== itemIndex
+      )
   );
   const options: OptionWithValue<MappingSource>[] = filteredSources.map((source) => ({
     value: source,
     toString: () => source.name,
   }));
   const selectedOption = options.filter(
-    (option) => builderItems[itemIndex].source === option.value
+    (option) => option.value.selfLink === builderItems[itemIndex].source?.selfLink
   );
 
   return (

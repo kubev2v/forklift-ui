@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Alert } from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -16,9 +16,9 @@ import {
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import {
-  ICommonTreeObject,
   IVMwareHostTree,
   IVMwareProvider,
+  IVMwareVM,
   IVMwareVMTree,
   VMwareTree,
   VMwareTreeType,
@@ -26,14 +26,15 @@ import {
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { PlanWizardFormState } from './PlanWizard';
 import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
-import { useVMwareTreeQuery } from '@app/queries';
+import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
+import VMConcernsIcon from './VMConcernsIcon';
+import VMConcernsDescription from './VMConcernsDescription';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -49,18 +50,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
   const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
   const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
+  const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
-    const availableVMs = getAvailableVMs(selectedTreeNodes);
+    const availableVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
     const treePathInfoByVM = getVMTreePathInfoByVM(
       availableVMs,
       hostTreeQuery.data || null,
       vmTreeQuery.data || null
     );
     return { availableVMs, treePathInfoByVM };
-  }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data]);
+  }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data, vmsQuery.data]);
 
-  const getSortValues = (vm: ICommonTreeObject) => {
+  const getSortValues = (vm: IVMwareVM) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
       '', // Expand control column
@@ -80,7 +82,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const { isItemSelected, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
-    ICommonTreeObject
+    IVMwareVM
   >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
@@ -88,7 +90,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   });
 
   const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
-    ICommonTreeObject
+    IVMwareVM
   >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
@@ -123,7 +125,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((vm: ICommonTreeObject) => {
+  currentPageItems.forEach((vm: IVMwareVM) => {
     const isSelected = isItemSelected(vm);
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
@@ -144,10 +146,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           ),
         },
         {
-          title: (
-            // TODO render real analytics results here when available
-            <StatusIcon status={StatusType.Ok} label="Ready" />
-          ),
+          title: <VMConcernsIcon vm={vm} />,
         },
         vm.name,
         datacenter?.name || '',
@@ -160,19 +159,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       rows.push({
         parent: rows.length - 1,
         fullWidth: true,
-        cells: [
-          // vm.analysisDescription
-          'TODO: Analytics description here',
-        ],
+        cells: [{ title: <VMConcernsDescription vm={vm} /> }],
       });
     }
   });
 
-  if (treeQueriesStatus === QueryStatus.Loading) {
+  if (treeQueriesStatus === QueryStatus.Loading || vmsQuery.isLoading) {
     return <LoadingEmptyState />;
   }
   if (treeQueriesStatus === QueryStatus.Error) {
     return <Alert variant="danger" title="Error loading VMware tree data" />;
+  }
+  if (vmsQuery.isError) {
+    return <Alert variant="danger" title="Error loading VMs" />;
   }
 
   if (availableVMs.length === 0) {
@@ -188,9 +187,8 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     <>
       <TextContent className={spacing.mbMd}>
         <Text component="p">
-          Select VMs for migration. The Migration analysis column shows the risk associated with
-          migrating a VM as determined by Red Hat&lsquo;s Migration Analytics service. The Flags
-          indicate the reason for that risk assement.
+          Select VMs for migration. The Migration assessment column highlights conditions related to
+          migrating a particular VM, as determined by Red Hat&apos;s migration analytics service.
         </Text>
       </TextContent>
       <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
@@ -208,7 +206,23 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         <TableHeader />
         <TableBody />
       </Table>
-      <Pagination {...paginationProps} widgetId="vms-table-pagination-bottom" variant="bottom" />
+      <Level>
+        <LevelItem>
+          <TextContent>
+            <Text
+              component="small"
+              className={spacing.mlLg}
+            >{`${form.values.selectedVMs.length} selected`}</Text>
+          </TextContent>
+        </LevelItem>
+        <LevelItem>
+          <Pagination
+            {...paginationProps}
+            widgetId="vms-table-pagination-bottom"
+            variant="bottom"
+          />
+        </LevelItem>
+      </Level>
     </>
   );
 };

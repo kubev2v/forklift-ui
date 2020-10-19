@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as yup from 'yup';
 import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patternfly/react-core';
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -10,12 +11,19 @@ import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import AddTooltip from '@app/common/components/AddTooltip';
 
 import './MappingBuilder.css';
-// import AddTooltip from '@app/common/components/AddTooltip';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
   target: MappingTarget | null;
+  highlight: boolean; // Highlight items that were automatically added for missing sources in the wizard
 }
+
+export const mappingBuilderItemsSchema = yup
+  .array<IMappingBuilderItem>()
+  .required()
+  .test('no-empty-selections', 'All sources must be mapped to a target.', (builderItems) =>
+    builderItems ? builderItems.every((item) => item.source && item.target) : false
+  );
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
@@ -23,6 +31,8 @@ interface IMappingBuilderProps {
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
+  isWizardMode?: boolean;
+  hasItemsAddedMessage?: boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -31,6 +41,8 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   availableTargets,
   builderItems,
   setBuilderItems,
+  isWizardMode = false,
+  hasItemsAddedMessage = false,
 }: IMappingBuilderProps) => {
   const messageSelectBoth = 'You must select a source and target before adding another mapping.';
   const messageExhausted = `All source ${
@@ -44,9 +56,10 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     return messageSelectBoth;
   };
 
-  const reset = () => setBuilderItems([{ source: null, target: null }]);
+  const reset = () => setBuilderItems([{ source: null, target: null, highlight: false }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
-  const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
+  const addEmptyItem = () =>
+    setBuilderItems([...builderItems, { source: null, target: null, highlight: false }]);
   const removeItem = (itemIndex: number) => {
     if (builderItems.length > 1) {
       setBuilderItems(builderItems.filter((_item, index) => index !== itemIndex));
@@ -61,6 +74,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   }
   if (mappingType === MappingType.Storage) {
     instructionText = 'Map source datastores to target storage classes.';
+  }
+  if (hasItemsAddedMessage) {
+    instructionText = `${instructionText} Sources missing from your selected mapping have been added.`;
   }
 
   return (
@@ -81,7 +97,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                     </span>
                   </label>
                 </GridItem>
-                <GridItem span={1} />
+                <GridItem span={isWizardMode ? 2 : 1} />
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
                     <span className="pf-c-form__label-text">
@@ -89,24 +105,35 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                     </span>
                   </label>
                 </GridItem>
-                <GridItem span={1} />
+                {isWizardMode ? null : <GridItem span={1} />}
               </>
             ) : null}
             <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
-              <MappingSourceSelect
-                id={`mapping-sources-for-${key}`}
-                builderItems={builderItems}
-                itemIndex={itemIndex}
-                setBuilderItems={setBuilderItems}
-                availableSources={availableSources}
-              />
+              {isWizardMode && item.source ? (
+                <Bullseye style={{ justifyContent: 'left' }} className={spacing.plSm}>
+                  {item.source.name}
+                </Bullseye>
+              ) : (
+                <MappingSourceSelect
+                  id={`mapping-sources-for-${key}`}
+                  builderItems={builderItems}
+                  itemIndex={itemIndex}
+                  setBuilderItems={setBuilderItems}
+                  availableSources={availableSources}
+                />
+              )}
             </GridItem>
-            <GridItem span={1}>
+            <GridItem span={isWizardMode ? 2 : 1}>
               <Bullseye>
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
+            <GridItem
+              span={5}
+              className={`mapping-builder-box ${spacing.pSm} ${
+                isWizardMode && item.highlight ? 'highlighted' : ''
+              }`}
+            >
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 builderItems={builderItems}
@@ -115,51 +142,55 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 availableTargets={availableTargets}
               />
             </GridItem>
-            <GridItem span={1}>
-              <Bullseye>
-                <Button
-                  variant="plain"
-                  aria-label="Remove mapping"
-                  onClick={() => removeItem(itemIndex)}
-                  isDisabled={isReset}
-                >
-                  <TrashIcon />
-                </Button>
-              </Bullseye>
-            </GridItem>
+            {isWizardMode ? null : (
+              <GridItem span={1}>
+                <Bullseye>
+                  <Button
+                    variant="plain"
+                    aria-label="Remove mapping"
+                    onClick={() => removeItem(itemIndex)}
+                    isDisabled={isReset}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </Bullseye>
+              </GridItem>
+            )}
           </Grid>
         );
       })}
-      <Flex
-        justifyContent={{ default: 'justifyContentCenter' }}
-        spaceItems={{ default: 'spaceItemsMd' }}
-      >
-        <AddTooltip
-          isTooltipEnabled={
-            !builderItems.every((item) => item.source && item.target) ||
-            builderItems.length === availableSources.length
-          }
-          content={getTooltipContent()}
-          position="bottom"
+      {isWizardMode ? null : (
+        <Flex
+          justifyContent={{ default: 'justifyContentCenter' }}
+          spaceItems={{ default: 'spaceItemsMd' }}
         >
-          <div>
-            <Button
-              isDisabled={
-                !builderItems.every((item) => item.source && item.target) ||
-                builderItems.length === availableSources.length
-              }
-              variant="secondary"
-              icon={<PlusCircleIcon />}
-              onClick={addEmptyItem}
-            >
-              Add
-            </Button>
-          </div>
-        </AddTooltip>
-        <Button variant="secondary" onClick={reset} isDisabled={isReset}>
-          Remove all
-        </Button>
-      </Flex>
+          <AddTooltip
+            isTooltipEnabled={
+              !builderItems.every((item) => item.source && item.target) ||
+              builderItems.length === availableSources.length
+            }
+            content={getTooltipContent()}
+            position="bottom"
+          >
+            <div>
+              <Button
+                isDisabled={
+                  !builderItems.every((item) => item.source && item.target) ||
+                  builderItems.length === availableSources.length
+                }
+                variant="secondary"
+                icon={<PlusCircleIcon />}
+                onClick={addEmptyItem}
+              >
+                Add
+              </Button>
+            </div>
+          </AddTooltip>
+          <Button variant="secondary" onClick={reset} isDisabled={isReset}>
+            Remove all
+          </Button>
+        </Flex>
+      )}
     </>
   );
 };

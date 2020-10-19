@@ -27,10 +27,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
 }: IFilterVMsFormProps) => {
-  const [treeType, setTreeType] = React.useState(VMwareTreeType.Host);
   const [searchText, setSearchText] = React.useState('');
 
-  const treeQuery = useVMwareTreeQuery(sourceProvider, treeType);
+  const treeQuery = useVMwareTreeQuery(sourceProvider, form.values.treeType);
 
   const treeSelection = useSelectionState({
     items: flattenVMwareTreeNodes(treeQuery.data || null),
@@ -38,22 +37,24 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     isEqual: (a: VMwareTree, b: VMwareTree) => a.object?.selfLink === b.object?.selfLink,
   });
 
+  const isFirstRender = React.useRef(true);
   React.useEffect(() => {
     // Clear selection when the tree type tab changes
-    treeSelection.selectAll(false);
+    if (!isFirstRender.current) {
+      treeSelection.selectAll(false);
+    }
+    isFirstRender.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [treeType]);
+  }, [form.values.treeType]);
 
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
-        <Text component="p">
-          Select datacenters, clusters and folders that contain the VMs to be included in the plan.
-        </Text>
+        <Text component="p">Filter the list of VMs that can be selected for migration.</Text>
       </TextContent>
       <Tabs
-        activeKey={treeType}
-        onSelect={(_event, tabKey) => setTreeType(tabKey as VMwareTreeType)}
+        activeKey={form.values.treeType}
+        onSelect={(_event, tabKey) => form.fields.treeType.setValue(tabKey as VMwareTreeType)}
         className={spacing.mtMd}
       >
         <Tab

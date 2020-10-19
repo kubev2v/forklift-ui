@@ -20,7 +20,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 }: IMappingTargetSelectProps) => {
   const setTarget = (target: MappingTarget) => {
     const newItems = [...builderItems];
-    newItems[itemIndex] = { ...builderItems[itemIndex], target };
+    newItems[itemIndex] = { ...builderItems[itemIndex], target, highlight: false };
     setBuilderItems(newItems);
   };
 
@@ -29,7 +29,8 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     toString: () => target.name,
   }));
   const selectedOption = targetOptions.find(
-    (option: OptionWithValue<MappingTarget>) => option.value === builderItems[itemIndex].target
+    (option: OptionWithValue<MappingTarget>) =>
+      option.value.selfLink === builderItems[itemIndex].target?.selfLink
   );
 
   return (
