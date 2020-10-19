@@ -97,7 +97,7 @@ export const useCreateProviderMutation = (
           Secret: secretResource,
         };
 
-        //   // The objects that need to be rolled back are those that were fulfilled
+        // The objects that need to be rolled back are those that were fulfilled
         const rollbackObjs = providerAddResults.reduce((rollbackAccum, res) => {
           return res.status === 201
             ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]

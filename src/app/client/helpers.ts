@@ -146,7 +146,6 @@ export const checkIfResourceExists = async (
     client.list(secretResource, getTokenSecretLabelSelector(resourceKind, resourceName)),
     client.get(resource, resourceName),
   ]);
-  console.log('results', results);
   const alreadyExists = Object.keys(results).reduce(
     (exists: { kind: string; name: string }[], result) => {
       return results[result]?.status === 'fulfilled ' && results[result]?.value.status === 200
