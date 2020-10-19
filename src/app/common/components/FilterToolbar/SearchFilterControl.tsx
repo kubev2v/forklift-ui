@@ -10,16 +10,16 @@ import { SearchIcon } from '@patternfly/react-icons';
 import { IFilterControlProps } from './FilterControl';
 import { ISearchFilterCategory } from './FilterToolbar';
 
-export interface ISearchFilterControlProps extends IFilterControlProps {
-  category: ISearchFilterCategory;
+export interface ISearchFilterControlProps<T> extends IFilterControlProps<T> {
+  category: ISearchFilterCategory<T>;
 }
 
-const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = ({
+const SearchFilterControl = <T,>({
   category,
   filterValue,
   setFilterValue,
   showToolbarItem,
-}: ISearchFilterControlProps) => {
+}: React.PropsWithChildren<ISearchFilterControlProps<T>>): JSX.Element | null => {
   // Keep internal copy of value until submitted by user
   const [inputValue, setInputValue] = React.useState((filterValue && filterValue[0]) || '');
   // Update it if it changes externally
