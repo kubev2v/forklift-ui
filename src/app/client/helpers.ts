@@ -44,7 +44,7 @@ export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: VirtResourceKind
-): INewSecret | undefined {
+): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
     // btoa => to base64, atob => from base64
@@ -65,8 +65,8 @@ export function convertFormValuesToSecret(
       },
       type: 'Opaque',
     };
-  }
-  if (values.providerType === 'vsphere') {
+  } else {
+    //default to vmware
     const vmwareValues = values as VMwareProviderFormValues;
     const testThumbprint = 'fjdasfjasdlj';
     const encodedThumbprint = btoa(testThumbprint);
@@ -90,7 +90,6 @@ export function convertFormValuesToSecret(
       type: 'Opaque',
     };
   }
-  return undefined;
 }
 
 export const convertFormValuesToProvider = (

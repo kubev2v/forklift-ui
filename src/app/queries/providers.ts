@@ -19,6 +19,7 @@ import {
   convertFormValuesToSecret,
   checkIfResourceExists,
   useClientInstance,
+  VirtResource,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
@@ -56,18 +57,31 @@ export const useCreateProviderMutation = (
         providerResource,
         provider.metadata.name
       );
+    } catch (error) {
+      console.error('Resources already exist.');
+      return Promise.reject(error);
+    }
+    try {
+      const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider);
 
-      const secret: INewSecret | undefined = convertFormValuesToSecret(
-        values,
-        VirtResourceKind.Provider
-      );
-      if (secret) {
-        await client.create(secretResource, secret);
+      const providerAddResults: Array<any> = [];
+      const providerSecretAddResult = await client.create(secretResource, secret);
+
+      if (providerSecretAddResult.status === 201) {
+        providerAddResults.push(providerSecretAddResult);
+
+        Object.assign(provider.spec.secret, {
+          name: providerSecretAddResult.data.metadata.name,
+          namespace: providerSecretAddResult.data.metadata.namespace,
+        });
+
+        const providerAddResult = await client.create(providerResource, provider);
+
+        if (providerAddResult.status === 201) {
+          providerAddResults.push(providerAddResult);
+        }
+        return providerAddResult;
       }
-
-      const providerResult = await client.create(providerResource, provider);
-
-      return providerResult;
     } catch (error) {
       console.error('Failed to add provider.');
       return Promise.reject(error);
