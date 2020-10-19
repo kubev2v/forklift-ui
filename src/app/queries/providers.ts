@@ -82,7 +82,48 @@ export const useCreateProviderMutation = (
         }
         return providerAddResult;
       }
+
+      // If any of the attempted object creation promises have failed, we need to
+      // rollback those that succeeded so we don't have a halfway created "Cluster"
+      // A rollback is only required if some objects have actually *succeeded*,
+      // as well as failed.
+      const isRollbackRequired =
+        providerAddResults.find((res) => res.status === 201) &&
+        providerAddResults.find((res) => res.status !== 201);
+
+      if (isRollbackRequired) {
+        const kindToResourceMap = {
+          Provider: providerResource,
+          Secret: secretResource,
+        };
+
+        //   // The objects that need to be rolled back are those that were fulfilled
+        const rollbackObjs = providerAddResults.reduce((rollbackAccum, res) => {
+          return res.status === 201
+            ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]
+            : rollbackAccum;
+        }, []);
+
+        const rollbackResultPromises = await Promise.allSettled(
+          rollbackObjs.map((r) => {
+            return client.delete(kindToResourceMap[r.kind], r.name);
+          })
+        );
+        Object.keys(rollbackResultPromises).forEach((rollbackResult) => {
+          if (rollbackResultPromises[rollbackResult]?.status === 'rejected') {
+            throw new Error('Attempted to rollback objects, but failed ');
+          } else {
+            //   // One of the objects failed, but rollback was successful. Need to alert
+            //   // the user that something went wrong, but we were able to recover with
+            //   // a rollback
+            throw Error(providerAddResults.find((res) => res.state === 'rejected').reason);
+          }
+        });
+      }
     } catch (error) {
+      // Something went wrong with rollback, not much we can do at this point
+      // except inform the user about what's gone wrong so they can take manual action
+
       console.error('Failed to add provider.');
       return Promise.reject(error);
     }
