@@ -12,7 +12,6 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 
 import { FilterControl } from './FilterControl';
-import { IPlan } from '@app/queries/types';
 
 export enum FilterType {
   select = 'select',
@@ -46,17 +45,17 @@ export interface IFilterValues {
   [categoryKey: string]: FilterValue;
 }
 
-export interface IFilterToolbarProps {
-  filterCategories: FilterCategory<IPlan>[];
+export interface IFilterToolbarProps<T> {
+  filterCategories: FilterCategory<T>[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
 }
 
-export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
+export const FilterToolbar = <T,>({
   filterCategories,
   filterValues,
   setFilterValues,
-}: IFilterToolbarProps) => {
+}: React.PropsWithChildren<IFilterToolbarProps<T>>): JSX.Element | null => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = React.useState(filterCategories[0].key);
 
@@ -65,7 +64,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setIsCategoryDropdownOpen(false);
   };
 
-  const setFilterValue = (category: FilterCategory<IPlan>, newValue: FilterValue) =>
+  const setFilterValue = (category: FilterCategory<T>, newValue: FilterValue) =>
     setFilterValues({ ...filterValues, [category.key]: newValue });
 
   const currentFilterCategory = filterCategories.find(
@@ -92,7 +91,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
             />
           </ToolbarItem>
           {filterCategories.map((category) => (
-            <FilterControl
+            <FilterControl<T>
               key={category.key}
               category={category}
               filterValue={filterValues[category.key]}

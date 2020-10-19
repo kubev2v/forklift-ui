@@ -224,7 +224,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               alignSelf={{ default: 'alignSelfFlexStart' }}
               spacer={{ default: 'spacerNone' }}
             >
-              <FilterToolbar
+              <FilterToolbar<IPlan>
                 filterCategories={filterCategories}
                 filterValues={filterValues}
                 setFilterValues={setFilterValues}
