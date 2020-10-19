@@ -3,16 +3,16 @@ import { ToolbarFilter, Select, SelectOption, SelectOptionObject } from '@patter
 import { IFilterControlProps } from './FilterControl';
 import { ISelectFilterCategory } from './FilterToolbar';
 
-export interface ISelectFilterControlProps extends IFilterControlProps {
-  category: ISelectFilterCategory;
+export interface ISelectFilterControlProps<T> extends IFilterControlProps<T> {
+  category: ISelectFilterCategory<T>;
 }
 
-const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = ({
+const SelectFilterControl = <T,>({
   category,
   filterValue,
   setFilterValue,
   showToolbarItem,
-}: ISelectFilterControlProps) => {
+}: React.PropsWithChildren<ISelectFilterControlProps<T>>): JSX.Element | null => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
 
   const getOptionKeyFromOptionValue = (optionValue: string | SelectOptionObject) =>

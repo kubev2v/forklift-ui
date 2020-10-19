@@ -10,22 +10,22 @@ import {
 import SelectFilterControl from './SelectFilterControl';
 import SearchFilterControl from './SearchFilterControl';
 
-export interface IFilterControlProps {
-  category: FilterCategory;
+export interface IFilterControlProps<T> {
+  category: FilterCategory<T>;
   filterValue: FilterValue;
   setFilterValue: (newValue: FilterValue) => void;
   showToolbarItem: boolean;
 }
 
-export const FilterControl: React.FunctionComponent<IFilterControlProps> = ({
+export const FilterControl = <T,>({
   category,
   ...props
-}: IFilterControlProps) => {
+}: React.PropsWithChildren<IFilterControlProps<T>>): JSX.Element | null => {
   if (category.type === FilterType.select) {
-    return <SelectFilterControl category={category as ISelectFilterCategory} {...props} />;
+    return <SelectFilterControl category={category as ISelectFilterCategory<T>} {...props} />;
   }
   if (category.type === FilterType.search) {
-    return <SearchFilterControl category={category as ISearchFilterCategory} {...props} />;
+    return <SearchFilterControl category={category as ISearchFilterCategory<T>} {...props} />;
   }
   return null;
 };

@@ -9,7 +9,7 @@ export interface IFilterStateHook<T> {
 
 export const useFilterState = <T>(
   items: T[],
-  filterCategories: FilterCategory[]
+  filterCategories: FilterCategory<T>[]
 ): IFilterStateHook<T> => {
   const [filterValues, setFilterValues] = React.useState<IFilterValues>({});
 
@@ -30,6 +30,5 @@ export const useFilterState = <T>(
       });
     })
   );
-
   return { filterValues, setFilterValues, filteredItems };
 };

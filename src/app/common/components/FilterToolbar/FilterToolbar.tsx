@@ -24,38 +24,38 @@ export interface OptionPropsWithKey extends SelectOptionProps {
   key: string;
 }
 
-export interface IBasicFilterCategory {
+export interface IBasicFilterCategory<T> {
   key: string;
   title: string;
   type: FilterType; // If we want to support arbitrary filter types, this could be a React node that consumes context instead of an enum
-  getItemValue?: (item: any) => any;
+  getItemValue?: (item: T) => string | boolean;
 }
 
-export interface ISelectFilterCategory extends IBasicFilterCategory {
+export interface ISelectFilterCategory<T> extends IBasicFilterCategory<T> {
   selectOptions: OptionPropsWithKey[];
 }
 
-export interface ISearchFilterCategory extends IBasicFilterCategory {
+export interface ISearchFilterCategory<T> extends IBasicFilterCategory<T> {
   placeholderText: string;
 }
 
-export type FilterCategory = ISearchFilterCategory | ISelectFilterCategory;
+export type FilterCategory<T> = ISearchFilterCategory<T> | ISelectFilterCategory<T>;
 
 export interface IFilterValues {
   [categoryKey: string]: FilterValue;
 }
 
-export interface IFilterToolbarProps {
-  filterCategories: FilterCategory[];
+export interface IFilterToolbarProps<T> {
+  filterCategories: FilterCategory<T>[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
 }
 
-export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
+export const FilterToolbar = <T,>({
   filterCategories,
   filterValues,
   setFilterValues,
-}: IFilterToolbarProps) => {
+}: React.PropsWithChildren<IFilterToolbarProps<T>>): JSX.Element | null => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = React.useState(filterCategories[0].key);
 
@@ -64,7 +64,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setIsCategoryDropdownOpen(false);
   };
 
-  const setFilterValue = (category: FilterCategory, newValue: FilterValue) =>
+  const setFilterValue = (category: FilterCategory<T>, newValue: FilterValue) =>
     setFilterValues({ ...filterValues, [category.key]: newValue });
 
   const currentFilterCategory = filterCategories.find(
@@ -91,7 +91,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
             />
           </ToolbarItem>
           {filterCategories.map((category) => (
-            <FilterControl
+            <FilterControl<T>
               key={category.key}
               category={category}
               filterValue={filterValues[category.key]}
