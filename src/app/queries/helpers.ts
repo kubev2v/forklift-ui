@@ -1,5 +1,15 @@
 import { VIRT_META } from '@app/common/constants';
-import { UseQueryObjectConfig, QueryResult, useQuery, QueryStatus } from 'react-query';
+import {
+  MutationConfig,
+  UseQueryObjectConfig,
+  QueryResult,
+  useQuery,
+  QueryStatus,
+  useMutation,
+  MutationResult,
+  MutationResultPair,
+  MutationFunction,
+} from 'react-query';
 import { VMwareTree } from './types/tree.types';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
@@ -26,7 +36,26 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
     queryFn: process.env.DATA_SOURCE !== 'mock' ? config.queryFn : () => mockPromise(mockData),
   });
 
-export const getApiUrl = (relativePath: string): string =>
+export const useMockableMutation = <
+  TResult = unknown,
+  TError = unknown,
+  TVariables = unknown,
+  TSnapshot = unknown
+>(
+  mutationFn: MutationFunction<TResult, TVariables>,
+  config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined
+): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
+  useMutation<TResult, TError, TVariables, TSnapshot>(
+    process.env.DATA_SOURCE !== 'mock'
+      ? mutationFn
+      : async () => {
+          await mockPromise(undefined);
+          throw new Error('This operation is not available in mock/preview mode');
+        },
+    config
+  );
+
+export const getInventoryApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
+import { Modal, Button, Form, FormGroup, Alert, Spinner } from '@patternfly/react-core';
 import { ConnectedIcon } from '@patternfly/react-icons';
 import {
   useFormState,
@@ -12,6 +12,8 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
+import { useCreateProviderMutation } from '@app/queries';
+
 import './AddProviderModal.css';
 
 interface IAddProviderModalProps {
@@ -23,38 +25,49 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
   value: type,
 })) as OptionWithValue<ProviderType>[];
 
+const useAddProviderFormState = () => {
+  // TODO determine the actual validation criteria for this form -- these are for testing
+  const providerTypeField = useFormField<ProviderType | null>(
+    null,
+    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
+  );
+  return {
+    [ProviderType.vsphere]: useFormState({
+      providerType: providerTypeField,
+      name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
+      hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
+      username: useFormField('', yup.string().label('Username').max(20).required()),
+      password: useFormField('', yup.string().label('Password').max(20).required()),
+    }),
+    [ProviderType.openshift]: useFormState({
+      providerType: providerTypeField,
+      clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
+      url: useFormField('', yup.string().label('URL').max(40).required()),
+      saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
+    }),
+  };
+};
+
+type AddProviderFormState = ReturnType<typeof useAddProviderFormState>; // ✨ Magic
+export type VMwareProviderFormValues = AddProviderFormState[ProviderType.vsphere]['values'];
+export type OpenshiftProviderFormValues = AddProviderFormState[ProviderType.openshift]['values'];
+export type AddProviderFormValues = VMwareProviderFormValues | OpenshiftProviderFormValues;
+
 const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   onClose,
 }: IAddProviderModalProps) => {
   usePausedPollingEffect();
 
-  // TODO determine the actual validation criteria for this form -- these are for testing
-
-  const providerTypeField = useFormField<ProviderType | null>(
-    null,
-    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
-  );
-
-  const vmwareForm = useFormState({
-    providerType: providerTypeField,
-    name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
-    hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
-    username: useFormField('', yup.string().label('Username').max(20).required()),
-    password: useFormField('', yup.string().label('Password').max(20).required()),
-  });
-
-  const openshiftForm = useFormState({
-    providerType: providerTypeField,
-    clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
-    url: useFormField('', yup.string().label('URL').max(40).required()),
-    saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
-  });
-
+  const forms = useAddProviderFormState();
+  const vmwareForm = forms[ProviderType.vsphere];
+  const openshiftForm = forms[ProviderType.openshift];
+  const providerTypeField = vmwareForm.fields.providerType;
   const providerType = providerTypeField.value;
-  const formValues =
-    providerType === ProviderType.vsphere ? vmwareForm.values : openshiftForm.values;
-  const isFormValid =
-    providerType === ProviderType.vsphere ? vmwareForm.isValid : openshiftForm.isValid;
+  const formValues = providerType ? forms[providerType].values : vmwareForm.values;
+  const isFormValid = providerType ? forms[providerType].isValid : false;
+
+  const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
+  // TODO render loading/error/result from returned createProviderResult
 
   return (
     <Modal
@@ -67,10 +80,9 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
         <Button
           key="confirm"
           variant="primary"
-          isDisabled={!isFormValid}
+          isDisabled={!isFormValid || createProviderResult.isLoading}
           onClick={() => {
-            console.log('TODO: submit form!', formValues);
-            alert('TODO');
+            createProvider(formValues);
           }}
         >
           Add
@@ -86,7 +98,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
           isRequired
           fieldId="provider-type"
           className={!providerType ? 'extraSelectMargin' : ''}
-          {...getFormGroupProps(vmwareForm.fields.providerType)}
+          {...getFormGroupProps(providerTypeField)}
         >
           <SimpleSelect
             id="provider-type"
@@ -158,6 +170,12 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               Check connection
             </Button>
           </div>
+        ) : null}
+        {createProviderResult.isLoading ? <Spinner size="md" /> : null}
+        {createProviderResult.isError ? (
+          <Alert variant="danger" isInline title="Error creating provider">
+            {createProviderResult.error?.message}
+          </Alert>
         ) : null}
       </Form>
     </Modal>

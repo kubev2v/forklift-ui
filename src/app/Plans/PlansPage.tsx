@@ -40,9 +40,9 @@ const PlansPage: React.FunctionComponent = () => {
         {sufficientProvidersQuery.isLoading || isFetchingInitialPlans ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
-          <Alert variant="danger" title="Error loading providers" />
+          <Alert variant="danger" isInline title="Error loading providers" />
         ) : isErrorFetchingPlans ? (
-          <Alert variant="danger" title="Error loading plans" />
+          <Alert variant="danger" isInline title="Error loading plans" />
         ) : (
           <Card>
             <CardBody>

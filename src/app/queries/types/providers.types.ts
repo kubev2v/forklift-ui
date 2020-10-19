@@ -10,9 +10,45 @@ interface ICommonProviderObject extends ICR {
       name: string;
     };
   };
-  status: {
+  status?: {
     conditions: IStatusCondition[];
     observedGeneration: number;
+  };
+}
+
+export interface INewSecret {
+  apiVersion: string;
+  data: {
+    user?: string;
+    password?: string;
+    thumbprint?: string;
+    token?: string;
+  };
+  kind: string;
+  metadata: {
+    generateName: string;
+    namespace: string;
+    labels: {
+      createdForResourceType: string;
+      createdForResource: string;
+    };
+  };
+  type: string;
+}
+export interface INewProvider {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+  };
+  spec: {
+    type: ProviderType | null;
+    url: string; // TODO is this the "Endpoint" column?
+    secret: {
+      namespace: string;
+      name: string;
+    };
   };
 }
 

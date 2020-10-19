@@ -2,7 +2,7 @@ import { usePollingContext } from '@app/common/context';
 import { ProviderType } from '@app/common/constants';
 import { QueryResult } from 'react-query';
 import { POLLING_INTERVAL } from './constants';
-import { useMockableQuery, getApiUrl, sortResultsByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortResultsByName } from './helpers';
 import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './mocks/networks.mock';
 import {
   IOpenShiftNetwork,
@@ -26,7 +26,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   const result = useMockableQuery<T[]>(
     {
       queryKey: `networks:${providerType}/${provider?.name}`,
-      queryFn: useAuthorizedFetch(getApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
         enabled: !!provider && mappingType === MappingType.Network,
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,

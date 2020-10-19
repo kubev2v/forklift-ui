@@ -9,7 +9,6 @@ interface ILoginHandlerComponentProps {
 const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = () => {
   const { saveLoginToken } = useNetworkContext();
   const history = useHistory();
-
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
@@ -27,7 +26,7 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
     if (loginError) {
       console.log('Authentication error: ', loginError);
     } else if (user) {
-      saveLoginToken(user.access_token, history); // Will cause a redirect to "/"
+      saveLoginToken(user, history); // Will cause a redirect to "/"
     }
   }, [loginError, user, history, saveLoginToken]);
 

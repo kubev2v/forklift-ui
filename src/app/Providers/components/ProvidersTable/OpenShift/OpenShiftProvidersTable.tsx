@@ -52,7 +52,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       vmCount,
       networkCount,
       storageClasses.length,
-      provider.object.status.conditions[0].type, // TODO maybe surface the most serious status condition?,
+      provider.object.status?.conditions[0].type || '', // TODO maybe surface the most serious status condition?,
       '',
     ];
   };
