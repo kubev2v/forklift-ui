@@ -32,22 +32,22 @@ export interface IBasicFilterCategory<T> {
   getItemValue?: (item: T) => string | boolean;
 }
 
-export interface ISelectFilterCategory extends IBasicFilterCategory<IPlan> {
+export interface ISelectFilterCategory<T> extends IBasicFilterCategory<T> {
   selectOptions: OptionPropsWithKey[];
 }
 
-export interface ISearchFilterCategory extends IBasicFilterCategory<IPlan> {
+export interface ISearchFilterCategory<T> extends IBasicFilterCategory<T> {
   placeholderText: string;
 }
 
-export type FilterCategory = ISearchFilterCategory | ISelectFilterCategory;
+export type FilterCategory<T> = ISearchFilterCategory<T> | ISelectFilterCategory<T>;
 
 export interface IFilterValues {
   [categoryKey: string]: FilterValue;
 }
 
 export interface IFilterToolbarProps {
-  filterCategories: FilterCategory[];
+  filterCategories: FilterCategory<IPlan>[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
 }
