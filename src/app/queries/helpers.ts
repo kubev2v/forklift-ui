@@ -10,6 +10,7 @@ import {
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
+import { INameNamespaceRef } from './types';
 import { VMwareTree } from './types/tree.types';
 
 // TODO add useMockableMutation wrapper that just turns the mutation into a noop?
@@ -134,3 +135,13 @@ export const sortTreeResultsByName = <T extends VMwareTree>(
   ...result,
   data: sortTreeItemsByName(result.data),
 });
+
+export const nameAndNamespace = (ref: INameNamespaceRef): INameNamespaceRef => {
+  const { name, namespace } = ref;
+  return { name, namespace };
+};
+
+export const isSameResource = (
+  refA: INameNamespaceRef | null | undefined,
+  refB: INameNamespaceRef | null | undefined
+): boolean => !!refA && !!refB && refA.name === refB.name && refA.namespace === refB.namespace;

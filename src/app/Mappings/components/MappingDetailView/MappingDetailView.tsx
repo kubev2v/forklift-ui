@@ -1,14 +1,15 @@
 import * as React from 'react';
-import { Alert, Grid, GridItem, Title, TitleProps } from '@patternfly/react-core';
+import { Alert, Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import { groupMappingItemsByTarget } from './helpers';
+import { findMappingProviders, getMappingTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
-import { useMappingResourceQueries } from '@app/queries';
+import { useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { getMappingItems } from '../MappingBuilder/helpers';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -21,20 +22,30 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mapping,
   className = '',
 }: IMappingDetailViewProps) => {
+  const providersQuery = useProvidersQuery();
+  const { sourceProvider, targetProvider } = findMappingProviders(mapping, providersQuery);
   const mappingResourceQueries = useMappingResourceQueries(
-    mapping?.provider.source || null,
-    mapping?.provider.target || null,
+    sourceProvider,
+    targetProvider,
     mappingType
   );
 
-  if (mappingResourceQueries.isLoading) {
+  if (providersQuery.isLoading || mappingResourceQueries.isLoading) {
     return <LoadingEmptyState className={className} />;
   }
-  if (mappingResourceQueries.isError) {
-    return <Alert className={className} variant="danger" title="Error loading mapping resources" />;
+  if (providersQuery.isError || mappingResourceQueries.isError) {
+    return (
+      <Alert
+        className={className}
+        isInline
+        variant="danger"
+        title="Error loading mapping resources"
+      />
+    );
   }
 
-  const mappingItemGroups = groupMappingItemsByTarget(mapping?.items || []);
+  const mappingItems = mapping ? getMappingItems(mapping, mappingType) : [];
+  const mappingItemGroups = groupMappingItemsByTarget(mappingItems, mappingType);
   return (
     <div className={className}>
       <Grid>
@@ -51,7 +62,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         </GridItem>
       </Grid>
       {mappingItemGroups.map((items, index) => {
-        const targetName = items[0].target.name;
+        const targetName = getMappingTargetName(items[0], mappingType);
         const isLastGroup = index === mappingItemGroups.length - 1;
         return (
           <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>

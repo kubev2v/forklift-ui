@@ -31,12 +31,15 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   toggleAddEditModal,
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
-    const { name, provider } = mapping;
+    const {
+      metadata: { name },
+      provider,
+    } = mapping;
     return [
       '', // Expand control column
       name,
       provider.source.name,
-      provider.target.name,
+      provider.destination.name,
       '', // Action column
     ];
   };
@@ -50,7 +53,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     isItemSelected: isMappingExpanded,
   } = useSelectionState<Mapping>({
     items: sortedItems,
-    isEqual: (a, b) => a.name === b.name,
+    isEqual: (a, b) => a.metadata.name === b.metadata.name,
   });
 
   const columns: ICell[] = [
@@ -62,15 +65,18 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
-    const { name, provider } = mapping;
+    const {
+      metadata: { name },
+      provider,
+    } = mapping;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
       isOpen: isExpanded,
       cells: [
         name,
-        provider.source?.name,
-        provider.target?.name,
+        provider.source.name,
+        provider.destination.name,
         {
           title: <MappingsActionsDropdown />,
         },

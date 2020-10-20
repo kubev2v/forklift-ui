@@ -1,7 +1,7 @@
-import { IOpenShiftProvider, IVMwareProvider } from './providers.types';
 import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
 import { IVMwareDatastore } from './datastores.types';
 import { IStorageClass } from './storageClasses.types';
+import { INameNamespaceRef } from './common.types';
 
 export enum MappingType {
   Network = 'Network',
@@ -50,24 +50,23 @@ export interface ICommonMapping {
     namespace: string;
   };
   provider: {
-    source: IVMwareProvider;
-    target: IOpenShiftProvider;
+    source: INameNamespaceRef;
+    destination: INameNamespaceRef;
   };
-  items: MappingItem[];
   status?: {
     conditions: MappingCondition[];
   };
 }
 
 export interface INetworkMapping extends ICommonMapping {
-  items: INetworkMappingItem[];
+  networks: INetworkMappingItem[];
   status?: {
     conditions: NetworkMappingCondition[];
   };
 }
 
 export interface IStorageMapping extends ICommonMapping {
-  items: IStorageMappingItem[];
+  datastores: IStorageMappingItem[];
   status?: {
     conditions: StorageMappingCondition[];
   };
