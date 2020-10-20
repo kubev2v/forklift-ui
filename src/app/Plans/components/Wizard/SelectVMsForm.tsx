@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
+import {
+  Pagination,
+  TextContent,
+  Text,
+  Alert,
+  Level,
+  LevelItem,
+  Flex,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -25,9 +33,9 @@ import {
 } from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
-import { useSortState, usePaginationState } from '@app/common/hooks';
+import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import { PlanWizardFormState } from './PlanWizard';
-import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
+import { getAvailableVMs, getMostSevereVMConcern, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
@@ -35,6 +43,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import VMConcernsIcon from './VMConcernsIcon';
 import VMConcernsDescription from './VMConcernsDescription';
+import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -62,6 +71,69 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     return { availableVMs, treePathInfoByVM };
   }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data, vmsQuery.data]);
 
+  const filterCategories: FilterCategory<IVMwareVM>[] = [
+    {
+      key: 'name',
+      title: 'VM name',
+      type: FilterType.search,
+      placeholderText: 'Filter by VM ...',
+    },
+    {
+      key: 'migrationAnalysis',
+      title: 'Migration Analysis',
+      type: FilterType.search,
+      placeholderText: 'Filter by migration analysis status ...',
+      getItemValue: (item) => {
+        const worstConcern = getMostSevereVMConcern(item);
+        return worstConcern ? worstConcern.severity : '';
+      },
+    },
+    {
+      key: 'dataCenter',
+      title: 'Datacenter',
+      type: FilterType.search,
+      placeholderText: 'Filter by datacenter ...',
+      getItemValue: (item) => {
+        const { datacenter } = treePathInfoByVM[item.selfLink];
+        return datacenter ? datacenter.name : '';
+      },
+    },
+    {
+      key: 'cluster',
+      title: 'Cluster',
+      type: FilterType.search,
+      placeholderText: 'Filter by cluster ...',
+      getItemValue: (item) => {
+        const { cluster } = treePathInfoByVM[item.selfLink];
+        return cluster ? cluster.name : '';
+      },
+    },
+    {
+      key: 'host',
+      title: 'Host',
+      type: FilterType.search,
+      placeholderText: 'Filter by hostname...',
+      getItemValue: (item) => {
+        const { host } = treePathInfoByVM[item.selfLink];
+        return host ? host.name : '';
+      },
+    },
+    {
+      key: 'folderPath',
+      title: 'Folder path',
+      type: FilterType.search,
+      placeholderText: 'Filter by folder path ...',
+      getItemValue: (item) => {
+        const { folderPathStr } = treePathInfoByVM[item.selfLink];
+        return folderPathStr ? folderPathStr : '';
+      },
+    },
+  ];
+
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    availableVMs,
+    filterCategories
+  );
   const getSortValues = (vm: IVMwareVM) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
@@ -77,7 +149,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     ];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(availableVMs, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
@@ -191,7 +263,18 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           migrating a particular VM, as determined by Red Hat&apos;s migration analytics service.
         </Text>
       </TextContent>
-      <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
+      <Level>
+        <LevelItem>
+          <FilterToolbar<IVMwareVM>
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+          />
+        </LevelItem>
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
+        </LevelItem>
+      </Level>
       <Table
         aria-label="VMware VMs table"
         variant={TableVariant.compact}
