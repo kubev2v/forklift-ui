@@ -36,7 +36,7 @@ export const useCreateMappingMutation = (
   return useMockableMutation<Mapping, Error, Mapping>(
     async (mapping: Mapping) => {
       const resource = new VirtResource(kind, VIRT_META.namespace);
-      checkIfResourceExists(client, kind, resource, mapping.name);
+      checkIfResourceExists(client, kind, resource, mapping.metadata.name);
       return await client.create(resource, mapping); // TODO do we need to check status codes here?
     },
     {

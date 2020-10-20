@@ -35,3 +35,8 @@ export interface IVMwareObjRef {
   Kind: string;
   ID: string;
 }
+
+export interface INameNamespaceRef {
+  name: string;
+  namespace: string;
+}

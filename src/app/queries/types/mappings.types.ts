@@ -10,38 +10,67 @@ export enum MappingType {
 
 export interface INetworkMappingItem {
   source: {
-    id: string; // TODO see what these actually need to be in the API?
+    id: string;
   };
-  target: IOpenShiftNetwork;
+  destination: {
+    name: string;
+    namespace: string;
+    type: 'pod' | 'multis';
+  };
 }
 
 export interface IStorageMappingItem {
   source: {
-    id: string; // TODO see what these actually need to be in the API?
+    id: string;
   };
-  target: IStorageClass;
+  destination: {
+    storageClass: string;
+  };
 }
 
 export type MappingItem = INetworkMappingItem | IStorageMappingItem;
 
+export type CommonMappingCondition =
+  | 'Ready'
+  | 'SourceProviderNotValid'
+  | 'DestinationProviderNotValid';
+export type NetworkMappingCondition =
+  | CommonMappingCondition
+  | 'SourceNetworkNotValid'
+  | 'DestinationNetworkNotValid';
+export type StorageMappingCondition =
+  | CommonMappingCondition
+  | 'SourceDatastoreNotValid'
+  | 'DestinationDatastoreNotValid';
+export type MappingCondition = NetworkMappingCondition | StorageMappingCondition;
+
 export interface ICommonMapping {
-  type: MappingType;
-  name: string;
+  metadata: {
+    name: string;
+    namespace: string;
+  };
   provider: {
     source: IVMwareProvider;
     target: IOpenShiftProvider;
   };
   items: MappingItem[];
+  status?: {
+    conditions: MappingCondition[];
+  };
 }
 
 export interface INetworkMapping extends ICommonMapping {
-  type: MappingType.Network;
   items: INetworkMappingItem[];
+  status?: {
+    conditions: NetworkMappingCondition[];
+  };
 }
 
 export interface IStorageMapping extends ICommonMapping {
-  type: MappingType.Storage;
   items: IStorageMappingItem[];
+  status?: {
+    conditions: StorageMappingCondition[];
+  };
 }
 
 export type Mapping = INetworkMapping | IStorageMapping;
