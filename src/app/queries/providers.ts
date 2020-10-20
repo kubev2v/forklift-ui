@@ -19,7 +19,6 @@ import {
   convertFormValuesToSecret,
   checkIfResourceExists,
   useClientInstance,
-  VirtResource,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
@@ -55,17 +54,12 @@ export const useCreateProviderMutation = (
   const client = useClientInstance();
   const postProvider = async (values: AddProviderFormValues) => {
     const provider: INewProvider = convertFormValuesToProvider(values, providerType);
-    try {
-      checkIfResourceExists(
-        client,
-        VirtResourceKind.Provider,
-        providerResource,
-        provider.metadata.name
-      );
-    } catch (error) {
-      console.error('Resources already exist.');
-      return Promise.reject(error);
-    }
+    checkIfResourceExists(
+      client,
+      VirtResourceKind.Provider,
+      providerResource,
+      provider.metadata.name
+    );
     try {
       const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider);
 

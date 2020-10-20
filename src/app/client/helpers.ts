@@ -31,6 +31,8 @@ export class VirtResource extends NamespacedResource {
 }
 export enum VirtResourceKind {
   Provider = 'providers',
+  NetworkMap = 'networkmaps',
+  StorageMap = 'storagemaps',
 }
 
 export const secretResource = new CoreNamespacedResource(
@@ -164,6 +166,7 @@ export const checkIfResourceExists = async (
     []
   );
   if (alreadyExists.length > 0) {
+    console.error(`Resource already exists: ${resourceKind}/${resourceName}`);
     throw new Error(
       alreadyExists.reduce((msg, v) => {
         return `${msg} - kind: "${v.kind}", name: "${v.name}"`;
