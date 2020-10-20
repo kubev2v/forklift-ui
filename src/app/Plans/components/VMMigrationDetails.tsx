@@ -9,6 +9,8 @@ import {
   Pagination,
   PageSection,
   Title,
+  Level,
+  LevelItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -28,12 +30,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { IMigration } from '@app/queries/types';
-import { useSortState, usePaginationState } from '@app/common/hooks';
+import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import VMStatusTable from './VMStatusTable';
 import PipelineSummary from '@app/common/components/PipelineSummary';
 import { PlanStatusType } from '@app/common/constants';
 
 import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
+import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 
 export interface IPlanMatchParams {
   url: string;
@@ -61,7 +64,39 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     ];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(migrations, getSortValues);
+  const filterCategories: FilterCategory<IMigration>[] = [
+    {
+      key: 'id',
+      title: 'Name',
+      type: FilterType.search,
+      placeholderText: 'Filter by name ...',
+    },
+    {
+      key: 'begin',
+      title: 'Start time',
+      type: FilterType.search,
+      placeholderText: 'Filter by started time ...',
+      getItemValue: (item) => {
+        return item.schedule.begin ? item.schedule.begin : '';
+      },
+    },
+    {
+      key: 'end',
+      title: 'Finished time',
+      type: FilterType.search,
+      placeholderText: 'Filter by finished time ...',
+      getItemValue: (item) => {
+        return item.schedule.end ? item.schedule.end : '';
+      },
+    },
+  ];
+
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    migrations,
+    filterCategories
+  );
+
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
@@ -150,7 +185,18 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       <PageSection>
         <Card>
           <CardBody>
-            <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
+            <Level>
+              <LevelItem>
+                <FilterToolbar<IMigration>
+                  filterCategories={filterCategories}
+                  filterValues={filterValues}
+                  setFilterValues={setFilterValues}
+                />
+              </LevelItem>
+              <LevelItem>
+                <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
+              </LevelItem>
+            </Level>
             <Table
               aria-label="Migration VMs table"
               cells={columns}
