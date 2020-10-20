@@ -7,6 +7,7 @@ export interface INetworkContext {
   selfSignedCertUrl: string;
   saveLoginToken: (user: string, history: any) => void;
   currentUser: string;
+  checkExpiry: (user: string, history: any) => void;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
@@ -18,6 +19,9 @@ const NetworkContext = React.createContext<INetworkContext>({
     console.error('saveLoginToken was called without a NetworkContextProvider in the tree');
   },
   currentUser: '',
+  checkExpiry: () => {
+    console.error('checkExpiry was called without a NetworkContextProvider in the tree');
+  },
 });
 
 interface INetworkContextProviderProps {
@@ -35,10 +39,12 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
     history.push('/');
   };
 
-  setTokenExpiryHandler(() => {
-    console.error('token expired');
-    setCurrentUser('');
-  });
+  const checkExpiry = (error, history) => {
+    if (error.response && error.response.status === 401) {
+      setCurrentUser('');
+      history.push('/');
+    }
+  };
 
   return (
     <NetworkContext.Provider
@@ -47,6 +53,7 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
         setSelfSignedCertUrl,
         saveLoginToken,
         currentUser: currentUser || '',
+        checkExpiry,
       }}
     >
       {children}
