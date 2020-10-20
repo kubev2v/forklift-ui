@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Provider } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { mostSeriousCondition } from '@app/common/helpers';
+import { StatusCategoryType, StatusConditionsType } from '@app/common/constants';
 
 interface IProviderStatusProps {
   provider: Provider;
@@ -9,12 +11,27 @@ interface IProviderStatusProps {
 const ProviderStatus: React.FunctionComponent<IProviderStatusProps> = ({
   provider,
 }: IProviderStatusProps) => {
-  // TODO check if there are any warning or error conditions and change this
-  // TODO probably surface the most severe condition
-  if (provider.object.status?.conditions.every((condition) => condition.type === 'Ready')) {
-    return <StatusIcon status={StatusType.Ok} label="Ready" />;
-  }
-  return null;
+  const setStatusType = () => {
+    if (provider.object.status) {
+      if (mostSeriousCondition(provider.object.status?.conditions) === StatusConditionsType.Ready) {
+        return StatusType.Ok;
+      } else if (
+        mostSeriousCondition(provider.object.status?.conditions) === StatusCategoryType.Critical
+      ) {
+        return StatusType.Error;
+      }
+    }
+    return StatusType.Warning;
+  };
+
+  if (provider.object.status) {
+    return (
+      <StatusIcon
+        status={setStatusType()}
+        label={mostSeriousCondition(provider.object.status?.conditions)}
+      />
+    );
+  } else return null;
 };
 
 export default ProviderStatus;

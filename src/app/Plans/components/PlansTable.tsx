@@ -30,10 +30,11 @@ import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
 import './PlansTable.css';
-import { PlanStatusType, PlanStatusConditionsType } from '@app/common/constants';
+import { PlanStatusType, StatusConditionsType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
+import { hasCondition } from '@app/common/helpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -85,7 +86,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             condition.type === PlanStatusType.Finished ||
             condition.type === PlanStatusType.Error
         );
-        return res ? PlanStatusConditionsType[res.type] : '';
+        return res ? StatusConditionsType[res.type] : '';
       },
     },
   ];
@@ -138,17 +139,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let title = '';
     let variant: ProgressVariant | undefined;
 
-    const hasCondition = (type: string) => {
-      return plan.status.conditions.find((condition) => condition.type === type);
-    };
-
-    if (hasCondition(PlanStatusConditionsType.Ready)) {
+    if (hasCondition(plan.status.conditions, StatusConditionsType.Ready)) {
       buttonText = 'Start';
       isStatusReady = true;
-    } else if (hasCondition(PlanStatusConditionsType.Finished)) {
+    } else if (hasCondition(plan.status.conditions, StatusConditionsType.Finished)) {
       title = PlanStatusType.Finished;
       variant = ProgressVariant.success;
-    } else if (hasCondition(PlanStatusConditionsType.Error)) {
+    } else if (hasCondition(plan.status.conditions, StatusConditionsType.Error)) {
       title = PlanStatusType.Error;
       variant = ProgressVariant.danger;
     } else {

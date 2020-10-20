@@ -68,6 +68,19 @@ const vmwareProvider2: IVMwareProvider = {
       ...vmwareProvider1.object.metadata,
       name: 'VCenter2',
     },
+    status: {
+      conditions: [
+        {
+          type: 'URLNotValid',
+          status: true,
+          category: 'Critical',
+          message: 'The provider is not responding.',
+          lastTransitionTime: '2020-08-21T18:36:41.468Z',
+          reason: '',
+        },
+      ],
+      observedGeneration: 1,
+    },
   },
 };
 
