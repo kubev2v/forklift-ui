@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
+import { setTokenExpiryHandler } from '@konveyor/lib-ui/dist';
 
 export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
@@ -33,6 +34,11 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
     setCurrentUser(JSON.stringify(user));
     history.push('/');
   };
+
+  setTokenExpiryHandler(() => {
+    console.error('token expired');
+    setCurrentUser('');
+  });
 
   return (
     <NetworkContext.Provider
