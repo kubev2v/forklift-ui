@@ -1,4 +1,4 @@
-import { MutationResultPair, queryCache, QueryResult, QueryStatus } from 'react-query';
+import { MutationResultPair, useQueryCache, QueryResult, QueryStatus } from 'react-query';
 import {
   IVMwareProvider,
   IOpenShiftProvider,
@@ -42,7 +42,7 @@ export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeLis
   const client = useClientInstance();
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
-      queryKey: `mappings:${mappingType}`,
+      queryKey: ['mappings', mappingType],
       queryFn: async () => {
         const { resource } = getMappingResource(mappingType);
         const result = await client.list(resource);
@@ -67,17 +67,16 @@ export const useCreateMappingMutation = (
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
   const client = useClientInstance();
+  const queryCache = useQueryCache();
   return useMockableMutation<Mapping, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
       await checkIfResourceExists(client, kind, resource, mapping.metadata.name);
-      const result = await client.create(resource, mapping);
-      console.log('mutation result: ', result);
-      return result;
+      return await client.create(resource, mapping);
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries(`mappings:${mappingType}`);
+        queryCache.invalidateQueries(['mappings', mappingType]);
         onSuccess();
       },
     }

@@ -1,4 +1,4 @@
-import { queryCache, QueryResult, MutationResultPair } from 'react-query';
+import { useQueryCache, QueryResult, MutationResultPair } from 'react-query';
 
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
@@ -53,6 +53,7 @@ export const useCreateProviderMutation = (
   const history = useHistory();
   //
   const client = useClientInstance();
+  const queryCache = useQueryCache();
   const postProvider = async (values: AddProviderFormValues) => {
     const provider: INewProvider = convertFormValuesToProvider(values, providerType);
     await checkIfResourceExists(
