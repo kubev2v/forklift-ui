@@ -63,6 +63,7 @@ const usePlanWizardFormState = () => ({
       null,
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
+    targetNamespace: useFormField('', yup.string().label('Target namespace').required()),
   }),
   filterVMs: useFormState({
     treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
