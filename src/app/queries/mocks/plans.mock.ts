@@ -1,5 +1,6 @@
 import { IPlan, IMigration, IPlanVM, IVMStatus } from '../types';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
+import { CLUSTER_API_VERSION } from '@app/common/constants';
 
 // TODO put this condition back when we don't directly import mocks into components anymore
 // if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
@@ -32,7 +33,7 @@ const vm2: IPlanVM = {
 };
 
 const plan1: IPlan = {
-  apiVersion: 'virt.konveyor.io/v1alpha1',
+  apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
   metadata: {
     name: 'plantest-1',
@@ -88,7 +89,7 @@ const plan1: IPlan = {
 };
 
 const plan2: IPlan = {
-  apiVersion: 'virt.konveyor.io/v1alpha1',
+  apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
   metadata: {
     name: 'plantest-2',
@@ -128,7 +129,7 @@ const plan2: IPlan = {
 };
 
 const plan3: IPlan = {
-  apiVersion: 'virt.konveyor.io/v1alpha1',
+  apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
   metadata: {
     name: 'plantest-3',
@@ -168,7 +169,7 @@ const plan3: IPlan = {
 };
 
 const plan4: IPlan = {
-  apiVersion: 'virt.konveyor.io/v1alpha1',
+  apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
   metadata: {
     name: 'plantest-4',

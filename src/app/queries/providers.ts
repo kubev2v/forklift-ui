@@ -1,6 +1,6 @@
-import { queryCache, QueryResult, useMutation, MutationResultPair } from 'react-query';
+import { queryCache, QueryResult, MutationResultPair } from 'react-query';
 
-import { usePollingContext, useNetworkContext } from '@app/common/context';
+import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import {
   useMockableQuery,
@@ -23,6 +23,7 @@ import {
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
 import { useHistory } from 'react-router-dom';
+import { KubeClientError } from '@app/client/types';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -42,8 +43,8 @@ export const useCreateProviderMutation = (
   providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
-  INewProvider, // TODO: is INewProvider really the TResult type var here? inspect the network response body to see?
-  Error, // TODO is there a more specific exception type we may encounter with real network/API errors?
+  INewProvider,
+  KubeClientError,
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
@@ -125,13 +126,12 @@ export const useCreateProviderMutation = (
 
       checkExpiry(error, history);
       console.error('Failed to add provider.');
-      return Promise.reject(error);
+      throw error;
     }
   };
 
-  return useMockableMutation<INewProvider, Error, AddProviderFormValues>(postProvider, {
-    onSuccess: (data) => {
-      console.log('did we succeed', { data });
+  return useMockableMutation<INewProvider, KubeClientError, AddProviderFormValues>(postProvider, {
+    onSuccess: () => {
       queryCache.invalidateQueries('providers');
       onSuccess();
     },

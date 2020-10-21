@@ -5,7 +5,7 @@ import KubeClient, {
   CoreNamespacedResource,
   ClusterClient,
 } from '@konveyor/lib-ui/dist/';
-import { VIRT_META, ProviderType } from '@app/common/constants';
+import { VIRT_META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
 import { INewProvider, INewSecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
@@ -110,7 +110,7 @@ export const convertFormValuesToProvider = (
     url = openshiftValues.url;
   }
   return {
-    apiVersion: 'virt.konveyor.io/v1alpha1',
+    apiVersion: CLUSTER_API_VERSION,
     kind: 'Provider',
     metadata: {
       name,

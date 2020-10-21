@@ -38,13 +38,13 @@ export const findMappingProviders = (
   const sourceProvider =
     (mapping &&
       providersQuery.data?.vsphere.find((provider) =>
-        isSameResource(provider, mapping.provider.source)
+        isSameResource(provider, mapping.spec.provider.source)
       )) ||
     null;
   const targetProvider =
     (mapping &&
       providersQuery.data?.openshift.find((provider) =>
-        isSameResource(provider, mapping.provider.destination)
+        isSameResource(provider, mapping.spec.provider.destination)
       )) ||
     null;
   return { sourceProvider, targetProvider };

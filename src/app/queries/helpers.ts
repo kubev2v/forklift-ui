@@ -1,3 +1,4 @@
+import { KubeClientError } from '@app/client/types';
 import { VIRT_META } from '@app/common/constants';
 import {
   MutationConfig,
@@ -6,7 +7,6 @@ import {
   useQuery,
   QueryStatus,
   useMutation,
-  MutationResult,
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
@@ -39,7 +39,7 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
 
 export const useMockableMutation = <
   TResult = unknown,
-  TError = unknown,
+  TError = KubeClientError,
   TVariables = unknown,
   TSnapshot = unknown
 >(
@@ -48,7 +48,14 @@ export const useMockableMutation = <
 ): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
   useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
-      ? mutationFn
+      ? async (vars: TVariables) => {
+          try {
+            return await mutationFn(vars);
+          } catch (error) {
+            console.error(error.response);
+            throw error;
+          }
+        }
       : async () => {
           await mockPromise(undefined);
           throw new Error('This operation is not available in mock/preview mode');

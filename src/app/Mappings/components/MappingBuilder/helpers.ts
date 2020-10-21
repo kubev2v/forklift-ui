@@ -5,21 +5,19 @@ import {
   MappingType,
   IVMwareProvider,
   IOpenShiftProvider,
-  INetworkMapping,
-  IStorageMapping,
   INetworkMappingItem,
   IStorageMappingItem,
   MappingTarget,
+  INetworkMappingSpec,
+  IStorageMappingSpec,
+  ICommonMapping,
+  INetworkMapping,
+  IStorageMapping,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
-import { VIRT_META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
-
-export const getMappingItems = (mapping: Mapping, mappingType: MappingType): MappingItem[] =>
-  mappingType === MappingType.Network
-    ? (mapping as INetworkMapping).networks
-    : (mapping as IStorageMapping).datastores;
 
 export const getBuilderItemsFromMapping = (
   mapping: Mapping,
@@ -27,7 +25,7 @@ export const getBuilderItemsFromMapping = (
   allSources: MappingSource[],
   allTargets: MappingTarget[]
 ): IMappingBuilderItem[] =>
-  getMappingItems(mapping, mappingType)
+  (mapping.spec.map as MappingItem[])
     .map((item: MappingItem): IMappingBuilderItem | null => {
       const source = getMappingSourceById(allSources, item.source.id);
       const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
@@ -79,17 +77,36 @@ export const getMappingFromBuilderItems = ({
       return null;
     })
     .filter((item) => !!item) as MappingItem[];
-  return {
+  const commonMapping: ICommonMapping = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: mappingType === MappingType.Network ? 'NetworkMap' : 'StorageMap',
     metadata: {
       name: mappingName,
       namespace: VIRT_META.namespace,
     },
-    provider: {
-      source: nameAndNamespace(sourceProvider),
-      destination: nameAndNamespace(targetProvider),
+    spec: {
+      provider: {
+        source: nameAndNamespace(sourceProvider),
+        destination: nameAndNamespace(targetProvider),
+      },
     },
-    ...(mappingType === MappingType.Network
-      ? { networks: items as INetworkMappingItem[] }
-      : { datastores: items as IStorageMappingItem[] }),
   };
+  if (mappingType === MappingType.Network) {
+    const mapping: INetworkMapping = {
+      ...commonMapping,
+      spec: {
+        ...commonMapping.spec,
+        map: items as INetworkMappingItem[],
+      },
+    };
+    return mapping;
+  }
+  const mapping: IStorageMapping = {
+    ...commonMapping,
+    spec: {
+      ...commonMapping.spec,
+      map: items as IStorageMappingItem[],
+    },
+  };
+  return mapping;
 };

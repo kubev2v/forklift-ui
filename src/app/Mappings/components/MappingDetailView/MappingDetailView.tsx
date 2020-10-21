@@ -9,7 +9,6 @@ import { findMappingProviders, getMappingTargetName, groupMappingItemsByTarget }
 import './MappingDetailView.css';
 import { useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { getMappingItems } from '../MappingBuilder/helpers';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -44,8 +43,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     );
   }
 
-  const mappingItems = mapping ? getMappingItems(mapping, mappingType) : [];
-  const mappingItemGroups = groupMappingItemsByTarget(mappingItems, mappingType);
+  const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
   return (
     <div className={className}>
       <Grid>

@@ -44,29 +44,40 @@ export type StorageMappingCondition =
   | 'DestinationDatastoreNotValid';
 export type MappingCondition = NetworkMappingCondition | StorageMappingCondition;
 
-export interface ICommonMapping {
-  metadata: {
-    name: string;
-    namespace: string;
-  };
+export interface ICommonMappingSpec {
   provider: {
     source: INameNamespaceRef;
     destination: INameNamespaceRef;
   };
-  status?: {
-    conditions: MappingCondition[];
+}
+
+export interface INetworkMappingSpec extends ICommonMappingSpec {
+  map: INetworkMappingItem[];
+}
+
+export interface IStorageMappingSpec extends ICommonMappingSpec {
+  map: IStorageMappingItem[];
+}
+
+export interface ICommonMapping {
+  apiVersion: string;
+  kind: 'NetworkMap' | 'StorageMap';
+  metadata: {
+    name: string;
+    namespace: string;
   };
+  spec: ICommonMappingSpec;
 }
 
 export interface INetworkMapping extends ICommonMapping {
-  networks: INetworkMappingItem[];
+  spec: INetworkMappingSpec;
   status?: {
     conditions: NetworkMappingCondition[];
   };
 }
 
 export interface IStorageMapping extends ICommonMapping {
-  datastores: IStorageMappingItem[];
+  spec: IStorageMappingSpec;
   status?: {
     conditions: StorageMappingCondition[];
   };

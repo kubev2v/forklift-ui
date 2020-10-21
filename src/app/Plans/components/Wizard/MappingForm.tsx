@@ -30,15 +30,12 @@ import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/Ma
 import { useMappingResourceQueries } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
-import {
-  getBuilderItemsFromMapping,
-  getMappingItems,
-} from '@app/Mappings/components/MappingBuilder/helpers';
-
-import './MappingForm.css';
+import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
 import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import { filterSourcesBySelectedVMs } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
+
+import './MappingForm.css';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -69,8 +66,11 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   const mappingsQueryData = fetchMockStorage(mappingType) as Mapping[] | undefined; // TODO replace this with a real query
   const filteredMappings = (mappingsQueryData || []).filter(
-    ({ provider: { source, destination } }) =>
-      isSameResource(source, sourceProvider) && isSameResource(destination, targetProvider)
+    ({
+      spec: {
+        provider: { source, destination },
+      },
+    }) => isSameResource(source, sourceProvider) && isSameResource(destination, targetProvider)
   );
 
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
@@ -107,8 +107,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   };
 
   const hasAddedItems = form.values.selectedExistingMapping
-    ? getMappingItems(form.values.selectedExistingMapping, mappingType).length <
-      form.values.builderItems.length
+    ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
     : false;
 
   if (mappingResourceQueries.isLoading) {

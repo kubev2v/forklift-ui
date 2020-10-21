@@ -33,7 +33,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const getSortValues = (mapping: Mapping) => {
     const {
       metadata: { name },
-      provider,
+      spec: { provider },
     } = mapping;
     return [
       '', // Expand control column
@@ -67,7 +67,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   currentPageItems.forEach((mapping: Mapping) => {
     const {
       metadata: { name },
-      provider,
+      spec: { provider },
     } = mapping;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
