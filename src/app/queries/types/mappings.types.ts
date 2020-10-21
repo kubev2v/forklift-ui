@@ -16,7 +16,7 @@ export interface INetworkMappingItem {
     | {
         name: string;
         namespace: string;
-        type: 'multis';
+        type: 'multus';
       }
     | { type: 'pod' };
 }

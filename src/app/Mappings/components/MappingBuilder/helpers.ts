@@ -60,7 +60,7 @@ export const getMappingFromBuilderItems = ({
                 : {
                     name: builderItem.target.name,
                     namespace: builderItem.target.namespace,
-                    type: 'multis',
+                    type: 'multus',
                   },
           };
           return item;

@@ -81,7 +81,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
           destination: {
             ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[0]),
-            type: 'multis',
+            type: 'multus',
           },
         },
       ],
@@ -107,7 +107,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
           destination: {
             ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[1]),
-            type: 'multis',
+            type: 'multus',
           },
         },
       ],
