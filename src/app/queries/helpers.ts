@@ -1,5 +1,5 @@
-import { KubeClientError } from '@app/client/types';
-import { VIRT_META } from '@app/common/constants';
+import { KubeClientError, IKubeList } from '@app/client/types';
+import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import {
   MutationConfig,
   UseQueryObjectConfig,
@@ -27,6 +27,17 @@ const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => 
     }, timeout);
   });
 };
+
+export const mockKubeList = <T>(items: T[], kind: string): IKubeList<T> => ({
+  apiVersion: CLUSTER_API_VERSION,
+  items,
+  kind,
+  metadata: {
+    continue: '',
+    resourceVersion: '',
+    selfLink: '/foo/list/selfLink',
+  },
+});
 
 export const useMockableQuery = <TResult = unknown, TError = unknown>(
   config: UseQueryObjectConfig<TResult, TError>,
@@ -101,18 +112,37 @@ export const sortIndexedData = <TItem, TIndexed>(
       )
     : undefined;
 
-export const sortByName = <T extends { name: string }>(data?: T[]): T[] | undefined =>
-  data?.sort((a: T, b: T) => (a.name < b.name ? -1 : 1));
+interface IHasName {
+  name?: string;
+  metadata?: { name: string };
+}
+
+export const sortByName = <T extends IHasName>(data?: T[]): T[] => {
+  const getName = (obj: T) => obj.name || obj.metadata?.name || '';
+  return (data || []).sort((a: T, b: T) => (getName(a) < getName(b) ? -1 : 1));
+};
 
 export const sortIndexedDataByName = <TItem extends { name: string }, TIndexed>(
   data: TIndexed | undefined
 ): TIndexed | undefined => sortIndexedData<TItem, TIndexed>(data, (item: TItem) => item.name);
 
-export const sortResultsByName = <T extends { name: string }>(
+export const sortResultsByName = <T extends IHasName>(
   result: QueryResult<T[]>
 ): QueryResult<T[]> => ({
   ...result,
   data: sortByName(result.data),
+});
+
+export const sortKubeResultsByName = <T>(
+  result: QueryResult<IKubeList<T>>
+): QueryResult<IKubeList<T>> => ({
+  ...result,
+  data: result.data
+    ? {
+        ...result.data,
+        items: sortByName(result.data.items || []),
+      }
+    : undefined,
 });
 
 export const sortIndexedResultsByName = <TItem extends { name: string }, TIndexed>(

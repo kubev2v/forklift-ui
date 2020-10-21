@@ -55,7 +55,7 @@ export const useCreateProviderMutation = (
   const client = useClientInstance();
   const postProvider = async (values: AddProviderFormValues) => {
     const provider: INewProvider = convertFormValuesToProvider(values, providerType);
-    checkIfResourceExists(
+    await checkIfResourceExists(
       client,
       VirtResourceKind.Provider,
       providerResource,

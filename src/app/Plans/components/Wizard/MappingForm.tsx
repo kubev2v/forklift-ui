@@ -27,11 +27,10 @@ import {
   IVMwareVM,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
-import { useMappingResourceQueries } from '@app/queries';
+import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
-import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import { filterSourcesBySelectedVMs } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 
@@ -57,6 +56,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     targetProvider,
     mappingType
   );
+  const mappingsQuery = useMappingsQuery(mappingType);
 
   const requiredSources = filterSourcesBySelectedVMs(
     mappingResourceQueries.availableSources,
@@ -64,8 +64,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingType
   );
 
-  const mappingsQueryData = fetchMockStorage(mappingType) as Mapping[] | undefined; // TODO replace this with a real query
-  const filteredMappings = (mappingsQueryData || []).filter(
+  const filteredMappings = (mappingsQuery.data?.items || []).filter(
     ({
       spec: {
         provider: { source, destination },
@@ -110,11 +109,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
     : false;
 
-  if (mappingResourceQueries.isLoading) {
+  if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
     return <LoadingEmptyState />;
   }
   if (mappingResourceQueries.isError) {
     return <Alert variant="danger" title="Error loading mapping resources" />;
+  }
+  if (mappingsQuery.isError) {
+    return <Alert variant="danger" title="Error loading mappings" />;
   }
 
   return (

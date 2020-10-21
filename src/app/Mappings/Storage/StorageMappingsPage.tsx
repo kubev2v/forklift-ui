@@ -10,13 +10,12 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IStorageMapping, MappingType } from '@app/queries/types';
+import { MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from '../components/MappingsTable';
 import AddEditMappingModal from '../components/AddEditMappingModal';
-import { fetchMockStorage } from '@app/queries/mocks/helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { useHasSufficientProvidersQuery } from '@app/queries';
+import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
 import CreateMappingButton from '../components/CreateMappingButton';
 
 // TODO we should probably combine this and NetworkMappingsPage, they're nearly identical
@@ -24,19 +23,10 @@ import CreateMappingButton from '../components/CreateMappingButton';
 const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
 
 const StorageMappingsPage: React.FunctionComponent = () => {
-  //TODO: replace with real state from react-query
-  const [storageMappings, setStorageMappings] = React.useState<IStorageMapping[]>([]);
-  const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
-
-  //TODO: replace with real state from react-query
-  const mockMapObj = localStorage.getItem('storageMappingsObject');
-  React.useEffect(() => {
-    console.log(`TODO: fetch storage mapping items`);
-    const currentMappings = fetchMockStorage(MappingType.Storage);
-    setStorageMappings((currentMappings as IStorageMapping[]) || []);
-  }, [mockMapObj]);
-
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const mappingsQuery = useMappingsQuery(MappingType.Storage);
+
+  const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
   return (
     <>
@@ -53,7 +43,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
         ) : (
           <Card>
             <CardBody>
-              {!storageMappings ? null : storageMappings.length === 0 ? (
+              {!mappingsQuery.data ? null : mappingsQuery.data.items.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -66,7 +56,7 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                 </EmptyState>
               ) : (
                 <MappingsTable
-                  mappings={storageMappings}
+                  mappings={mappingsQuery.data?.items || []}
                   mappingType={MappingType.Storage}
                   toggleAddEditModal={toggleAddEditModal}
                 />
