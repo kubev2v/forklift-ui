@@ -6,6 +6,7 @@ import {
   MappingSource,
   MappingTarget,
   Mapping,
+  POD_NETWORK,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
 import { getAggregateQueryStatus, getFirstQueryError, useMockableMutation } from './helpers';
@@ -77,7 +78,10 @@ export const useMappingResourceQueries = (
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = (sourceProvider && vmwareNetworksQuery.data) || [];
-    availableTargets = (targetProvider && openshiftNetworksQuery.data) || [];
+    availableTargets =
+      targetProvider && openshiftNetworksQuery.data
+        ? [POD_NETWORK, ...openshiftNetworksQuery.data]
+        : [];
   }
   if (mappingType === MappingType.Storage) {
     availableSources = (sourceProvider && datastoresQuery.data) || [];

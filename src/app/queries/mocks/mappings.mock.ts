@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const networkMapping1: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
-    kind: 'StorageMap',
+    kind: 'NetworkMap',
     metadata: {
       name: 'vcenter1_netstore_to_OCP1_network1',
       namespace: VIRT_META.namespace,
@@ -81,7 +81,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
           destination: {
             ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[0]),
-            type: 'pod',
+            type: 'multis',
           },
         },
       ],
@@ -90,7 +90,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const networkMapping2: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
-    kind: 'StorageMap',
+    kind: 'NetworkMap',
     metadata: {
       name: 'vcenter1_netstore_to_OCP1_network2',
       namespace: VIRT_META.namespace,
@@ -107,6 +107,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
           destination: {
             ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[1]),
+            type: 'multis',
+          },
+        },
+      ],
+    },
+  };
+
+  const networkMapping3: INetworkMapping = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'StorageMap',
+    metadata: {
+      name: 'vcenter1_netstore_to_pod',
+      namespace: VIRT_META.namespace,
+    },
+    spec: {
+      provider: {
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
+      },
+      map: [
+        {
+          source: {
+            id: MOCK_VMWARE_NETWORKS[1].id,
+          },
+          destination: {
             type: 'pod',
           },
         },
@@ -114,5 +139,5 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2];
+  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2, networkMapping3];
 }

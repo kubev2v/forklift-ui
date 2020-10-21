@@ -8,8 +8,6 @@ import {
   INetworkMappingItem,
   IStorageMappingItem,
   MappingTarget,
-  INetworkMappingSpec,
-  IStorageMappingSpec,
   ICommonMapping,
   INetworkMapping,
   IStorageMapping,
@@ -56,11 +54,14 @@ export const getMappingFromBuilderItems = ({
         if (mappingType === MappingType.Network) {
           const item: INetworkMappingItem = {
             source: { id: builderItem.source.id },
-            destination: {
-              name: builderItem.target.name,
-              namespace: builderItem.target.namespace,
-              type: 'pod', // TODO don't hard-code the type here? where do we get that?
-            },
+            destination:
+              builderItem.target.selfLink === 'pod'
+                ? { type: 'pod' }
+                : {
+                    name: builderItem.target.name,
+                    namespace: builderItem.target.namespace,
+                    type: 'multis',
+                  },
           };
           return item;
         }

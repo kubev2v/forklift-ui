@@ -12,11 +12,13 @@ export interface INetworkMappingItem {
   source: {
     id: string;
   };
-  destination: {
-    name: string;
-    namespace: string;
-    type: 'pod' | 'multis';
-  };
+  destination:
+    | {
+        name: string;
+        namespace: string;
+        type: 'multis';
+      }
+    | { type: 'pod' };
 }
 
 export interface IStorageMappingItem {
@@ -85,5 +87,11 @@ export interface IStorageMapping extends ICommonMapping {
 
 export type Mapping = INetworkMapping | IStorageMapping;
 
+export const POD_NETWORK = {
+  name: 'Target namespace pod network',
+  namespace: 'pod',
+  type: 'pod',
+  selfLink: 'pod',
+};
 export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = IOpenShiftNetwork | IStorageClass;
+export type MappingTarget = IOpenShiftNetwork | typeof POD_NETWORK | IStorageClass;

@@ -17,6 +17,9 @@ export const getMappingTargetByRef = (
   targets.find((target) => {
     if (mappingType === MappingType.Network) {
       const networkRef = ref as INetworkMappingItem['destination'];
+      if (networkRef.type === 'pod') {
+        return target.selfLink === 'pod';
+      }
       return target.name === networkRef.name && target.namespace === networkRef.namespace;
     }
     if (mappingType === MappingType.Storage) {

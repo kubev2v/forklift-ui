@@ -8,13 +8,18 @@ import {
   Mapping,
   MappingItem,
   MappingType,
+  POD_NETWORK,
 } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 
-export const getMappingTargetName = (item: MappingItem, mappingType: MappingType): string =>
-  mappingType === MappingType.Network
-    ? (item as INetworkMappingItem).destination.name
-    : (item as IStorageMappingItem).destination.storageClass;
+export const getMappingTargetName = (item: MappingItem, mappingType: MappingType): string => {
+  if (mappingType === MappingType.Network) {
+    const networkItem = item as INetworkMappingItem;
+    if (networkItem.destination.type === 'pod') return POD_NETWORK.name;
+    return networkItem.destination.name;
+  }
+  return (item as IStorageMappingItem).destination.storageClass;
+};
 
 export const groupMappingItemsByTarget = (
   mappingItems: MappingItem[],
