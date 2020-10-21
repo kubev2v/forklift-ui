@@ -12,7 +12,7 @@ export const useDatastoresQuery = (
 ): QueryResult<IVMwareDatastore[]> => {
   const result = useMockableQuery<IVMwareDatastore[]>(
     {
-      queryKey: `datastores:${provider?.name}`,
+      queryKey: ['datastores', provider?.name],
       queryFn: useAuthorizedFetch(
         getInventoryApiUrl(`${provider?.selfLink || ''}/datastores?detail=true`)
       ),

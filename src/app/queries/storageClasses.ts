@@ -15,7 +15,7 @@ export const useStorageClassesQuery = (
   const result = useMockableQuery<IStorageClassesByProvider>(
     {
       // Key by the provider names combined, so it refetches if the list of providers changes
-      queryKey: `storageClasses:${(providers || []).map((provider) => provider.name).join(',')}`,
+      queryKey: ['storageClasses', ...(providers || []).map((provider) => provider.name)],
       // Fetch multiple resources in one query via Promise.all()
       queryFn: async () => {
         const storageClassLists: IStorageClass[][] = await Promise.all(
