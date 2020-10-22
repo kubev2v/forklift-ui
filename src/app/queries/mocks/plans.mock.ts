@@ -54,7 +54,6 @@ const plan1: IPlan = {
       networks: [],
       datastores: [],
     },
-    warm: false,
     vms: [vm1, vm2],
   },
   status: {
@@ -110,7 +109,6 @@ const plan2: IPlan = {
       networks: [],
       datastores: [],
     },
-    warm: false,
     vms: [vm1],
   },
   status: {
@@ -150,7 +148,6 @@ const plan3: IPlan = {
       networks: [],
       datastores: [],
     },
-    warm: false,
     vms: [vm1, vm2, vm1, vm2],
   },
   status: {
@@ -190,7 +187,6 @@ const plan4: IPlan = {
       networks: [],
       datastores: [],
     },
-    warm: false,
     vms: [vm1, vm2],
   },
   status: {

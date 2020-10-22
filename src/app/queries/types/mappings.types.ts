@@ -1,7 +1,7 @@
 import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
 import { IVMwareDatastore } from './datastores.types';
 import { IStorageClass } from './storageClasses.types';
-import { INameNamespaceRef } from './common.types';
+import { ICR, INameNamespaceRef } from './common.types';
 
 export enum MappingType {
   Network = 'Network',
@@ -61,13 +61,9 @@ export interface IStorageMappingSpec extends ICommonMappingSpec {
   map: IStorageMappingItem[];
 }
 
-export interface ICommonMapping {
+export interface ICommonMapping extends ICR {
   apiVersion: string;
   kind: 'NetworkMap' | 'StorageMap';
-  metadata: {
-    name: string;
-    namespace: string;
-  };
   spec: ICommonMappingSpec;
 }
 

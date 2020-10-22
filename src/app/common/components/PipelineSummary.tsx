@@ -85,7 +85,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   if (status.completed) {
     return (
       <Summary title={MigrationVMStepsType.Completed}>
-        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
+        <Chain Face={ResourcesFullIcon} times={status.pipeline.tasks.length} color={successColor} />
       </Summary>
     );
   } else if (status.started && !status.completed) {

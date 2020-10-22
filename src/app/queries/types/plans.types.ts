@@ -1,6 +1,5 @@
-import { ICR, IStatusCondition } from '../types/common.types';
-import { Mapping } from '../types/mappings.types';
-import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
+import { ICR, INameNamespaceRef, IStatusCondition } from '../types/common.types';
+import { INetworkMappingItem, IStorageMappingItem } from '../types/mappings.types';
 
 export interface IProgress {
   total: number;
@@ -10,7 +9,12 @@ export interface IProgress {
 export interface IStep {
   name: string;
   progress: IProgress;
-  phase: string;
+  phase?: string;
+  annotations?: Record<string, unknown>;
+  started?: string;
+  completed?: string;
+  error?: IError;
+  tasks?: IStep[];
 }
 
 export interface IError {
@@ -20,19 +24,26 @@ export interface IError {
 
 export interface IVMStatus {
   id: string;
-  pipeline: IStep[];
-  step: number;
-  started: string;
-  completed: string;
-  error: IError;
+  pipeline: {
+    tasks: IStep[];
+  };
+  phase: string;
+  error?: IError;
+  completed?: string;
 }
 
 export interface IPlanVM {
   id: string;
-  host: IHost;
+  // hook?: ??? // TODO add this when we add hooks
 }
 
 export interface IPlanStatus {
+  migration?: {
+    active: string;
+    completed?: string;
+    started?: string;
+    vms?: IVMStatus[];
+  };
   conditions: IStatusCondition[];
   observedGeneration: number;
 }
@@ -41,17 +52,16 @@ export interface IPlan extends ICR {
   spec: {
     description: string;
     provider: {
-      sourceProvider: IVMwareProvider;
-      destinationProvider: IOpenShiftProvider;
+      source: INameNamespaceRef;
+      destination: INameNamespaceRef;
     };
     map: {
-      networks: Mapping[];
-      datastores: Mapping[];
+      networks: INetworkMappingItem[];
+      datastores: IStorageMappingItem[];
     };
-    warm: boolean;
     vms: IPlanVM[];
   };
-  status: IPlanStatus;
+  status?: IPlanStatus;
 }
 
 // TODO: This is speculative
