@@ -82,9 +82,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     },
     {
       key: 'end',
-      title: 'Finished time',
+      title: 'End time',
       type: FilterType.search,
-      placeholderText: 'Filter by finished time ...',
+      placeholderText: 'Filter by ended time ...',
       getItemValue: (item) => {
         return item.schedule.end ? item.schedule.end : '';
       },
