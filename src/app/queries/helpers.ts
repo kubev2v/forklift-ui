@@ -10,10 +10,10 @@ import {
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
+import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef } from './types';
 import { VMwareTree } from './types/tree.types';
 
-// TODO add useMockableMutation wrapper that just turns the mutation into a noop?
 // TODO what about usePaginatedQuery, useInfiniteQuery?
 
 const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => {
@@ -56,14 +56,16 @@ export const useMockableMutation = <
 >(
   mutationFn: MutationFunction<TResult, TVariables>,
   config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined
-): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
-  useMutation<TResult, TError, TVariables, TSnapshot>(
+): MutationResultPair<TResult, TError, TVariables, TSnapshot> => {
+  const { checkExpiry } = useFetchContext();
+  return useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
       ? async (vars: TVariables) => {
           try {
             return await mutationFn(vars);
           } catch (error) {
             console.error(error.response);
+            checkExpiry(error);
             throw error;
           }
         }
@@ -73,6 +75,7 @@ export const useMockableMutation = <
         },
     config
   );
+};
 
 export const getInventoryApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;

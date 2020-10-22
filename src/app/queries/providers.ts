@@ -10,7 +10,7 @@ import {
 } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider, INewProvider, INewSecret } from './types';
-import { useAuthorizedFetch, useFetchContext } from './fetchHelpers';
+import { useAuthorizedFetch } from './fetchHelpers';
 import {
   VirtResourceKind,
   providerResource,
@@ -22,7 +22,6 @@ import {
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
-import { useHistory } from 'react-router-dom';
 import { KubeClientError } from '@app/client/types';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
@@ -48,10 +47,6 @@ export const useCreateProviderMutation = (
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
-  //move this to its own abstracted post/mutation function
-  const { checkExpiry } = useFetchContext();
-  const history = useHistory();
-  //
   const client = useClientInstance();
   const queryCache = useQueryCache();
   const postProvider = async (values: AddProviderFormValues) => {
@@ -124,8 +119,6 @@ export const useCreateProviderMutation = (
     } catch (error) {
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-
-      checkExpiry(error, history);
       console.error('Failed to add provider.');
       throw error;
     }
