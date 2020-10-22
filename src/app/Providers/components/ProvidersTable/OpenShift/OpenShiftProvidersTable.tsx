@@ -19,8 +19,10 @@ import { useStorageClassesQuery } from '@app/queries';
 import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
 import ProviderStatus from '../ProviderStatus';
-import './OpenShiftProvidersTable.css';
 import { MappingType } from '@app/queries/types';
+import { mostSeriousCondition } from '@app/common/helpers';
+
+import './OpenShiftProvidersTable.css';
 
 interface IOpenShiftProvidersTableProps {
   providers: IOpenShiftProvider[];
@@ -52,7 +54,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       vmCount,
       networkCount,
       storageClasses.length,
-      provider.object.status?.conditions[0].type || '', // TODO maybe surface the most serious status condition?,
+      provider.object.status ? mostSeriousCondition(provider.object.status?.conditions) : '',
       '',
     ];
   };

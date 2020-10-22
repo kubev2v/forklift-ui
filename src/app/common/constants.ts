@@ -12,7 +12,15 @@ export enum ProviderType {
   openshift = 'openshift',
 }
 
-export enum PlanStatusConditionsType {
+export enum StatusCategoryType {
+  Required = 'Required',
+  Critical = 'Critical',
+  Error = 'Error',
+  Advisory = 'Advisory',
+  Warn = 'Warn',
+}
+
+export enum StatusConditionsType {
   Ready = 'Ready',
   Execute = 'Execute',
   Finished = 'Finished',

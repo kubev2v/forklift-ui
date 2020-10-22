@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 
 import { IStatusCondition } from '@app/queries/types';
-import { PlanStatusConditionsType } from '@app/common/constants';
+import { StatusConditionsType } from '@app/common/constants';
+import { hasCondition } from '@app/common/helpers';
 
 interface IPlansActionDropdownProps {
   conditions: IStatusCondition[];
@@ -13,10 +14,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
 }: IPlansActionDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
 
-  const hasCondition = (type: string) => {
-    return !!conditions.find((condition) => condition.type === type);
-  };
-
   return (
     <Dropdown
       aria-label="Actions"
@@ -26,9 +23,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       dropdownItems={[
         <DropdownItem
           isDisabled={
-            hasCondition(PlanStatusConditionsType.Execute) ||
-            hasCondition(PlanStatusConditionsType.Finished) ||
-            hasCondition(PlanStatusConditionsType.Error)
+            hasCondition(conditions, StatusConditionsType.Execute) ||
+            hasCondition(conditions, StatusConditionsType.Finished) ||
+            hasCondition(conditions, StatusConditionsType.Error)
           }
           onClick={() => {
             setKebabIsOpen(false);
@@ -39,7 +36,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           Edit
         </DropdownItem>,
         <DropdownItem
-          isDisabled={hasCondition(PlanStatusConditionsType.Execute)}
+          isDisabled={hasCondition(conditions, StatusConditionsType.Execute)}
           onClick={() => {
             setKebabIsOpen(false);
             alert('TODO');
