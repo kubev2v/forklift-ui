@@ -33,6 +33,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
           <GridItem md={9}>{forms.general.values.planDescription}</GridItem>
         </>
       ) : null}
+      <GridItem md={3}>Target namespace</GridItem>
+      <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
       <GridItem md={3}>Network mapping</GridItem>
       <GridItem md={9}>
         <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
