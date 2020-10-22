@@ -29,12 +29,14 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan, IMigration } from '@app/queries/types';
-import './PlansTable.css';
 import { PlanStatusType, StatusConditionsType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
+import TableEmptyState from '@app/common/components/TableEmptyState';
+
+import './PlansTable.css';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -236,17 +238,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />
         </LevelItem>
       </Level>
-      <Table
-        aria-label="Migration Plans table"
-        className="plans-table"
-        cells={columns}
-        rows={rows}
-        sortBy={sortBy}
-        onSort={onSort}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
+      {filteredItems.length > 0 ? (
+        <Table
+          aria-label="Migration Plans table"
+          className="plans-table"
+          cells={columns}
+          rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+      ) : (
+        <TableEmptyState
+          titleText="No migration plans found"
+          bodyText="No results match your filter. Go back and make a different selection."
+        />
+      )}
       <Pagination {...paginationProps} widgetId="plans-table-pagination-bottom" variant="bottom" />
     </>
   );
