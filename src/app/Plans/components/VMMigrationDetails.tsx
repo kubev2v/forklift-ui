@@ -215,7 +215,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             ) : (
               <TableEmptyState
                 titleText="No migration details found"
-                bodyText="No results match your filter. Go back and make a different selection."
+                bodyText="No results match your filter."
               />
             )}
             <Pagination

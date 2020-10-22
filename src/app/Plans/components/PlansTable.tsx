@@ -253,7 +253,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       ) : (
         <TableEmptyState
           titleText="No migration plans found"
-          bodyText="No results match your filter. Go back and make a different selection."
+          bodyText="No results match your filter."
         />
       )}
       <Pagination {...paginationProps} widgetId="plans-table-pagination-bottom" variant="bottom" />
