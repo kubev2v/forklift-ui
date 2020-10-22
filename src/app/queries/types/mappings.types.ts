@@ -88,7 +88,7 @@ export interface IStorageMapping extends ICommonMapping {
 export type Mapping = INetworkMapping | IStorageMapping;
 
 export const POD_NETWORK = {
-  name: 'Target namespace pod network',
+  name: 'Pod network',
   namespace: 'pod',
   type: 'pod',
   selfLink: 'pod',
