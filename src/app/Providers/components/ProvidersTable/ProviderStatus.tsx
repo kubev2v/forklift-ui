@@ -16,7 +16,8 @@ const ProviderStatus: React.FunctionComponent<IProviderStatusProps> = ({
       if (mostSeriousCondition(provider.object.status?.conditions) === StatusConditionsType.Ready) {
         return StatusType.Ok;
       } else if (
-        mostSeriousCondition(provider.object.status?.conditions) === StatusCategoryType.Critical
+        mostSeriousCondition(provider.object.status?.conditions) === StatusCategoryType.Critical ||
+        mostSeriousCondition(provider.object.status?.conditions) === StatusCategoryType.Error
       ) {
         return StatusType.Error;
       }
