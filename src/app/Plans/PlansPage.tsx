@@ -17,7 +17,7 @@ import { useHasSufficientProvidersQuery } from '@app/queries';
 import PlansTable from './components/PlansTable';
 
 // TODO replace these with real data from react-query
-import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
+import { MOCK_PLANS } from '@app/queries/mocks/plans.mock';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
 
@@ -26,7 +26,6 @@ const isFetchingInitialPlans = false; // Fetching for the first time, not pollin
 const isErrorFetchingPlans = false;
 
 const plans = MOCK_PLANS;
-const migrations = MOCK_MIGRATIONS;
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -58,7 +57,7 @@ const PlansPage: React.FunctionComponent = () => {
                   <CreatePlanButton />
                 </EmptyState>
               ) : (
-                <PlansTable plans={plans} migrations={migrations} />
+                <PlansTable plans={plans} />
               )}
             </CardBody>
           </Card>

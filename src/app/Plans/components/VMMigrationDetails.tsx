@@ -3,7 +3,6 @@ import { useRouteMatch } from 'react-router-dom';
 import {
   Breadcrumb,
   BreadcrumbItem,
-  Button,
   Card,
   CardBody,
   Pagination,
@@ -11,6 +10,7 @@ import {
   Title,
   Level,
   LevelItem,
+  Alert,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -29,43 +29,55 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
-import { IMigration } from '@app/queries/types';
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import VMStatusTable from './VMStatusTable';
-import PipelineSummary from '@app/common/components/PipelineSummary';
-import { PlanStatusType } from '@app/common/constants';
+import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components/PipelineSummary';
 
-import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
+import { IVMStatus } from '@app/queries/types';
+import { usePlansQuery } from '@app/queries/plans';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { formatTimestamp } from '@app/common/helpers';
 
 export interface IPlanMatchParams {
   url: string;
-  planId: string;
+  planName: string;
 }
 
-const VMMigrationDetails: React.FunctionComponent = () => {
-  // TODO: Replace with useMockableQuery
-  const migrations = MOCK_MIGRATIONS;
+const getTotalCopiedRatio = (vmStatus: IVMStatus) => {
+  const diskTransferTasks = vmStatus.pipeline.tasks.filter((task) => task.name === 'DiskTransfer');
+  let completed = 0;
+  let total = 0;
+  diskTransferTasks.forEach((task) => {
+    completed += task.progress.completed;
+    total += task.progress.total;
+  });
+  return { completed, total };
+};
 
+const VMMigrationDetails: React.FunctionComponent = () => {
   const match = useRouteMatch<IPlanMatchParams>({
-    path: '/plans/:planId',
+    path: '/plans/:planName',
     strict: true,
     sensitive: true,
   });
 
-  const getSortValues = (migration: IMigration) => {
+  const plansQuery = usePlansQuery();
+  const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
+  const vms = plan?.status?.migration?.vms || [];
+
+  const getSortValues = (vmStatus: IVMStatus) => {
     return [
-      migration.id,
-      migration.schedule.begin,
-      migration.schedule.end,
-      migration.other.total,
-      migration.other.status,
-      '', // Action column
+      vmStatus.id, // TODO do a lookup to get the real VM name
+      vmStatus.started || '',
+      vmStatus.completed || '',
+      getTotalCopiedRatio(vmStatus).completed,
+      getPipelineSummaryTitle(vmStatus),
     ];
   };
 
-  const filterCategories: FilterCategory<IMigration>[] = [
+  const filterCategories: FilterCategory<IVMStatus>[] = [
     {
       key: 'id',
       title: 'Name',
@@ -76,33 +88,30 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       key: 'begin',
       title: 'Start time',
       type: FilterType.search,
-      placeholderText: 'Filter by started time ...',
+      placeholderText: 'Filter by start time ...',
       getItemValue: (item) => {
-        return item.schedule.begin ? item.schedule.begin : '';
+        return item.started || '';
       },
     },
     {
       key: 'end',
       title: 'End time',
       type: FilterType.search,
-      placeholderText: 'Filter by ended time ...',
+      placeholderText: 'Filter by end time ...',
       getItemValue: (item) => {
-        return item.schedule.end ? item.schedule.end : '';
+        return item.completed || '';
       },
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    migrations,
-    filterCategories
-  );
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(vms, filterCategories);
 
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } = useSelectionState<
-    IMigration
+    IVMStatus
   >({
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
@@ -122,40 +131,21 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((migration: IMigration) => {
-    const isExpanded = isVMExpanded(migration);
+  currentPageItems.forEach((vmStatus: IVMStatus) => {
+    const isExpanded = isVMExpanded(vmStatus);
 
-    let isButtonCancel = false;
-    if (
-      migration.other.status !== PlanStatusType.Ready &&
-      migration.other.status !== PlanStatusType.Finished &&
-      migration.other.status !== PlanStatusType.Error
-    ) {
-      isButtonCancel = true;
-    }
+    const ratio = getTotalCopiedRatio(vmStatus);
 
     rows.push({
-      meta: { migration },
+      meta: { vmStatus },
       isOpen: isExpanded,
       cells: [
-        migration.id,
-        migration.schedule.begin,
-        migration.schedule.end,
-        `${Math.round(migration.other.copied / 1024)} / ${Math.round(
-          migration.other.total / 1024
-        )} GB`,
+        vmStatus.id, // TODO do a lookup to get the real VM name
+        formatTimestamp(vmStatus.started),
+        formatTimestamp(vmStatus.completed),
+        `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
         {
-          title: <PipelineSummary status={migration.status2} />,
-        },
-
-        {
-          title: isButtonCancel ? (
-            <>
-              <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-                Cancel
-              </Button>
-            </>
-          ) : null,
+          title: <PipelineSummary status={vmStatus} />,
         },
       ],
     });
@@ -164,8 +154,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       fullWidth: true,
       cells: [
         {
-          // TODO: status2 to be replaced once statuses consolidated
-          title: <VMStatusTable vmstatus={migration.status2} />,
+          title: <VMStatusTable status={vmStatus} />,
           columnTransforms: [classNamesTransform(alignment.textAlignRight)],
         },
       ],
@@ -179,52 +168,58 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           <BreadcrumbItem>
             <Link to={`/plans`}>Migration plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem>{match?.params.planId}</BreadcrumbItem>
+          <BreadcrumbItem>{match?.params.planName}</BreadcrumbItem>
         </Breadcrumb>
         <Title headingLevel="h1">Migration Details by VM</Title>
       </PageSection>
       <PageSection>
-        <Card>
-          <CardBody>
-            <Level>
-              <LevelItem>
-                <FilterToolbar<IMigration>
-                  filterCategories={filterCategories}
-                  filterValues={filterValues}
-                  setFilterValues={setFilterValues}
+        {plansQuery.isLoading ? (
+          <LoadingEmptyState />
+        ) : plansQuery.isError ? (
+          <Alert variant="danger" isInline title="Error loading plan details" />
+        ) : (
+          <Card>
+            <CardBody>
+              <Level>
+                <LevelItem>
+                  <FilterToolbar<IVMStatus>
+                    filterCategories={filterCategories}
+                    filterValues={filterValues}
+                    setFilterValues={setFilterValues}
+                  />
+                </LevelItem>
+                <LevelItem>
+                  <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
+                </LevelItem>
+              </Level>
+              {filteredItems.length > 0 ? (
+                <Table
+                  aria-label="Migration VMs table"
+                  cells={columns}
+                  rows={rows}
+                  sortBy={sortBy}
+                  onSort={onSort}
+                  onCollapse={(event, rowKey, isOpen, rowData) => {
+                    toggleVMExpanded(rowData.meta.migration);
+                  }}
+                >
+                  <TableHeader />
+                  <TableBody />
+                </Table>
+              ) : (
+                <TableEmptyState
+                  titleText="No migration details found"
+                  bodyText="No results match your filter."
                 />
-              </LevelItem>
-              <LevelItem>
-                <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
-              </LevelItem>
-            </Level>
-            {filteredItems.length > 0 ? (
-              <Table
-                aria-label="Migration VMs table"
-                cells={columns}
-                rows={rows}
-                sortBy={sortBy}
-                onSort={onSort}
-                onCollapse={(event, rowKey, isOpen, rowData) => {
-                  toggleVMExpanded(rowData.meta.migration);
-                }}
-              >
-                <TableHeader />
-                <TableBody />
-              </Table>
-            ) : (
-              <TableEmptyState
-                titleText="No migration details found"
-                bodyText="No results match your filter."
+              )}
+              <Pagination
+                {...paginationProps}
+                widgetId="migration-vms-table-pagination-bottom"
+                variant="bottom"
               />
-            )}
-            <Pagination
-              {...paginationProps}
-              widgetId="migration-vms-table-pagination-bottom"
-              variant="bottom"
-            />
-          </CardBody>
-        </Card>
+            </CardBody>
+          </Card>
+        )}
       </PageSection>
     </>
   );

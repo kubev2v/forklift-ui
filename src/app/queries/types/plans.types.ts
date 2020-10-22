@@ -1,5 +1,6 @@
-import { ICR, INameNamespaceRef, IStatusCondition } from '../types/common.types';
+import { ICR, IStatusCondition } from '../types/common.types';
 import { INetworkMappingItem, IStorageMappingItem } from '../types/mappings.types';
+import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {
   total: number;
@@ -10,7 +11,10 @@ export interface IStep {
   name: string;
   progress: IProgress;
   phase?: string;
-  annotations?: Record<string, unknown>;
+  annotations?: {
+    unit: string;
+    [key: string]: string;
+  };
   started?: string;
   completed?: string;
   error?: IError;
@@ -29,6 +33,7 @@ export interface IVMStatus {
   };
   phase: string;
   error?: IError;
+  started?: string;
   completed?: string;
 }
 
@@ -49,12 +54,11 @@ export interface IPlanStatus {
 }
 
 export interface IPlan extends ICR {
+  apiVersion: string;
+  kind: 'Plan';
   spec: {
     description: string;
-    provider: {
-      source: INameNamespaceRef;
-      destination: INameNamespaceRef;
-    };
+    provider: ISrcDestRefs;
     map: {
       networks: INetworkMappingItem[];
       datastores: IStorageMappingItem[];
@@ -62,25 +66,4 @@ export interface IPlan extends ICR {
     vms: IPlanVM[];
   };
   status?: IPlanStatus;
-}
-
-// TODO: This is speculative
-export interface IMigration {
-  plan: IPlan;
-  id: string;
-  schedule: {
-    begin: string;
-    end: string;
-  };
-  status: {
-    ready: boolean;
-    storageReady: boolean;
-    nbVMsDone: number;
-  };
-  status2: IVMStatus;
-  other: {
-    copied: number;
-    total: number;
-    status: string;
-  };
 }

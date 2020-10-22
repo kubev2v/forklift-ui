@@ -12,16 +12,17 @@ import {
 } from '@patternfly/react-tokens';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-import { IStep, IVMStatus } from '@app/queries/types';
+import { IVMStatus } from '@app/queries/types';
+import { findCurrentStep } from '@app/common/helpers';
 
 interface IStepProps {
   status: IVMStatus;
-  step: IStep;
   index: number;
 }
 
-const Step: React.FunctionComponent<IStepProps> = ({ status, step, index }: IStepProps) => {
-  if (status.completed || step.progress.completed === step.progress.total) {
+const Step: React.FunctionComponent<IStepProps> = ({ status, index }: IStepProps) => {
+  const { currentStep, currentStepIndex } = findCurrentStep(status.pipeline.tasks);
+  if (status.completed || currentStep?.completed) {
     return (
       <ResourcesFullIcon
         className={spacing.mlSm}
@@ -30,13 +31,13 @@ const Step: React.FunctionComponent<IStepProps> = ({ status, step, index }: ISte
         color={successColor.value}
       />
     );
-  } else if (status.started && index + 1 === status.step) {
+  } else if (status.started && index === currentStepIndex) {
     return (
       <ResourcesAlmostFullIcon
         className={spacing.mlSm}
         height="1em"
         width="1em"
-        color={status.error.phase ? dangerColor.value : infoColor.value}
+        color={status.error?.phase ? dangerColor.value : infoColor.value}
       />
     );
   } else {

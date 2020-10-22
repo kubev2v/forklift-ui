@@ -28,25 +28,23 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IPlan, IMigration } from '@app/queries/types';
+import { IPlan } from '@app/queries/types';
 import { PlanStatusType, StatusConditionsType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
 import TableEmptyState from '@app/common/components/TableEmptyState';
+import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
 
 import './PlansTable.css';
 
 interface IPlansTableProps {
   plans: IPlan[];
-  migrations: IMigration[];
 }
 
-const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
-  plans,
-  migrations,
-}: IPlansTableProps) => {
+const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlansTableProps) => {
+  const providersQuery = useProvidersQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
     {
       key: 'name',
@@ -63,7 +61,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by name...',
       getItemValue: (item) => {
-        return item.spec.provider.sourceProvider.name;
+        const { sourceProvider } = findProvidersByRefs(item.spec.provider, providersQuery);
+        return sourceProvider?.name || '';
       },
     },
     {
@@ -72,7 +71,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by name...',
       getItemValue: (item) => {
-        return item.spec.provider.destinationProvider.name;
+        const { targetProvider } = findProvidersByRefs(item.spec.provider, providersQuery);
+        return targetProvider?.name || '';
       },
     },
     {
@@ -81,7 +81,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter state...',
       getItemValue: (item) => {
-        const res = item.status.conditions.find(
+        const res = item.status?.conditions.find(
           (condition) =>
             condition.type === PlanStatusType.Ready ||
             condition.type === PlanStatusType.Execute ||
@@ -95,10 +95,14 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
   const getSortValues = (plan: IPlan) => {
+    const { sourceProvider, targetProvider } = findProvidersByRefs(
+      plan.spec.provider,
+      providersQuery
+    );
     return [
       plan.metadata.name,
-      plan.spec.provider.sourceProvider.name,
-      plan.spec.provider.destinationProvider.name,
+      sourceProvider?.name || '',
+      targetProvider?.name || '',
       plan.spec.vms.length,
       '', // Plan status
       '', // Action column
@@ -109,13 +113,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const getMigration = (plan: IPlan) => migrations.filter((migration) => migration.plan === plan);
-
   const ratioVMs = (plan: IPlan) => {
-    const migration = getMigration(plan)[0];
     const totalVMs = plan.spec.vms.length;
-    const statusValue = totalVMs > 0 ? (migration.status.nbVMsDone * 100) / totalVMs : 0;
-    const statusMessage = `${migration.status.nbVMsDone} of ${plan.spec.vms.length} VMs migrated`;
+    const numVMsDone = plan.status?.migration?.vms?.filter((vm) => !!vm.completed).length || 0;
+    const statusValue = totalVMs > 0 ? (numVMsDone * 100) / totalVMs : 0;
+    const statusMessage = `${numVMsDone} of ${totalVMs} VMs migrated`;
 
     return { statusValue, statusMessage };
   };
@@ -141,13 +143,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let title = '';
     let variant: ProgressVariant | undefined;
 
-    if (hasCondition(plan.status.conditions, StatusConditionsType.Ready)) {
+    const conditions = plan.status?.conditions || [];
+
+    if (hasCondition(conditions, StatusConditionsType.Ready)) {
       buttonText = 'Start';
       isStatusReady = true;
-    } else if (hasCondition(plan.status.conditions, StatusConditionsType.Finished)) {
+    } else if (hasCondition(conditions, StatusConditionsType.Finished)) {
       title = PlanStatusType.Finished;
       variant = ProgressVariant.success;
-    } else if (hasCondition(plan.status.conditions, StatusConditionsType.Error)) {
+    } else if (hasCondition(conditions, StatusConditionsType.Error)) {
       title = PlanStatusType.Error;
       variant = ProgressVariant.danger;
     } else {
@@ -156,6 +160,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
+
+    const { sourceProvider, targetProvider } = findProvidersByRefs(
+      plan.spec.provider,
+      providersQuery
+    );
 
     rows.push({
       meta: { plan },
@@ -170,8 +179,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             </>
           ),
         },
-        plan.spec.provider.sourceProvider.name,
-        plan.spec.provider.destinationProvider.name,
+        sourceProvider?.name || '',
+        targetProvider?.name || '',
         plan.spec.vms.length,
         {
           title: isStatusReady ? (
@@ -202,12 +211,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </Button>
                 </FlexItem>
                 <FlexItem>
-                  <PlanActionsDropdown conditions={plan.status.conditions} />
+                  <PlanActionsDropdown conditions={conditions} />
                 </FlexItem>
               </Flex>
             </>
           ) : (
-            <PlanActionsDropdown conditions={plan.status.conditions} />
+            <PlanActionsDropdown conditions={conditions} />
           ),
         },
       ],

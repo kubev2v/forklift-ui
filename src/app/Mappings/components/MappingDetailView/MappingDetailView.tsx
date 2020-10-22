@@ -4,10 +4,10 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import { findMappingProviders, getMappingTargetName, groupMappingItemsByTarget } from './helpers';
+import { getMappingTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
-import { useMappingResourceQueries, useProvidersQuery } from '@app/queries';
+import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IMappingDetailViewProps {
@@ -22,7 +22,10 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   className = '',
 }: IMappingDetailViewProps) => {
   const providersQuery = useProvidersQuery();
-  const { sourceProvider, targetProvider } = findMappingProviders(mapping, providersQuery);
+  const { sourceProvider, targetProvider } = findProvidersByRefs(
+    mapping?.spec.provider || null,
+    providersQuery
+  );
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,

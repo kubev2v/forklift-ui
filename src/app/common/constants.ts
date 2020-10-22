@@ -32,7 +32,7 @@ export enum StatusConditionsType {
 export enum PlanStatusType {
   Ready = 'Ready',
   Execute = 'Running',
-  Finished = 'Complete',
+  Finished = 'Succeeded',
   Error = 'Failed',
 }
 

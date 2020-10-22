@@ -15,6 +15,7 @@ import {
 import { IVMStatus } from '@app/queries/types';
 import { MigrationVMStepsType } from '@app/common/constants';
 import './PipelineSummary.css';
+import { findCurrentStep } from '../helpers';
 
 interface IDashProps {
   isReached: boolean;
@@ -75,6 +76,25 @@ const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: IS
   </Flex>
 );
 
+export const getPipelineSummaryTitle = (status: IVMStatus): string => {
+  const {
+    pipeline: { tasks },
+  } = status;
+  const { currentStep } = findCurrentStep(tasks);
+  if (status.completed) {
+    return MigrationVMStepsType.Completed;
+  }
+  if (status.started && !status.completed) {
+    let title: string;
+    title = status.error?.phase ? `${MigrationVMStepsType.Error} - ` : '';
+    if (currentStep) {
+      title = `${title}${MigrationVMStepsType[currentStep.name]}`;
+    }
+    return title;
+  }
+  return MigrationVMStepsType.NotStarted;
+};
+
 interface IPipelineSummaryProps {
   status: IVMStatus;
 }
@@ -82,40 +102,39 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
+  const title = getPipelineSummaryTitle(status);
+  const {
+    pipeline: { tasks },
+  } = status;
   if (status.completed) {
     return (
-      <Summary title={MigrationVMStepsType.Completed}>
+      <Summary title={title}>
         <Chain Face={ResourcesFullIcon} times={status.pipeline.tasks.length} color={successColor} />
       </Summary>
     );
   } else if (status.started && !status.completed) {
-    let title = status.error.phase ? MigrationVMStepsType.Error + ' - ' : '';
-    title += MigrationVMStepsType[status.pipeline[status.step - 1].name];
+    const { currentStepIndex } = findCurrentStep(tasks);
     return (
       <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={status.step - 1} color={successColor} />
-        {status.step > 0 ? <Dash isReached={true} /> : null}
+        <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
+        {currentStepIndex > 0 ? <Dash isReached={true} /> : null}
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <ResourcesAlmostFullIcon
-            color={status.error.phase ? dangerColor.value : infoColor.value}
+            color={status.error?.phase ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
-        {status.step > 0 ? <Dash isReached={false} /> : null}
+        {currentStepIndex > 0 ? <Dash isReached={false} /> : null}
         <Chain
           Face={ResourcesAlmostEmptyIcon}
-          times={status.pipeline.length - status.step}
+          times={tasks.length - currentStepIndex}
           color={disabledColor}
         />
       </Summary>
     );
   } else {
     return (
-      <Summary title={MigrationVMStepsType.NotStarted}>
-        <Chain
-          Face={ResourcesAlmostEmptyIcon}
-          times={status.pipeline.length}
-          color={disabledColor}
-        />
+      <Summary title={title}>
+        <Chain Face={ResourcesAlmostEmptyIcon} times={tasks.length} color={disabledColor} />
       </Summary>
     );
   }
