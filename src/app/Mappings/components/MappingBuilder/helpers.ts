@@ -28,7 +28,7 @@ export const getBuilderItemsFromMapping = (
       const source = getMappingSourceById(allSources, item.source.id);
       const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
       if (source) {
-        return { source, target, highlight: false }; // TODO we need a lookup....
+        return { source, target, highlight: false };
       }
       return null;
     })

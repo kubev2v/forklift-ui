@@ -1,3 +1,4 @@
+import { isSameResource } from '@app/queries/helpers';
 import {
   INetworkMappingItem,
   IStorageMappingItem,
@@ -20,7 +21,7 @@ export const getMappingTargetByRef = (
       if (networkRef.type === 'pod') {
         return target.selfLink === 'pod';
       }
-      return target.name === networkRef.name && target.namespace === networkRef.namespace;
+      return isSameResource(target, networkRef);
     }
     if (mappingType === MappingType.Storage) {
       const storageRef = ref as IStorageMappingItem['destination'];
