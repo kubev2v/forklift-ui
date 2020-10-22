@@ -12,19 +12,21 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import MappingsTable from '../components/MappingsTable';
-import AddEditMappingModal from '../components/AddEditMappingModal';
+import MappingsTable from './components/MappingsTable';
+import AddEditMappingModal from './components/AddEditMappingModal';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
-import CreateMappingButton from '../components/CreateMappingButton';
+import CreateMappingButton from './components/CreateMappingButton';
 
-// TODO we should probably combine this and NetworkMappingsPage, they're nearly identical
+interface IMappingsPageProps {
+  mappingType: MappingType;
+}
 
-const isFetchingInitialStorageMappings = false; // Fetching for the first time, not polling
-
-const StorageMappingsPage: React.FunctionComponent = () => {
+const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
+  mappingType,
+}: IMappingsPageProps) => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const mappingsQuery = useMappingsQuery(MappingType.Storage);
+  const mappingsQuery = useMappingsQuery(mappingType);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
@@ -32,14 +34,16 @@ const StorageMappingsPage: React.FunctionComponent = () => {
     <>
       <PageSection variant="light">
         <Title headingLevel="h1" size="lg">
-          Storage mappings
+          {mappingType} mappings
         </Title>
       </PageSection>
       <PageSection>
-        {sufficientProvidersQuery.isLoading || isFetchingInitialStorageMappings ? (
+        {sufficientProvidersQuery.isLoading || mappingsQuery.isLoading ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
           <Alert variant="danger" isInline title="Error loading providers" />
+        ) : mappingsQuery.isError ? (
+          <Alert variant="danger" isInline title="Error loading mappings" />
         ) : (
           <Card>
             <CardBody>
@@ -47,17 +51,19 @@ const StorageMappingsPage: React.FunctionComponent = () => {
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
-                    No storage mappings
+                    No {mappingType.toLowerCase()} mappings
                   </Title>
                   <EmptyStateBody>
-                    Map source provider datastores to target provider storage classes.
+                    {mappingType === MappingType.Network
+                      ? 'Map source provider networks to target provider networks.'
+                      : 'Map source provider datastores to target provider storage classes.'}
                   </EmptyStateBody>
                   <CreateMappingButton onClick={toggleAddEditModal} />
                 </EmptyState>
               ) : (
                 <MappingsTable
                   mappings={mappingsQuery.data?.items || []}
-                  mappingType={MappingType.Storage}
+                  mappingType={mappingType}
                   toggleAddEditModal={toggleAddEditModal}
                 />
               )}
@@ -67,12 +73,12 @@ const StorageMappingsPage: React.FunctionComponent = () => {
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title="Create storage mapping"
+          title={`Create ${mappingType.toLowerCase()} mapping`}
           onClose={toggleAddEditModal}
-          mappingType={MappingType.Storage}
+          mappingType={mappingType}
         />
       ) : null}
     </>
   );
 };
-export default StorageMappingsPage;
+export default MappingsPage;
