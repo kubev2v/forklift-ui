@@ -291,10 +291,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           <TableBody />
         </Table>
       ) : (
-        <TableEmptyState
-          titleText="No VMs found"
-          bodyText="No results match your filter. Go back and make a different selection."
-        />
+        <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
       )}
 
       <Level>
