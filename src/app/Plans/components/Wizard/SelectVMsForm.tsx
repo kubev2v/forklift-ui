@@ -80,7 +80,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     },
     {
       key: 'migrationAnalysis',
-      title: 'Migration Analysis',
+      title: 'Migration analysis',
       type: FilterType.search,
       placeholderText: 'Filter by migration analysis status ...',
       getItemValue: (item) => {
