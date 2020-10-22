@@ -1,6 +1,6 @@
 import { queryCache, QueryResult, useMutation, MutationResultPair } from 'react-query';
 
-import { usePollingContext } from '@app/common/context';
+import { usePollingContext, useNetworkContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
 import {
   useMockableQuery,
@@ -10,7 +10,7 @@ import {
 } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import { IProvidersByType, Provider, INewProvider, INewSecret } from './types';
-import { useAuthorizedFetch } from './fetchHelpers';
+import { useAuthorizedFetch, useFetchContext } from './fetchHelpers';
 import {
   VirtResourceKind,
   providerResource,
@@ -23,6 +23,7 @@ import {
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
+import { useHistory } from 'react-router-dom';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -47,6 +48,10 @@ export const useCreateProviderMutation = (
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
+  //move this to its own abstracted post/mutation function
+  const { checkExpiry } = useFetchContext();
+  const history = useHistory();
+  //
   const client = useClientInstance();
   const postProvider = async (values: AddProviderFormValues) => {
     const provider: INewProvider = convertFormValuesToProvider(values, providerType);
@@ -124,6 +129,7 @@ export const useCreateProviderMutation = (
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
 
+      checkExpiry(error, history);
       console.error('Failed to add provider.');
       return Promise.reject(error);
     }

@@ -7,11 +7,13 @@ import { History, LocationState } from 'history';
 interface IFetchContext {
   history: History<LocationState>;
   setSelfSignedCertUrl: INetworkContext['setSelfSignedCertUrl'];
+  checkExpiry: INetworkContext['checkExpiry'];
 }
 
 export const useFetchContext = (): IFetchContext => ({
   history: useHistory(),
   setSelfSignedCertUrl: useNetworkContext().setSelfSignedCertUrl,
+  checkExpiry: useNetworkContext().checkExpiry,
 });
 
 export const authorizedFetch = async <T>(
@@ -19,7 +21,7 @@ export const authorizedFetch = async <T>(
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {}
 ): Promise<T> => {
-  const { history, setSelfSignedCertUrl } = fetchContext;
+  const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
   try {
     const response = await fetch(url, {
       headers: {
@@ -42,6 +44,7 @@ export const authorizedFetch = async <T>(
       setSelfSignedCertUrl(url);
       history.push('/cert-error');
     }
+    checkExpiry(error, history);
     return Promise.reject(error);
   }
 };
