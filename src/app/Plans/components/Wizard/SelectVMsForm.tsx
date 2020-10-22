@@ -275,20 +275,25 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
         </LevelItem>
       </Level>
-      <Table
-        aria-label="VMware VMs table"
-        variant={TableVariant.compact}
-        cells={columns}
-        rows={rows}
-        sortBy={sortBy}
-        onSort={onSort}
-        onCollapse={(event, rowKey, isOpen, rowData) => {
-          toggleVMsExpanded(rowData.meta.vm);
-        }}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
+      {filteredItems.length > 0 ? (
+        <Table
+          aria-label="VMware VMs table"
+          variant={TableVariant.compact}
+          cells={columns}
+          rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
+          onCollapse={(event, rowKey, isOpen, rowData) => {
+            toggleVMsExpanded(rowData.meta.vm);
+          }}
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+      ) : (
+        <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
+      )}
+
       <Level>
         <LevelItem>
           <TextContent>

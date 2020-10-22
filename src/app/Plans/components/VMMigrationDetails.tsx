@@ -37,6 +37,7 @@ import { PlanStatusType } from '@app/common/constants';
 
 import { MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
+import TableEmptyState from '@app/common/components/TableEmptyState';
 
 export interface IPlanMatchParams {
   url: string;
@@ -197,19 +198,26 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                 <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
               </LevelItem>
             </Level>
-            <Table
-              aria-label="Migration VMs table"
-              cells={columns}
-              rows={rows}
-              sortBy={sortBy}
-              onSort={onSort}
-              onCollapse={(event, rowKey, isOpen, rowData) => {
-                toggleVMExpanded(rowData.meta.migration);
-              }}
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
+            {filteredItems.length > 0 ? (
+              <Table
+                aria-label="Migration VMs table"
+                cells={columns}
+                rows={rows}
+                sortBy={sortBy}
+                onSort={onSort}
+                onCollapse={(event, rowKey, isOpen, rowData) => {
+                  toggleVMExpanded(rowData.meta.migration);
+                }}
+              >
+                <TableHeader />
+                <TableBody />
+              </Table>
+            ) : (
+              <TableEmptyState
+                titleText="No migration details found"
+                bodyText="No results match your filter."
+              />
+            )}
             <Pagination
               {...paginationProps}
               widgetId="migration-vms-table-pagination-bottom"
