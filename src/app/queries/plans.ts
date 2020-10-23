@@ -34,7 +34,7 @@ export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
 };
 
 export const useCreatePlanMutation = (
-  onSuccess: () => void
+  onSuccess?: () => void
 ): MutationResultPair<IPlan, KubeClientError, IPlan, unknown> => {
   const client = useClientInstance();
   const queryCache = useQueryCache();
@@ -46,7 +46,7 @@ export const useCreatePlanMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
-        onSuccess();
+        onSuccess && onSuccess();
       },
     }
   );

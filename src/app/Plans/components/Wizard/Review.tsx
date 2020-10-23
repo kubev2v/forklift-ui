@@ -3,7 +3,7 @@ import { TextContent, Text, Grid, GridItem, Form } from '@patternfly/react-core'
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { IPlan, MappingType } from '@app/queries/types';
+import { IPlan, Mapping, MappingType } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { KubeClientError } from '@app/client/types';
 import MutationStatus from '@app/common/components/MutationStatus';
@@ -12,14 +12,25 @@ import { generateMappings } from './helpers';
 interface IReviewProps {
   forms: PlanWizardFormState;
   createPlanResult: MutationResult<IPlan, KubeClientError>;
+  createNetworkMappingResult: MutationResult<Mapping, KubeClientError>;
+  createStorageMappingResult: MutationResult<Mapping, KubeClientError>;
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   createPlanResult,
+  createNetworkMappingResult,
+  createStorageMappingResult,
 }: IReviewProps) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => createPlanResult.reset, []);
+  // Reset mutation state on unmount (going back in the wizard clears errors)
+  React.useEffect(() => {
+    return () => {
+      createPlanResult.reset();
+      createNetworkMappingResult.reset();
+      createStorageMappingResult.reset();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { networkMapping, storageMapping } = generateMappings(forms);
   return (
     <Form>
@@ -52,7 +63,14 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={3}>Selected VMs</GridItem>
         <GridItem md={9}>{forms.selectVMs.values.selectedVMs.length}</GridItem>
       </Grid>
-      <MutationStatus result={createPlanResult} errorTitle="Error creating migration plan" />
+      <MutationStatus
+        results={[createPlanResult, createNetworkMappingResult, createStorageMappingResult]}
+        errorTitles={[
+          'Error creating migration plan',
+          'Error creating network mapping',
+          'Error creating storage mapping',
+        ]}
+      />
     </Form>
   );
 };

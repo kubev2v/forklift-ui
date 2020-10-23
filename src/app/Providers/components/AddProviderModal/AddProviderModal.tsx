@@ -77,7 +77,10 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus result={createProviderResult} errorTitle="Error adding provider" />
+          <MutationStatus
+            results={[createProviderResult]}
+            errorTitles={['Error adding provider']}
+          />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="confirm"

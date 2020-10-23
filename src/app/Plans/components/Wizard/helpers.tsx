@@ -9,7 +9,6 @@ import {
   IVMwareVM,
   IVMwareVMConcern,
   IVMwareVMTree,
-  Mapping,
   MappingSource,
   MappingType,
   VMwareTree,
@@ -252,27 +251,28 @@ export const generateMappings = (
   return { networkMapping, storageMapping };
 };
 
-export const generatePlan = (forms: PlanWizardFormState): IPlan => {
-  const { networkMapping, storageMapping } = generateMappings(forms);
-  return {
-    apiVersion: CLUSTER_API_VERSION,
-    kind: 'Plan',
-    metadata: {
-      name: forms.general.values.planName,
-      namespace: VIRT_META.namespace,
+export const generatePlan = (
+  forms: PlanWizardFormState,
+  networkMapping: INetworkMapping | null,
+  storageMapping: IStorageMapping | null
+): IPlan => ({
+  apiVersion: CLUSTER_API_VERSION,
+  kind: 'Plan',
+  metadata: {
+    name: forms.general.values.planName,
+    namespace: VIRT_META.namespace,
+  },
+  spec: {
+    description: forms.general.values.planDescription,
+    provider: {
+      source: nameAndNamespace(forms.general.values.sourceProvider),
+      destination: nameAndNamespace(forms.general.values.targetProvider),
     },
-    spec: {
-      description: forms.general.values.planDescription,
-      provider: {
-        source: nameAndNamespace(forms.general.values.sourceProvider),
-        destination: nameAndNamespace(forms.general.values.targetProvider),
-      },
-      targetNamespace: forms.general.values.targetNamespace,
-      map: {
-        networks: networkMapping?.spec.map || [],
-        datastores: storageMapping?.spec.map || [],
-      },
-      vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+    targetNamespace: forms.general.values.targetNamespace,
+    map: {
+      networks: networkMapping?.spec.map || [],
+      datastores: storageMapping?.spec.map || [],
     },
-  };
-};
+    vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+  },
+});
