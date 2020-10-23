@@ -23,3 +23,6 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
   );
   return sortResultsByName(result);
 };
+
+export const findVMById = (id: string, vmsQuery: QueryResult<IVMwareVM[]>): IVMwareVM | null =>
+  vmsQuery.data?.find((vm) => vm.id === id) || null;

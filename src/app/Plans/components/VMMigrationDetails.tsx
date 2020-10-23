@@ -39,6 +39,12 @@ import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries/plans';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { formatTimestamp } from '@app/common/helpers';
+import {
+  useProvidersQuery,
+  findProvidersByRefs,
+  useVMwareVMsQuery,
+  findVMById,
+} from '@app/queries';
 
 export interface IPlanMatchParams {
   url: string;
@@ -65,11 +71,16 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const plansQuery = usePlansQuery();
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
-  const vms = plan?.status?.migration?.vms || [];
+  const vmStatuses = plan?.status?.migration?.vms || [];
+
+  const providersQuery = useProvidersQuery();
+  const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
+
+  const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
-      vmStatus.id, // TODO do a lookup to get the real VM name
+      findVMById(vmStatus.id, vmsQuery)?.name || '',
       vmStatus.started || '',
       vmStatus.completed || '',
       getTotalCopiedRatio(vmStatus).completed,
@@ -104,7 +115,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(vms, filterCategories);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    vmStatuses,
+    filterCategories
+  );
 
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
@@ -140,7 +154,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       meta: { vmStatus },
       isOpen: isExpanded,
       cells: [
-        vmStatus.id, // TODO do a lookup to get the real VM name
+        findVMById(vmStatus.id, vmsQuery)?.name || '',
         formatTimestamp(vmStatus.started),
         formatTimestamp(vmStatus.completed),
         `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
@@ -173,10 +187,14 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Details by VM</Title>
       </PageSection>
       <PageSection>
-        {plansQuery.isLoading ? (
+        {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
           <LoadingEmptyState />
         ) : plansQuery.isError ? (
           <Alert variant="danger" isInline title="Error loading plan details" />
+        ) : providersQuery.isError ? (
+          <Alert variant="danger" isInline title="Error loading providers" />
+        ) : vmsQuery.isError ? (
+          <Alert variant="danger" isInline title="Error loading VMs" />
         ) : (
           <Card>
             <CardBody>
