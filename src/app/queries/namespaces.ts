@@ -12,7 +12,7 @@ export const useNamespacesQuery = (
 ): QueryResult<IOpenShiftNamespace[]> => {
   const result = useMockableQuery<IOpenShiftNamespace[]>(
     {
-      queryKey: `namespaces:${provider?.name}`,
+      queryKey: ['namespaces', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/namespaces`)),
       config: {
         enabled: !!provider,

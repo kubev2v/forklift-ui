@@ -1,6 +1,16 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, Grid, GridItem, Alert } from '@patternfly/react-core';
+import {
+  Modal,
+  Button,
+  Form,
+  FormGroup,
+  Grid,
+  GridItem,
+  Alert,
+  Stack,
+  Flex,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   useFormField,
@@ -13,14 +23,16 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
-import { useProvidersQuery, useMappingResourceQueries } from '@app/queries';
-import { updateMockStorage } from '@app/queries/mocks/helpers';
+import {
+  useProvidersQuery,
+  useMappingResourceQueries,
+  useCreateMappingMutation,
+} from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
-
-import './AddEditMappingModal.css';
+import MutationStatus from '@app/common/components/MutationStatus';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -33,6 +45,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
 }: IAddEditMappingModalProps) => {
+  usePausedPollingEffect();
+
   // TODO add support for prefilling form for editing an API mapping
   const form = useFormState({
     name: useFormField('', yup.string().label('Mapping name').required()),
@@ -49,8 +63,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       mappingBuilderItemsSchema
     ),
   });
+
   const providersQuery = useProvidersQuery();
-  usePausedPollingEffect();
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
   const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
@@ -80,6 +94,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
+  const [createMapping, createMappingResult] = useCreateMappingMutation(mappingType, onClose);
+
   return (
     <Modal
       className="addEditMappingModal"
@@ -87,32 +103,40 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       title={title}
       isOpen
       onClose={onClose}
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          onClick={() => {
-            if (form.values.sourceProvider && form.values.targetProvider) {
-              const generatedMapping = getMappingFromBuilderItems({
-                mappingType,
-                mappingName: form.values.name,
-                sourceProvider: form.values.sourceProvider,
-                targetProvider: form.values.targetProvider,
-                builderItems: form.values.builderItems,
-              });
-              //TODO: Update when real api call & validation is implemented
-              updateMockStorage(generatedMapping);
-              onClose();
-            }
-          }}
-          isDisabled={!form.isValid}
-        >
-          Create
-        </Button>,
-        <Button key="cancel" variant="link" onClick={onClose}>
-          Cancel
-        </Button>,
-      ]}
+      footer={
+        <Stack hasGutter>
+          <MutationStatus result={createMappingResult} errorTitle="Error creating mapping" />
+          <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+            <Button
+              key="confirm"
+              variant="primary"
+              onClick={() => {
+                if (form.values.sourceProvider && form.values.targetProvider) {
+                  const generatedMapping = getMappingFromBuilderItems({
+                    mappingType,
+                    mappingName: form.values.name,
+                    sourceProvider: form.values.sourceProvider,
+                    targetProvider: form.values.targetProvider,
+                    builderItems: form.values.builderItems,
+                  });
+                  createMapping(generatedMapping);
+                }
+              }}
+              isDisabled={!form.isValid || createMappingResult.isLoading}
+            >
+              Create
+            </Button>
+            <Button
+              key="cancel"
+              variant="link"
+              onClick={onClose}
+              isDisabled={createMappingResult.isLoading}
+            >
+              Cancel
+            </Button>
+          </Flex>
+        </Stack>
+      }
     >
       <Form className="extraSelectMargin">
         {providersQuery.isLoading ? (

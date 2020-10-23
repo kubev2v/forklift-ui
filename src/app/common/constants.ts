@@ -2,6 +2,8 @@ import { IVirtMetaVars } from './types';
 
 export const APP_TITLE = 'Migration Toolkit for Virtualization';
 
+export const CLUSTER_API_VERSION = 'virt.konveyor.io/v1alpha1';
+
 export const CLOUD_MA_LINK = {
   href: 'https://cloud.redhat.com/migrations/migration-analytics',
   label: 'cloud.redhat.com',

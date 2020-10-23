@@ -7,8 +7,6 @@ import { IHost } from './types';
 import { useProvidersQuery } from '.';
 import { useAuthorizedFetch } from './fetchHelpers';
 
-export const HOSTS_QUERY_KEY = 'hosts';
-
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
   const { isPollingEnabled } = usePollingContext();
@@ -17,7 +15,7 @@ export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
 
   const result = useMockableQuery<IHost[]>(
     {
-      queryKey: providers && HOSTS_QUERY_KEY,
+      queryKey: 'hosts',
       queryFn: useAuthorizedFetch(
         getInventoryApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)
       ),

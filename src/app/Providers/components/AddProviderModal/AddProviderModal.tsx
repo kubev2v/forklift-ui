@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, Alert, Spinner } from '@patternfly/react-core';
-import { ConnectedIcon } from '@patternfly/react-icons';
+import { Modal, Button, Form, FormGroup, Flex, Stack } from '@patternfly/react-core';
 import {
   useFormState,
   useFormField,
@@ -13,6 +12,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useCreateProviderMutation } from '@app/queries';
+import MutationStatus from '@app/common/components/MutationStatus';
 
 import './AddProviderModal.css';
 
@@ -67,7 +67,6 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   const isFormValid = providerType ? forms[providerType].isValid : false;
 
   const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
-  // TODO render loading/error/result from returned createProviderResult
 
   return (
     <Modal
@@ -76,21 +75,31 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
       title="Add provider"
       isOpen
       onClose={onClose}
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          isDisabled={!isFormValid || createProviderResult.isLoading}
-          onClick={() => {
-            createProvider(formValues);
-          }}
-        >
-          Add
-        </Button>,
-        <Button key="cancel" variant="link" onClick={onClose}>
-          Cancel
-        </Button>,
-      ]}
+      footer={
+        <Stack hasGutter>
+          <MutationStatus result={createProviderResult} errorTitle="Error adding provider" />
+          <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+            <Button
+              key="confirm"
+              variant="primary"
+              isDisabled={!isFormValid || createProviderResult.isLoading}
+              onClick={() => {
+                createProvider(formValues);
+              }}
+            >
+              Add
+            </Button>
+            <Button
+              key="cancel"
+              variant="link"
+              onClick={onClose}
+              isDisabled={createProviderResult.isLoading}
+            >
+              Cancel
+            </Button>
+          </Flex>
+        </Stack>
+      }
     >
       <Form>
         <FormGroup
@@ -164,19 +173,15 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
             />
           </>
         ) : null}
-        {providerType ? (
+        {/* TODO re-enable this when we have the API capability
+        providerType ? (
           <div>
             <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
               Check connection
             </Button>
           </div>
-        ) : null}
-        {createProviderResult.isLoading ? <Spinner size="md" /> : null}
-        {createProviderResult.isError ? (
-          <Alert variant="danger" isInline title="Error creating provider">
-            {createProviderResult.error?.message}
-          </Alert>
-        ) : null}
+        ) : null
+        */}
       </Form>
     </Modal>
   );

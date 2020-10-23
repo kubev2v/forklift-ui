@@ -1,4 +1,5 @@
-import { VIRT_META } from '@app/common/constants';
+import { KubeClientError, IKubeList } from '@app/client/types';
+import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import {
   MutationConfig,
   UseQueryObjectConfig,
@@ -6,13 +7,14 @@ import {
   useQuery,
   QueryStatus,
   useMutation,
-  MutationResult,
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
+import { useHistory } from 'react-router-dom';
+import { useFetchContext } from './fetchHelpers';
+import { INameNamespaceRef } from './types';
 import { VMwareTree } from './types/tree.types';
 
-// TODO add useMockableMutation wrapper that just turns the mutation into a noop?
 // TODO what about usePaginatedQuery, useInfiniteQuery?
 
 const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => {
@@ -27,6 +29,17 @@ const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => 
   });
 };
 
+export const mockKubeList = <T>(items: T[], kind: string): IKubeList<T> => ({
+  apiVersion: CLUSTER_API_VERSION,
+  items,
+  kind,
+  metadata: {
+    continue: '',
+    resourceVersion: '',
+    selfLink: '/foo/list/selfLink',
+  },
+});
+
 export const useMockableQuery = <TResult = unknown, TError = unknown>(
   config: UseQueryObjectConfig<TResult, TError>,
   mockData: TResult
@@ -38,22 +51,33 @@ export const useMockableQuery = <TResult = unknown, TError = unknown>(
 
 export const useMockableMutation = <
   TResult = unknown,
-  TError = unknown,
+  TError = KubeClientError,
   TVariables = unknown,
   TSnapshot = unknown
 >(
   mutationFn: MutationFunction<TResult, TVariables>,
   config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined
-): MutationResultPair<TResult, TError, TVariables, TSnapshot> =>
-  useMutation<TResult, TError, TVariables, TSnapshot>(
+): MutationResultPair<TResult, TError, TVariables, TSnapshot> => {
+  const { checkExpiry } = useFetchContext();
+  const history = useHistory();
+  return useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
-      ? mutationFn
+      ? async (vars: TVariables) => {
+          try {
+            return await mutationFn(vars);
+          } catch (error) {
+            console.error(error.response);
+            checkExpiry(error, history);
+            throw error;
+          }
+        }
       : async () => {
           await mockPromise(undefined);
           throw new Error('This operation is not available in mock/preview mode');
         },
     config
   );
+};
 
 export const getInventoryApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;
@@ -93,18 +117,37 @@ export const sortIndexedData = <TItem, TIndexed>(
       )
     : undefined;
 
-export const sortByName = <T extends { name: string }>(data?: T[]): T[] | undefined =>
-  data?.sort((a: T, b: T) => (a.name < b.name ? -1 : 1));
+interface IHasName {
+  name?: string;
+  metadata?: { name: string };
+}
+
+export const sortByName = <T extends IHasName>(data?: T[]): T[] => {
+  const getName = (obj: T) => obj.name || obj.metadata?.name || '';
+  return (data || []).sort((a: T, b: T) => (getName(a) < getName(b) ? -1 : 1));
+};
 
 export const sortIndexedDataByName = <TItem extends { name: string }, TIndexed>(
   data: TIndexed | undefined
 ): TIndexed | undefined => sortIndexedData<TItem, TIndexed>(data, (item: TItem) => item.name);
 
-export const sortResultsByName = <T extends { name: string }>(
+export const sortResultsByName = <T extends IHasName>(
   result: QueryResult<T[]>
 ): QueryResult<T[]> => ({
   ...result,
   data: sortByName(result.data),
+});
+
+export const sortKubeResultsByName = <T>(
+  result: QueryResult<IKubeList<T>>
+): QueryResult<IKubeList<T>> => ({
+  ...result,
+  data: result.data
+    ? {
+        ...result.data,
+        items: sortByName(result.data.items || []),
+      }
+    : undefined,
 });
 
 export const sortIndexedResultsByName = <TItem extends { name: string }, TIndexed>(
@@ -134,3 +177,13 @@ export const sortTreeResultsByName = <T extends VMwareTree>(
   ...result,
   data: sortTreeItemsByName(result.data),
 });
+
+export const nameAndNamespace = (ref: INameNamespaceRef): INameNamespaceRef => {
+  const { name, namespace } = ref;
+  return { name, namespace };
+};
+
+export const isSameResource = (
+  refA: INameNamespaceRef | null | undefined,
+  refB: INameNamespaceRef | null | undefined
+): boolean => !!refA && !!refB && refA.name === refB.name && refA.namespace === refB.namespace;

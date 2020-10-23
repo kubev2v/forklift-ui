@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
-import { setTokenExpiryHandler } from '@konveyor/lib-ui/dist';
+import { AxiosError } from 'axios';
+import { History } from 'history';
 
 export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
   selfSignedCertUrl: string;
-  saveLoginToken: (user: string, history: any) => void;
+  saveLoginToken: (user: string, history: History) => void;
   currentUser: string;
-  checkExpiry: (user: string, history: any) => void;
+  checkExpiry: (error: Response | AxiosError<unknown>, history: History) => void;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
@@ -34,13 +35,14 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
   const [selfSignedCertUrl, setSelfSignedCertUrl] = React.useState('');
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
 
-  const saveLoginToken = (user, history) => {
+  const saveLoginToken = (user: string | null, history: History) => {
     setCurrentUser(JSON.stringify(user));
     history.push('/');
   };
 
-  const checkExpiry = (error, history) => {
-    if (error.response && error.response.status === 401) {
+  const checkExpiry = (error: Response | AxiosError<unknown>, history: History) => {
+    const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
+    if (status === 401) {
       setCurrentUser('');
       history.push('/');
     }

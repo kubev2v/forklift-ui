@@ -2,18 +2,14 @@ import React, { useEffect } from 'react';
 import { useLocation, Redirect, useHistory } from 'react-router-dom';
 import { useNetworkContext } from './context/NetworkContext';
 
-interface ILoginHandlerComponentProps {
-  test: any;
-}
-
-const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = () => {
+const LoginHandlerComponent: React.FunctionComponent = () => {
   const { saveLoginToken } = useNetworkContext();
   const history = useHistory();
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
-  let user;
-  let loginError;
+  let user: string | null;
+  let loginError: string | null;
   try {
     user = userStr && JSON.parse(userStr);
     loginError = errorStr && JSON.parse(errorStr);

@@ -28,6 +28,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     value: target,
     toString: () => target.name,
   }));
+
   const selectedOption = targetOptions.find(
     (option: OptionWithValue<MappingTarget>) =>
       option.value.selfLink === builderItems[itemIndex].target?.selfLink

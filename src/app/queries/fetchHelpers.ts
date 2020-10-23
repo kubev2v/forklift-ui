@@ -32,7 +32,7 @@ export const authorizedFetch = async <T>(
     if (response.ok && response.json) {
       return response.json();
     } else {
-      return Promise.reject(response);
+      throw response;
     }
   } catch (error) {
     // HACK: Doing our best to determine whether or not the
@@ -45,7 +45,7 @@ export const authorizedFetch = async <T>(
       history.push('/cert-error');
     }
     checkExpiry(error, history);
-    return Promise.reject(error);
+    throw error;
   }
 };
 

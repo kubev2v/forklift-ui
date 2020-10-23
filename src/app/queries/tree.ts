@@ -14,7 +14,7 @@ export const useVMwareTreeQuery = <T extends VMwareTree>(
   const apiSlug = treeType === VMwareTreeType.Host ? '/tree/host' : '/tree/vm';
   const result = useMockableQuery<T>(
     {
-      queryKey: `vmware-tree:${provider?.name}/${treeType}`,
+      queryKey: ['vmware-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
         enabled: !!provider,

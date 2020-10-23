@@ -27,14 +27,14 @@ import {
   IVMwareVM,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
-import { useMappingResourceQueries } from '@app/queries';
+import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
+import { filterSourcesBySelectedVMs } from './helpers';
+import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
-import { fetchMockStorage } from '@app/queries/mocks/helpers';
-import { filterSourcesBySelectedVMs } from './helpers';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -56,6 +56,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     targetProvider,
     mappingType
   );
+  const mappingsQuery = useMappingsQuery(mappingType);
 
   const requiredSources = filterSourcesBySelectedVMs(
     mappingResourceQueries.availableSources,
@@ -63,11 +64,12 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingType
   );
 
-  const mappingsQueryData = fetchMockStorage(mappingType) as Mapping[] | undefined; // TODO replace this with a real query
-  const filteredMappings = (mappingsQueryData || []).filter(
-    // TODO this probably needs to use type/id, whatever we end up having for real mapping provider references
-    ({ provider: { source, target } }) =>
-      source.selfLink === sourceProvider?.selfLink && target.selfLink === targetProvider?.selfLink
+  const filteredMappings = (mappingsQuery.data?.items || []).filter(
+    ({
+      spec: {
+        provider: { source, destination },
+      },
+    }) => isSameResource(source, sourceProvider) && isSameResource(destination, targetProvider)
   );
 
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
@@ -77,14 +79,19 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     value: 'new',
   };
   const mappingOptions = Object.values(filteredMappings).map((mapping) => ({
-    toString: () => mapping.name,
+    toString: () => mapping.metadata.name,
     value: mapping,
   })) as OptionWithValue<Mapping>[];
 
   const populateMappingBuilder = (mapping?: Mapping) => {
     let newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
-      : getBuilderItemsFromMapping(mapping, mappingResourceQueries.availableSources);
+      : getBuilderItemsFromMapping(
+          mapping,
+          mappingType,
+          mappingResourceQueries.availableSources,
+          mappingResourceQueries.availableTargets
+        );
     const missingSources = requiredSources.filter(
       (source) => !newBuilderItems.some((item) => item.source?.selfLink === source.selfLink)
     );
@@ -99,14 +106,17 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   };
 
   const hasAddedItems = form.values.selectedExistingMapping
-    ? form.values.selectedExistingMapping.items.length < form.values.builderItems.length
+    ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
     : false;
 
-  if (mappingResourceQueries.isLoading) {
+  if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
     return <LoadingEmptyState />;
   }
   if (mappingResourceQueries.isError) {
     return <Alert variant="danger" title="Error loading mapping resources" />;
+  }
+  if (mappingsQuery.isError) {
+    return <Alert variant="danger" title="Error loading mappings" />;
   }
 
   return (
@@ -145,8 +155,11 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                   ? [newMappingOption]
                   : form.values.selectedExistingMapping
                   ? [
-                      mappingOptions.find(
-                        (option) => option.value.name === form.values.selectedExistingMapping?.name
+                      mappingOptions.find((option) =>
+                        isSameResource(
+                          option.value.metadata,
+                          form.values.selectedExistingMapping?.metadata
+                        )
                       ),
                     ]
                   : []

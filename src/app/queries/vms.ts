@@ -10,7 +10,7 @@ import { IVMwareVM } from './types/vms.types';
 export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult<IVMwareVM[]> => {
   const result = useMockableQuery<IVMwareVM[]>(
     {
-      queryKey: `vms:${provider?.name}`,
+      queryKey: ['vms', provider?.name],
       queryFn: useAuthorizedFetch(
         getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=true`)
       ),
