@@ -45,8 +45,7 @@ export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeLis
       queryKey: ['mappings', mappingType],
       queryFn: async () => {
         const { resource } = getMappingResource(mappingType);
-        const result = await client.list(resource);
-        return result.data;
+        return (await client.list(resource)).data;
       },
       config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
     },
@@ -59,7 +58,7 @@ export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeLis
 
 export const useCreateMappingMutation = (
   mappingType: MappingType,
-  onSuccess: () => void
+  onSuccess?: () => void
 ): MutationResultPair<
   Mapping,
   KubeClientError,
@@ -77,7 +76,7 @@ export const useCreateMappingMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries(['mappings', mappingType]);
-        onSuccess();
+        onSuccess && onSuccess();
       },
     }
   );

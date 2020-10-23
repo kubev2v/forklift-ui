@@ -32,25 +32,3 @@ export const groupMappingItemsByTarget = (
     mappingItems.filter((item) => getMappingTargetName(item, mappingType) === targetName)
   );
 };
-
-export const findMappingProviders = (
-  mapping: Mapping | null,
-  providersQuery: QueryResult<IProvidersByType>
-): {
-  sourceProvider: IVMwareProvider | null;
-  targetProvider: IOpenShiftProvider | null;
-} => {
-  const sourceProvider =
-    (mapping &&
-      providersQuery.data?.vsphere.find((provider) =>
-        isSameResource(provider, mapping.spec.provider.source)
-      )) ||
-    null;
-  const targetProvider =
-    (mapping &&
-      providersQuery.data?.openshift.find((provider) =>
-        isSameResource(provider, mapping.spec.provider.destination)
-      )) ||
-    null;
-  return { sourceProvider, targetProvider };
-};

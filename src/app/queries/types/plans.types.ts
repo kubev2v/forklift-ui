@@ -1,6 +1,6 @@
 import { ICR, IStatusCondition } from '../types/common.types';
-import { Mapping } from '../types/mappings.types';
-import { IVMwareProvider, IOpenShiftProvider, IHost } from '../types/providers.types';
+import { INetworkMappingItem, IStorageMappingItem } from '../types/mappings.types';
+import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {
   total: number;
@@ -10,7 +10,15 @@ export interface IProgress {
 export interface IStep {
   name: string;
   progress: IProgress;
-  phase: string;
+  phase?: string;
+  annotations?: {
+    unit: string;
+    [key: string]: string;
+  };
+  started?: string;
+  completed?: string;
+  error?: IError;
+  tasks?: IStep[];
 }
 
 export interface IError {
@@ -20,57 +28,43 @@ export interface IError {
 
 export interface IVMStatus {
   id: string;
-  pipeline: IStep[];
-  step: number;
-  started: string;
-  completed: string;
-  error: IError;
+  pipeline: {
+    tasks: IStep[];
+  };
+  phase: string;
+  error?: IError;
+  started?: string;
+  completed?: string;
 }
 
 export interface IPlanVM {
   id: string;
-  host: IHost;
+  // hook?: ??? // TODO add this when we add hooks
 }
 
 export interface IPlanStatus {
+  migration?: {
+    active: string;
+    completed?: string;
+    started?: string;
+    vms?: IVMStatus[];
+  };
   conditions: IStatusCondition[];
   observedGeneration: number;
 }
 
 export interface IPlan extends ICR {
+  apiVersion: string;
+  kind: 'Plan';
   spec: {
     description: string;
-    provider: {
-      sourceProvider: IVMwareProvider;
-      destinationProvider: IOpenShiftProvider;
-    };
+    provider: ISrcDestRefs;
+    targetNamespace: string;
     map: {
-      networks: Mapping[];
-      datastores: Mapping[];
+      networks: INetworkMappingItem[];
+      datastores: IStorageMappingItem[];
     };
-    warm: boolean;
     vms: IPlanVM[];
   };
-  status: IPlanStatus;
-}
-
-// TODO: This is speculative
-export interface IMigration {
-  plan: IPlan;
-  id: string;
-  schedule: {
-    begin: string;
-    end: string;
-  };
-  status: {
-    ready: boolean;
-    storageReady: boolean;
-    nbVMsDone: number;
-  };
-  status2: IVMStatus;
-  other: {
-    copied: number;
-    total: number;
-    status: string;
-  };
+  status?: IPlanStatus;
 }

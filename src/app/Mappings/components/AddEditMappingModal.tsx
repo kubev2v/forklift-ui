@@ -105,7 +105,10 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus result={createMappingResult} errorTitle="Error creating mapping" />
+          <MutationStatus
+            results={[createMappingResult]}
+            errorTitles={['Error creating mapping']}
+          />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="confirm"

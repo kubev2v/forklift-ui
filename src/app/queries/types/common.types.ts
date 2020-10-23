@@ -8,11 +8,11 @@ export interface IMetaTypeMeta {
 export interface IMetaObjectMeta {
   name: string;
   namespace: string;
-  selfLink: string;
-  uid: string;
-  resourceVersion: string;
-  generation: number;
-  creationTimestamp: string; // ISO timestamp
+  selfLink?: string;
+  uid?: string;
+  resourceVersion?: string;
+  generation?: number;
+  creationTimestamp?: string; // ISO timestamp
   annotations?: {
     'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
   };

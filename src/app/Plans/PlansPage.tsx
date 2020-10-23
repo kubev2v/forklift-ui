@@ -15,21 +15,13 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
-
-// TODO replace these with real data from react-query
-import { MOCK_PLANS, MOCK_MIGRATIONS } from '@app/queries/mocks/plans.mock';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
-
-// TODO replace these with real state from react-query results
-const isFetchingInitialPlans = false; // Fetching for the first time, not polling
-const isErrorFetchingPlans = false;
-
-const plans = MOCK_PLANS;
-const migrations = MOCK_MIGRATIONS;
+import { usePlansQuery } from '@app/queries/plans';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const plansQuery = usePlansQuery();
 
   return (
     <>
@@ -37,16 +29,16 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
-        {sufficientProvidersQuery.isLoading || isFetchingInitialPlans ? (
+        {sufficientProvidersQuery.isLoading || plansQuery.isLoading ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
           <Alert variant="danger" isInline title="Error loading providers" />
-        ) : isErrorFetchingPlans ? (
+        ) : plansQuery.isError ? (
           <Alert variant="danger" isInline title="Error loading plans" />
         ) : (
           <Card>
             <CardBody>
-              {!plans ? null : plans.length === 0 ? (
+              {!plansQuery.data ? null : plansQuery.data.items.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title size="lg" headingLevel="h2">
@@ -58,7 +50,7 @@ const PlansPage: React.FunctionComponent = () => {
                   <CreatePlanButton />
                 </EmptyState>
               ) : (
-                <PlansTable plans={plans} migrations={migrations} />
+                <PlansTable plans={plansQuery.data?.items || []} />
               )}
             </CardBody>
           </Card>

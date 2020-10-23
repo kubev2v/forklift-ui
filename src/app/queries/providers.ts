@@ -7,9 +7,19 @@ import {
   getInventoryApiUrl,
   sortIndexedResultsByName,
   useMockableMutation,
+  isSameResource,
 } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
-import { IProvidersByType, Provider, INewProvider, INewSecret } from './types';
+import {
+  IProvidersByType,
+  Provider,
+  INewProvider,
+  INewSecret,
+  INameNamespaceRef,
+  IVMwareProvider,
+  IOpenShiftProvider,
+  ISrcDestRefs,
+} from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
 import {
   VirtResourceKind,
@@ -23,6 +33,7 @@ import {
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
 import { KubeClientError } from '@app/client/types';
+import { ResourcesFullIcon } from '@patternfly/react-icons';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -148,4 +159,24 @@ export const useHasSufficientProvidersQuery = (): {
     isError: result.isError,
     hasSufficientProviders,
   };
+};
+
+export const findProvidersByRefs = (
+  refs: ISrcDestRefs | null,
+  providersQuery: QueryResult<IProvidersByType>
+): {
+  sourceProvider: IVMwareProvider | null;
+  targetProvider: IOpenShiftProvider | null;
+} => {
+  const sourceProvider =
+    (refs &&
+      providersQuery.data?.vsphere.find((provider) => isSameResource(provider, refs.source))) ||
+    null;
+  const targetProvider =
+    (refs &&
+      providersQuery.data?.openshift.find((provider) =>
+        isSameResource(provider, refs.destination)
+      )) ||
+    null;
+  return { sourceProvider, targetProvider };
 };

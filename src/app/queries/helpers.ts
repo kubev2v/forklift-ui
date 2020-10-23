@@ -9,6 +9,7 @@ import {
   useMutation,
   MutationResultPair,
   MutationFunction,
+  MutationResult,
 } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
@@ -82,7 +83,9 @@ export const useMockableMutation = <
 export const getInventoryApiUrl = (relativePath: string): string =>
   `${VIRT_META.inventoryApi}${relativePath}`;
 
-export const getAggregateQueryStatus = (queryResults: QueryResult<unknown>[]): QueryStatus => {
+export const getAggregateQueryStatus = (
+  queryResults: (QueryResult<unknown> | MutationResult<unknown>)[]
+): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return QueryStatus.Error;
   if (queryResults.some((result) => result.isLoading)) return QueryStatus.Loading;
   if (queryResults.every((result) => result.isIdle)) return QueryStatus.Idle;
@@ -178,9 +181,12 @@ export const sortTreeResultsByName = <T extends VMwareTree>(
   data: sortTreeItemsByName(result.data),
 });
 
-export const nameAndNamespace = (ref: INameNamespaceRef): INameNamespaceRef => {
-  const { name, namespace } = ref;
-  return { name, namespace };
+export const nameAndNamespace = (ref: INameNamespaceRef | null | undefined): INameNamespaceRef => {
+  if (ref) {
+    const { name, namespace } = ref;
+    return { name, namespace };
+  }
+  return { name: '', namespace: '' };
 };
 
 export const isSameResource = (

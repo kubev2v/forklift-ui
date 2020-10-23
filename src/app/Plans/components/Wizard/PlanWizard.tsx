@@ -33,7 +33,11 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings } from './helpers';
+import { generateMappings, generatePlan } from './helpers';
+import { useCreatePlanMutation } from '@app/queries/plans';
+import { useCreateMappingMutation } from '@app/queries';
+import { getAggregateQueryStatus } from '@app/queries/helpers';
+import { QueryStatus } from 'react-query';
 
 const useMappingFormState = () => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -130,7 +134,41 @@ const PlanWizard: React.FunctionComponent = () => {
 
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const { networkMapping, storageMapping } = generateMappings(forms);
+  const onClose = () => history.push('/plans');
+
+  const [createPlan, createPlanResult] = useCreatePlanMutation();
+  const [createNetworkMapping, createNetworkMappingResult] = useCreateMappingMutation(
+    MappingType.Network
+  );
+  const [createStorageMapping, createStorageMappingResult] = useCreateMappingMutation(
+    MappingType.Storage
+  );
+
+  const onSave = () => {
+    const { networkMapping, storageMapping } = generateMappings(forms);
+    createPlan(generatePlan(forms, networkMapping, storageMapping));
+    if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
+      createNetworkMapping(networkMapping);
+    }
+    if (storageMapping && forms.storageMapping.values.isSaveNewMapping) {
+      createStorageMapping(storageMapping);
+    }
+  };
+
+  const mutationStatus = getAggregateQueryStatus([
+    createPlanResult,
+    createNetworkMappingResult,
+    createStorageMappingResult,
+  ]);
+  const mutationsSucceeded =
+    createPlanResult.isSuccess &&
+    (!forms.networkMapping.values.isSaveNewMapping || createNetworkMappingResult.isSuccess) &&
+    (!forms.storageMapping.values.isSaveNewMapping || createStorageMappingResult.isSuccess);
+
+  React.useEffect(() => {
+    if (mutationsSucceeded) onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mutationsSucceeded]);
 
   const steps = [
     {
@@ -218,9 +256,15 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Review',
       component: (
         <WizardStepContainer title="Review the migration plan">
-          <Review forms={forms} networkMapping={networkMapping} storageMapping={storageMapping} />
+          <Review
+            forms={forms}
+            createPlanResult={createPlanResult}
+            createNetworkMappingResult={createNetworkMappingResult}
+            createStorageMappingResult={createStorageMappingResult}
+          />
         </WizardStepContainer>
       ),
+      enableNext: mutationStatus === QueryStatus.Idle,
       nextButtonText: 'Finish',
       canJumpTo: stepIdReached >= StepId.Review,
     },
@@ -233,7 +277,7 @@ const PlanWizard: React.FunctionComponent = () => {
   return (
     <>
       <Prompt
-        when={isSomeFormDirty} // TODO onSave will have to set something to unblock this when the wizard closes after saving
+        when={isSomeFormDirty && mutationStatus === QueryStatus.Idle}
         message="You have unsaved changes, are you sure you want to leave this page?"
       />
       <PageSection title="Create a Migration Plan" variant="light">
@@ -254,8 +298,8 @@ const PlanWizard: React.FunctionComponent = () => {
           className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
           steps={steps}
           onSubmit={(event) => event.preventDefault()}
-          onSave={() => alert('TODO: create plan CR')}
-          onClose={() => history.push('/plans')}
+          onSave={onSave}
+          onClose={onClose}
         />
       </PageSection>
     </>

@@ -1,5 +1,5 @@
 import { ProviderType } from '@app/common/constants';
-import { ICR, IStatusCondition } from '@app/queries/types';
+import { ICR, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
 
 interface ICommonProviderObject extends ICR {
   spec: {
@@ -97,4 +97,9 @@ export interface IHost {
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];
+}
+
+export interface ISrcDestRefs {
+  source: INameNamespaceRef;
+  destination: INameNamespaceRef;
 }

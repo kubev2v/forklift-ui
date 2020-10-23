@@ -2,7 +2,7 @@
 const path = require('path');
 const express = require('express');
 const fs = require('fs');
-const moment = require('moment');
+const dayjs = require('dayjs');
 
 const helpers = require('../config/helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
@@ -52,7 +52,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     try {
       const clusterAuth = await getClusterAuth(virtMeta);
       const accessToken = await clusterAuth.getToken(options);
-      const currentUnixTime = moment().unix();
+      const currentUnixTime = dayjs().unix();
       const user = {
         ...accessToken.token,
         login_time: currentUnixTime,

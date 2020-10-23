@@ -4,13 +4,14 @@ import { Table, TableHeader, TableBody, ICell, IRow, cellWidth } from '@patternf
 
 import Step from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
+import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
 
 interface IVMStatusTableProps {
-  vmstatus: IVMStatus;
+  status: IVMStatus;
 }
 
 const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
-  vmstatus,
+  status,
 }: IVMStatusTableProps) => {
   const columns: ICell[] = [
     {
@@ -21,40 +22,38 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
     { title: 'State' },
   ];
 
-  const rows: IRow[] = vmstatus.pipeline.map((step: IStep, index) => {
-    return {
-      meta: { step },
-      cells: [
-        {
-          title: (
-            <Flex
-              spaceItems={{ default: 'spaceItemsSm' }}
-              alignContent={{ default: 'alignContentFlexStart' }}
-              flexWrap={{ default: 'nowrap' }}
-            >
-              <FlexItem>
-                <Step status={vmstatus} step={step} index={index} />
-              </FlexItem>
-              <FlexItem>
-                <Text>{step.name}</Text>
-              </FlexItem>
-            </Flex>
-          ),
-        },
-        // TODO Replace with data from API structure
-        // step.progress...,
-        'hh:mm:ss',
-        step.phase,
-      ],
-    };
-  });
+  const rows: IRow[] = status.pipeline.tasks.map((step: IStep, index) => ({
+    meta: { step },
+    cells: [
+      {
+        title: (
+          <Flex
+            spaceItems={{ default: 'spaceItemsSm' }}
+            alignContent={{ default: 'alignContentFlexStart' }}
+            flexWrap={{ default: 'nowrap' }}
+          >
+            <FlexItem>
+              <Step status={status} index={index} />
+            </FlexItem>
+            <FlexItem>
+              <Text>{step.name}</Text>
+            </FlexItem>
+          </Flex>
+        ),
+      },
+      {
+        title: <TickingElapsedTime start={status.started} end={status.completed} />,
+      },
+      step.phase,
+    ],
+  }));
 
   return (
     <>
       <Table
-        className="migration-inner-vmstatus-table"
+        className="migration-inner-vmStatus-table"
         variant="compact"
-        aria-label={`VM status table for migration plan`}
+        aria-label="VM status table for migration plan"
         cells={columns}
         rows={rows}
       >

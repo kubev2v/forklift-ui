@@ -1,451 +1,376 @@
-import { IPlan, IMigration, IPlanVM, IVMStatus } from '../types';
+import { IPlan, IPlanVM, IVMStatus } from '../types';
 import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { CLUSTER_API_VERSION } from '@app/common/constants';
+import { nameAndNamespace } from '../helpers';
+import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
+import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
 
-// TODO put this condition back when we don't directly import mocks into components anymore
-// if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
-const vm1: IPlanVM = {
-  id: 'vm1-id',
-  host: {
-    name: 'string',
-    network: {
-      name: 'string',
-      address: 'string',
-      isDefault: true,
-    },
-    bandwidth: 'string',
-    mtu: 1400,
-  },
-};
+export let MOCK_PLANS: IPlan[];
 
-const vm2: IPlanVM = {
-  id: 'vm2-id',
-  host: {
-    name: 'string',
-    network: {
-      name: 'string',
-      address: 'string',
-      isDefault: true,
-    },
-    bandwidth: 'string',
-    mtu: 1400,
-  },
-};
+if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
+  const vm1: IPlanVM = {
+    id: 'vm1-id',
+  };
 
-const plan1: IPlan = {
-  apiVersion: CLUSTER_API_VERSION,
-  kind: 'Plan',
-  metadata: {
-    name: 'plantest-1',
-    namespace: 'openshift-migration',
-    generation: 2,
-    resourceVersion: '30825024',
-    selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-1',
-    uid: '28fde094-b667-4d21-8f29-27c18f22178c',
-    creationTimestamp: '2020-08-27T19:40:49Z',
-  },
-  spec: {
-    description: 'my first plan',
-    provider: {
-      sourceProvider: MOCK_PROVIDERS.vsphere[0],
-      destinationProvider: MOCK_PROVIDERS.openshift[0],
-    },
-    map: {
-      networks: [],
-      datastores: [],
-    },
-    warm: false,
-    vms: [vm1, vm2],
-  },
-  status: {
-    conditions: [
-      {
-        category: 'Critical',
-        lastTransitionTime: '2020-09-18T16:04:10Z',
-        message: 'The destination provider is not valid.',
-        reason: 'TypeNotValid',
-        status: true,
-        type: 'DestinationProviderNotValid',
-      },
-      {
-        category: 'Critical',
-        lastTransitionTime: '2020-09-18T16:04:10Z',
-        message: 'Source network not valid.',
-        reason: 'NotFound',
-        status: true,
-        type: 'SourceNetworkNotValid',
-      },
-      {
-        category: 'Info',
-        lastTransitionTime: '2020-09-18T16:04:10Z',
-        message: 'In progress',
-        reason: 'Valid',
-        status: true,
-        type: 'Execute',
-      },
-    ],
-    observedGeneration: 2,
-  },
-};
+  const vm2: IPlanVM = {
+    id: 'vm2-id',
+  };
 
-const plan2: IPlan = {
-  apiVersion: CLUSTER_API_VERSION,
-  kind: 'Plan',
-  metadata: {
-    name: 'plantest-2',
-    namespace: 'openshift-migration',
-    generation: 2,
-    resourceVersion: '30825024',
-    selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
-    uid: '28fde094-b667-4d21-8f29-27c18f22178c',
-    creationTimestamp: '2020-08-27T19:40:49Z',
-  },
-  spec: {
-    description: 'my 2nd plan',
-    provider: {
-      sourceProvider: MOCK_PROVIDERS.vsphere[0],
-      destinationProvider: MOCK_PROVIDERS.openshift[0],
-    },
-    map: {
-      networks: [],
-      datastores: [],
-    },
-    warm: false,
-    vms: [vm1],
-  },
-  status: {
-    conditions: [
-      {
-        category: 'Info',
-        lastTransitionTime: '2020-09-18T16:04:10Z',
-        message: 'Ready for migration',
-        reason: 'Valid',
-        status: true,
-        type: 'Ready',
-      },
-    ],
-    observedGeneration: 2,
-  },
-};
+  const vm3: IPlanVM = {
+    id: 'vm3-id',
+  };
 
-const plan3: IPlan = {
-  apiVersion: CLUSTER_API_VERSION,
-  kind: 'Plan',
-  metadata: {
-    name: 'plantest-3',
-    namespace: 'openshift-migration',
-    generation: 2,
-    resourceVersion: '30825023',
-    selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-3',
-    uid: '28fde094-b667-4d21-8f29-27c18f22178c',
-    creationTimestamp: '2020-08-27T19:40:49Z',
-  },
-  spec: {
-    description: 'my 3nd plan',
-    provider: {
-      sourceProvider: MOCK_PROVIDERS.vsphere[0],
-      destinationProvider: MOCK_PROVIDERS.openshift[0],
-    },
-    map: {
-      networks: [],
-      datastores: [],
-    },
-    warm: false,
-    vms: [vm1, vm2, vm1, vm2],
-  },
-  status: {
-    conditions: [
-      {
-        category: 'Info',
-        lastTransitionTime: '2020-09-10T16:04:10Z',
-        message: 'Ready for migration',
-        reason: 'Valid',
-        status: true,
-        type: 'Error',
-      },
-    ],
-    observedGeneration: 2,
-  },
-};
+  const vm4: IPlanVM = {
+    id: 'vm4-id',
+  };
 
-const plan4: IPlan = {
-  apiVersion: CLUSTER_API_VERSION,
-  kind: 'Plan',
-  metadata: {
-    name: 'plantest-4',
-    namespace: 'openshift-migration',
-    generation: 2,
-    resourceVersion: '30825024',
-    selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-4',
-    uid: '28fde094-b667-4d21-8f29-27c18f22178c',
-    creationTimestamp: '2020-08-27T19:40:49Z',
-  },
-  spec: {
-    description: 'my 4th plan',
-    provider: {
-      sourceProvider: MOCK_PROVIDERS.vsphere[0],
-      destinationProvider: MOCK_PROVIDERS.openshift[0],
+  const vmStatus1: IVMStatus = {
+    id: 'vm1-id',
+    pipeline: {
+      tasks: [
+        {
+          name: 'PreHook',
+          progress: { total: 2, completed: 2 },
+          phase: 'Mock Step Phase',
+          started: '2020-10-10T14:04:10Z',
+          completed: '2020-10-10T14:21:10Z',
+        },
+        {
+          name: 'DiskTransfer',
+          progress: { total: 1024 * 64, completed: 1024 * 30 },
+          phase: 'Mock Step Phase',
+          annotations: { unit: 'MB' },
+          started: '2020-10-10T14:21:10Z',
+        },
+        {
+          name: 'Import',
+          progress: { total: 2, completed: 0 },
+          phase: 'Mock Step Phase',
+        },
+        {
+          name: 'PostHook',
+          progress: { total: 2, completed: 0 },
+          phase: 'Mock Step Phase',
+        },
+      ],
     },
-    map: {
-      networks: [],
-      datastores: [],
-    },
-    warm: false,
-    vms: [vm1, vm2],
-  },
-  status: {
-    conditions: [
-      {
-        category: 'Info',
-        lastTransitionTime: '2020-09-10T16:04:10Z',
-        message: 'Ready for migration',
-        reason: 'Valid',
-        status: true,
-        type: 'Finished',
-      },
-    ],
-    observedGeneration: 2,
-  },
-};
-
-export const MOCK_PLANS: IPlan[] = [plan1, plan2, plan3, plan4];
-
-export const vmStatus1: IVMStatus = {
-  id: 'vm1-id',
-  pipeline: [
-    {
-      name: 'PreHook',
-      progress: {
-        total: 2,
-        completed: 2,
-      },
+    phase: 'Mock VM Phase',
+    started: '2020-10-10T14:04:10Z',
+    error: {
       phase: '',
+      reasons: [''],
     },
-    {
-      name: 'DiskTransfer',
-      progress: {
-        total: 2,
-        completed: 1,
-      },
-      phase: '',
-    },
-    {
-      name: 'Import',
-      progress: {
-        total: 2,
-        completed: 0,
-      },
-      phase: '',
-    },
-    {
-      name: 'PostHook',
-      progress: {
-        total: 2,
-        completed: 0,
-      },
-      phase: '',
-    },
-  ],
-  step: 2,
-  started: '2020-10-10T16:04:10Z',
-  completed: '',
-  error: {
-    phase: '',
-    reasons: [''],
-  },
-};
+  };
 
-export const vmStatus2: IVMStatus = {
-  id: 'vm2-id',
-  pipeline: [
-    {
-      name: 'PreHook',
-      progress: {
-        total: 1,
-        completed: 1,
-      },
-      phase: '',
+  const vmStatus2: IVMStatus = {
+    id: 'vm2-id',
+    pipeline: {
+      tasks: [
+        {
+          name: 'PreHook',
+          progress: { total: 1, completed: 1 },
+          phase: 'Mock Step Phase',
+          started: '2020-10-10T14:04:10Z',
+          completed: '2020-10-10T14:21:10Z',
+        },
+        {
+          name: 'DiskTransfer',
+          progress: { total: 1024 * 64, completed: 1024 * 64 },
+          phase: 'Mock Step Phase',
+          annotations: { unit: 'MB' },
+          started: '2020-10-10T14:21:10Z',
+          completed: '2020-10-10T15:57:10Z',
+        },
+        {
+          name: 'Import',
+          progress: { total: 1, completed: 0 },
+          phase: 'Mock Step Phase',
+          started: '2020-10-10T15:57:10Z',
+        },
+        {
+          name: 'PostHook',
+          progress: { total: 1, completed: 0 },
+          phase: 'Mock Step Phase',
+        },
+      ],
     },
-    {
-      name: 'DiskTransfer',
-      progress: {
-        total: 1,
-        completed: 1,
-      },
+    phase: 'Mock VM Phase',
+    started: '2020-10-10T14:04:10Z',
+    error: {
       phase: '',
+      reasons: [''],
     },
-    {
-      name: 'Import',
-      progress: {
-        total: 1,
-        completed: 0,
-      },
-      phase: '',
-    },
-    {
-      name: 'PostHook',
-      progress: {
-        total: 1,
-        completed: 0,
-      },
-      phase: '',
-    },
-  ],
-  step: 4,
-  started: '2020-10-10T16:04:10Z',
-  completed: '2020-10-10T16:04:10Z',
-  error: {
-    phase: '',
-    reasons: [''],
-  },
-};
+  };
 
-export const vmStatus3: IVMStatus = {
-  id: 'vm3-id',
-  pipeline: [
-    {
-      name: 'PreHook',
-      progress: {
-        total: 2,
-        completed: 2,
-      },
-      phase: 'Latest message from controller',
+  const vmStatus3: IVMStatus = {
+    id: 'vm3-id',
+    pipeline: {
+      tasks: [
+        {
+          name: 'PreHook',
+          progress: { total: 2, completed: 2 },
+          phase: 'Latest message from controller',
+          started: '2020-10-10T14:04:10Z',
+          completed: '2020-10-10T14:21:10Z',
+        },
+        {
+          name: 'DiskTransfer',
+          progress: { total: 1024 * 64, completed: 1024 * 64 },
+          phase: 'Mock Step Phase',
+          annotations: { unit: 'MB' },
+          started: '2020-10-10T14:21:10Z',
+          completed: '2020-10-10T15:57:10Z',
+        },
+        {
+          name: 'Import',
+          progress: { total: 3, completed: 3 },
+          phase: 'Mock Step Phase',
+          started: '2020-10-10T15:57:10Z',
+          completed: '2020-10-10T15:58:43Z',
+        },
+      ],
     },
-    {
-      name: 'Data transfer',
-      progress: {
-        total: 2,
-        completed: 2,
-      },
+    phase: 'Mock VM Phase',
+    started: '2020-10-10T14:04:10Z',
+    completed: '2020-10-10T15:58:43Z',
+    error: {
       phase: '',
+      reasons: [''],
     },
-    {
-      name: 'Import',
-      progress: {
-        total: 3,
-        completed: 3,
+  };
+
+  const vmStatus4: IVMStatus = {
+    id: 'vm4-id',
+    pipeline: {
+      tasks: [
+        {
+          name: 'PreHook',
+          progress: { total: 2, completed: 2 },
+          phase: 'Latest message from controller',
+          started: '2020-10-10T14:04:10Z',
+          completed: '2020-10-10T14:21:10Z',
+        },
+        {
+          name: 'DiskTransfer',
+          progress: { total: 1024 * 64, completed: 1024 * 64 },
+          phase: 'Mock Step Phase',
+          annotations: { unit: 'MB' },
+          started: '2020-10-10T14:21:10Z',
+          completed: '2020-10-10T15:57:10Z',
+        },
+        {
+          name: 'Import',
+          progress: { total: 3, completed: 1 },
+          phase: 'Mock Step Phase',
+          started: '2020-10-10T15:57:10Z',
+        },
+        {
+          name: 'PostHook',
+          progress: { total: 1, completed: 0 },
+          phase: 'Mock Step Phase',
+        },
+      ],
+    },
+    phase: 'Mock VM Phase',
+    started: '2020-10-10T14:04:10Z',
+    completed: '',
+    error: {
+      phase: 'Error',
+      reasons: [''],
+    },
+  };
+
+  const plan1: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-1',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825024',
+      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-1',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: 'my first plan',
+      provider: {
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
-      phase: '',
-    },
-  ],
-  step: 0,
-  started: '',
-  completed: '',
-  error: {
-    phase: '',
-    reasons: [''],
-  },
-};
-
-export const vmStatus4: IVMStatus = {
-  id: 'vm4-id',
-  pipeline: [
-    {
-      name: 'PreHook',
-      progress: {
-        total: 2,
-        completed: 2,
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
+        datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
       },
-      phase: 'Latest message from controller',
+      vms: [vm1, vm2],
     },
-    {
-      name: 'DiskTransfer',
-      progress: {
-        total: 2,
-        completed: 2,
+    status: {
+      conditions: [
+        {
+          category: 'Critical',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'The destination provider is not valid.',
+          reason: 'TypeNotValid',
+          status: true,
+          type: 'DestinationProviderNotValid',
+        },
+        {
+          category: 'Critical',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Source network not valid.',
+          reason: 'NotFound',
+          status: true,
+          type: 'SourceNetworkNotValid',
+        },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'In progress',
+          reason: 'Valid',
+          status: true,
+          type: 'Execute',
+        },
+      ],
+      observedGeneration: 2,
+    },
+  };
+
+  const plan2: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-2',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825024',
+      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: 'my 2nd plan',
+      provider: {
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
-      phase: '',
-    },
-    {
-      name: 'Import',
-      progress: {
-        total: 3,
-        completed: 1,
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
+        datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
       },
-      phase: '',
+      vms: [vm1],
     },
-    {
-      name: 'PostHook',
-      progress: {
-        total: 1,
-        completed: 0,
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: true,
+          type: 'Ready',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        vms: [vmStatus1],
       },
-      phase: '',
     },
-  ],
-  step: 3,
-  started: '2020-10-10T16:04:10Z',
-  completed: '',
-  error: {
-    phase: 'Error',
-    reasons: [''],
-  },
-};
+  };
 
-export const MOCK_VMSSTATUS: IVMStatus[] = [vmStatus1, vmStatus2, vmStatus3];
+  const plan3: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-3',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825023',
+      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-3',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: 'my 3nd plan',
+      provider: {
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
+      },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
+        datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
+      },
+      vms: [vm1, vm2, vm3, vm4],
+    },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-10T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: true,
+          type: 'Error',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        vms: [vmStatus1, vmStatus2, vmStatus3, vmStatus4],
+      },
+    },
+  };
 
-export const migration1: IMigration = {
-  id: 'VM1',
-  plan: plan1,
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 12:33:44',
-  },
-  status: { ready: true, storageReady: true, nbVMsDone: 1 },
-  status2: vmStatus1,
-  other: {
-    copied: 93184,
-    total: 125952,
-    status: 'Ready',
-  },
-};
+  const plan4: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-4',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825024',
+      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-4',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: 'my 4th plan',
+      provider: {
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
+      },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
+        datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
+      },
+      vms: [vm3],
+    },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-10T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: true,
+          type: 'Finished',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T15:58:43Z',
+        vms: [vmStatus3],
+      },
+    },
+  };
 
-export const migration2: IMigration = {
-  id: 'VM2',
-  plan: plan2,
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 12:33:44',
-  },
-  status: { ready: false, storageReady: true, nbVMsDone: 1 },
-  status2: vmStatus2,
-  other: {
-    copied: 87952,
-    total: 87952,
-    status: 'Running',
-  },
-};
-
-export const migration3: IMigration = {
-  id: 'VM3',
-  plan: plan3,
-  schedule: {
-    begin: '09 Aug 2019, 08:19:11',
-    end: '09 Aug 2019, 09:43:12',
-  },
-  status: { ready: false, storageReady: true, nbVMsDone: 1 },
-  status2: vmStatus3,
-  other: {
-    copied: 87952,
-    total: 87952,
-    status: 'Complete',
-  },
-};
-
-export const migration4: IMigration = {
-  id: 'VM4',
-  plan: plan4,
-  schedule: {
-    begin: '09 Aug 2019, 11:34:56',
-    end: '10 Aug 2019, 11:34:56',
-  },
-  status: { ready: false, storageReady: false, nbVMsDone: 2 },
-  status2: vmStatus4,
-  other: {
-    copied: 87952,
-    total: 87952,
-    status: 'Failed',
-  },
-};
-
-export const MOCK_MIGRATIONS: IMigration[] = [migration1, migration2, migration3, migration4];
+  MOCK_PLANS = [plan1, plan2, plan3, plan4];
+}
