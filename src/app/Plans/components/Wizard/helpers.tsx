@@ -2,6 +2,9 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
+  INetworkMapping,
+  IPlan,
+  IStorageMapping,
   IVMwareHostTree,
   IVMwareVM,
   IVMwareVMConcern,
@@ -14,6 +17,8 @@ import {
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 import { getMappingFromBuilderItems } from '@app/Mappings/components/MappingBuilder/helpers';
 import { PlanWizardFormState } from './PlanWizard';
+import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { nameAndNamespace } from '@app/queries/helpers';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -222,27 +227,52 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
 
 export const generateMappings = (
   forms: PlanWizardFormState
-): { networkMapping: Mapping | null; storageMapping: Mapping | null } => {
+): { networkMapping: INetworkMapping | null; storageMapping: IStorageMapping | null } => {
   const { sourceProvider, targetProvider } = forms.general.values;
   const networkMapping =
     sourceProvider && targetProvider
-      ? getMappingFromBuilderItems({
+      ? (getMappingFromBuilderItems({
           mappingType: MappingType.Network,
           mappingName: forms.networkMapping.values.newMappingName || '',
           sourceProvider,
           targetProvider,
           builderItems: forms.networkMapping.values.builderItems,
-        })
+        }) as INetworkMapping)
       : null;
   const storageMapping =
     sourceProvider && targetProvider
-      ? getMappingFromBuilderItems({
+      ? (getMappingFromBuilderItems({
           mappingType: MappingType.Storage,
           mappingName: forms.storageMapping.values.newMappingName || '',
           sourceProvider,
           targetProvider,
           builderItems: forms.storageMapping.values.builderItems,
-        })
+        }) as IStorageMapping)
       : null;
   return { networkMapping, storageMapping };
+};
+
+export const generatePlan = (forms: PlanWizardFormState): IPlan => {
+  const { networkMapping, storageMapping } = generateMappings(forms);
+  return {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: forms.general.values.planName,
+      namespace: VIRT_META.namespace,
+    },
+    spec: {
+      description: forms.general.values.planDescription,
+      provider: {
+        source: nameAndNamespace(forms.general.values.sourceProvider),
+        destination: nameAndNamespace(forms.general.values.targetProvider),
+      },
+      targetNamespace: forms.general.values.targetNamespace,
+      map: {
+        networks: networkMapping?.spec.map || [],
+        datastores: storageMapping?.spec.map || [],
+      },
+      vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+    },
+  };
 };

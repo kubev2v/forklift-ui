@@ -33,7 +33,8 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings } from './helpers';
+import { generateMappings, generatePlan } from './helpers';
+import { useCreatePlanMutation } from '@app/queries/plans';
 
 const useMappingFormState = () => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -130,7 +131,9 @@ const PlanWizard: React.FunctionComponent = () => {
 
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const { networkMapping, storageMapping } = generateMappings(forms);
+  const onClose = () => history.push('/plans');
+
+  const [createPlan, createPlanResult] = useCreatePlanMutation(onClose);
 
   const steps = [
     {
@@ -218,9 +221,10 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Review',
       component: (
         <WizardStepContainer title="Review the migration plan">
-          <Review forms={forms} networkMapping={networkMapping} storageMapping={storageMapping} />
+          <Review forms={forms} createPlanResult={createPlanResult} />
         </WizardStepContainer>
       ),
+      enableNext: !createPlanResult.isLoading,
       nextButtonText: 'Finish',
       canJumpTo: stepIdReached >= StepId.Review,
     },
@@ -233,7 +237,7 @@ const PlanWizard: React.FunctionComponent = () => {
   return (
     <>
       <Prompt
-        when={isSomeFormDirty} // TODO onSave will have to set something to unblock this when the wizard closes after saving
+        when={isSomeFormDirty && createPlanResult.isIdle}
         message="You have unsaved changes, are you sure you want to leave this page?"
       />
       <PageSection title="Create a Migration Plan" variant="light">
@@ -254,8 +258,8 @@ const PlanWizard: React.FunctionComponent = () => {
           className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
           steps={steps}
           onSubmit={(event) => event.preventDefault()}
-          onSave={() => alert('TODO: create plan CR')}
-          onClose={() => history.push('/plans')}
+          onSave={() => createPlan(generatePlan(forms))}
+          onClose={onClose}
         />
       </PageSection>
     </>

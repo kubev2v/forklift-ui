@@ -3,6 +3,7 @@ import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { CLUSTER_API_VERSION } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
+import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
 
 export let MOCK_PLANS: IPlan[];
 
@@ -197,6 +198,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
         networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
         datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
@@ -252,6 +254,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
         networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
         datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
@@ -296,6 +299,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
         networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
         datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
@@ -340,6 +344,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
         networks: MOCK_NETWORK_MAPPINGS[0].spec.map,
         datastores: MOCK_STORAGE_MAPPINGS[0].spec.map,
