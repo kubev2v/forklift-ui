@@ -71,7 +71,14 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const plansQuery = usePlansQuery();
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
-  const vmStatuses = plan?.status?.migration?.vms || [];
+  const planStarted = !!plan?.status?.migration?.started;
+  const vmStatuses = planStarted
+    ? plan?.status?.migration?.vms || []
+    : plan?.spec.vms.map(({ id }) => ({
+        id,
+        pipeline: { tasks: [] },
+        phase: '',
+      })) || [];
 
   const providersQuery = useProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
@@ -132,7 +139,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   });
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable, wrappable], cellFormatters: [expandable] },
+    {
+      title: 'Name',
+      transforms: [sortable, wrappable],
+      cellFormatters: planStarted ? [expandable] : [],
+    },
     { title: 'Start time', transforms: [sortable] },
     { title: 'End time', transforms: [sortable] },
     { title: 'Data copied', transforms: [sortable] },
@@ -152,7 +163,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
     rows.push({
       meta: { vmStatus },
-      isOpen: isExpanded,
+      isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
         formatTimestamp(vmStatus.started),
@@ -163,16 +174,18 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         },
       ],
     });
-    rows.push({
-      parent: rows.length - 1,
-      fullWidth: true,
-      cells: [
-        {
-          title: <VMStatusTable status={vmStatus} />,
-          columnTransforms: [classNamesTransform(alignment.textAlignRight)],
-        },
-      ],
-    });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
+        fullWidth: true,
+        cells: [
+          {
+            title: <VMStatusTable status={vmStatus} />,
+            columnTransforms: [classNamesTransform(alignment.textAlignRight)],
+          },
+        ],
+      });
+    }
   });
 
   return (
