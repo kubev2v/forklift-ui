@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 import { AxiosError } from 'axios';
-import { useHistory } from 'react-router-dom';
+import { History } from 'history';
 
 export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
   selfSignedCertUrl: string;
-  saveLoginToken: (user: string) => void;
+  saveLoginToken: (user: string, history: History) => void;
   currentUser: string;
-  checkExpiry: (error: Response | AxiosError<unknown>) => void;
+  checkExpiry: (error: Response | AxiosError<unknown>, history: History) => void;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
@@ -34,14 +34,13 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
 }: INetworkContextProviderProps) => {
   const [selfSignedCertUrl, setSelfSignedCertUrl] = React.useState('');
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
-  const history = useHistory();
 
-  const saveLoginToken = (user: string | null) => {
+  const saveLoginToken = (user: string | null, history: History) => {
     setCurrentUser(JSON.stringify(user));
     history.push('/');
   };
 
-  const checkExpiry = (error: Response | AxiosError<unknown>) => {
+  const checkExpiry = (error: Response | AxiosError<unknown>, history: History) => {
     const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
     if (status === 401) {
       setCurrentUser('');

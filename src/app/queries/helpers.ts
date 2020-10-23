@@ -10,6 +10,7 @@ import {
   MutationResultPair,
   MutationFunction,
 } from 'react-query';
+import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef } from './types';
 import { VMwareTree } from './types/tree.types';
@@ -58,6 +59,7 @@ export const useMockableMutation = <
   config: MutationConfig<TResult, TError, TVariables, TSnapshot> | undefined
 ): MutationResultPair<TResult, TError, TVariables, TSnapshot> => {
   const { checkExpiry } = useFetchContext();
+  const history = useHistory();
   return useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
       ? async (vars: TVariables) => {
@@ -65,7 +67,7 @@ export const useMockableMutation = <
             return await mutationFn(vars);
           } catch (error) {
             console.error(error.response);
-            checkExpiry(error);
+            checkExpiry(error, history);
             throw error;
           }
         }

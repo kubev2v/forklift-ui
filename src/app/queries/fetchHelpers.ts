@@ -44,7 +44,7 @@ export const authorizedFetch = async <T>(
       setSelfSignedCertUrl(url);
       history.push('/cert-error');
     }
-    checkExpiry(error);
+    checkExpiry(error, history);
     throw error;
   }
 };

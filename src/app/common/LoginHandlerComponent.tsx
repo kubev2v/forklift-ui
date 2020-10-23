@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { useLocation, Redirect } from 'react-router-dom';
+import { useLocation, Redirect, useHistory } from 'react-router-dom';
 import { useNetworkContext } from './context/NetworkContext';
 
 const LoginHandlerComponent: React.FunctionComponent = () => {
   const { saveLoginToken } = useNetworkContext();
+  const history = useHistory();
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
@@ -21,9 +22,9 @@ const LoginHandlerComponent: React.FunctionComponent = () => {
     if (loginError) {
       console.log('Authentication error: ', loginError);
     } else if (user) {
-      saveLoginToken(user); // Will cause a redirect to "/"
+      saveLoginToken(user, history); // Will cause a redirect to "/"
     }
-  }, [loginError, user, saveLoginToken]);
+  }, [loginError, user, history, saveLoginToken]);
 
   return user ? null : <Redirect to="/" />;
 };
