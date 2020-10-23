@@ -18,6 +18,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   createPlanResult,
 }: IReviewProps) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => createPlanResult.reset, []);
   const { networkMapping, storageMapping } = generateMappings(forms);
   return (
     <Form>
@@ -27,7 +29,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
           button to make changes.
         </Text>
       </TextContent>
-      <Grid hasGutter className={spacing.mtSm}>
+      <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
         <GridItem md={12}></GridItem>
         <GridItem md={3}>Plan name</GridItem>
         <GridItem md={9}>{forms.general.values.planName}</GridItem>
