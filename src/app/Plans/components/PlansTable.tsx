@@ -38,12 +38,21 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
 
 import './PlansTable.css';
+import { KubeClientError } from '@app/client/types';
+import { IMigration } from '@app/queries/types/migrations.types';
+import { MutationResult } from 'react-query';
 
 interface IPlansTableProps {
   plans: IPlan[];
+  createMigration: (plan: IPlan) => Promise<IMigration | undefined>;
+  createMigrationResult: MutationResult<IMigration, KubeClientError>;
 }
 
-const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlansTableProps) => {
+const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
+  plans,
+  createMigration,
+  createMigrationResult,
+}: IPlansTableProps) => {
   const providersQuery = useProvidersQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
     {
@@ -137,8 +146,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
 
   const rows: IRow[] = [];
 
+  enum ActionButtonType {
+    Start = 'Start',
+    Cancel = 'Cancel',
+  }
+
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonText: string | React.ReactNode;
+    let buttonType: ActionButtonType | null = null;
     let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
@@ -146,7 +160,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
     const conditions = plan.status?.conditions || [];
 
     if (hasCondition(conditions, StatusConditionsType.Ready)) {
-      buttonText = 'Start';
+      buttonType = ActionButtonType.Start;
       isStatusReady = true;
     } else if (hasCondition(conditions, StatusConditionsType.Finished)) {
       title = PlanStatusType.Finished;
@@ -155,7 +169,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
       title = PlanStatusType.Error;
       variant = ProgressVariant.danger;
     } else {
-      buttonText = 'Cancel';
+      buttonType = ActionButtonType.Cancel;
       title = PlanStatusType.Execute;
     }
 
@@ -197,27 +211,43 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
           ),
         },
         {
-          title: buttonText ? (
-            <>
-              <Flex
-                flex={{ default: 'flex_2' }}
-                spaceItems={{ default: 'spaceItemsNone' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-                flexWrap={{ default: 'nowrap' }}
-              >
-                <FlexItem align={{ default: 'alignRight' }}>
-                  <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-                    {buttonText}
-                  </Button>
-                </FlexItem>
-                <FlexItem>
-                  <PlanActionsDropdown conditions={conditions} />
-                </FlexItem>
-              </Flex>
-            </>
-          ) : (
-            <PlanActionsDropdown conditions={conditions} />
-          ),
+          // TODO: Cancellation is disabled until we have API support.
+          //   When it is ready, this condition should just be `title: buttonType ? (`
+          title:
+            buttonType && buttonType === ActionButtonType.Start ? (
+              <>
+                <Flex
+                  flex={{ default: 'flex_2' }}
+                  spaceItems={{ default: 'spaceItemsNone' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  flexWrap={{ default: 'nowrap' }}
+                >
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        if (buttonType === ActionButtonType.Start) {
+                          createMigration(plan);
+                        }
+                        if (buttonType === ActionButtonType.Cancel) {
+                          alert('TODO');
+                        }
+                      }}
+                      isDisabled={
+                        buttonType === ActionButtonType.Start && createMigrationResult.isLoading
+                      }
+                    >
+                      {buttonType}
+                    </Button>
+                  </FlexItem>
+                  <FlexItem>
+                    <PlanActionsDropdown conditions={conditions} />
+                  </FlexItem>
+                </Flex>
+              </>
+            ) : (
+              <PlanActionsDropdown conditions={conditions} />
+            ),
         },
       ],
     });
