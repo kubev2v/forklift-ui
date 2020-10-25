@@ -159,7 +159,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
-    if (hasCondition(conditions, StatusConditionsType.Ready)) {
+    if (hasCondition(conditions, StatusConditionsType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
       isStatusReady = true;
     } else if (hasCondition(conditions, StatusConditionsType.Finished)) {

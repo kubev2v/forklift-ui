@@ -9,23 +9,23 @@ export let MOCK_PLANS: IPlan[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vm1: IPlanVM = {
-    id: 'vm1-id',
+    id: 'vm-1630',
   };
 
   const vm2: IPlanVM = {
-    id: 'vm2-id',
+    id: 'vm-2844',
   };
 
   const vm3: IPlanVM = {
-    id: 'vm3-id',
+    id: 'vm-1008',
   };
 
   const vm4: IPlanVM = {
-    id: 'vm4-id',
+    id: 'vm-2685',
   };
 
   const vmStatus1: IVMStatus = {
-    id: 'vm1-id',
+    id: vm1.id,
     pipeline: {
       tasks: [
         {
@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus2: IVMStatus = {
-    id: 'vm2-id',
+    id: vm2.id,
     pipeline: {
       tasks: [
         {
@@ -103,7 +103,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus3: IVMStatus = {
-    id: 'vm3-id',
+    id: vm3.id,
     pipeline: {
       tasks: [
         {
@@ -140,7 +140,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus4: IVMStatus = {
-    id: 'vm4-id',
+    id: vm4.id,
     pipeline: {
       tasks: [
         {
@@ -233,6 +233,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         },
       ],
       observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        vms: [vmStatus1, vmStatus2],
+      },
     },
   };
 
@@ -273,11 +278,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         },
       ],
       observedGeneration: 2,
-      migration: {
-        active: '',
-        started: '2020-10-10T14:04:10Z',
-        vms: [vmStatus1],
-      },
     },
   };
 

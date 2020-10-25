@@ -47,11 +47,17 @@ export const findCurrentStep = (
 export const formatTimestamp = (timestamp?: string): string =>
   timestamp ? dayjs(timestamp).format('DD MMM YYYY, HH:mm:ss') : '';
 
+const padNum = (num: number) => (num < 10 ? `0${num}` : `${num}`);
+
 export const formatDuration = (
   start?: string | dayjs.Dayjs,
   end?: string | dayjs.Dayjs
 ): string => {
   if (!start) return '00:00:00';
-  const elapsedSeconds = (end ? dayjs(end) : dayjs()).diff(dayjs(start), 'second');
-  return dayjs().startOf('day').second(elapsedSeconds).format('HH:mm:ss');
+  let seconds = (end ? dayjs(end) : dayjs()).diff(dayjs(start), 'second');
+  const hours = Math.floor(seconds / 3600);
+  seconds %= 3600;
+  const minutes = Math.floor(seconds / 60);
+  seconds %= 60;
+  return `${padNum(hours)}:${padNum(minutes)}:${padNum(seconds)}`;
 };

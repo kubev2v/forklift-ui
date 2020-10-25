@@ -42,7 +42,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
         ),
       },
       {
-        title: <TickingElapsedTime start={status.started} end={status.completed} />,
+        title: <TickingElapsedTime start={step.started} end={step.completed} />,
       },
       step.phase,
     ],

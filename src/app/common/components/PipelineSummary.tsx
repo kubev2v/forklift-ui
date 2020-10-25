@@ -126,7 +126,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         {currentStepIndex > 0 ? <Dash isReached={false} /> : null}
         <Chain
           Face={ResourcesAlmostEmptyIcon}
-          times={tasks.length - currentStepIndex}
+          times={tasks.length - currentStepIndex - 1}
           color={disabledColor}
         />
       </Summary>
