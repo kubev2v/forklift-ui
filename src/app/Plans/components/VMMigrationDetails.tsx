@@ -231,7 +231,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                   sortBy={sortBy}
                   onSort={onSort}
                   onCollapse={(event, rowKey, isOpen, rowData) => {
-                    toggleVMExpanded(rowData.meta.migration);
+                    toggleVMExpanded(rowData.meta.vmStatus);
                   }}
                 >
                   <TableHeader />
