@@ -40,11 +40,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
         started: '2020-10-10T14:21:10Z',
+        completed: '2020-10-10T14:21:10Z',
       },
       {
         name: 'Import',
         progress: { total: 2, completed: 0 },
         phase: 'Mock Step Phase',
+        started: '2020-10-10T14:21:10Z',
       },
       {
         name: 'PostHook',

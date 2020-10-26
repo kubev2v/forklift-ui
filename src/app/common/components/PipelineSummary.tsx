@@ -117,12 +117,16 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
             color={status.error?.phase ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
-        {currentStepIndex > 0 ? <Dash isReached={false} /> : null}
-        <Chain
-          Face={ResourcesAlmostEmptyIcon}
-          times={status.pipeline.length - currentStepIndex - 1}
-          color={disabledColor}
-        />
+        {currentStepIndex < status.pipeline.length - 1 ? (
+          <>
+            <Dash isReached={false} />
+            <Chain
+              Face={ResourcesAlmostEmptyIcon}
+              times={status.pipeline.length - currentStepIndex - 1}
+              color={disabledColor}
+            />
+          </>
+        ) : null}
       </Summary>
     );
   } else {
