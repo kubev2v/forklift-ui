@@ -29,7 +29,7 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import { PlanStatusType, StatusConditionsType } from '@app/common/constants';
+import { PlanStatusDisplayType, PlanStatusAPIType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
@@ -92,12 +92,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       getItemValue: (item) => {
         const res = item.status?.conditions.find(
           (condition) =>
-            condition.type === PlanStatusType.Ready ||
-            condition.type === PlanStatusType.Execute ||
-            condition.type === PlanStatusType.Finished ||
-            condition.type === PlanStatusType.Error
+            condition.type === PlanStatusAPIType.Ready ||
+            condition.type === PlanStatusAPIType.Executing ||
+            condition.type === PlanStatusAPIType.Succeeded ||
+            condition.type === PlanStatusAPIType.Failed
         );
-        return res ? StatusConditionsType[res.type] : '';
+        return res ? PlanStatusDisplayType[res.type] : '';
       },
     },
   ];
@@ -159,18 +159,18 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
-    if (hasCondition(conditions, StatusConditionsType.Ready) && !plan.status?.migration?.started) {
+    if (hasCondition(conditions, PlanStatusAPIType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
       isStatusReady = true;
-    } else if (hasCondition(conditions, StatusConditionsType.Finished)) {
-      title = PlanStatusType.Finished;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Succeeded)) {
+      title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
-    } else if (hasCondition(conditions, StatusConditionsType.Error)) {
-      title = PlanStatusType.Error;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
+      title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else {
       buttonType = ActionButtonType.Cancel;
-      title = PlanStatusType.Execute;
+      title = PlanStatusDisplayType.Executing;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -198,7 +198,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.vms.length,
         {
           title: isStatusReady ? (
-            <StatusIcon status={StatusType.Ok} label={PlanStatusType.Ready} />
+            <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
             <Progress
               title={title}

@@ -22,18 +22,18 @@ export enum StatusCategoryType {
   Warn = 'Warn',
 }
 
-export enum StatusConditionsType {
+export enum PlanStatusAPIType {
   Ready = 'Ready',
-  Execute = 'Execute',
-  Finished = 'Finished',
-  Error = 'Error',
+  Executing = 'Executing',
+  Succeeded = 'Succeeded',
+  Failed = 'Failed',
 }
 
-export enum PlanStatusType {
+export enum PlanStatusDisplayType {
   Ready = 'Ready',
-  Execute = 'Running',
-  Finished = 'Succeeded',
-  Error = 'Failed',
+  Executing = 'Running',
+  Succeeded = 'Succeeded',
+  Failed = 'Failed',
 }
 
 export enum MigrationVMStepsType {

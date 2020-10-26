@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { StatusCategoryType, StatusConditionsType } from '@app/common/constants';
+import { StatusCategoryType, PlanStatusAPIType } from '@app/common/constants';
 import { IStatusCondition, IStep } from '@app/queries/types';
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
@@ -20,19 +20,19 @@ export const mostSeriousCondition = (conditions: IStatusCondition[]): string => 
     return StatusCategoryType.Error;
   } else if (
     hasConditionsByCategory(conditions, StatusCategoryType.Warn) &&
-    !hasCondition(conditions, StatusConditionsType.Ready)
+    !hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
     return StatusCategoryType.Warn;
   } else if (
     hasConditionsByCategory(conditions, StatusCategoryType.Advisory) &&
-    !hasCondition(conditions, StatusConditionsType.Ready)
+    !hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
     return StatusCategoryType.Advisory;
   } else if (
     hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
-    hasCondition(conditions, StatusConditionsType.Ready)
+    hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
-    return StatusConditionsType.Ready;
+    return PlanStatusAPIType.Ready;
   } else return 'Unknown';
 };
 
