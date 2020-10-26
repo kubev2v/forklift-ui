@@ -34,16 +34,16 @@ const useAddProviderFormState = () => {
   return {
     [ProviderType.vsphere]: useFormState({
       providerType: providerTypeField,
-      name: useFormField('', yup.string().label('Name').min(2).max(20).required()),
-      hostname: useFormField('', yup.string().label('Hostname').max(40).required()),
-      username: useFormField('', yup.string().label('Username').max(20).required()),
-      password: useFormField('', yup.string().label('Password').max(20).required()),
+      name: useFormField('', yup.string().label('Name').required()),
+      hostname: useFormField('', yup.string().label('Hostname').required()),
+      username: useFormField('', yup.string().label('Username').required()),
+      password: useFormField('', yup.string().label('Password').required()),
     }),
     [ProviderType.openshift]: useFormState({
       providerType: providerTypeField,
-      clusterName: useFormField('', yup.string().label('Cluster name').max(40).required()),
-      url: useFormField('', yup.string().label('URL').max(40).required()),
-      saToken: useFormField('', yup.string().label('Service account token').max(20).required()),
+      clusterName: useFormField('', yup.string().label('Cluster name').required()),
+      url: useFormField('', yup.string().label('URL').required()),
+      saToken: useFormField('', yup.string().label('Service account token').required()),
     }),
   };
 };
