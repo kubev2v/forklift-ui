@@ -87,6 +87,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
+      '', // Expand/collapse control column
       findVMById(vmStatus.id, vmsQuery)?.name || '',
       vmStatus.started || '',
       vmStatus.completed || '',

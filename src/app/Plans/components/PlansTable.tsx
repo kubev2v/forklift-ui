@@ -41,6 +41,7 @@ import './PlansTable.css';
 import { KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
+import { getPlanStatusTitle } from './helpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -89,16 +90,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title: 'Status',
       type: FilterType.search,
       placeholderText: 'Filter state...',
-      getItemValue: (item) => {
-        const res = item.status?.conditions.find(
-          (condition) =>
-            condition.type === PlanStatusAPIType.Ready ||
-            condition.type === PlanStatusAPIType.Executing ||
-            condition.type === PlanStatusAPIType.Succeeded ||
-            condition.type === PlanStatusAPIType.Failed
-        );
-        return res ? PlanStatusDisplayType[res.type] : '';
-      },
+      getItemValue: getPlanStatusTitle,
     },
   ];
 
@@ -113,7 +105,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       sourceProvider?.name || '',
       targetProvider?.name || '',
       plan.spec.vms.length,
-      '', // Plan status
+      getPlanStatusTitle(plan),
       '', // Action column
     ];
   };
