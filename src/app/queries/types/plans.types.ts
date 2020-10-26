@@ -28,9 +28,7 @@ export interface IError {
 
 export interface IVMStatus {
   id: string;
-  pipeline: {
-    tasks: IStep[];
-  };
+  pipeline: IStep[];
   phase: string;
   error?: IError;
   started?: string;

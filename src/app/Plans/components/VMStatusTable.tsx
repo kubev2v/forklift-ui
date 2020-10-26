@@ -22,7 +22,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
     { title: 'State' },
   ];
 
-  const rows: IRow[] = status.pipeline.tasks.map((step: IStep, index) => ({
+  const rows: IRow[] = status.pipeline.map((step: IStep, index) => ({
     meta: { step },
     cells: [
       {

@@ -26,34 +26,32 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus1: IVMStatus = {
     id: vm1.id,
-    pipeline: {
-      tasks: [
-        {
-          name: 'PreHook',
-          progress: { total: 2, completed: 2 },
-          phase: 'Mock Step Phase',
-          started: '2020-10-10T14:04:10Z',
-          completed: '2020-10-10T14:21:10Z',
-        },
-        {
-          name: 'DiskTransfer',
-          progress: { total: 1024 * 64, completed: 1024 * 30 },
-          phase: 'Mock Step Phase',
-          annotations: { unit: 'MB' },
-          started: '2020-10-10T14:21:10Z',
-        },
-        {
-          name: 'Import',
-          progress: { total: 2, completed: 0 },
-          phase: 'Mock Step Phase',
-        },
-        {
-          name: 'PostHook',
-          progress: { total: 2, completed: 0 },
-          phase: 'Mock Step Phase',
-        },
-      ],
-    },
+    pipeline: [
+      {
+        name: 'PreHook',
+        progress: { total: 2, completed: 2 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'DiskTransfer',
+        progress: { total: 1024 * 64, completed: 1024 * 30 },
+        phase: 'Mock Step Phase',
+        annotations: { unit: 'MB' },
+        started: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'Import',
+        progress: { total: 2, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+      {
+        name: 'PostHook',
+        progress: { total: 2, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+    ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     error: {
@@ -64,36 +62,34 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus2: IVMStatus = {
     id: vm2.id,
-    pipeline: {
-      tasks: [
-        {
-          name: 'PreHook',
-          progress: { total: 1, completed: 1 },
-          phase: 'Mock Step Phase',
-          started: '2020-10-10T14:04:10Z',
-          completed: '2020-10-10T14:21:10Z',
-        },
-        {
-          name: 'DiskTransfer',
-          progress: { total: 1024 * 64, completed: 1024 * 64 },
-          phase: 'Mock Step Phase',
-          annotations: { unit: 'MB' },
-          started: '2020-10-10T14:21:10Z',
-          completed: '2020-10-10T15:57:10Z',
-        },
-        {
-          name: 'Import',
-          progress: { total: 1, completed: 0 },
-          phase: 'Mock Step Phase',
-          started: '2020-10-10T15:57:10Z',
-        },
-        {
-          name: 'PostHook',
-          progress: { total: 1, completed: 0 },
-          phase: 'Mock Step Phase',
-        },
-      ],
-    },
+    pipeline: [
+      {
+        name: 'PreHook',
+        progress: { total: 1, completed: 1 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'DiskTransfer',
+        progress: { total: 1024 * 64, completed: 1024 * 64 },
+        phase: 'Mock Step Phase',
+        annotations: { unit: 'MB' },
+        started: '2020-10-10T14:21:10Z',
+        completed: '2020-10-10T15:57:10Z',
+      },
+      {
+        name: 'Import',
+        progress: { total: 1, completed: 0 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T15:57:10Z',
+      },
+      {
+        name: 'PostHook',
+        progress: { total: 1, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+    ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     error: {
@@ -104,32 +100,30 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus3: IVMStatus = {
     id: vm3.id,
-    pipeline: {
-      tasks: [
-        {
-          name: 'PreHook',
-          progress: { total: 2, completed: 2 },
-          phase: 'Latest message from controller',
-          started: '2020-10-10T14:04:10Z',
-          completed: '2020-10-10T14:21:10Z',
-        },
-        {
-          name: 'DiskTransfer',
-          progress: { total: 1024 * 64, completed: 1024 * 64 },
-          phase: 'Mock Step Phase',
-          annotations: { unit: 'MB' },
-          started: '2020-10-10T14:21:10Z',
-          completed: '2020-10-10T15:57:10Z',
-        },
-        {
-          name: 'Import',
-          progress: { total: 3, completed: 3 },
-          phase: 'Mock Step Phase',
-          started: '2020-10-10T15:57:10Z',
-          completed: '2020-10-10T15:58:43Z',
-        },
-      ],
-    },
+    pipeline: [
+      {
+        name: 'PreHook',
+        progress: { total: 2, completed: 2 },
+        phase: 'Latest message from controller',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'DiskTransfer',
+        progress: { total: 1024 * 64, completed: 1024 * 64 },
+        phase: 'Mock Step Phase',
+        annotations: { unit: 'MB' },
+        started: '2020-10-10T14:21:10Z',
+        completed: '2020-10-10T15:57:10Z',
+      },
+      {
+        name: 'Import',
+        progress: { total: 3, completed: 3 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T15:57:10Z',
+        completed: '2020-10-10T15:58:43Z',
+      },
+    ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     completed: '2020-10-10T15:58:43Z',
@@ -141,36 +135,34 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus4: IVMStatus = {
     id: vm4.id,
-    pipeline: {
-      tasks: [
-        {
-          name: 'PreHook',
-          progress: { total: 2, completed: 2 },
-          phase: 'Latest message from controller',
-          started: '2020-10-10T14:04:10Z',
-          completed: '2020-10-10T14:21:10Z',
-        },
-        {
-          name: 'DiskTransfer',
-          progress: { total: 1024 * 64, completed: 1024 * 64 },
-          phase: 'Mock Step Phase',
-          annotations: { unit: 'MB' },
-          started: '2020-10-10T14:21:10Z',
-          completed: '2020-10-10T15:57:10Z',
-        },
-        {
-          name: 'Import',
-          progress: { total: 3, completed: 1 },
-          phase: 'Mock Step Phase',
-          started: '2020-10-10T15:57:10Z',
-        },
-        {
-          name: 'PostHook',
-          progress: { total: 1, completed: 0 },
-          phase: 'Mock Step Phase',
-        },
-      ],
-    },
+    pipeline: [
+      {
+        name: 'PreHook',
+        progress: { total: 2, completed: 2 },
+        phase: 'Latest message from controller',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'DiskTransfer',
+        progress: { total: 1024 * 64, completed: 1024 * 64 },
+        phase: 'Mock Step Phase',
+        annotations: { unit: 'MB' },
+        started: '2020-10-10T14:21:10Z',
+        completed: '2020-10-10T15:57:10Z',
+      },
+      {
+        name: 'Import',
+        progress: { total: 3, completed: 1 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T15:57:10Z',
+      },
+      {
+        name: 'PostHook',
+        progress: { total: 1, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+    ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     completed: '',

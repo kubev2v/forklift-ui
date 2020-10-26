@@ -77,10 +77,7 @@ const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: IS
 );
 
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
-  const {
-    pipeline: { tasks },
-  } = status;
-  const { currentStep } = findCurrentStep(tasks);
+  const { currentStep } = findCurrentStep(status.pipeline);
   if (status.completed) {
     return MigrationVMStepsType.Completed;
   }
@@ -102,18 +99,16 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
+  console.log({ status });
   const title = getPipelineSummaryTitle(status);
-  const {
-    pipeline: { tasks },
-  } = status;
   if (status.completed) {
     return (
       <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={status.pipeline.tasks.length} color={successColor} />
+        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
       </Summary>
     );
   } else if (status.started && !status.completed) {
-    const { currentStepIndex } = findCurrentStep(tasks);
+    const { currentStepIndex } = findCurrentStep(status.pipeline);
     return (
       <Summary title={title}>
         <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
@@ -126,7 +121,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         {currentStepIndex > 0 ? <Dash isReached={false} /> : null}
         <Chain
           Face={ResourcesAlmostEmptyIcon}
-          times={tasks.length - currentStepIndex - 1}
+          times={status.pipeline.length - currentStepIndex - 1}
           color={disabledColor}
         />
       </Summary>
@@ -134,7 +129,11 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   } else {
     return (
       <Summary title={title}>
-        <Chain Face={ResourcesAlmostEmptyIcon} times={tasks.length} color={disabledColor} />
+        <Chain
+          Face={ResourcesAlmostEmptyIcon}
+          times={status.pipeline.length}
+          color={disabledColor}
+        />
       </Summary>
     );
   }

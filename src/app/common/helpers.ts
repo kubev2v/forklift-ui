@@ -37,10 +37,10 @@ export const mostSeriousCondition = (conditions: IStatusCondition[]): string => 
 };
 
 export const findCurrentStep = (
-  tasks: IStep[]
+  pipeline: IStep[]
 ): { currentStep: IStep | undefined; currentStepIndex: number } => {
-  const currentStep = tasks.find((task) => !!task.started && !task.completed);
-  const currentStepIndex = currentStep ? tasks.indexOf(currentStep) : tasks.length - 1;
+  const currentStep = pipeline.find((step) => !!step.started && !step.completed);
+  const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : pipeline.length - 1;
   return { currentStep, currentStepIndex };
 };
 
