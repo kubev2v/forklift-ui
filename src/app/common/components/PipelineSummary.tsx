@@ -99,7 +99,6 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
-  console.log({ status });
   const title = getPipelineSummaryTitle(status);
   if (status.completed) {
     return (
