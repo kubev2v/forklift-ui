@@ -9,6 +9,7 @@ import {
   Progress,
   ProgressMeasureLocation,
   ProgressVariant,
+  Spinner,
   Text,
 } from '@patternfly/react-core';
 import {
@@ -22,6 +23,7 @@ import {
   classNames,
   cellWidth,
 } from '@patternfly/react-table';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
@@ -42,17 +44,20 @@ import { KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { getPlanStatusTitle } from './helpers';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
   createMigration: (plan: IPlan) => Promise<IMigration | undefined>;
   createMigrationResult: MutationResult<IMigration, KubeClientError>;
+  planBeingStarted: IPlan | null;
 }
 
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   createMigration,
   createMigrationResult,
+  planBeingStarted,
 }: IPlansTableProps) => {
   const providersQuery = useProvidersQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
@@ -215,22 +220,26 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   flexWrap={{ default: 'nowrap' }}
                 >
                   <FlexItem align={{ default: 'alignRight' }}>
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        if (buttonType === ActionButtonType.Start) {
-                          createMigration(plan);
+                    {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
+                      <Spinner size="md" className={spacing.mxLg} />
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          if (buttonType === ActionButtonType.Start) {
+                            createMigration(plan);
+                          }
+                          if (buttonType === ActionButtonType.Cancel) {
+                            alert('TODO');
+                          }
+                        }}
+                        isDisabled={
+                          buttonType === ActionButtonType.Start && createMigrationResult.isLoading
                         }
-                        if (buttonType === ActionButtonType.Cancel) {
-                          alert('TODO');
-                        }
-                      }}
-                      isDisabled={
-                        buttonType === ActionButtonType.Start && createMigrationResult.isLoading
-                      }
-                    >
-                      {buttonType}
-                    </Button>
+                      >
+                        {buttonType}
+                      </Button>
+                    )}
                   </FlexItem>
                   <FlexItem>
                     <PlanActionsDropdown conditions={conditions} />

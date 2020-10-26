@@ -24,6 +24,7 @@ import { IPlan } from '@app/queries/types';
 import { KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
+import { isSameResource } from '@app/queries/helpers';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -47,6 +48,17 @@ const PlansPage: React.FunctionComponent = () => {
       setPlanBeingStarted(null);
     }
   }, [createMigrationResult]);
+
+  React.useEffect(() => {
+    if (planBeingStarted) {
+      const matchingPlan = plansQuery.data?.items.find((plan) =>
+        isSameResource(plan.metadata, planBeingStarted.metadata)
+      );
+      if ((matchingPlan?.status?.migration?.vms?.length || 0) > 0) {
+        setPlanBeingStarted(null);
+      }
+    }
+  }, [planBeingStarted, plansQuery.data]);
 
   return (
     <>
@@ -86,6 +98,7 @@ const PlansPage: React.FunctionComponent = () => {
                   plans={plansQuery.data?.items || []}
                   createMigration={createMigration}
                   createMigrationResult={createMigrationResult}
+                  planBeingStarted={planBeingStarted}
                 />
               )}
             </CardBody>
