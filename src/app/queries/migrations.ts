@@ -24,7 +24,7 @@ export const useCreateMigrationMutation = (
         apiVersion: CLUSTER_API_VERSION,
         kind: 'Migration',
         metadata: {
-          name: `${plan.metadata.name}-${new Date().toISOString()}`,
+          name: `${plan.metadata.name}-${Date.now()}`,
           namespace: VIRT_META.namespace,
         },
         spec: {
