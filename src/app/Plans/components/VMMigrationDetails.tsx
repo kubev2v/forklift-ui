@@ -101,6 +101,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       title: 'Name',
       type: FilterType.search,
       placeholderText: 'Filter by name ...',
+      getItemValue: (item) => {
+        return findVMById(item.id, vmsQuery)?.name || '';
+      },
     },
     {
       key: 'begin',
