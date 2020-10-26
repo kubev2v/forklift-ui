@@ -85,7 +85,7 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     let title: string;
     title = status.error?.phase ? `${MigrationVMStepsType.Error} - ` : '';
     if (currentStep) {
-      title = `${title}${MigrationVMStepsType[currentStep.name]}`;
+      title = `${title}${MigrationVMStepsType[currentStep.name] || currentStep.name}`;
     }
     return title;
   }
