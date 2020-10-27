@@ -5,6 +5,7 @@ import { Table, TableHeader, TableBody, ICell, IRow, cellWidth } from '@patternf
 import Step from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
 import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
+import { MigrationVMStepsType } from '@app/common/constants';
 
 interface IVMStatusTableProps {
   status: IVMStatus;
@@ -36,7 +37,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
               <Step status={status} index={index} />
             </FlexItem>
             <FlexItem>
-              <Text>{step.name}</Text>
+              <Text>{MigrationVMStepsType[step.name]}</Text>
             </FlexItem>
           </Flex>
         ),
