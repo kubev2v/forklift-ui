@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, Flex, Stack } from '@patternfly/react-core';
+import { Modal, Button, Form, FormGroup, Flex, Stack, FileUpload } from '@patternfly/react-core';
 import {
   useFormState,
   useFormField,
@@ -38,6 +38,8 @@ const useAddProviderFormState = () => {
       hostname: useFormField('', yup.string().label('Hostname').required()),
       username: useFormField('', yup.string().label('Username').required()),
       password: useFormField('', yup.string().label('Password').required()),
+      fingerprint: useFormField('', yup.string().label('Fingerprint').required()),
+      fingerprintFilename: useFormField('', yup.string()),
     }),
     [ProviderType.openshift]: useFormState({
       providerType: providerTypeField,
@@ -151,6 +153,25 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               isRequired
               fieldId="vmware-password"
             />
+            <FormGroup
+              label="Fingerprint"
+              isRequired
+              fieldId="fingerprint"
+              {...getFormGroupProps(vmwareForm.fields.fingerprint)}
+            >
+              <FileUpload
+                id="fingerprint"
+                type="text"
+                value={vmwareForm.values.fingerprint}
+                filename={vmwareForm.values.fingerprintFilename}
+                onChange={(value, filename) => {
+                  vmwareForm.fields.fingerprint.setValue(value as string);
+                  vmwareForm.fields.fingerprintFilename.setValue(filename);
+                }}
+                onBlur={() => vmwareForm.fields.fingerprint.setIsTouched(true)}
+                validated={vmwareForm.fields.fingerprint.isValid ? 'default' : 'error'}
+              />
+            </FormGroup>
           </>
         ) : null}
         {providerType === ProviderType.openshift ? (
