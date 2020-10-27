@@ -150,6 +150,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
+    let isInitializing = false;
     let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
@@ -165,9 +166,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
-    } else {
+    } else if (hasCondition(conditions, PlanStatusAPIType.Executing)) {
       buttonType = ActionButtonType.Cancel;
       title = PlanStatusDisplayType.Executing;
+    } else {
+      isInitializing = true;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -194,7 +197,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         targetProvider?.name || '',
         plan.spec.vms.length,
         {
-          title: isStatusReady ? (
+          title: isInitializing ? (
+            <StatusIcon status={StatusType.Warning} label={PlanStatusDisplayType.Initializing} />
+          ) : isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
             <Progress

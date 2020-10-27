@@ -36,6 +36,7 @@ export enum PlanStatusDisplayType {
   Executing = 'Running',
   Succeeded = 'Succeeded',
   Failed = 'Failed',
+  Initializing = 'Initializing',
 }
 
 export enum MigrationVMStepsType {
