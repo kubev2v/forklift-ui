@@ -52,12 +52,12 @@ export interface IPlanMatchParams {
 }
 
 const getTotalCopiedRatio = (vmStatus: IVMStatus) => {
-  const diskTransferTasks = vmStatus.pipeline.tasks.filter((task) => task.name === 'DiskTransfer');
+  const diskTransferSteps = vmStatus.pipeline.filter((step) => step.name === 'DiskTransfer');
   let completed = 0;
   let total = 0;
-  diskTransferTasks.forEach((task) => {
-    completed += task.progress.completed;
-    total += task.progress.total;
+  diskTransferSteps.forEach((step) => {
+    completed += step.progress.completed;
+    total += step.progress.total;
   });
   return { completed, total };
 };
@@ -76,7 +76,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     ? plan?.status?.migration?.vms || []
     : plan?.spec.vms.map(({ id }) => ({
         id,
-        pipeline: { tasks: [] },
+        pipeline: [],
         phase: '',
       })) || [];
 
@@ -87,6 +87,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
+      '', // Expand/collapse control column
       findVMById(vmStatus.id, vmsQuery)?.name || '',
       vmStatus.started || '',
       vmStatus.completed || '',
@@ -101,6 +102,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       title: 'Name',
       type: FilterType.search,
       placeholderText: 'Filter by name ...',
+      getItemValue: (item) => {
+        return findVMById(item.id, vmsQuery)?.name || '';
+      },
     },
     {
       key: 'begin',

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 
 import { IStatusCondition } from '@app/queries/types';
-import { StatusConditionsType } from '@app/common/constants';
+import { PlanStatusAPIType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 
 interface IPlansActionDropdownProps {
@@ -23,9 +23,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       dropdownItems={[
         <DropdownItem
           isDisabled={
-            hasCondition(conditions, StatusConditionsType.Execute) ||
-            hasCondition(conditions, StatusConditionsType.Finished) ||
-            hasCondition(conditions, StatusConditionsType.Error)
+            hasCondition(conditions, PlanStatusAPIType.Executing) ||
+            hasCondition(conditions, PlanStatusAPIType.Succeeded) ||
+            hasCondition(conditions, PlanStatusAPIType.Failed)
           }
           onClick={() => {
             setKebabIsOpen(false);
@@ -36,7 +36,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           Edit
         </DropdownItem>,
         <DropdownItem
-          isDisabled={hasCondition(conditions, StatusConditionsType.Execute)}
+          isDisabled={hasCondition(conditions, PlanStatusAPIType.Executing)}
           onClick={() => {
             setKebabIsOpen(false);
             alert('TODO');

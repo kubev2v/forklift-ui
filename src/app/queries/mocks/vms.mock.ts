@@ -38,7 +38,7 @@ MOCK_VMWARE_VMS = [
   {
     id: 'vm-2844',
     parent: { Kind: 'Folder', ID: 'group-v22' },
-    name: 'fdupont%2ftest',
+    name: 'fdupont-test',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
     uuid: '422558fb-928d-8eed-a06c-5aacfb4a4fb6',
     firmware: 'bios',

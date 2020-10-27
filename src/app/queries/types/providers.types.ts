@@ -1,5 +1,5 @@
 import { ProviderType } from '@app/common/constants';
-import { ICR, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
+import { ICR, IMetaTypeMeta, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
 
 interface ICommonProviderObject extends ICR {
   spec: {
@@ -16,15 +16,13 @@ interface ICommonProviderObject extends ICR {
   };
 }
 
-export interface INewSecret {
-  apiVersion: string;
+export interface INewSecret extends IMetaTypeMeta {
   data: {
     user?: string;
     password?: string;
     thumbprint?: string;
     token?: string;
   };
-  kind: string;
   metadata: {
     generateName: string;
     namespace: string;
@@ -35,9 +33,8 @@ export interface INewSecret {
   };
   type: string;
 }
-export interface INewProvider {
-  apiVersion: string;
-  kind: string;
+
+export interface INewProvider extends IMetaTypeMeta {
   metadata: {
     name: string;
     namespace: string;

@@ -77,10 +77,7 @@ const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: IS
 );
 
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
-  const {
-    pipeline: { tasks },
-  } = status;
-  const { currentStep } = findCurrentStep(tasks);
+  const { currentStep } = findCurrentStep(status.pipeline);
   if (status.completed) {
     return MigrationVMStepsType.Completed;
   }
@@ -88,7 +85,7 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     let title: string;
     title = status.error?.phase ? `${MigrationVMStepsType.Error} - ` : '';
     if (currentStep) {
-      title = `${title}${MigrationVMStepsType[currentStep.name]}`;
+      title = `${title}${MigrationVMStepsType[currentStep.name] || currentStep.name}`;
     }
     return title;
   }
@@ -103,17 +100,14 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
   const title = getPipelineSummaryTitle(status);
-  const {
-    pipeline: { tasks },
-  } = status;
   if (status.completed) {
     return (
       <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={status.pipeline.tasks.length} color={successColor} />
+        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
       </Summary>
     );
   } else if (status.started && !status.completed) {
-    const { currentStepIndex } = findCurrentStep(tasks);
+    const { currentStepIndex } = findCurrentStep(status.pipeline);
     return (
       <Summary title={title}>
         <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
@@ -123,18 +117,26 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
             color={status.error?.phase ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
-        {currentStepIndex > 0 ? <Dash isReached={false} /> : null}
-        <Chain
-          Face={ResourcesAlmostEmptyIcon}
-          times={tasks.length - currentStepIndex}
-          color={disabledColor}
-        />
+        {currentStepIndex < status.pipeline.length - 1 ? (
+          <>
+            <Dash isReached={false} />
+            <Chain
+              Face={ResourcesAlmostEmptyIcon}
+              times={status.pipeline.length - currentStepIndex - 1}
+              color={disabledColor}
+            />
+          </>
+        ) : null}
       </Summary>
     );
   } else {
     return (
       <Summary title={title}>
-        <Chain Face={ResourcesAlmostEmptyIcon} times={tasks.length} color={disabledColor} />
+        <Chain
+          Face={ResourcesAlmostEmptyIcon}
+          times={status.pipeline.length}
+          color={disabledColor}
+        />
       </Summary>
     );
   }

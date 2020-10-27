@@ -9,6 +9,7 @@ import {
   Progress,
   ProgressMeasureLocation,
   ProgressVariant,
+  Spinner,
   Text,
 } from '@patternfly/react-core';
 import {
@@ -22,6 +23,7 @@ import {
   classNames,
   cellWidth,
 } from '@patternfly/react-table';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
@@ -29,7 +31,7 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import { PlanStatusType, StatusConditionsType } from '@app/common/constants';
+import { PlanStatusDisplayType, PlanStatusAPIType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
@@ -38,12 +40,25 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
 
 import './PlansTable.css';
+import { KubeClientError } from '@app/client/types';
+import { IMigration } from '@app/queries/types/migrations.types';
+import { MutationResult } from 'react-query';
+import { getPlanStatusTitle } from './helpers';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
+  createMigration: (plan: IPlan) => Promise<IMigration | undefined>;
+  createMigrationResult: MutationResult<IMigration, KubeClientError>;
+  planBeingStarted: IPlan | null;
 }
 
-const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlansTableProps) => {
+const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
+  plans,
+  createMigration,
+  createMigrationResult,
+  planBeingStarted,
+}: IPlansTableProps) => {
   const providersQuery = useProvidersQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
     {
@@ -80,16 +95,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
       title: 'Status',
       type: FilterType.search,
       placeholderText: 'Filter state...',
-      getItemValue: (item) => {
-        const res = item.status?.conditions.find(
-          (condition) =>
-            condition.type === PlanStatusType.Ready ||
-            condition.type === PlanStatusType.Execute ||
-            condition.type === PlanStatusType.Finished ||
-            condition.type === PlanStatusType.Error
-        );
-        return res ? StatusConditionsType[res.type] : '';
-      },
+      getItemValue: getPlanStatusTitle,
     },
   ];
 
@@ -104,7 +110,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
       sourceProvider?.name || '',
       targetProvider?.name || '',
       plan.spec.vms.length,
-      '', // Plan status
+      getPlanStatusTitle(plan),
       '', // Action column
     ];
   };
@@ -137,26 +143,31 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
 
   const rows: IRow[] = [];
 
+  enum ActionButtonType {
+    Start = 'Start',
+    Cancel = 'Cancel',
+  }
+
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonText: string | React.ReactNode;
+    let buttonType: ActionButtonType | null = null;
     let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
 
     const conditions = plan.status?.conditions || [];
 
-    if (hasCondition(conditions, StatusConditionsType.Ready)) {
-      buttonText = 'Start';
+    if (hasCondition(conditions, PlanStatusAPIType.Ready) && !plan.status?.migration?.started) {
+      buttonType = ActionButtonType.Start;
       isStatusReady = true;
-    } else if (hasCondition(conditions, StatusConditionsType.Finished)) {
-      title = PlanStatusType.Finished;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Succeeded)) {
+      title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
-    } else if (hasCondition(conditions, StatusConditionsType.Error)) {
-      title = PlanStatusType.Error;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
+      title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else {
-      buttonText = 'Cancel';
-      title = PlanStatusType.Execute;
+      buttonType = ActionButtonType.Cancel;
+      title = PlanStatusDisplayType.Executing;
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -184,7 +195,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
         plan.spec.vms.length,
         {
           title: isStatusReady ? (
-            <StatusIcon status={StatusType.Ok} label={PlanStatusType.Ready} />
+            <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
             <Progress
               title={title}
@@ -197,27 +208,47 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
           ),
         },
         {
-          title: buttonText ? (
-            <>
-              <Flex
-                flex={{ default: 'flex_2' }}
-                spaceItems={{ default: 'spaceItemsNone' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-                flexWrap={{ default: 'nowrap' }}
-              >
-                <FlexItem align={{ default: 'alignRight' }}>
-                  <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={false}>
-                    {buttonText}
-                  </Button>
-                </FlexItem>
-                <FlexItem>
-                  <PlanActionsDropdown conditions={conditions} />
-                </FlexItem>
-              </Flex>
-            </>
-          ) : (
-            <PlanActionsDropdown conditions={conditions} />
-          ),
+          // TODO: Cancellation is disabled until we have API support.
+          //   When it is ready, this condition should just be `title: buttonType ? (`
+          title:
+            buttonType && buttonType === ActionButtonType.Start ? (
+              <>
+                <Flex
+                  flex={{ default: 'flex_2' }}
+                  spaceItems={{ default: 'spaceItemsNone' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  flexWrap={{ default: 'nowrap' }}
+                >
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
+                      <Spinner size="md" className={spacing.mxLg} />
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          if (buttonType === ActionButtonType.Start) {
+                            createMigration(plan);
+                          }
+                          if (buttonType === ActionButtonType.Cancel) {
+                            alert('TODO');
+                          }
+                        }}
+                        isDisabled={
+                          buttonType === ActionButtonType.Start && createMigrationResult.isLoading
+                        }
+                      >
+                        {buttonType}
+                      </Button>
+                    )}
+                  </FlexItem>
+                  <FlexItem>
+                    <PlanActionsDropdown conditions={conditions} />
+                  </FlexItem>
+                </Flex>
+              </>
+            ) : (
+              <PlanActionsDropdown conditions={conditions} />
+            ),
         },
       ],
     });

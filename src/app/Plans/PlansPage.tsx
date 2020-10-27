@@ -18,10 +18,47 @@ import PlansTable from './components/PlansTable';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
 import { usePlansQuery } from '@app/queries/plans';
+import { useCreateMigrationMutation } from '@app/queries/migrations';
+import MutationStatus from '@app/common/components/MutationStatus';
+import { IPlan } from '@app/queries/types';
+import { KubeClientError } from '@app/client/types';
+import { IMigration } from '@app/queries/types/migrations.types';
+import { MutationResult } from 'react-query';
+import { isSameResource } from '@app/queries/helpers';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const plansQuery = usePlansQuery();
+  const [planBeingStarted, setPlanBeingStarted] = React.useState<IPlan | null>(null);
+  const [baseCreateMigration, baseCreateMigrationResult] = useCreateMigrationMutation();
+  const createMigration = (plan: IPlan) => {
+    setPlanBeingStarted(plan);
+    return baseCreateMigration(plan);
+  };
+  const createMigrationResult: MutationResult<IMigration, KubeClientError> = {
+    ...baseCreateMigrationResult,
+    reset: () => {
+      setPlanBeingStarted(null);
+      baseCreateMigrationResult.reset();
+    },
+  };
+
+  React.useEffect(() => {
+    if (createMigrationResult.isIdle) {
+      setPlanBeingStarted(null);
+    }
+  }, [createMigrationResult]);
+
+  React.useEffect(() => {
+    if (planBeingStarted) {
+      const matchingPlan = plansQuery.data?.items.find((plan) =>
+        isSameResource(plan.metadata, planBeingStarted.metadata)
+      );
+      if ((matchingPlan?.status?.migration?.vms?.length || 0) > 0) {
+        setPlanBeingStarted(null);
+      }
+    }
+  }, [planBeingStarted, plansQuery.data]);
 
   return (
     <>
@@ -29,6 +66,13 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration Plans</Title>
       </PageSection>
       <PageSection>
+        <MutationStatus
+          results={[createMigrationResult]}
+          errorTitles={[`Error starting migration for plan: ${planBeingStarted?.metadata.name}`]}
+          isInline={false}
+          disableSpinner
+          className={spacing.mbMd}
+        />
         {sufficientProvidersQuery.isLoading || plansQuery.isLoading ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
@@ -50,7 +94,12 @@ const PlansPage: React.FunctionComponent = () => {
                   <CreatePlanButton />
                 </EmptyState>
               ) : (
-                <PlansTable plans={plansQuery.data?.items || []} />
+                <PlansTable
+                  plans={plansQuery.data?.items || []}
+                  createMigration={createMigration}
+                  createMigrationResult={createMigrationResult}
+                  planBeingStarted={planBeingStarted}
+                />
               )}
             </CardBody>
           </Card>
