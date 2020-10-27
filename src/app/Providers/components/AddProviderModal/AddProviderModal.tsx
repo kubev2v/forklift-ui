@@ -9,7 +9,12 @@ import {
 } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import {
+  dnsLabelNameSchema,
+  ProviderType,
+  PROVIDER_TYPE_NAMES,
+  urlSchema,
+} from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useCreateProviderMutation } from '@app/queries';
 import MutationStatus from '@app/common/components/MutationStatus';
@@ -34,17 +39,17 @@ const useAddProviderFormState = () => {
   return {
     [ProviderType.vsphere]: useFormState({
       providerType: providerTypeField,
-      name: useFormField('', yup.string().label('Name').required()),
-      hostname: useFormField('', yup.string().label('Hostname').required()),
-      username: useFormField('', yup.string().label('Username').required()),
-      password: useFormField('', yup.string().label('Password').required()),
+      name: useFormField('', dnsLabelNameSchema.label('Name').required()),
+      hostname: useFormField('', yup.string().max(255).label('Hostname').required()),
+      username: useFormField('', yup.string().max(320).label('Username').required()),
+      password: useFormField('', yup.string().max(256).label('Password').required()),
       fingerprint: useFormField('', yup.string().label('Certificate SHA1 Fingerprint').required()),
       fingerprintFilename: useFormField('', yup.string()),
     }),
     [ProviderType.openshift]: useFormState({
       providerType: providerTypeField,
-      clusterName: useFormField('', yup.string().label('Cluster name').required()),
-      url: useFormField('', yup.string().label('URL').required()),
+      clusterName: useFormField('', dnsLabelNameSchema.label('Cluster name').required()),
+      url: useFormField('', urlSchema.label('URL').required()),
       saToken: useFormField('', yup.string().label('Service account token').required()),
     }),
   };

@@ -38,10 +38,11 @@ import { useCreatePlanMutation } from '@app/queries/plans';
 import { useCreateMappingMutation } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
+import { dnsLabelNameSchema } from '@app/common/constants';
 
 const useMappingFormState = () => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
-  const newMappingNameSchema = yup.string().label('Name');
+  const newMappingNameSchema = dnsLabelNameSchema.label('Name');
   return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
@@ -57,7 +58,7 @@ const useMappingFormState = () => {
 // TODO add support for prefilling forms for editing an API plan
 const usePlanWizardFormState = () => ({
   general: useFormState({
-    planName: useFormField('', yup.string().label('Plan name').required()),
+    planName: useFormField('', dnsLabelNameSchema.label('Plan name').required()),
     planDescription: useFormField('', yup.string().label('Plan description').defined()),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
@@ -67,7 +68,7 @@ const usePlanWizardFormState = () => ({
       null,
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
-    targetNamespace: useFormField('', yup.string().label('Target namespace').required()),
+    targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
   }),
   filterVMs: useFormState({
     treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
