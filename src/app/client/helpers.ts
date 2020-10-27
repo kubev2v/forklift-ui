@@ -70,17 +70,15 @@ export function convertFormValuesToSecret(
       type: 'Opaque',
     };
   } else {
-    //default to vmware
+    // default to vmware
     const vmwareValues = values as VMwareProviderFormValues;
-    const testThumbprint = 'fjdasfjasdlj';
-    const encodedThumbprint = btoa(testThumbprint);
     const encodedPassword = btoa(vmwareValues.password);
     return {
       apiVersion: 'v1',
       data: {
         user: vmwareValues.username,
         password: encodedPassword,
-        thumbprint: encodedThumbprint, //values.thumbprint?//
+        thumbprint: vmwareValues.fingerprint,
       },
       kind: 'Secret',
       metadata: {
