@@ -46,8 +46,8 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   onClose,
 }: ISelectNetworkModalProps) => {
   const form = useFormState({
-    adminUserId: useFormField('', yup.string().label('User Id').min(2).max(20).required()),
-    adminPassword: useFormField('', yup.string().label('Password').max(20).required()),
+    adminUserId: useFormField('', yup.string().label('User Id').required()),
+    adminPassword: useFormField('', yup.string().label('Password').required()),
     selectedNetwork: useFormField(null, yup.mixed<IHostNetwork>().label('Host network').required()),
   });
 
