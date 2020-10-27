@@ -37,7 +37,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
               <Step status={status} index={index} />
             </FlexItem>
             <FlexItem>
-              <Text>{MigrationVMStepsType[step.name]}</Text>
+              <Text>{MigrationVMStepsType[step.name] || step.name}</Text>
             </FlexItem>
           </Flex>
         ),
