@@ -15,7 +15,6 @@ import {
   Provider,
   INewProvider,
   INewSecret,
-  INameNamespaceRef,
   IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
@@ -33,7 +32,6 @@ import {
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { ProviderType } from '@app/common/constants';
 import { KubeClientError } from '@app/client/types';
-import { ResourcesFullIcon } from '@patternfly/react-icons';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
