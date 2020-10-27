@@ -1,4 +1,5 @@
 import { MutationResultPair, useQueryCache, QueryResult, QueryStatus } from 'react-query';
+import * as yup from 'yup';
 import {
   IVMwareProvider,
   IOpenShiftProvider,
@@ -25,7 +26,7 @@ import {
   VirtResource,
   VirtResourceKind,
 } from '@app/client/helpers';
-import { VIRT_META } from '@app/common/constants';
+import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
@@ -138,3 +139,11 @@ export const useMappingResourceQueries = (
     error,
   };
 };
+
+export const getMappingNameSchema = (
+  mappingsQuery: QueryResult<IKubeList<Mapping>>
+): yup.StringSchema =>
+  dnsLabelNameSchema.test('unique-name', 'A mapping with this name already exists', (value) => {
+    if (mappingsQuery.data?.items.find((mapping) => mapping.metadata.name === value)) return false;
+    return true;
+  });

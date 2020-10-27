@@ -27,13 +27,14 @@ import {
   useProvidersQuery,
   useMappingResourceQueries,
   useCreateMappingMutation,
+  getMappingNameSchema,
+  useMappingsQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
 import MutationStatus from '@app/common/components/MutationStatus';
-import { dnsLabelNameSchema } from '@app/common/constants';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -48,9 +49,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
 }: IAddEditMappingModalProps) => {
   usePausedPollingEffect();
 
+  const mappingsQuery = useMappingsQuery(mappingType);
+
   // TODO add support for prefilling form for editing an API mapping
   const form = useFormState({
-    name: useFormField('', dnsLabelNameSchema.label('Mapping name').required()),
+    name: useFormField('', getMappingNameSchema(mappingsQuery).label('Mapping name').required()),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
       yup.mixed<IVMwareProvider>().label('Source provider').required()

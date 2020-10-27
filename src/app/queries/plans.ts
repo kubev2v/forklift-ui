@@ -1,3 +1,4 @@
+import * as yup from 'yup';
 import {
   checkIfResourceExists,
   useClientInstance,
@@ -5,7 +6,7 @@ import {
   VirtResourceKind,
 } from '@app/client/helpers';
 import { IKubeList, KubeClientError } from '@app/client/types';
-import { VIRT_META } from '@app/common/constants';
+import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import { POLLING_INTERVAL } from './constants';
@@ -51,3 +52,9 @@ export const useCreatePlanMutation = (
     }
   );
 };
+
+export const getPlanNameSchema = (plansQuery: QueryResult<IKubeList<IPlan>>): yup.StringSchema =>
+  dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {
+    if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
+    return true;
+  });
