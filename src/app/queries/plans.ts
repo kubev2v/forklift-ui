@@ -28,9 +28,6 @@ export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
       queryFn: useAuthorizedK8sFetch(planResource),
       config: {
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
-        onError: (error) => {
-          console.log('error', error);
-        },
       },
     },
     mockKubeList(MOCK_PLANS, 'Plan')

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 import { AxiosError } from 'axios';
 import { History } from 'history';
-import { setTokenExpiryHandler } from '@konveyor/lib-ui';
 
 export interface INetworkContext {
   setSelfSignedCertUrl: (url: string) => void;
@@ -40,11 +39,6 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
     setCurrentUser(JSON.stringify(user));
     history.push('/');
   };
-  // handle expiry for axios calls using k8s client
-  setTokenExpiryHandler(() => {
-    console.error('token expired');
-    setCurrentUser('');
-  });
 
   const checkExpiry = (error: Response | AxiosError<unknown>, history: History) => {
     const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
