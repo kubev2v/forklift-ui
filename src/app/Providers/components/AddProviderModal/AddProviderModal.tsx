@@ -38,7 +38,7 @@ const useAddProviderFormState = () => {
       hostname: useFormField('', yup.string().label('Hostname').required()),
       username: useFormField('', yup.string().label('Username').required()),
       password: useFormField('', yup.string().label('Password').required()),
-      fingerprint: useFormField('', yup.string().label('Fingerprint').required()),
+      fingerprint: useFormField('', yup.string().label('Certificate SHA1 Fingerprint').required()),
       fingerprintFilename: useFormField('', yup.string()),
     }),
     [ProviderType.openshift]: useFormState({
@@ -154,7 +154,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
               fieldId="vmware-password"
             />
             <FormGroup
-              label="Fingerprint"
+              label="Certificate SHA1 Fingerprint"
               isRequired
               fieldId="fingerprint"
               {...getFormGroupProps(vmwareForm.fields.fingerprint)}
