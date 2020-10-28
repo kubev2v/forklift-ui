@@ -198,7 +198,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.vms.length,
         {
           title: isInitializing ? (
-            <StatusIcon status={StatusType.Warning} label={PlanStatusDisplayType.Initializing} />
+            <Spinner size="md" />
           ) : isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
