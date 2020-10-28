@@ -160,17 +160,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     if (hasCondition(conditions, PlanStatusAPIType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
       isStatusReady = true;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Executing)) {
+      buttonType = ActionButtonType.Cancel;
+      title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusAPIType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
     } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
-    } else if (hasCondition(conditions, PlanStatusAPIType.Executing)) {
-      buttonType = ActionButtonType.Cancel;
-      title = PlanStatusDisplayType.Executing;
-    } else {
+    } else if (!plan.status) {
       isInitializing = true;
+    } else {
+      console.log('Migration plan Status Error:', plan);
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
