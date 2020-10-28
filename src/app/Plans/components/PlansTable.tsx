@@ -251,9 +251,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </FlexItem>
                 </Flex>
               </>
-            ) : (
+            ) : !isInitializing ? (
               <PlanActionsDropdown conditions={conditions} />
-            ),
+            ) : null,
         },
       ],
     });
