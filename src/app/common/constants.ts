@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 import { IVirtMetaVars } from './types';
 
 export const APP_TITLE = 'Migration Toolkit for Virtualization';
@@ -71,3 +73,21 @@ export const VIRT_META: IVirtMetaVars =
         configNamespace: 'mock-namespace',
         inventoryApi: '/mock/api',
       };
+
+export const dnsLabelNameSchema = yup
+  .string()
+  .max(63)
+  .matches(
+    /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
+    ({ label }) =>
+      `${label} can only contain lowercase alphanumeric characters and dashes (-), and must start and end with an alphanumeric character`
+  );
+
+export const urlSchema = yup.string().test('is-valid-url', 'Must be a valid URL', (value) => {
+  try {
+    new URL(value as string);
+  } catch (_) {
+    return false;
+  }
+  return true;
+});

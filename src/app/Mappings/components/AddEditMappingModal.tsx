@@ -27,6 +27,8 @@ import {
   useProvidersQuery,
   useMappingResourceQueries,
   useCreateMappingMutation,
+  getMappingNameSchema,
+  useMappingsQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -47,9 +49,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
 }: IAddEditMappingModalProps) => {
   usePausedPollingEffect();
 
+  const mappingsQuery = useMappingsQuery(mappingType);
+
   // TODO add support for prefilling form for editing an API mapping
   const form = useFormState({
-    name: useFormField('', yup.string().label('Mapping name').required()),
+    name: useFormField('', getMappingNameSchema(mappingsQuery).label('Mapping name').required()),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
       yup.mixed<IVMwareProvider>().label('Source provider').required()
