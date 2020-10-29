@@ -200,7 +200,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.vms.length,
         {
           title: isInitializing ? (
-            <Spinner size="md" />
+            <Flex
+              spaceItems={{ default: 'spaceItemsSm' }}
+              alignItems={{ default: 'alignItemsCenter' }}
+              flexWrap={{ default: 'nowrap' }}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              <FlexItem>
+                <Spinner size="md" />
+              </FlexItem>
+              <FlexItem>Initializing</FlexItem>
+            </Flex>
           ) : isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
