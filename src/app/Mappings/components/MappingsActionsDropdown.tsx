@@ -1,8 +1,19 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import { MappingType, Mapping } from '@app/queries/types';
+import { useDeleteMappingMutation } from '@app/queries';
 
-const MappingsActionsDropdown: React.FunctionComponent = () => {
+interface IMappingsActionsDropdownProps {
+  mappingType: MappingType;
+  mapping: Mapping;
+}
+
+const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownProps> = ({
+  mappingType,
+  mapping,
+}: IMappingsActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
+  const [deleteMapping, deleteMappingResult] = useDeleteMappingMutation(mappingType);
   return (
     <Dropdown
       aria-label="Actions"
@@ -22,8 +33,9 @@ const MappingsActionsDropdown: React.FunctionComponent = () => {
         <DropdownItem
           onClick={() => {
             setKebabIsOpen(false);
-            alert('TODO');
+            deleteMapping(mapping);
           }}
+          isDisabled={deleteMappingResult.isLoading}
           key="remove"
         >
           Remove

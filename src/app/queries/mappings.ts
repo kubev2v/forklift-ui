@@ -22,7 +22,7 @@ import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
 import { useDatastoresQuery } from './datastores';
 import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
-import { KubeClientError, IKubeList, IKubeResponse } from '@app/client/types';
+import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedK8sClient } from './fetchHelpers';
@@ -71,6 +71,22 @@ export const useCreateMappingMutation = (
       onSuccess: () => {
         queryCache.invalidateQueries(['mappings', mappingType]);
         onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useDeleteMappingMutation = (
+  mappingType: MappingType
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Mapping, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const { resource } = getMappingResource(mappingType);
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Mapping>(
+    (mapping: Mapping) => client.delete(resource, mapping.metadata.name),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries(['mappings', mappingType]);
       },
     }
   );
