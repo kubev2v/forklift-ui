@@ -18,15 +18,16 @@ import {
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
 import { IPlan } from './types';
-import { useAuthorizedK8sFetch } from './fetchHelpers';
+import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const planResource = new VirtResource(VirtResourceKind.Plan, VIRT_META.namespace);
 
 export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
+  const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
-      queryFn: useAuthorizedK8sFetch(planResource),
+      queryFn: () => client.list(planResource),
       config: {
         refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
       },

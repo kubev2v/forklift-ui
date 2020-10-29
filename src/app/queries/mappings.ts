@@ -31,7 +31,7 @@ import { KubeClientError, IKubeList } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
-import { useAuthorizedK8sFetch } from './fetchHelpers';
+import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
@@ -41,11 +41,11 @@ const getMappingResource = (mappingType: MappingType) => {
 };
 
 export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeList<Mapping>> => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
       queryKey: ['mappings', mappingType],
-      queryFn: useAuthorizedK8sFetch(getMappingResource(mappingType).resource),
+      queryFn: () => client.list(getMappingResource(mappingType).resource),
       config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
     },
     mappingType === MappingType.Network
