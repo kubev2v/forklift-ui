@@ -1,10 +1,5 @@
 import * as yup from 'yup';
-import {
-  checkIfResourceExists,
-  useClientInstance,
-  VirtResource,
-  VirtResourceKind,
-} from '@app/client/helpers';
+import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
 import { IKubeList, KubeClientError } from '@app/client/types';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
@@ -40,7 +35,7 @@ export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
 export const useCreatePlanMutation = (
   onSuccess?: () => void
 ): MutationResultPair<IPlan, KubeClientError, IPlan, unknown> => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IPlan, KubeClientError, IPlan>(
     async (plan: IPlan) => {

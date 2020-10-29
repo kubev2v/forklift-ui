@@ -20,12 +20,7 @@ import {
 } from './helpers';
 import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
 import { useDatastoresQuery } from './datastores';
-import {
-  checkIfResourceExists,
-  useClientInstance,
-  VirtResource,
-  VirtResourceKind,
-} from '@app/client/helpers';
+import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
@@ -64,7 +59,7 @@ export const useCreateMappingMutation = (
   Mapping,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<Mapping, KubeClientError, Mapping>(
     async (mapping: Mapping) => {

@@ -6,13 +6,14 @@ import KubeClient, {
   ClusterClient,
 } from '@konveyor/lib-ui/dist/';
 import { VIRT_META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { INewProvider, INewSecret } from '@app/queries/types';
+import { ICommonProviderObject, INewSecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
   OpenshiftProviderFormValues,
   VMwareProviderFormValues,
 } from '@app/Providers/components/AddProviderModal/AddProviderModal';
+import { AuthorizedClusterClient } from './types';
 
 export class VirtResource extends NamespacedResource {
   private _gvk: KubeClient.IGroupVersionKindPlural;
@@ -99,7 +100,7 @@ export function convertFormValuesToSecret(
 export const convertFormValuesToProvider = (
   values: AddProviderFormValues,
   providerType: ProviderType | null
-): INewProvider => {
+): ICommonProviderObject => {
   let name: string;
   let url: string;
   if (providerType === 'vsphere') {
@@ -141,7 +142,7 @@ export const getTokenSecretLabelSelector = (
 };
 
 export const checkIfResourceExists = async (
-  client: ClusterClient,
+  client: AuthorizedClusterClient,
   resourceKind: VirtResourceKind | CoreNamespacedResourceKind,
   resource: VirtResource,
   resourceName: string

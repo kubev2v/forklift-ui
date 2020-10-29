@@ -1,10 +1,11 @@
 import { VIRT_META } from '@app/common/constants';
 import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
-import { QueryFunction, MutateFunction, MutationFunction } from 'react-query/types/core/types';
+import { QueryFunction, MutationFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
-import { ClusterClient, KubeResource } from '@konveyor/lib-ui';
+import { KubeResource } from '@konveyor/lib-ui';
+import { AuthorizedClusterClient } from '@app/client/types';
 
 interface IFetchContext {
   history: History<LocationState>;
@@ -62,7 +63,10 @@ export const authorizedPost = async <T, TData>(
   data?: TData
 ): Promise<T> => authorizedFetch(url, fetchContext, { body: JSON.stringify(data) });
 
-export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFunction<T, TData> => {
+export const useAuthorizedPost = <T, TData>(
+  url: string,
+  data: TData
+): MutationFunction<T, TData> => {
   const fetchContext = useFetchContext();
   return () => authorizedPost(url, fetchContext, data);
 };
@@ -100,10 +104,7 @@ export const authorizedK8sRequest = async <T>(
   }
 };
 
-export const useAuthorizedK8sClient = (): Pick<
-  ClusterClient,
-  'get' | 'list' | 'create' | 'delete' | 'patch' | 'put'
-> => {
+export const useAuthorizedK8sClient = (): AuthorizedClusterClient => {
   const fetchContext = useFetchContext();
   const client = useClientInstance();
   /* eslint-disable @typescript-eslint/ban-types */

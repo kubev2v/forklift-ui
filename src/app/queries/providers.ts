@@ -14,13 +14,13 @@ import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import {
   IProvidersByType,
   Provider,
-  INewProvider,
   INewSecret,
   IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
+  ICommonProviderObject,
 } from './types';
-import { useAuthorizedFetch } from './fetchHelpers';
+import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
   VirtResourceKind,
   providerResource,
@@ -28,7 +28,6 @@ import {
   convertFormValuesToProvider,
   convertFormValuesToSecret,
   checkIfResourceExists,
-  useClientInstance,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
@@ -52,15 +51,15 @@ export const useCreateProviderMutation = (
   providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
-  INewProvider,
+  ICommonProviderObject,
   KubeClientError,
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   const postProvider = async (values: AddProviderFormValues) => {
-    const provider: INewProvider = convertFormValuesToProvider(values, providerType);
+    const provider: ICommonProviderObject = convertFormValuesToProvider(values, providerType);
     await checkIfResourceExists(
       client,
       VirtResourceKind.Provider,
@@ -134,12 +133,15 @@ export const useCreateProviderMutation = (
     }
   };
 
-  return useMockableMutation<INewProvider, KubeClientError, AddProviderFormValues>(postProvider, {
-    onSuccess: () => {
-      queryCache.invalidateQueries('providers');
-      onSuccess();
-    },
-  });
+  return useMockableMutation<ICommonProviderObject, KubeClientError, AddProviderFormValues>(
+    postProvider,
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('providers');
+        onSuccess();
+      },
+    }
+  );
 };
 
 export const useHasSufficientProvidersQuery = (): {
