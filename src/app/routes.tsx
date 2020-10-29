@@ -73,6 +73,8 @@ export const routes: AppRouteConfig[] = [
     title: `${APP_TITLE} | Providers`,
     isProtected: true,
   },
+  /*
+  // TODO (post-beta): reintroduce this page when we resolve https://github.com/konveyor/virt-ui/issues/138
   {
     component: HostsPage,
     exact: false,
@@ -80,6 +82,7 @@ export const routes: AppRouteConfig[] = [
     title: `${APP_TITLE} | Hosts`,
     isProtected: true,
   },
+  */
   {
     component: PlansPage,
     exact: true,
