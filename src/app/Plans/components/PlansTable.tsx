@@ -42,14 +42,15 @@ import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
 import './PlansTable.css';
 import { KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
-import { MutationResult } from 'react-query';
+import { MutateFunction, MutationResult } from 'react-query';
 import { getPlanStatusTitle } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
+import { KubeResponse } from '@app/queries/fetchHelpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
-  createMigration: (plan: IPlan) => Promise<IMigration | undefined>;
-  createMigrationResult: MutationResult<IMigration, KubeClientError>;
+  createMigration: MutateFunction<KubeResponse<IMigration>, KubeClientError, IPlan>;
+  createMigrationResult: MutationResult<KubeResponse<IMigration>, KubeClientError>;
   planBeingStarted: IPlan | null;
 }
 

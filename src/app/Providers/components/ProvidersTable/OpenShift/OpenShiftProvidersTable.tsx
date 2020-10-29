@@ -98,7 +98,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         {
           title: <ProviderStatus provider={provider} />,
         },
-        { title: <OpenShiftProviderActionsDropdown /> },
+        { title: <OpenShiftProviderActionsDropdown provider={provider} /> },
       ],
     });
     if (isExpanded) {

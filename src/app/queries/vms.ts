@@ -1,6 +1,5 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
-import { POLLING_INTERVAL } from './constants';
 import { useAuthorizedFetch } from './fetchHelpers';
 import { sortResultsByName, useMockableQuery, getInventoryApiUrl } from './helpers';
 import { MOCK_VMWARE_VMS } from './mocks/vms.mock';
@@ -16,7 +15,7 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
       ),
       config: {
         enabled: !!provider,
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     MOCK_VMWARE_VMS

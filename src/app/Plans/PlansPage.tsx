@@ -25,17 +25,18 @@ import { KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
+import { KubeResponse } from '@app/queries/fetchHelpers';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const plansQuery = usePlansQuery();
   const [planBeingStarted, setPlanBeingStarted] = React.useState<IPlan | null>(null);
   const [baseCreateMigration, baseCreateMigrationResult] = useCreateMigrationMutation();
-  const createMigration = (plan: IPlan) => {
-    setPlanBeingStarted(plan);
+  const createMigration = (plan: IPlan | undefined) => {
+    setPlanBeingStarted(plan || null);
     return baseCreateMigration(plan);
   };
-  const createMigrationResult: MutationResult<IMigration, KubeClientError> = {
+  const createMigrationResult: MutationResult<KubeResponse<IMigration>, KubeClientError> = {
     ...baseCreateMigrationResult,
     reset: () => {
       setPlanBeingStarted(null);

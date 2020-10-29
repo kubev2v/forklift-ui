@@ -25,8 +25,7 @@ import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
-import { POLLING_INTERVAL } from './constants';
-import { useAuthorizedK8sClient } from './fetchHelpers';
+import { KubeResponse, useAuthorizedK8sClient } from './fetchHelpers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
@@ -40,8 +39,9 @@ export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeLis
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
       queryKey: ['mappings', mappingType],
-      queryFn: () => client.list(getMappingResource(mappingType).resource),
-      config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
+      queryFn: async () =>
+        (await client.list<IKubeList<Mapping>>(getMappingResource(mappingType).resource)).data,
+      config: { refetchInterval: usePollingContext().refetchInterval },
     },
     mappingType === MappingType.Network
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')
@@ -54,18 +54,18 @@ export const useCreateMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
 ): MutationResultPair<
-  Mapping,
+  KubeResponse<Mapping>,
   KubeClientError,
   Mapping,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<Mapping, KubeClientError, Mapping>(
+  return useMockableMutation<KubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
       await checkIfResourceExists(client, kind, resource, mapping.metadata.name);
-      return await client.create(resource, mapping);
+      return await client.create<Mapping>(resource, mapping);
     },
     {
       onSuccess: () => {

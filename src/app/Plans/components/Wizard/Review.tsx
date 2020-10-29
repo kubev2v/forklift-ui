@@ -8,12 +8,13 @@ import { MutationResult } from 'react-query';
 import { KubeClientError } from '@app/client/types';
 import MutationStatus from '@app/common/components/MutationStatus';
 import { generateMappings } from './helpers';
+import { KubeResponse } from '@app/queries/fetchHelpers';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
-  createPlanResult: MutationResult<IPlan, KubeClientError>;
-  createNetworkMappingResult: MutationResult<Mapping, KubeClientError>;
-  createStorageMappingResult: MutationResult<Mapping, KubeClientError>;
+  createPlanResult: MutationResult<KubeResponse<IPlan>, KubeClientError>;
+  createNetworkMappingResult: MutationResult<KubeResponse<Mapping>, KubeClientError>;
+  createStorageMappingResult: MutationResult<KubeResponse<Mapping>, KubeClientError>;
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({

@@ -1,11 +1,10 @@
 import { VIRT_META } from '@app/common/constants';
 import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
-import { QueryFunction, MutationFunction } from 'react-query/types/core/types';
+import { QueryFunction, MutateFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
 import { KubeResource } from '@konveyor/lib-ui';
-import { AuthorizedClusterClient } from '@app/client/types';
 
 interface IFetchContext {
   history: History<LocationState>;
@@ -63,24 +62,32 @@ export const authorizedPost = async <T, TData>(
   data?: TData
 ): Promise<T> => authorizedFetch(url, fetchContext, { body: JSON.stringify(data) });
 
-export const useAuthorizedPost = <T, TData>(
-  url: string,
-  data: TData
-): MutationFunction<T, TData> => {
+export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFunction<T, TData> => {
   const fetchContext = useFetchContext();
   return () => authorizedPost(url, fetchContext, data);
 };
 
+export interface KubeResponse<T = unknown> {
+  data: T;
+  status: number;
+  statusText: string;
+  config: Record<string, unknown>;
+  headers: Record<string, unknown>;
+  request: XMLHttpRequest;
+  state?: string;
+  reason?: string;
+}
+
 export const authorizedK8sRequest = async <T>(
   fetchContext: IFetchContext,
-  requestFn: () => Promise<{ data: T }>
-): Promise<T> => {
+  requestFn: () => Promise<KubeResponse<T>>
+): Promise<KubeResponse<T>> => {
   const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
 
   try {
     const response = await requestFn();
     if (response && response.data) {
-      return response.data;
+      return response;
     } else {
       throw response;
     }
@@ -104,7 +111,8 @@ export const authorizedK8sRequest = async <T>(
   }
 };
 
-export const useAuthorizedK8sClient = (): AuthorizedClusterClient => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const useAuthorizedK8sClient = () => {
   const fetchContext = useFetchContext();
   const client = useClientInstance();
   /* eslint-disable @typescript-eslint/ban-types */
@@ -124,3 +132,5 @@ export const useAuthorizedK8sClient = (): AuthorizedClusterClient => {
   };
   /* eslint-enable @typescript-eslint/ban-types */
 };
+
+export type AuthorizedClusterClient = ReturnType<typeof useAuthorizedK8sClient>;

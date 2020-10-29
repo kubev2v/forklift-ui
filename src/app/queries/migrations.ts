@@ -5,16 +5,16 @@ import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import { nameAndNamespace, useMockableMutation } from './helpers';
 import { IMigration } from './types/migrations.types';
 import { IPlan } from './types/plans.types';
-import { useAuthorizedK8sClient } from './fetchHelpers';
+import { KubeResponse, useAuthorizedK8sClient } from './fetchHelpers';
 
 const migrationResource = new VirtResource(VirtResourceKind.Migration, VIRT_META.namespace);
 
 export const useCreateMigrationMutation = (
   onSuccess?: () => void
-): MutationResultPair<IMigration, KubeClientError, IPlan, unknown> => {
+): MutationResultPair<KubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<IMigration, KubeClientError, IPlan>(
+  return useMockableMutation<KubeResponse<IMigration>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       const migration: IMigration = {
         apiVersion: CLUSTER_API_VERSION,

@@ -134,7 +134,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
           title: <ProviderStatus provider={provider} />,
         },
         {
-          title: <VMwareProviderActionsDropdown />,
+          title: <VMwareProviderActionsDropdown provider={provider} />,
         },
       ],
     });

@@ -1,6 +1,5 @@
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { POLLING_INTERVAL } from './constants';
 import { getInventoryApiUrl, sortResultsByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_DATASTORES } from './mocks/datastores.mock';
 import { IVMwareDatastore, IVMwareProvider, MappingType } from './types';
@@ -18,7 +17,7 @@ export const useDatastoresQuery = (
       ),
       config: {
         enabled: !!provider && mappingType === MappingType.Storage,
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     MOCK_VMWARE_DATASTORES

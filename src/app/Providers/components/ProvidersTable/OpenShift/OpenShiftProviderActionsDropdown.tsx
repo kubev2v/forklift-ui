@@ -1,8 +1,18 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import { ProviderType } from '@app/common/constants';
+import { useDeleteProviderMutation } from '@app/queries';
+import { IOpenShiftProvider } from '@app/queries/types';
 
-const OpenShiftProviderActionsDropdown: React.FunctionComponent = () => {
+interface IOpenShiftProviderActionsDropdownProps {
+  provider: IOpenShiftProvider;
+}
+
+const OpenShiftProviderActionsDropdown: React.FunctionComponent<IOpenShiftProviderActionsDropdownProps> = ({
+  provider,
+}: IOpenShiftProviderActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
+  const [deleteProvider, deleteProviderResult] = useDeleteProviderMutation(ProviderType.openshift);
   return (
     <Dropdown
       aria-label="Actions"
@@ -22,8 +32,9 @@ const OpenShiftProviderActionsDropdown: React.FunctionComponent = () => {
         <DropdownItem
           onClick={() => {
             setKebabIsOpen(false);
-            alert('TODO');
+            deleteProvider(provider.name);
           }}
+          isDisabled={deleteProviderResult.isLoading}
           key="remove"
         >
           Remove

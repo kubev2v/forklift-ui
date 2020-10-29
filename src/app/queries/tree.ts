@@ -1,6 +1,5 @@
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { POLLING_INTERVAL } from './constants';
 import { getInventoryApiUrl, sortTreeResultsByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
 import { IVMwareProvider } from './types';
@@ -18,7 +17,7 @@ export const useVMwareTreeQuery = <T extends VMwareTree>(
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
         enabled: !!provider,
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     (treeType === VMwareTreeType.Host ? MOCK_VMWARE_HOST_TREE : MOCK_VMWARE_VM_TREE) as T

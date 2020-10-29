@@ -1,8 +1,18 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import { useDeleteProviderMutation } from '@app/queries';
+import { IVMwareProvider } from '@app/queries/types';
+import { ProviderType } from '@app/common/constants';
 
-const VMwareProviderActionsDropdown: React.FunctionComponent = () => {
+interface IVMwareProviderActionsDropdownProps {
+  provider: IVMwareProvider;
+}
+
+const VMwareProviderActionsDropdown: React.FunctionComponent<IVMwareProviderActionsDropdownProps> = ({
+  provider,
+}: IVMwareProviderActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
+  const [deleteProvider, deleteProviderResult] = useDeleteProviderMutation(ProviderType.vsphere);
   return (
     <Dropdown
       aria-label="Actions"
@@ -22,8 +32,9 @@ const VMwareProviderActionsDropdown: React.FunctionComponent = () => {
         <DropdownItem
           onClick={() => {
             setKebabIsOpen(false);
-            alert('TODO');
+            deleteProvider(provider.name);
           }}
+          isDisabled={deleteProviderResult.isLoading}
           key="remove"
         >
           Remove

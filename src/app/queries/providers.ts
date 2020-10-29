@@ -2,7 +2,6 @@ import { useQueryCache, QueryResult, MutationResultPair } from 'react-query';
 import * as yup from 'yup';
 
 import { usePollingContext } from '@app/common/context';
-import { POLLING_INTERVAL } from './constants';
 import {
   useMockableQuery,
   getInventoryApiUrl,
@@ -20,7 +19,7 @@ import {
   ISrcDestRefs,
   ICommonProviderObject,
 } from './types';
-import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
+import { KubeResponse, useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
   VirtResourceKind,
   providerResource,
@@ -39,7 +38,7 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
     {
       queryKey: 'providers',
       queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=true')),
-      config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
+      config: { refetchInterval: usePollingContext().refetchInterval },
     },
     MOCK_PROVIDERS
   );
@@ -51,7 +50,7 @@ export const useCreateProviderMutation = (
   providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
-  ICommonProviderObject,
+  KubeResponse<ICommonProviderObject> | undefined,
   KubeClientError,
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
@@ -69,8 +68,8 @@ export const useCreateProviderMutation = (
     try {
       const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider);
 
-      const providerAddResults: Array<any> = [];
-      const providerSecretAddResult = await client.create(secretResource, secret);
+      const providerAddResults: Array<KubeResponse<INewSecret | ICommonProviderObject>> = [];
+      const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
 
       if (providerSecretAddResult.status === 201) {
         providerAddResults.push(providerSecretAddResult);
@@ -80,7 +79,10 @@ export const useCreateProviderMutation = (
           namespace: providerSecretAddResult.data.metadata.namespace,
         });
 
-        const providerAddResult = await client.create(providerResource, provider);
+        const providerAddResult = await client.create<ICommonProviderObject>(
+          providerResource,
+          provider
+        );
 
         if (providerAddResult.status === 201) {
           providerAddResults.push(providerAddResult);
@@ -103,11 +105,21 @@ export const useCreateProviderMutation = (
         };
 
         // The objects that need to be rolled back are those that were fulfilled
-        const rollbackObjs = providerAddResults.reduce((rollbackAccum, res) => {
-          return res.status === 201
-            ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]
-            : rollbackAccum;
-        }, []);
+        interface IRollbackObj {
+          kind: string;
+          name: string;
+        }
+        const rollbackObjs = providerAddResults.reduce(
+          (
+            rollbackAccum: IRollbackObj[],
+            res: KubeResponse<ICommonProviderObject | INewSecret>
+          ) => {
+            return res.status === 201
+              ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name || '' }]
+              : rollbackAccum;
+          },
+          []
+        );
 
         const rollbackResultPromises = await Promise.allSettled(
           rollbackObjs.map((r) => {
@@ -121,10 +133,11 @@ export const useCreateProviderMutation = (
             //   // One of the objects failed, but rollback was successful. Need to alert
             //   // the user that something went wrong, but we were able to recover with
             //   // a rollback
-            throw Error(providerAddResults.find((res) => res.state === 'rejected').reason);
+            throw Error(providerAddResults.find((res) => res.state === 'rejected')?.reason);
           }
         });
       }
+      return undefined;
     } catch (error) {
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
@@ -133,12 +146,38 @@ export const useCreateProviderMutation = (
     }
   };
 
-  return useMockableMutation<ICommonProviderObject, KubeClientError, AddProviderFormValues>(
-    postProvider,
+  return useMockableMutation<
+    KubeResponse<ICommonProviderObject> | undefined,
+    KubeClientError,
+    AddProviderFormValues
+  >(postProvider, {
+    onSuccess: () => {
+      queryCache.invalidateQueries('providers');
+      onSuccess();
+    },
+  });
+};
+
+export const useDeleteProviderMutation = (
+  providerType: ProviderType
+): MutationResultPair<KubeResponse<ICommonProviderObject>, KubeClientError, string, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<KubeResponse<ICommonProviderObject>, KubeClientError, string>(
+    (providerName: string) => client.delete(providerResource, providerName),
     {
-      onSuccess: () => {
-        queryCache.invalidateQueries('providers');
-        onSuccess();
+      onSuccess: (_data, providerName) => {
+        // Optimistically remove this provider from the cache immediately
+        queryCache.setQueryData(
+          'providers',
+          (oldData?: IProvidersByType) =>
+            ({
+              ...oldData,
+              [providerType]: ((oldData ? oldData[providerType] : []) as Provider[]).filter(
+                (provider) => provider.name !== providerName
+              ),
+            } as IProvidersByType)
+        );
       },
     }
   );

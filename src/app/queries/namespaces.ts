@@ -1,6 +1,5 @@
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { POLLING_INTERVAL } from './constants';
 import { getInventoryApiUrl, sortResultsByName, useMockableQuery } from './helpers';
 import { IOpenShiftProvider } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
@@ -16,7 +15,7 @@ export const useNamespacesQuery = (
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/namespaces`)),
       config: {
         enabled: !!provider,
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     MOCK_OPENSHIFT_NAMESPACES

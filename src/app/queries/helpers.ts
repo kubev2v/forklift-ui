@@ -1,5 +1,6 @@
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { usePollingContext } from '@app/common/context';
 import {
   MutationConfig,
   UseQueryObjectConfig,
@@ -61,6 +62,7 @@ export const useMockableMutation = <
 ): MutationResultPair<TResult, TError, TVariables, TSnapshot> => {
   const { checkExpiry } = useFetchContext();
   const history = useHistory();
+  const { pollFasterAfterMutation } = usePollingContext();
   return useMutation<TResult, TError, TVariables, TSnapshot>(
     process.env.DATA_SOURCE !== 'mock'
       ? async (vars: TVariables) => {
@@ -76,7 +78,13 @@ export const useMockableMutation = <
           await mockPromise(undefined);
           throw new Error('This operation is not available in mock/preview mode');
         },
-    config
+    {
+      ...config,
+      onSuccess: (data, variables) => {
+        config?.onSuccess && config.onSuccess(data, variables);
+        pollFasterAfterMutation();
+      },
+    }
   );
 };
 

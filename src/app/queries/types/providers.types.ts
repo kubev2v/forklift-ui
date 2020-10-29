@@ -21,6 +21,7 @@ export interface INewSecret extends IMetaTypeMeta {
     token?: string;
   };
   metadata: {
+    name?: string;
     generateName: string;
     namespace: string;
     labels: {
