@@ -97,7 +97,7 @@ export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
   return () => authorizedFetch(url, fetchContext);
 };
 
-export const useAuthorizedK8sFetch = <T>(resourceType: any): QueryFunction<T> => {
+export const useAuthorizedK8sFetch = <T>(resourceType: KubeResource): QueryFunction<T> => {
   const fetchContext = useFetchContext();
   const client = useClientInstance();
   return () => authorizedK8sFetch(resourceType, fetchContext, client);
