@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
-import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
+import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
@@ -47,6 +47,24 @@ export const useCreatePlanMutation = (
         queryCache.invalidateQueries('plans');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useDeletePlanMutation = (): MutationResultPair<
+  IKubeResponse<IKubeStatus>,
+  KubeClientError,
+  IPlan,
+  unknown
+> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
+    (plan: IPlan) => client.delete(planResource, plan.metadata.name),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
       },
     }
   );
