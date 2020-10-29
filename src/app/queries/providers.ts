@@ -57,6 +57,7 @@ export const useCreateProviderMutation = (
 > => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
   const postProvider = async (values: AddProviderFormValues) => {
     const provider: ICommonProviderObject = convertFormValuesToProvider(values, providerType);
     await checkIfResourceExists(
@@ -153,6 +154,7 @@ export const useCreateProviderMutation = (
   >(postProvider, {
     onSuccess: () => {
       queryCache.invalidateQueries('providers');
+      pollFasterAfterMutation();
       onSuccess();
     },
   });

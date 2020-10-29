@@ -36,6 +36,7 @@ export const useCreatePlanMutation = (
 ): MutationResultPair<KubeResponse<IPlan>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<KubeResponse<IPlan>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       await checkIfResourceExists(client, VirtResourceKind.Plan, planResource, plan.metadata.name);
@@ -44,6 +45,7 @@ export const useCreatePlanMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }

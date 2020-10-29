@@ -6,6 +6,7 @@ import { nameAndNamespace, useMockableMutation } from './helpers';
 import { IMigration } from './types/migrations.types';
 import { IPlan } from './types/plans.types';
 import { KubeResponse, useAuthorizedK8sClient } from './fetchHelpers';
+import { usePollingContext } from '@app/common/context';
 
 const migrationResource = new VirtResource(VirtResourceKind.Migration, VIRT_META.namespace);
 
@@ -14,6 +15,7 @@ export const useCreateMigrationMutation = (
 ): MutationResultPair<KubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<KubeResponse<IMigration>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       const migration: IMigration = {
@@ -38,6 +40,7 @@ export const useCreateMigrationMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
