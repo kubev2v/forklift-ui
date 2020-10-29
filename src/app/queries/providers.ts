@@ -162,13 +162,17 @@ export const useCreateProviderMutation = (
 
 export const useDeleteProviderMutation = (
   providerType: ProviderType
-): MutationResultPair<KubeResponse<ICommonProviderObject>, KubeClientError, string, unknown> => {
+): MutationResultPair<KubeResponse<Provider>, KubeClientError, Provider, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<KubeResponse<ICommonProviderObject>, KubeClientError, string>(
-    (providerName: string) => client.delete(providerResource, providerName),
+  return useMockableMutation<KubeResponse<Provider>, KubeClientError, Provider>(
+    async (provider: Provider) => {
+      const providerResponse = await client.delete<Provider>(providerResource, provider.name);
+      await client.delete(secretResource, provider.object.spec.secret.name);
+      return providerResponse;
+    },
     {
-      onSuccess: (_data, providerName) => {
+      onSuccess: (_data, provider) => {
         // Optimistically remove this provider from the cache immediately
         queryCache.setQueryData(
           'providers',
@@ -176,7 +180,7 @@ export const useDeleteProviderMutation = (
             ({
               ...oldData,
               [providerType]: ((oldData ? oldData[providerType] : []) as Provider[]).filter(
-                (provider) => provider.name !== providerName
+                (p) => p.name !== provider.name
               ),
             } as IProvidersByType)
         );

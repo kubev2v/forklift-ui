@@ -32,7 +32,7 @@ const VMwareProviderActionsDropdown: React.FunctionComponent<IVMwareProviderActi
         <DropdownItem
           onClick={() => {
             setKebabIsOpen(false);
-            deleteProvider(provider.name);
+            deleteProvider(provider);
           }}
           isDisabled={deleteProviderResult.isLoading}
           key="remove"
