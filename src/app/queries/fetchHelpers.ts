@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
 import { KubeResource } from '@konveyor/lib-ui';
+import { IKubeResponse, IKubeStatus } from '@app/client/types';
 
 interface IFetchContext {
   history: History<LocationState>;
@@ -67,21 +68,10 @@ export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFun
   return () => authorizedPost(url, fetchContext, data);
 };
 
-export interface KubeResponse<T = unknown> {
-  data: T;
-  status: number;
-  statusText: string;
-  config: Record<string, unknown>;
-  headers: Record<string, unknown>;
-  request: XMLHttpRequest;
-  state?: string;
-  reason?: string;
-}
-
 export const authorizedK8sRequest = async <T>(
   fetchContext: IFetchContext,
-  requestFn: () => Promise<KubeResponse<T>>
-): Promise<KubeResponse<T>> => {
+  requestFn: () => Promise<IKubeResponse<T>>
+): Promise<IKubeResponse<T>> => {
   const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
 
   try {
@@ -123,7 +113,7 @@ export const useAuthorizedK8sClient = () => {
       authorizedK8sRequest<T>(fetchContext, () => client.list(resource, params)),
     create: <T>(resource: KubeResource, newObject: object, params?: object) =>
       authorizedK8sRequest<T>(fetchContext, () => client.create(resource, newObject, params)),
-    delete: <T>(resource: KubeResource, name: string, params?: object) =>
+    delete: <T = IKubeStatus>(resource: KubeResource, name: string, params?: object) =>
       authorizedK8sRequest<T>(fetchContext, () => client.delete(resource, name, params)),
     patch: <T>(resource: KubeResource, name: string, patch: object, params?: object) =>
       authorizedK8sRequest<T>(fetchContext, () => client.patch(resource, name, patch, params)),

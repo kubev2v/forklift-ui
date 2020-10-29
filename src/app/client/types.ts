@@ -1,4 +1,4 @@
-import { IMetaTypeMeta } from '@app/queries/types';
+import { IMetaObjectMeta, IMetaTypeMeta } from '@app/queries/types';
 import { ClusterClient } from '@konveyor/lib-ui';
 import { AxiosError } from 'axios';
 
@@ -17,3 +17,25 @@ export type AuthorizedClusterClient = Pick<
   ClusterClient,
   'get' | 'list' | 'create' | 'delete' | 'patch' | 'put'
 >;
+
+export interface IKubeResponse<T = unknown> {
+  data: T;
+  status: number;
+  statusText: string;
+  config: Record<string, unknown>;
+  headers: Record<string, unknown>;
+  request: XMLHttpRequest;
+  state?: string;
+  reason?: string;
+}
+
+export interface IKubeStatus extends IMetaTypeMeta {
+  status: string;
+  details: {
+    group: string;
+    kind: string;
+    name: string;
+    uid: string;
+  };
+  metadata: Partial<IMetaObjectMeta>;
+}

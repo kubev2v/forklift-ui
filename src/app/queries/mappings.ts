@@ -22,10 +22,10 @@ import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
 import { useDatastoresQuery } from './datastores';
 import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
-import { KubeClientError, IKubeList } from '@app/client/types';
+import { KubeClientError, IKubeList, IKubeResponse } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
-import { KubeResponse, useAuthorizedK8sClient } from './fetchHelpers';
+import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
@@ -54,14 +54,14 @@ export const useCreateMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
 ): MutationResultPair<
-  KubeResponse<Mapping>,
+  IKubeResponse<Mapping>,
   KubeClientError,
   Mapping,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<KubeResponse<Mapping>, KubeClientError, Mapping>(
+  return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
       await checkIfResourceExists(client, kind, resource, mapping.metadata.name);

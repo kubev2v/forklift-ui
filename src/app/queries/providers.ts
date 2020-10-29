@@ -19,7 +19,7 @@ import {
   ISrcDestRefs,
   ICommonProviderObject,
 } from './types';
-import { KubeResponse, useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
+import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
   VirtResourceKind,
   providerResource,
@@ -30,7 +30,7 @@ import {
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
-import { KubeClientError } from '@app/client/types';
+import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
@@ -50,7 +50,7 @@ export const useCreateProviderMutation = (
   providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
-  KubeResponse<ICommonProviderObject> | undefined,
+  IKubeResponse<ICommonProviderObject> | undefined,
   KubeClientError,
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
@@ -69,7 +69,7 @@ export const useCreateProviderMutation = (
     try {
       const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider);
 
-      const providerAddResults: Array<KubeResponse<INewSecret | ICommonProviderObject>> = [];
+      const providerAddResults: Array<IKubeResponse<INewSecret | ICommonProviderObject>> = [];
       const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
 
       if (providerSecretAddResult.status === 201) {
@@ -113,7 +113,7 @@ export const useCreateProviderMutation = (
         const rollbackObjs = providerAddResults.reduce(
           (
             rollbackAccum: IRollbackObj[],
-            res: KubeResponse<ICommonProviderObject | INewSecret>
+            res: IKubeResponse<ICommonProviderObject | INewSecret>
           ) => {
             return res.status === 201
               ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name || '' }]
@@ -148,7 +148,7 @@ export const useCreateProviderMutation = (
   };
 
   return useMockableMutation<
-    KubeResponse<ICommonProviderObject> | undefined,
+    IKubeResponse<ICommonProviderObject> | undefined,
     KubeClientError,
     AddProviderFormValues
   >(postProvider, {
@@ -162,12 +162,12 @@ export const useCreateProviderMutation = (
 
 export const useDeleteProviderMutation = (
   providerType: ProviderType
-): MutationResultPair<KubeResponse<Provider>, KubeClientError, Provider, unknown> => {
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Provider, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<KubeResponse<Provider>, KubeClientError, Provider>(
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Provider>(
     async (provider: Provider) => {
-      const providerResponse = await client.delete<Provider>(providerResource, provider.name);
+      const providerResponse = await client.delete(providerResource, provider.name);
       await client.delete(secretResource, provider.object.spec.secret.name);
       return providerResponse;
     },
