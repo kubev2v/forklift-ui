@@ -150,6 +150,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
+    let isInitializing = false;
     let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
@@ -159,15 +160,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     if (hasCondition(conditions, PlanStatusAPIType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
       isStatusReady = true;
+    } else if (hasCondition(conditions, PlanStatusAPIType.Executing)) {
+      buttonType = ActionButtonType.Cancel;
+      title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusAPIType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
     } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
+    } else if (!plan.status) {
+      isInitializing = true;
     } else {
-      buttonType = ActionButtonType.Cancel;
-      title = PlanStatusDisplayType.Executing;
+      console.log('Migration plan Status Error:', plan);
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -194,7 +199,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         targetProvider?.name || '',
         plan.spec.vms.length,
         {
-          title: isStatusReady ? (
+          title: isInitializing ? (
+            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Initializing} />
+          ) : isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
             <Progress
@@ -246,9 +253,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </FlexItem>
                 </Flex>
               </>
-            ) : (
+            ) : !isInitializing ? (
               <PlanActionsDropdown conditions={conditions} />
-            ),
+            ) : null,
         },
       ],
     });
