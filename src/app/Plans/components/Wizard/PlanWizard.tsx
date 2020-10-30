@@ -54,7 +54,7 @@ const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => 
     isSaveNewMapping,
     newMappingName: useFormField(
       '',
-      isSaveNewMapping.value ? newMappingNameSchema.required() : newMappingNameSchema
+      isSaveNewMapping.value ? newMappingNameSchema.required() : yup.string()
     ),
   });
 };
