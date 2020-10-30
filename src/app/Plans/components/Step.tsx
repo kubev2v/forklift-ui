@@ -23,7 +23,7 @@ interface IStepProps {
 const Step: React.FunctionComponent<IStepProps> = ({ status, index }: IStepProps) => {
   const { currentStepIndex } = findCurrentStep(status.pipeline);
   const step = status.pipeline[index];
-  if (status.completed || step?.completed) {
+  if (status.completed || step?.completed || index < currentStepIndex) {
     return (
       <ResourcesFullIcon
         className={spacing.mlSm}
