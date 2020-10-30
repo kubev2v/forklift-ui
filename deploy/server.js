@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const express = require('express');
+const https = require('https');
 const fs = require('fs');
 const dayjs = require('dayjs');
 
@@ -20,6 +21,10 @@ const virtMeta = JSON.parse(virtMetaStr);
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
 const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
+const options = {
+  key: fs.readFileSync("/var/run/secrets/migration-ui-tls/tls.key"),
+  cert: fs.readFileSync("/var/run/secrets/migration-ui-tls/tls.crt")
+};
 
 app.engine('ejs', require('ejs').renderFile);
 app.use(express.static(staticDir));
@@ -80,3 +85,4 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
+https.createServer(options, app).listen(8443);
