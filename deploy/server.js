@@ -21,10 +21,6 @@ const virtMeta = JSON.parse(virtMetaStr);
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
 const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
-const options = {
-  key: fs.readFileSync("/var/run/secrets/migration-ui-tls/tls.key"),
-  cert: fs.readFileSync("/var/run/secrets/migration-ui-tls/tls.crt")
-};
 
 app.engine('ejs', require('ejs').renderFile);
 app.use(express.static(staticDir));
@@ -84,5 +80,12 @@ app.get('*', (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
-https.createServer(options, app).listen(8443);
+if (process.env['NODE_ENV'] !== 'development' && process.env['DATA_SOURCE'] !== 'mock') {
+  const options = {
+    key: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.key'),
+    cert: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.crt'),
+  };
+  https.createServer(options, app).listen(8443);
+} else {
+  app.listen(port, () => console.log(`Listening on port ${port}`));
+}
