@@ -72,13 +72,15 @@ export function convertFormValuesToSecret(
   } else {
     // default to vmware
     const vmwareValues = values as VMwareProviderFormValues;
+    const encodedUser = btoa(vmwareValues.username);
     const encodedPassword = btoa(vmwareValues.password);
+    const encodedThumbprint = btoa(vmwareValues.fingerprint);
     return {
       apiVersion: 'v1',
       data: {
-        user: vmwareValues.username,
+        user: encodedUser,
         password: encodedPassword,
-        thumbprint: vmwareValues.fingerprint,
+        thumbprint: encodedThumbprint,
       },
       kind: 'Secret',
       metadata: {
