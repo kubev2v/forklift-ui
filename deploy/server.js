@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const express = require('express');
+const https = require('https');
 const fs = require('fs');
 const dayjs = require('dayjs');
 
@@ -79,4 +80,12 @@ app.get('*', (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+if (process.env['NODE_ENV'] !== 'development' && process.env['DATA_SOURCE'] !== 'mock') {
+  const options = {
+    key: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.key'),
+    cert: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.crt'),
+  };
+  https.createServer(options, app).listen(8443);
+} else {
+  app.listen(port, () => console.log(`Listening on port ${port}`));
+}
