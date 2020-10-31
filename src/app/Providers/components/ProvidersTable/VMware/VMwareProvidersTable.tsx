@@ -115,6 +115,8 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         provider.object.spec.url,
         clusterCount,
         {
+          /*
+          // TODO (post-beta): reintroduce the link to /providers/* when we resolve https://github.com/konveyor/virt-ui/issues/138
           title: (
             <>
               <Link to={`/providers/${provider.name}`}>
@@ -122,6 +124,8 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
               </Link>
             </>
           ),
+          */
+          title: hostCount,
         },
         vmCount,
         networkCount,
