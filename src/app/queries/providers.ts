@@ -1,4 +1,5 @@
 import { useQueryCache, QueryResult, MutationResultPair } from 'react-query';
+import * as yup from 'yup';
 
 import { usePollingContext } from '@app/common/context';
 import { POLLING_INTERVAL } from './constants';
@@ -30,7 +31,7 @@ import {
   useClientInstance,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
-import { ProviderType } from '@app/common/constants';
+import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { KubeClientError } from '@app/client/types';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
@@ -178,3 +179,13 @@ export const findProvidersByRefs = (
     null;
   return { sourceProvider, targetProvider };
 };
+
+export const getProviderNameSchema = (
+  providersQuery: QueryResult<IProvidersByType>,
+  providerType: ProviderType
+): yup.StringSchema =>
+  dnsLabelNameSchema.test('unique-name', 'A provider with this name already exists', (value) => {
+    const providers: Provider[] = (providersQuery.data && providersQuery.data[providerType]) || [];
+    if (providers.find((provider) => provider.name === value)) return false;
+    return true;
+  });

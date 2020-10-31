@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as yup from 'yup';
 import {
+  Alert,
   Breadcrumb,
   BreadcrumbItem,
   Level,
@@ -21,6 +22,7 @@ import Review from './Review';
 import MappingForm from './MappingForm';
 import {
   IOpenShiftProvider,
+  IPlan,
   IVMwareProvider,
   IVMwareVM,
   Mapping,
@@ -34,14 +36,17 @@ import {
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
 import { generateMappings, generatePlan } from './helpers';
-import { useCreatePlanMutation } from '@app/queries/plans';
-import { useCreateMappingMutation } from '@app/queries';
+import { getPlanNameSchema, useCreatePlanMutation, usePlansQuery } from '@app/queries/plans';
+import { getMappingNameSchema, useCreateMappingMutation, useMappingsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
-import { QueryStatus } from 'react-query';
+import { QueryResult, QueryStatus } from 'react-query';
+import { dnsLabelNameSchema } from '@app/common/constants';
+import { IKubeList } from '@app/client/types';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
-const useMappingFormState = () => {
+const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
-  const newMappingNameSchema = yup.string().label('Name');
+  const newMappingNameSchema = getMappingNameSchema(mappingsQuery).label('Name');
   return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
@@ -55,9 +60,13 @@ const useMappingFormState = () => {
 };
 
 // TODO add support for prefilling forms for editing an API plan
-const usePlanWizardFormState = () => ({
+const usePlanWizardFormState = (
+  plansQuery: QueryResult<IKubeList<IPlan>>,
+  networkMappingsQuery: QueryResult<IKubeList<Mapping>>,
+  storageMappingsQuery: QueryResult<IKubeList<Mapping>>
+) => ({
   general: useFormState({
-    planName: useFormField('', yup.string().label('Plan name').required()),
+    planName: useFormField('', getPlanNameSchema(plansQuery).label('Plan name').required()),
     planDescription: useFormField('', yup.string().label('Plan description').defined()),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
@@ -67,7 +76,7 @@ const usePlanWizardFormState = () => ({
       null,
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
-    targetNamespace: useFormField('', yup.string().label('Target namespace').required()),
+    targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
   }),
   filterVMs: useFormState({
     treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
@@ -76,8 +85,8 @@ const usePlanWizardFormState = () => ({
   selectVMs: useFormState({
     selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
   }),
-  networkMapping: useMappingFormState(),
-  storageMapping: useMappingFormState(),
+  networkMapping: useMappingFormState(networkMappingsQuery),
+  storageMapping: useMappingFormState(storageMappingsQuery),
 });
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
@@ -85,7 +94,10 @@ export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // 
 const PlanWizard: React.FunctionComponent = () => {
   usePausedPollingEffect(); // Polling can interfere with form state
   const history = useHistory();
-  const forms = usePlanWizardFormState();
+  const plansQuery = usePlansQuery();
+  const networkMappingsQuery = useMappingsQuery(MappingType.Network);
+  const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
+  const forms = usePlanWizardFormState(plansQuery, networkMappingsQuery, storageMappingsQuery);
 
   enum StepId {
     General = 1,
@@ -273,6 +285,16 @@ const PlanWizard: React.FunctionComponent = () => {
   const isSomeFormDirty = (Object.keys(forms) as (keyof PlanWizardFormState)[]).some(
     (key) => forms[key].isDirty
   );
+
+  if (plansQuery.isLoading || networkMappingsQuery.isLoading || storageMappingsQuery.isLoading) {
+    return <LoadingEmptyState />;
+  }
+  if (plansQuery.isError) {
+    return <Alert variant="danger" title="Error loading plans" />;
+  }
+  if (networkMappingsQuery.isError || storageMappingsQuery.isError) {
+    return <Alert variant="danger" title="Error loading mappings" />;
+  }
 
   return (
     <>
