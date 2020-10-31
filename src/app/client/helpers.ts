@@ -105,7 +105,7 @@ export const convertFormValuesToProvider = (
   if (providerType === 'vsphere') {
     const vmwareValues = values as VMwareProviderFormValues;
     name = vmwareValues.name;
-    url = vmwareValues.hostname;
+    url = 'https://' + vmwareValues.hostname + '/sdk';
   } else {
     const openshiftValues = values as OpenshiftProviderFormValues;
     name = openshiftValues.clusterName;
