@@ -36,9 +36,9 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
             deleteMapping(mapping);
           }}
           isDisabled={deleteMappingResult.isLoading}
-          key="remove"
+          key="delete"
         >
-          Remove
+          Delete
         </DropdownItem>,
       ]}
       position={DropdownPosition.right}

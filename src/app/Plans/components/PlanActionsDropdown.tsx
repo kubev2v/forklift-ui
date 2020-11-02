@@ -47,9 +47,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             setKebabIsOpen(false);
             deletePlan(plan);
           }}
-          key="Remove"
+          key="Delete"
         >
-          Remove
+          Delete
         </DropdownItem>,
       ]}
       position={DropdownPosition.right}
