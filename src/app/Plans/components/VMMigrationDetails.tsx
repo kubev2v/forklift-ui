@@ -153,7 +153,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     { title: 'Data copied', transforms: [sortable] },
     {
       title: 'Status',
-      transforms: [sortable, cellWidth(10)],
+      transforms: [sortable, cellWidth(20)],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
