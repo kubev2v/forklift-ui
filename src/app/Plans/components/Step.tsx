@@ -11,20 +11,17 @@ import {
   global_success_color_100 as successColor,
 } from '@patternfly/react-tokens';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-
-import { IVMStatus } from '@app/queries/types';
-import { findCurrentStep } from '@app/common/helpers';
+import { StepType } from '@app/common/constants';
 
 interface IStepProps {
-  status: IVMStatus;
-  index: number;
+  type: StepType;
+  error?: boolean;
 }
 
-const Step: React.FunctionComponent<IStepProps> = ({ status, index }: IStepProps) => {
-  const { currentStepIndex } = findCurrentStep(status.pipeline);
-  const step = status.pipeline[index];
-  if (status.completed || step?.completed || index < currentStepIndex) {
-    return (
+const Step: React.FunctionComponent<IStepProps> = ({ type, error }: IStepProps) => {
+  let step: React.ReactElement | null = null;
+  if (type === StepType.Full) {
+    step = (
       <ResourcesFullIcon
         className={spacing.mlSm}
         height="1em"
@@ -32,17 +29,19 @@ const Step: React.FunctionComponent<IStepProps> = ({ status, index }: IStepProps
         color={successColor.value}
       />
     );
-  } else if (status.started && index === currentStepIndex) {
-    return (
+  }
+  if (type === StepType.Half) {
+    step = (
       <ResourcesAlmostFullIcon
         className={spacing.mlSm}
         height="1em"
         width="1em"
-        color={status.error?.phase ? dangerColor.value : infoColor.value}
+        color={error ? dangerColor.value : infoColor.value}
       />
     );
-  } else {
-    return (
+  }
+  if (type === StepType.Empty) {
+    step = (
       <ResourcesAlmostEmptyIcon
         className={spacing.mlSm}
         height="1em"
@@ -51,6 +50,8 @@ const Step: React.FunctionComponent<IStepProps> = ({ status, index }: IStepProps
       />
     );
   }
+
+  return step;
 };
 
 export default Step;

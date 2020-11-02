@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { StatusCategoryType, PlanStatusAPIType } from '@app/common/constants';
-import { IStatusCondition, IStep } from '@app/queries/types';
+import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
+import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
   return !!conditions.find((condition) => condition.type === type);
@@ -39,8 +39,11 @@ export const mostSeriousCondition = (conditions: IStatusCondition[]): string => 
 export const findCurrentStep = (
   pipeline: IStep[]
 ): { currentStep: IStep | undefined; currentStepIndex: number } => {
-  const currentStep = pipeline.find((step) => !!step.started && !step.completed);
-  const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : pipeline.length - 1;
+  const currentStep = pipeline
+    .slice(0)
+    .reverse()
+    .find((step) => !!step.started && !step.completed);
+  const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
   return { currentStep, currentStepIndex };
 };
 
@@ -60,4 +63,13 @@ export const formatDuration = (
   const minutes = Math.floor(seconds / 60);
   seconds %= 60;
   return `${padNum(hours)}:${padNum(minutes)}:${padNum(seconds)}`;
+};
+
+export const getStepType = (status: IVMStatus, index: number): StepType => {
+  const { currentStepIndex } = findCurrentStep(status.pipeline);
+  const step = status.pipeline[index];
+  if (status.completed || step?.completed || index < currentStepIndex) return StepType.Full;
+  else if (status.started && index === currentStepIndex) {
+    return StepType.Half;
+  } else return StepType.Empty;
 };
