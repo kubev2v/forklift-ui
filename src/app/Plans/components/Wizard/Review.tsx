@@ -5,15 +5,15 @@ import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
 import { IPlan, Mapping, MappingType } from '@app/queries/types';
 import { MutationResult } from 'react-query';
-import { KubeClientError } from '@app/client/types';
+import { IKubeResponse, KubeClientError } from '@app/client/types';
 import MutationStatus from '@app/common/components/MutationStatus';
 import { generateMappings } from './helpers';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
-  createPlanResult: MutationResult<IPlan, KubeClientError>;
-  createNetworkMappingResult: MutationResult<Mapping, KubeClientError>;
-  createStorageMappingResult: MutationResult<Mapping, KubeClientError>;
+  createPlanResult: MutationResult<IKubeResponse<IPlan>, KubeClientError>;
+  createNetworkMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
+  createStorageMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({

@@ -40,16 +40,16 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
 
 import './PlansTable.css';
-import { KubeClientError } from '@app/client/types';
+import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
-import { MutationResult } from 'react-query';
+import { MutateFunction, MutationResult } from 'react-query';
 import { getPlanStatusTitle } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IPlansTableProps {
   plans: IPlan[];
-  createMigration: (plan: IPlan) => Promise<IMigration | undefined>;
-  createMigrationResult: MutationResult<IMigration, KubeClientError>;
+  createMigration: MutateFunction<IKubeResponse<IMigration>, KubeClientError, IPlan>;
+  createMigrationResult: MutationResult<IKubeResponse<IMigration>, KubeClientError>;
   planBeingStarted: IPlan | null;
 }
 
@@ -249,12 +249,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     )}
                   </FlexItem>
                   <FlexItem>
-                    <PlanActionsDropdown conditions={conditions} />
+                    <PlanActionsDropdown plan={plan} />
                   </FlexItem>
                 </Flex>
               </>
             ) : !isInitializing ? (
-              <PlanActionsDropdown conditions={conditions} />
+              <PlanActionsDropdown plan={plan} />
             ) : null,
         },
       ],

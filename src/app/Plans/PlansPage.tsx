@@ -21,7 +21,7 @@ import { usePlansQuery } from '@app/queries/plans';
 import { useCreateMigrationMutation } from '@app/queries/migrations';
 import MutationStatus from '@app/common/components/MutationStatus';
 import { IPlan } from '@app/queries/types';
-import { KubeClientError } from '@app/client/types';
+import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
@@ -31,11 +31,11 @@ const PlansPage: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const [planBeingStarted, setPlanBeingStarted] = React.useState<IPlan | null>(null);
   const [baseCreateMigration, baseCreateMigrationResult] = useCreateMigrationMutation();
-  const createMigration = (plan: IPlan) => {
-    setPlanBeingStarted(plan);
+  const createMigration = (plan: IPlan | undefined) => {
+    setPlanBeingStarted(plan || null);
     return baseCreateMigration(plan);
   };
-  const createMigrationResult: MutationResult<IMigration, KubeClientError> = {
+  const createMigrationResult: MutationResult<IKubeResponse<IMigration>, KubeClientError> = {
     ...baseCreateMigrationResult,
     reset: () => {
       setPlanBeingStarted(null);

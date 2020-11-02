@@ -9,18 +9,17 @@ import {
   ICell,
   IRow,
 } from '@patternfly/react-table';
-import { Link } from 'react-router-dom';
-import { OutlinedHddIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
-import VMwareProviderActionsDropdown from './VMwareProviderActionsDropdown';
+import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import ProviderStatus from '../ProviderStatus';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
+import { ProviderType } from '@app/common/constants';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -134,7 +133,9 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
           title: <ProviderStatus provider={provider} />,
         },
         {
-          title: <VMwareProviderActionsDropdown />,
+          title: (
+            <ProviderActionsDropdown provider={provider} providerType={ProviderType.vsphere} />
+          ),
         },
       ],
     });

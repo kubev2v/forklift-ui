@@ -17,12 +17,13 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useStorageClassesQuery } from '@app/queries';
 import { IOpenShiftProvider } from '@app/queries/types/providers.types';
-import OpenShiftProviderActionsDropdown from './OpenShiftProviderActionsDropdown';
+import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import ProviderStatus from '../ProviderStatus';
 import { MappingType } from '@app/queries/types';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './OpenShiftProvidersTable.css';
+import { ProviderType } from '@app/common/constants';
 
 interface IOpenShiftProvidersTableProps {
   providers: IOpenShiftProvider[];
@@ -98,7 +99,11 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         {
           title: <ProviderStatus provider={provider} />,
         },
-        { title: <OpenShiftProviderActionsDropdown /> },
+        {
+          title: (
+            <ProviderActionsDropdown provider={provider} providerType={ProviderType.openshift} />
+          ),
+        },
       ],
     });
     if (isExpanded) {

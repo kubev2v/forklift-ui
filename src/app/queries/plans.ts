@@ -1,15 +1,9 @@
 import * as yup from 'yup';
-import {
-  checkIfResourceExists,
-  useClientInstance,
-  VirtResource,
-  VirtResourceKind,
-} from '@app/client/helpers';
-import { IKubeList, KubeClientError } from '@app/client/types';
+import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
+import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
-import { POLLING_INTERVAL } from './constants';
 import {
   mockKubeList,
   sortKubeResultsByName,
@@ -18,17 +12,18 @@ import {
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
 import { IPlan } from './types';
-import { useAuthorizedK8sFetch } from './fetchHelpers';
+import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const planResource = new VirtResource(VirtResourceKind.Plan, VIRT_META.namespace);
 
 export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
+  const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
-      queryFn: useAuthorizedK8sFetch(planResource),
+      queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       config: {
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     mockKubeList(MOCK_PLANS, 'Plan')
@@ -38,14 +33,32 @@ export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
 
 export const useCreatePlanMutation = (
   onSuccess?: () => void
-): MutationResultPair<IPlan, KubeClientError, IPlan, unknown> => {
-  const client = useClientInstance();
+): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<IPlan, KubeClientError, IPlan>(
+  const { pollFasterAfterMutation } = usePollingContext();
+  return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       await checkIfResourceExists(client, VirtResourceKind.Plan, planResource, plan.metadata.name);
       return await client.create(planResource, plan);
     },
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useDeletePlanMutation = (
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
+    (plan: IPlan) => client.delete(planResource, plan.metadata.name),
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');

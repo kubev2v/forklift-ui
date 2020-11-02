@@ -1,22 +1,23 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
-import { MappingType, Mapping } from '@app/queries/types';
-import { useDeleteMappingMutation } from '@app/queries';
+import { useDeleteProviderMutation } from '@app/queries';
+import { Provider } from '@app/queries/types';
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 
-interface IMappingsActionsDropdownProps {
-  mappingType: MappingType;
-  mapping: Mapping;
+interface IProviderActionsDropdownProps {
+  provider: Provider;
+  providerType: ProviderType;
 }
 
-const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownProps> = ({
-  mappingType,
-  mapping,
-}: IMappingsActionsDropdownProps) => {
+const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownProps> = ({
+  provider,
+  providerType,
+}: IProviderActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [deleteMapping, deleteMappingResult] = useDeleteMappingMutation(
-    mappingType,
+  const [deleteProvider, deleteProviderResult] = useDeleteProviderMutation(
+    providerType,
     toggleDeleteModal
   );
   return (
@@ -41,10 +42,10 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
               setKebabIsOpen(false);
               toggleDeleteModal();
             }}
-            isDisabled={deleteMappingResult.isLoading}
-            key="delete"
+            isDisabled={deleteProviderResult.isLoading}
+            key="remove"
           >
-            Delete
+            Remove
           </DropdownItem>,
         ]}
         position={DropdownPosition.right}
@@ -52,19 +53,20 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        deleteFn={() => deleteMapping(mapping)}
-        deleteResult={deleteMappingResult}
-        title={`Delete ${mappingType.toLowerCase()} mapping`}
+        deleteFn={() => deleteProvider(provider)}
+        deleteResult={deleteProviderResult}
+        title="Remove provider"
         body={
           <>
-            Are you sure you want to delete the {mappingType.toLowerCase()} mapping &quot;
-            <strong>{mapping.metadata.name}</strong>&quot;?
+            Are you sure you want to remove the {PROVIDER_TYPE_NAMES[providerType]} provider &quot;
+            <strong>{provider.name}</strong>&quot;?
           </>
         }
-        errorText="Error deleting mapping"
+        deleteButtonText="Remove"
+        errorText="Error removing provider"
       />
     </>
   );
 };
 
-export default MappingsActionsDropdown;
+export default ProviderActionsDropdown;

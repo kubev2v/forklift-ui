@@ -78,7 +78,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         provider.source.name,
         provider.destination.name,
         {
-          title: <MappingsActionsDropdown />,
+          title: <MappingsActionsDropdown mappingType={mappingType} mapping={mapping} />,
         },
       ],
     });

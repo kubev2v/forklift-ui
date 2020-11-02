@@ -1,6 +1,5 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
-import { POLLING_INTERVAL } from './constants';
 import { useMockableQuery, getInventoryApiUrl, sortIndexedResultsByName } from './helpers';
 import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingType } from './types';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
@@ -33,7 +32,7 @@ export const useStorageClassesQuery = (
       },
       config: {
         enabled: !!providers && providers.length > 0 && mappingType === MappingType.Storage,
-        refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     MOCK_STORAGE_CLASSES_BY_PROVIDER

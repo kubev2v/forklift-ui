@@ -20,18 +20,12 @@ import {
 } from './helpers';
 import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
 import { useDatastoresQuery } from './datastores';
-import {
-  checkIfResourceExists,
-  useClientInstance,
-  VirtResource,
-  VirtResourceKind,
-} from '@app/client/helpers';
+import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
-import { KubeClientError, IKubeList } from '@app/client/types';
+import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
-import { POLLING_INTERVAL } from './constants';
-import { useAuthorizedK8sFetch } from './fetchHelpers';
+import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
@@ -41,12 +35,13 @@ const getMappingResource = (mappingType: MappingType) => {
 };
 
 export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeList<Mapping>> => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
       queryKey: ['mappings', mappingType],
-      queryFn: useAuthorizedK8sFetch(getMappingResource(mappingType).resource),
-      config: { refetchInterval: usePollingContext().isPollingEnabled ? POLLING_INTERVAL : false },
+      queryFn: async () =>
+        (await client.list<IKubeList<Mapping>>(getMappingResource(mappingType).resource)).data,
+      config: { refetchInterval: usePollingContext().refetchInterval },
     },
     mappingType === MappingType.Network
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')
@@ -59,19 +54,37 @@ export const useCreateMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
 ): MutationResultPair<
-  Mapping,
+  IKubeResponse<Mapping>,
   KubeClientError,
   Mapping,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
-  const client = useClientInstance();
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<Mapping, KubeClientError, Mapping>(
+  return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
       await checkIfResourceExists(client, kind, resource, mapping.metadata.name);
-      return await client.create(resource, mapping);
+      return await client.create<Mapping>(resource, mapping);
     },
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries(['mappings', mappingType]);
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useDeleteMappingMutation = (
+  mappingType: MappingType,
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Mapping, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const { resource } = getMappingResource(mappingType);
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Mapping>(
+    (mapping: Mapping) => client.delete(resource, mapping.metadata.name),
     {
       onSuccess: () => {
         queryCache.invalidateQueries(['mappings', mappingType]);

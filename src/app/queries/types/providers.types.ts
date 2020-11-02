@@ -1,14 +1,11 @@
 import { ProviderType } from '@app/common/constants';
 import { ICR, IMetaTypeMeta, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
 
-interface ICommonProviderObject extends ICR {
+export interface ICommonProviderObject extends ICR {
   spec: {
-    type: ProviderType;
+    type: ProviderType | null;
     url: string; // TODO is this the "Endpoint" column?
-    secret: {
-      namespace: string;
-      name: string;
-    };
+    secret: INameNamespaceRef;
   };
   status?: {
     conditions: IStatusCondition[];
@@ -24,6 +21,7 @@ export interface INewSecret extends IMetaTypeMeta {
     token?: string;
   };
   metadata: {
+    name?: string;
     generateName: string;
     namespace: string;
     labels: {
@@ -32,21 +30,6 @@ export interface INewSecret extends IMetaTypeMeta {
     };
   };
   type: string;
-}
-
-export interface INewProvider extends IMetaTypeMeta {
-  metadata: {
-    name: string;
-    namespace: string;
-  };
-  spec: {
-    type: ProviderType | null;
-    url: string; // TODO is this the "Endpoint" column?
-    secret: {
-      namespace: string;
-      name: string;
-    };
-  };
 }
 
 export interface ICommonProvider {

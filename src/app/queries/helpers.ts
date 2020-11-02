@@ -1,5 +1,6 @@
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { usePollingContext } from '@app/common/context';
 import {
   MutationConfig,
   UseQueryObjectConfig,
