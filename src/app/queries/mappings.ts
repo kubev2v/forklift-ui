@@ -77,7 +77,8 @@ export const useCreateMappingMutation = (
 };
 
 export const useDeleteMappingMutation = (
-  mappingType: MappingType
+  mappingType: MappingType,
+  onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Mapping, unknown> => {
   const client = useAuthorizedK8sClient();
   const { resource } = getMappingResource(mappingType);
@@ -87,6 +88,7 @@ export const useDeleteMappingMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries(['mappings', mappingType]);
+        onSuccess && onSuccess();
       },
     }
   );
