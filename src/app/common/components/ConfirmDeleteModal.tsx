@@ -10,6 +10,7 @@ interface IConfirmDeleteModalProps {
   deleteResult: MutationResult<unknown>;
   title: string;
   body: React.ReactNode;
+  deleteButtonText?: string;
   errorText: string;
 }
 
@@ -20,6 +21,7 @@ const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
   deleteResult,
   title,
   body,
+  deleteButtonText = 'Delete',
   errorText,
 }: IConfirmDeleteModalProps) => {
   React.useEffect(() => {
@@ -43,7 +45,7 @@ const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
               onClick={deleteFn}
               isDisabled={deleteResult.isLoading}
             >
-              Delete
+              {deleteButtonText}
             </Button>
             <Button
               key="cancel"
