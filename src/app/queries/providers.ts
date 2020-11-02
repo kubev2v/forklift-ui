@@ -161,7 +161,8 @@ export const useCreateProviderMutation = (
 };
 
 export const useDeleteProviderMutation = (
-  providerType: ProviderType
+  providerType: ProviderType,
+  onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Provider, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
@@ -184,6 +185,7 @@ export const useDeleteProviderMutation = (
               ),
             } as IProvidersByType)
         );
+        onSuccess && onSuccess();
       },
     }
   );

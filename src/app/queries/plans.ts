@@ -52,12 +52,9 @@ export const useCreatePlanMutation = (
   );
 };
 
-export const useDeletePlanMutation = (): MutationResultPair<
-  IKubeResponse<IKubeStatus>,
-  KubeClientError,
-  IPlan,
-  unknown
-> => {
+export const useDeletePlanMutation = (
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
@@ -65,6 +62,7 @@ export const useDeletePlanMutation = (): MutationResultPair<
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        onSuccess && onSuccess();
       },
     }
   );

@@ -16,7 +16,10 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
 }: IProviderActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [deleteProvider, deleteProviderResult] = useDeleteProviderMutation(providerType);
+  const [deleteProvider, deleteProviderResult] = useDeleteProviderMutation(
+    providerType,
+    toggleDeleteModal
+  );
   return (
     <>
       <Dropdown
