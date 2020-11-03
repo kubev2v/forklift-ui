@@ -54,7 +54,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       {
         title: <TickingElapsedTime start={step.started} end={step.completed} />,
       },
-      step.error ? `${step.error?.phase}: ${step.error?.reasons}` : step.phase,
+      step.error ? `${step.phase}: ${step.error?.reasons}` : step.phase,
     ],
   }));
 
