@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { Flex, FlexItem, Text } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, ICell, IRow, cellWidth } from '@patternfly/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  ICell,
+  IRow,
+  cellWidth,
+  truncate,
+} from '@patternfly/react-table';
 
 import Step from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
@@ -21,7 +29,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       transforms: [cellWidth(40)],
     },
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
-    { title: 'State' },
+    { title: 'State', cellTransforms: [truncate] },
   ];
 
   const rows: IRow[] = status.pipeline.map((step: IStep, index) => ({
@@ -46,7 +54,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       {
         title: <TickingElapsedTime start={step.started} end={step.completed} />,
       },
-      step.phase,
+      step.error ? `${step.error?.phase}: ${step.error?.reasons}` : step.phase,
     ],
   }));
 
