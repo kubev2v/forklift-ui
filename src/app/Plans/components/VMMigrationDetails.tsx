@@ -160,11 +160,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const rows: IRow[] = [];
 
-  const getVMStatus = (vmStatus) => {
-    console.log('vmStatus:', vmStatus);
-    return vmStatus;
-  };
-
   currentPageItems.forEach((vmStatus: IVMStatus) => {
     const isExpanded = isVMExpanded(vmStatus);
 
@@ -179,7 +174,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         formatTimestamp(vmStatus.completed),
         `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
         {
-          title: <PipelineSummary status={getVMStatus(vmStatus)} />,
+          title: <PipelineSummary status={vmStatus} />,
         },
       ],
     });
