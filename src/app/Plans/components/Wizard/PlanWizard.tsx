@@ -10,7 +10,7 @@ import {
   Title,
   Wizard,
 } from '@patternfly/react-core';
-import { Link, Prompt, useHistory } from 'react-router-dom';
+import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
 
@@ -98,6 +98,15 @@ const PlanWizard: React.FunctionComponent = () => {
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
   const forms = usePlanWizardFormState(plansQuery, networkMappingsQuery, storageMappingsQuery);
+
+  const editRouteMatch = useRouteMatch<{ planName: string }>({
+    path: '/plans/:planName/edit',
+    strict: true,
+    sensitive: true,
+  });
+  const planBeingEdited =
+    plansQuery.data?.items.find((plan) => plan.metadata.name === editRouteMatch?.params.planName) ||
+    null;
 
   enum StepId {
     General = 1,
@@ -296,22 +305,29 @@ const PlanWizard: React.FunctionComponent = () => {
     return <Alert variant="danger" title="Error loading mappings" />;
   }
 
+  if (editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started)) {
+    return <Redirect to="/plans" />;
+  }
+
   return (
     <>
       <Prompt
         when={isSomeFormDirty && mutationStatus === QueryStatus.Idle}
         message="You have unsaved changes, are you sure you want to leave this page?"
       />
-      <PageSection title="Create a Migration Plan" variant="light">
+      <PageSection title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`} variant="light">
         <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
           <BreadcrumbItem>
             <Link to={`/plans`}>Migration plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem>Create</BreadcrumbItem>
+          {planBeingEdited ? (
+            <BreadcrumbItem>{planBeingEdited.metadata.name}</BreadcrumbItem>
+          ) : null}
+          <BreadcrumbItem>{!planBeingEdited ? 'Create' : 'Edit'}</BreadcrumbItem>
         </Breadcrumb>
         <Level>
           <LevelItem>
-            <Title headingLevel="h1">Create Migration Plan</Title>
+            <Title headingLevel="h1">{!planBeingEdited ? 'Create' : 'Edit'} Migration Plan</Title>
           </LevelItem>
         </Level>
       </PageSection>

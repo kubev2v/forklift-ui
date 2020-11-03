@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import { useHistory } from 'react-router-dom';
 
 import { IPlan } from '@app/queries/types';
 import { PlanStatusAPIType } from '@app/common/constants';
@@ -17,6 +18,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
+  const history = useHistory();
 
   const conditions = plan.status?.conditions || [];
 
@@ -29,14 +31,10 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         isPlain
         dropdownItems={[
           <DropdownItem
-            isDisabled={
-              hasCondition(conditions, PlanStatusAPIType.Executing) ||
-              hasCondition(conditions, PlanStatusAPIType.Succeeded) ||
-              hasCondition(conditions, PlanStatusAPIType.Failed)
-            }
+            isDisabled={!!plan.status?.migration?.started}
             onClick={() => {
               setKebabIsOpen(false);
-              alert('TODO');
+              history.push(`/plans/${plan.metadata.name}/edit`);
             }}
             key="Edit"
           >
