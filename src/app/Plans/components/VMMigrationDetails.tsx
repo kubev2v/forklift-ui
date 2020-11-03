@@ -161,9 +161,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const rows: IRow[] = [];
 
   currentPageItems.forEach((vmStatus: IVMStatus) => {
-    const pipeline = vmStatus.pipeline.map((step, index) => getStepType(vmStatus, index));
     const isExpanded = isVMExpanded(vmStatus);
-
     const ratio = getTotalCopiedRatio(vmStatus);
 
     rows.push({

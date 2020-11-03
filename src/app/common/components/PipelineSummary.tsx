@@ -58,7 +58,9 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
   if (res === StepType.Full) {
     return (
       <>
-        <ResourcesFullIcon color={successColor.value} />
+        <ResourcesFullIcon
+          color={isStepOnError(status, index) ? dangerColor.value : successColor.value}
+        />
         {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
       </>
     );
