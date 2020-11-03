@@ -196,14 +196,14 @@ const PlanWizard: React.FunctionComponent = () => {
       id: StepId.General,
       name: 'General',
       component: (
-        <WizardStepContainer title="General Settings">
+        <WizardStepContainer title="General settings">
           <GeneralForm form={forms.general} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
     },
     {
-      name: 'VM Selection',
+      name: 'VM selection',
       steps: [
         {
           id: StepId.FilterVMs,
@@ -238,9 +238,9 @@ const PlanWizard: React.FunctionComponent = () => {
     },
     {
       id: StepId.NetworkMapping,
-      name: 'Network Mapping',
+      name: 'Network mapping',
       component: (
-        <WizardStepContainer title="Network Mapping">
+        <WizardStepContainer title="Network mapping">
           <MappingForm
             key="mapping-form-network"
             form={forms.networkMapping}
@@ -256,9 +256,9 @@ const PlanWizard: React.FunctionComponent = () => {
     },
     {
       id: StepId.StorageMapping,
-      name: 'Storage Mapping',
+      name: 'Storage mapping',
       component: (
-        <WizardStepContainer title="Map Storage">
+        <WizardStepContainer title="Storage mapping">
           <MappingForm
             key="mapping-form-storage"
             form={forms.storageMapping}
