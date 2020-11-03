@@ -23,6 +23,7 @@ import MappingForm from './MappingForm';
 import {
   IOpenShiftProvider,
   IPlan,
+  IProvidersByType,
   IVMwareProvider,
   IVMwareVM,
   Mapping,
@@ -37,7 +38,13 @@ import {
 } from '@app/Mappings/components/MappingBuilder';
 import { generateMappings, generatePlan } from './helpers';
 import { getPlanNameSchema, useCreatePlanMutation, usePlansQuery } from '@app/queries/plans';
-import { getMappingNameSchema, useCreateMappingMutation, useMappingsQuery } from '@app/queries';
+import {
+  findProvidersByRefs,
+  getMappingNameSchema,
+  useCreateMappingMutation,
+  useMappingsQuery,
+  useProvidersQuery,
+} from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryResult, QueryStatus } from 'react-query';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -63,31 +70,48 @@ const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => 
 const usePlanWizardFormState = (
   plansQuery: QueryResult<IKubeList<IPlan>>,
   networkMappingsQuery: QueryResult<IKubeList<Mapping>>,
-  storageMappingsQuery: QueryResult<IKubeList<Mapping>>
-) => ({
-  general: useFormState({
-    planName: useFormField('', getPlanNameSchema(plansQuery).label('Plan name').required()),
-    planDescription: useFormField('', yup.string().label('Plan description').defined()),
-    sourceProvider: useFormField<IVMwareProvider | null>(
-      null,
-      yup.mixed<IVMwareProvider>().label('Source provider').required()
-    ),
-    targetProvider: useFormField<IOpenShiftProvider | null>(
-      null,
-      yup.mixed<IOpenShiftProvider>().label('Target provider').required()
-    ),
-    targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
-  }),
-  filterVMs: useFormState({
-    treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
-    selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
-  }),
-  selectVMs: useFormState({
-    selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
-  }),
-  networkMapping: useMappingFormState(networkMappingsQuery),
-  storageMapping: useMappingFormState(storageMappingsQuery),
-});
+  storageMappingsQuery: QueryResult<IKubeList<Mapping>>,
+  providersQuery: QueryResult<IProvidersByType>,
+  planBeingEdited: IPlan | null
+) => {
+  const { sourceProvider, targetProvider } = findProvidersByRefs(
+    planBeingEdited?.spec.provider || null,
+    providersQuery
+  );
+  return {
+    general: useFormState({
+      planName: useFormField(
+        planBeingEdited?.metadata.name || '',
+        getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
+      ),
+      planDescription: useFormField(
+        planBeingEdited?.spec.description || '',
+        yup.string().label('Plan description').defined()
+      ),
+      sourceProvider: useFormField<IVMwareProvider | null>(
+        sourceProvider,
+        yup.mixed<IVMwareProvider>().label('Source provider').required()
+      ),
+      targetProvider: useFormField<IOpenShiftProvider | null>(
+        targetProvider,
+        yup.mixed<IOpenShiftProvider>().label('Target provider').required()
+      ),
+      targetNamespace: useFormField(
+        planBeingEdited?.spec.targetNamespace || '',
+        dnsLabelNameSchema.label('Target namespace').required()
+      ),
+    }),
+    filterVMs: useFormState({
+      treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
+      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()), // TODO prefill tree for host mode based on edited mapping? shared helper?
+    }),
+    selectVMs: useFormState({
+      selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
+    }),
+    networkMapping: useMappingFormState(networkMappingsQuery),
+    storageMapping: useMappingFormState(storageMappingsQuery),
+  };
+};
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
@@ -97,7 +121,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
-  const forms = usePlanWizardFormState(plansQuery, networkMappingsQuery, storageMappingsQuery);
+  const providersQuery = useProvidersQuery();
 
   const editRouteMatch = useRouteMatch<{ planName: string }>({
     path: '/plans/:planName/edit',
@@ -107,6 +131,14 @@ const PlanWizard: React.FunctionComponent = () => {
   const planBeingEdited =
     plansQuery.data?.items.find((plan) => plan.metadata.name === editRouteMatch?.params.planName) ||
     null;
+
+  const forms = usePlanWizardFormState(
+    plansQuery,
+    networkMappingsQuery,
+    storageMappingsQuery,
+    providersQuery,
+    planBeingEdited
+  );
 
   enum StepId {
     General = 1,
@@ -213,6 +245,7 @@ const PlanWizard: React.FunctionComponent = () => {
               <FilterVMsForm
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
+                planBeingEdited={planBeingEdited}
               />
             </WizardStepContainer>
           ),
@@ -248,6 +281,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
             selectedVMs={forms.selectVMs.values.selectedVMs}
+            planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
       ),
@@ -266,6 +300,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
             selectedVMs={forms.selectVMs.values.selectedVMs}
+            planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
       ),

@@ -51,6 +51,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   mappingType,
   selectedVMs,
 }: IMappingFormProps) => {
+  // TODO maybe move this query to the wizard level (separate for network/storage), use for prefilling based on mappingBeingEdited
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,

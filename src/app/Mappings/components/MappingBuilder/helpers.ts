@@ -17,22 +17,38 @@ import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
 import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 
+export const getBuilderItemsFromMappingItems = (
+  items: MappingItem[] | null,
+  mappingType: MappingType,
+  allSources: MappingSource[],
+  allTargets: MappingTarget[]
+): IMappingBuilderItem[] =>
+  items
+    ? (items
+        .map((item: MappingItem): IMappingBuilderItem | null => {
+          const source = getMappingSourceById(allSources, item.source.id);
+          const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
+          if (source) {
+            return { source, target, highlight: false };
+          }
+          return null;
+        })
+        .filter((builderItem) => !!builderItem) as IMappingBuilderItem[])
+    : [];
+
 export const getBuilderItemsFromMapping = (
   mapping: Mapping,
   mappingType: MappingType,
   allSources: MappingSource[],
   allTargets: MappingTarget[]
 ): IMappingBuilderItem[] =>
-  (mapping.spec.map as MappingItem[])
-    .map((item: MappingItem): IMappingBuilderItem | null => {
-      const source = getMappingSourceById(allSources, item.source.id);
-      const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
-      if (source) {
-        return { source, target, highlight: false };
-      }
-      return null;
-    })
-    .filter((builderItem) => !!builderItem) as IMappingBuilderItem[];
+  getBuilderItemsFromMappingItems(
+    mapping.spec.map as MappingItem[],
+    mappingType,
+    allSources,
+    allTargets
+  );
+
 interface IGetMappingParams {
   mappingType: MappingType;
   mappingName: string;

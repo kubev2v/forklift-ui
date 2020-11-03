@@ -41,6 +41,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   React.useEffect(() => {
     // Clear selection when the tree type tab changes
     if (!isFirstRender.current) {
+      // TODO if editing, instead prefill the tree based on the first matching tree node for each selected VM?
       treeSelection.selectAll(false);
     }
     isFirstRender.current = false;

@@ -68,8 +68,12 @@ export const useDeletePlanMutation = (
   );
 };
 
-export const getPlanNameSchema = (plansQuery: QueryResult<IKubeList<IPlan>>): yup.StringSchema =>
+export const getPlanNameSchema = (
+  plansQuery: QueryResult<IKubeList<IPlan>>,
+  planBeingEdited: IPlan | null
+): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {
+    if (planBeingEdited?.metadata.name === value) return true;
     if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
     return true;
   });
