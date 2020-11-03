@@ -158,6 +158,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         progress: { total: 3, completed: 1 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
+        error: {
+          phase: 'Error',
+          reasons: ['Something wrong happened.'],
+        },
       },
       {
         name: 'PostHook',
