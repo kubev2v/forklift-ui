@@ -15,7 +15,7 @@ import {
 import { IVMStatus } from '@app/queries/types';
 import { MigrationVMStepsType } from '@app/common/constants';
 import './PipelineSummary.css';
-import { findCurrentStep } from '../helpers';
+import { findCurrentStep, isStepOnError } from '../helpers';
 
 interface IDashProps {
   isReached: boolean;
@@ -100,6 +100,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
   const title = getPipelineSummaryTitle(status);
+
   if (status.completed) {
     return (
       <Summary title={title}>
@@ -114,7 +115,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         {currentStepIndex > 0 ? <Dash isReached={true} /> : null}
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <ResourcesAlmostFullIcon
-            color={status.error?.phase ? dangerColor.value : infoColor.value}
+            color={isStepOnError(status, currentStepIndex) ? dangerColor.value : infoColor.value}
           />
         </FlexItem>
         {currentStepIndex < status.pipeline.length - 1 ? (
