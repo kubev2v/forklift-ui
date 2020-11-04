@@ -34,5 +34,6 @@ COPY --from=builder /virt-ui/node_modules /opt/app-root/src/node_modules
 COPY --from=builder /virt-ui/package.json /opt/app-root/src
 
 ENV VIRTMETA_FILE="/etc/virt-ui/virtMeta.json"
+ENV NODE_TLS_REJECT_UNAUTHORIZED="0"
 
 ENTRYPOINT ["npm", "run", "-d", "start"]
