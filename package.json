@@ -30,6 +30,7 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.0.0",
     "@types/dotenv-webpack": "^3.0.0",
     "@types/ejs": "^3.0.4",
     "@types/enzyme-adapter-react-16": "^1.0.6",
@@ -61,7 +62,6 @@
     "prettier": "^2.0.5",
     "prop-types": "^15.6.1",
     "raw-loader": "^4.0.1",
-    "react-axe": "^3.4.1",
     "react-docgen-typescript-loader": "^3.7.2",
     "react-query-devtools": "^2.5.0",
     "react-router-dom": "^5.2.0",
