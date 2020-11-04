@@ -11,11 +11,14 @@ import {
   ICommonMapping,
   INetworkMapping,
   IStorageMapping,
+  IVMwareVM,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
 import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
+import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
+import { IMappingResourcesResult } from '@app/queries';
 
 export const getBuilderItemsFromMappingItems = (
   items: MappingItem[] | null,
@@ -126,4 +129,30 @@ export const getMappingFromBuilderItems = ({
     },
   };
   return mapping;
+};
+
+export const getBuilderItemsWithMissingSources = (
+  builderItems: IMappingBuilderItem[],
+  mappingResourceQueries: IMappingResourcesResult,
+  selectedVMs: IVMwareVM[],
+  mappingType: MappingType
+): IMappingBuilderItem[] => {
+  const requiredSources = filterSourcesBySelectedVMs(
+    mappingResourceQueries.availableSources,
+    selectedVMs,
+    mappingType
+  );
+  const missingSources = requiredSources.filter(
+    (source) => !builderItems.some((item) => item.source?.selfLink === source.selfLink)
+  );
+  return [
+    ...builderItems,
+    ...missingSources.map(
+      (source): IMappingBuilderItem => ({
+        source,
+        target: null,
+        highlight: builderItems.length > 0,
+      })
+    ),
+  ];
 };

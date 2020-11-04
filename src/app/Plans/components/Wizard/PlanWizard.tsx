@@ -23,7 +23,6 @@ import MappingForm from './MappingForm';
 import {
   IOpenShiftProvider,
   IPlan,
-  IProvidersByType,
   IVMwareProvider,
   IVMwareVM,
   Mapping,
@@ -36,15 +35,9 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, generatePlan } from './helpers';
+import { generateMappings, generatePlan, useEditingPrefillEffect } from './helpers';
 import { getPlanNameSchema, useCreatePlanMutation, usePlansQuery } from '@app/queries/plans';
-import {
-  findProvidersByRefs,
-  getMappingNameSchema,
-  useCreateMappingMutation,
-  useMappingsQuery,
-  useProvidersQuery,
-} from '@app/queries';
+import { getMappingNameSchema, useCreateMappingMutation, useMappingsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryResult, QueryStatus } from 'react-query';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -63,53 +56,49 @@ const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => 
       '',
       isSaveNewMapping.value ? newMappingNameSchema.required() : yup.string()
     ),
+    isPrefilled: useFormField(false, yup.boolean()),
   });
 };
 
-// TODO add support for prefilling forms for editing an API plan
 const usePlanWizardFormState = (
   plansQuery: QueryResult<IKubeList<IPlan>>,
   networkMappingsQuery: QueryResult<IKubeList<Mapping>>,
   storageMappingsQuery: QueryResult<IKubeList<Mapping>>,
-  providersQuery: QueryResult<IProvidersByType>,
   planBeingEdited: IPlan | null
 ) => {
-  const { sourceProvider, targetProvider } = findProvidersByRefs(
-    planBeingEdited?.spec.provider || null,
-    providersQuery
-  );
-  return {
+  const forms = {
     general: useFormState({
       planName: useFormField(
-        planBeingEdited?.metadata.name || '',
+        '',
         getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
       ),
-      planDescription: useFormField(
-        planBeingEdited?.spec.description || '',
-        yup.string().label('Plan description').defined()
-      ),
+      planDescription: useFormField('', yup.string().label('Plan description').defined()),
       sourceProvider: useFormField<IVMwareProvider | null>(
-        sourceProvider,
+        null,
         yup.mixed<IVMwareProvider>().label('Source provider').required()
       ),
       targetProvider: useFormField<IOpenShiftProvider | null>(
-        targetProvider,
+        null,
         yup.mixed<IOpenShiftProvider>().label('Target provider').required()
       ),
-      targetNamespace: useFormField(
-        planBeingEdited?.spec.targetNamespace || '',
-        dnsLabelNameSchema.label('Target namespace').required()
-      ),
+      targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
     }),
     filterVMs: useFormState({
       treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
-      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()), // TODO prefill tree for host mode based on edited mapping? shared helper?
+      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
+      isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({
       selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
     }),
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
+  };
+  return {
+    ...forms,
+    isSomeFormDirty: (Object.keys(forms) as (keyof typeof forms)[]).some(
+      (key) => forms[key].isDirty
+    ),
   };
 };
 
@@ -121,7 +110,6 @@ const PlanWizard: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
-  const providersQuery = useProvidersQuery();
 
   const editRouteMatch = useRouteMatch<{ planName: string }>({
     path: '/plans/:planName/edit',
@@ -136,9 +124,10 @@ const PlanWizard: React.FunctionComponent = () => {
     plansQuery,
     networkMappingsQuery,
     storageMappingsQuery,
-    providersQuery,
     planBeingEdited
   );
+
+  const { prefillQueryStatus, prefillQueryError } = useEditingPrefillEffect(forms, planBeingEdited);
 
   enum StepId {
     General = 1,
@@ -281,7 +270,6 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
             selectedVMs={forms.selectVMs.values.selectedVMs}
-            planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
       ),
@@ -300,7 +288,6 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
             selectedVMs={forms.selectVMs.values.selectedVMs}
-            planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
       ),
@@ -326,11 +313,12 @@ const PlanWizard: React.FunctionComponent = () => {
     },
   ];
 
-  const isSomeFormDirty = (Object.keys(forms) as (keyof PlanWizardFormState)[]).some(
-    (key) => forms[key].isDirty
-  );
-
-  if (plansQuery.isLoading || networkMappingsQuery.isLoading || storageMappingsQuery.isLoading) {
+  if (
+    plansQuery.isLoading ||
+    networkMappingsQuery.isLoading ||
+    storageMappingsQuery.isLoading ||
+    prefillQueryStatus === QueryStatus.Loading
+  ) {
     return <LoadingEmptyState />;
   }
   if (plansQuery.isError) {
@@ -338,6 +326,10 @@ const PlanWizard: React.FunctionComponent = () => {
   }
   if (networkMappingsQuery.isError || storageMappingsQuery.isError) {
     return <Alert variant="danger" title="Error loading mappings" />;
+  }
+  if (prefillQueryStatus === QueryStatus.Error) {
+    console.log('TODO: report prefilling error:', prefillQueryError);
+    return <Alert variant="danger" title="Error pre-filling existing plan" />;
   }
 
   if (editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started)) {
@@ -347,7 +339,7 @@ const PlanWizard: React.FunctionComponent = () => {
   return (
     <>
       <Prompt
-        when={isSomeFormDirty && mutationStatus === QueryStatus.Idle}
+        when={forms.isSomeFormDirty && mutationStatus === QueryStatus.Idle}
         message="You have unsaved changes, are you sure you want to leave this page?"
       />
       <PageSection title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`} variant="light">

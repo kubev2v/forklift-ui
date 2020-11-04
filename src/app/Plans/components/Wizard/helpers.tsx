@@ -14,10 +14,26 @@ import {
   VMwareTree,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
-import { getMappingFromBuilderItems } from '@app/Mappings/components/MappingBuilder/helpers';
+import {
+  getBuilderItemsFromMappingItems,
+  getBuilderItemsWithMissingSources,
+  getMappingFromBuilderItems,
+} from '@app/Mappings/components/MappingBuilder/helpers';
 import { PlanWizardFormState } from './PlanWizard';
 import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
-import { nameAndNamespace } from '@app/queries/helpers';
+import {
+  getAggregateQueryStatus,
+  getFirstQueryError,
+  nameAndNamespace,
+} from '@app/queries/helpers';
+import {
+  findProvidersByRefs,
+  useMappingResourceQueries,
+  useProvidersQuery,
+  useVMwareTreeQuery,
+  useVMwareVMsQuery,
+} from '@app/queries';
+import { QueryResult, QueryStatus } from 'react-query';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -187,6 +203,32 @@ export const getVMTreePathInfoByVM = (
     {}
   );
 
+export const findMatchingNodeAndDescendants = (
+  tree: VMwareTree | null,
+  vmSelfLink: string
+): VMwareTree[] => {
+  const matchingPath = tree && findVMTreePath(tree, vmSelfLink);
+  const matchingNode = matchingPath && matchingPath[matchingPath.length - 1];
+  if (!matchingNode) return [];
+  const nodeAndDescendants: VMwareTree[] = [];
+  const pushNodeAndDescendants = (n: VMwareTree) => {
+    nodeAndDescendants.push(n);
+    if (n.children) {
+      n.children.forEach(pushNodeAndDescendants);
+    }
+  };
+  pushNodeAndDescendants(matchingNode);
+  return nodeAndDescendants;
+};
+
+export const findNodesMatchingSelectedVMs = (
+  tree: VMwareTree | null,
+  selectedVMs: IVMwareVM[]
+): VMwareTree[] =>
+  Array.from(
+    new Set(selectedVMs.flatMap((vm) => findMatchingNodeAndDescendants(tree, vm.selfLink)))
+  );
+
 export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
   selectedVMs: IVMwareVM[],
@@ -276,3 +318,118 @@ export const generatePlan = (
     vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
   },
 });
+
+export const getSelectedVMsFromPlan = (
+  planBeingEdited: IPlan | null,
+  vmsQuery: QueryResult<IVMwareVM[]>
+): IVMwareVM[] => {
+  if (!planBeingEdited) return [];
+  return planBeingEdited.spec.vms
+    .map(({ id }) => vmsQuery.data?.find((vm) => vm.id === id))
+    .filter((vm) => !!vm) as IVMwareVM[];
+};
+
+export const useEditingPrefillEffect = (
+  forms: PlanWizardFormState,
+  planBeingEdited: IPlan | null
+): { prefillQueryStatus: QueryStatus; prefillQueryError: unknown } => {
+  const providersQuery = useProvidersQuery();
+  const { sourceProvider, targetProvider } = findProvidersByRefs(
+    planBeingEdited?.spec.provider || null,
+    providersQuery
+  );
+  const vmsQuery = useVMwareVMsQuery(sourceProvider);
+  const treeQuery = useVMwareTreeQuery(sourceProvider, forms.filterVMs.values.treeType);
+
+  const networkMappingResourceQueries = useMappingResourceQueries(
+    sourceProvider,
+    targetProvider,
+    MappingType.Network
+  );
+  const storageMappingResourceQueries = useMappingResourceQueries(
+    sourceProvider,
+    targetProvider,
+    MappingType.Storage
+  );
+
+  const queries = [
+    providersQuery,
+    vmsQuery,
+    treeQuery,
+    ...networkMappingResourceQueries.queries,
+    ...storageMappingResourceQueries.queries,
+  ];
+  const queryStatus = getAggregateQueryStatus(queries);
+  const queryError = getFirstQueryError(queries);
+
+  React.useEffect(() => {
+    if (queryStatus === QueryStatus.Success && !forms.isSomeFormDirty && planBeingEdited) {
+      const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
+      const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+
+      forms.general.fields.planName.setValue(planBeingEdited.metadata.name);
+      forms.general.fields.planName.setIsTouched(true);
+      if (planBeingEdited.spec.description) {
+        forms.general.fields.planDescription.setValue(planBeingEdited.spec.description);
+        forms.general.fields.planDescription.setIsTouched(true);
+      }
+      forms.general.fields.sourceProvider.setValue(sourceProvider);
+      forms.general.fields.sourceProvider.setIsTouched(true);
+      forms.general.fields.targetProvider.setValue(targetProvider);
+      forms.general.fields.targetProvider.setIsTouched(true);
+      forms.general.fields.targetNamespace.setValue(planBeingEdited.spec.targetNamespace);
+      forms.general.fields.targetNamespace.setIsTouched(true);
+
+      forms.filterVMs.fields.selectedTreeNodes.setValue(selectedTreeNodes);
+      forms.filterVMs.fields.selectedTreeNodes.setIsTouched(true);
+      forms.filterVMs.fields.isPrefilled.setValue(true);
+
+      forms.selectVMs.fields.selectedVMs.setValue(selectedVMs);
+      forms.selectVMs.fields.selectedVMs.setIsTouched(true);
+
+      forms.networkMapping.fields.builderItems.setValue(
+        getBuilderItemsWithMissingSources(
+          getBuilderItemsFromMappingItems(
+            planBeingEdited.spec.map.networks,
+            MappingType.Network,
+            networkMappingResourceQueries.availableSources,
+            networkMappingResourceQueries.availableTargets
+          ),
+          networkMappingResourceQueries,
+          selectedVMs,
+          MappingType.Network
+        )
+      );
+      forms.networkMapping.fields.builderItems.setIsTouched(true);
+      forms.networkMapping.fields.isPrefilled.setValue(true);
+
+      forms.storageMapping.fields.builderItems.setValue(
+        getBuilderItemsWithMissingSources(
+          getBuilderItemsFromMappingItems(
+            planBeingEdited.spec.map.datastores,
+            MappingType.Storage,
+            storageMappingResourceQueries.availableSources,
+            storageMappingResourceQueries.availableTargets
+          ),
+          storageMappingResourceQueries,
+          selectedVMs,
+          MappingType.Storage
+        )
+      );
+      forms.storageMapping.fields.builderItems.setIsTouched(true);
+      forms.storageMapping.fields.isPrefilled.setValue(true);
+    }
+  }, [
+    queryStatus,
+    forms,
+    planBeingEdited,
+    sourceProvider,
+    targetProvider,
+    networkMappingResourceQueries,
+    storageMappingResourceQueries,
+    vmsQuery,
+    treeQuery,
+  ]);
+
+  return { prefillQueryStatus: queryStatus, prefillQueryError: queryError };
+};
