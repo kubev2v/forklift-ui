@@ -38,7 +38,7 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries/plans';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { formatTimestamp } from '@app/common/helpers';
+import { formatTimestamp, getStepType } from '@app/common/helpers';
 import {
   useProvidersQuery,
   findProvidersByRefs,
@@ -160,14 +160,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const rows: IRow[] = [];
 
-  const getVMStatus = (vmStatus) => {
-    console.log('vmStatus:', vmStatus);
-    return vmStatus;
-  };
-
   currentPageItems.forEach((vmStatus: IVMStatus) => {
     const isExpanded = isVMExpanded(vmStatus);
-
     const ratio = getTotalCopiedRatio(vmStatus);
 
     rows.push({
@@ -179,7 +173,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         formatTimestamp(vmStatus.completed),
         `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
         {
-          title: <PipelineSummary status={getVMStatus(vmStatus)} />,
+          title: <PipelineSummary status={vmStatus} />,
         },
       ],
     });

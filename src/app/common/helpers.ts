@@ -73,3 +73,9 @@ export const getStepType = (status: IVMStatus, index: number): StepType => {
     return StepType.Half;
   } else return StepType.Empty;
 };
+
+export const isStepOnError = (status: IVMStatus, index: number): boolean => {
+  const step = status.pipeline[index];
+  if (step.error) return true;
+  return false;
+};

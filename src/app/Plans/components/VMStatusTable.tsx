@@ -1,12 +1,20 @@
 import * as React from 'react';
 import { Flex, FlexItem, Text } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, ICell, IRow, cellWidth } from '@patternfly/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  ICell,
+  IRow,
+  cellWidth,
+  truncate,
+} from '@patternfly/react-table';
 
 import Step from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
 import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
 import { MigrationVMStepsType } from '@app/common/constants';
-import { getStepType } from '@app/common/helpers';
+import { getStepType, isStepOnError } from '@app/common/helpers';
 
 interface IVMStatusTableProps {
   status: IVMStatus;
@@ -21,7 +29,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       transforms: [cellWidth(40)],
     },
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
-    { title: 'State' },
+    { title: 'State', cellTransforms: [truncate] },
   ];
 
   const rows: IRow[] = status.pipeline.map((step: IStep, index) => ({
@@ -35,7 +43,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
             flexWrap={{ default: 'nowrap' }}
           >
             <FlexItem>
-              <Step type={getStepType(status, index)} error={!!status.error?.phase} />
+              <Step type={getStepType(status, index)} error={isStepOnError(status, index)} />
             </FlexItem>
             <FlexItem>
               <Text>{MigrationVMStepsType[step.name] || step.name}</Text>
@@ -46,7 +54,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       {
         title: <TickingElapsedTime start={step.started} end={step.completed} />,
       },
-      step.phase,
+      step.error ? `${step.phase}: ${step.error?.reasons}` : step.phase,
     ],
   }));
 

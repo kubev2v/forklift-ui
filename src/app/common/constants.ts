@@ -55,6 +55,7 @@ export enum StepType {
   Half = 'Half',
   Empty = 'Empty',
 }
+
 export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
   [ProviderType.openshift]: 'OpenShift Virtualization',

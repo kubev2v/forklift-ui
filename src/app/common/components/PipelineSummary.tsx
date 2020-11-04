@@ -13,9 +13,9 @@ import {
 } from '@patternfly/react-tokens';
 
 import { IVMStatus } from '@app/queries/types';
-import { MigrationVMStepsType } from '@app/common/constants';
+import { MigrationVMStepsType, StepType } from '@app/common/constants';
 import './PipelineSummary.css';
-import { findCurrentStep } from '../helpers';
+import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
 
 interface IDashProps {
   isReached: boolean;
@@ -28,53 +28,6 @@ const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) =>
     </FlexItem>
   );
 };
-
-interface IChainProps {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  Face: React.ComponentClass<any>;
-  times: number;
-  color: {
-    name: string;
-    value: string;
-    var: string;
-  };
-}
-
-const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: IChainProps) => {
-  return times < 1 ? null : (
-    <>
-      <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-        <Face color={color.value} />
-      </FlexItem>
-      {times > 1 ? (
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          {color === disabledColor ? <Dash isReached={false} /> : <Dash isReached={true} />}
-        </FlexItem>
-      ) : null}
-      <Chain Face={Face} times={times - 1} color={color} />
-    </>
-  );
-};
-
-interface ISummaryProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: ISummaryProps) => (
-  <Flex direction={{ default: 'column' }}>
-    <FlexItem>
-      <Text component="small">{title}</Text>
-      <Flex
-        spaceItems={{ default: 'spaceItemsNone' }}
-        alignContent={{ default: 'alignContentCenter' }}
-        flexWrap={{ default: 'nowrap' }}
-      >
-        {children}
-      </Flex>
-    </FlexItem>
-  </Flex>
-);
 
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
   const { currentStep } = findCurrentStep(status.pipeline);
@@ -92,54 +45,61 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
   return MigrationVMStepsType.NotStarted;
 };
 
+interface IGetStepTypeIcon {
+  status: IVMStatus;
+  index: number;
+}
+
+const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
+  status,
+  index,
+}: IGetStepTypeIcon) => {
+  const res = getStepType(status, index);
+  if (res === StepType.Full) {
+    return (
+      <>
+        <ResourcesFullIcon
+          color={isStepOnError(status, index) ? dangerColor.value : successColor.value}
+        />
+        {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
+      </>
+    );
+  } else if (res === StepType.Half) {
+    return (
+      <>
+        <ResourcesAlmostFullIcon
+          color={isStepOnError(status, index) ? dangerColor.value : infoColor.value}
+        />
+        {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
+      </>
+    );
+  } else return <ResourcesAlmostEmptyIcon key={index} color={disabledColor.value} />;
+};
+
 interface IPipelineSummaryProps {
   status: IVMStatus;
 }
-
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
 }: IPipelineSummaryProps) => {
   const title = getPipelineSummaryTitle(status);
-  if (status.completed) {
-    return (
-      <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
-      </Summary>
-    );
-  } else if (status.started && !status.completed) {
-    const { currentStepIndex } = findCurrentStep(status.pipeline);
-    return (
-      <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
-        {currentStepIndex > 0 ? <Dash isReached={true} /> : null}
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <ResourcesAlmostFullIcon
-            color={status.error?.phase ? dangerColor.value : infoColor.value}
-          />
-        </FlexItem>
-        {currentStepIndex < status.pipeline.length - 1 ? (
-          <>
-            <Dash isReached={false} />
-            <Chain
-              Face={ResourcesAlmostEmptyIcon}
-              times={status.pipeline.length - currentStepIndex - 1}
-              color={disabledColor}
-            />
-          </>
-        ) : null}
-      </Summary>
-    );
-  } else {
-    return (
-      <Summary title={title}>
-        <Chain
-          Face={ResourcesAlmostEmptyIcon}
-          times={status.pipeline.length}
-          color={disabledColor}
-        />
-      </Summary>
-    );
-  }
+
+  return (
+    <Flex direction={{ default: 'column' }}>
+      <FlexItem>
+        <Text component="small">{title}</Text>
+        <Flex
+          spaceItems={{ default: 'spaceItemsNone' }}
+          alignContent={{ default: 'alignContentCenter' }}
+          flexWrap={{ default: 'nowrap' }}
+        >
+          {status.pipeline.map((_, index) => (
+            <GetStepTypeIcon key={index} status={status} index={index} />
+          ))}
+        </Flex>
+      </FlexItem>
+    </Flex>
+  );
 };
 
 export default PipelineSummary;

@@ -26,7 +26,7 @@ const Step: React.FunctionComponent<IStepProps> = ({ type, error }: IStepProps) 
         className={spacing.mlSm}
         height="1em"
         width="1em"
-        color={successColor.value}
+        color={error ? dangerColor.value : successColor.value}
       />
     );
   }
