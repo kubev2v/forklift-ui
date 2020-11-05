@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
     ],
   };
   // eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
-  const axe = require('react-axe');
+  const axe = require('@axe-core/react');
   axe(React, ReactDOM, 1000, config);
 }
 

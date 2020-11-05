@@ -30,6 +30,7 @@
     "clean": "rimraf dist"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.0.0",
     "@types/dotenv-webpack": "^3.0.0",
     "@types/ejs": "^3.0.4",
     "@types/enzyme-adapter-react-16": "^1.0.6",
@@ -61,7 +62,6 @@
     "prettier": "^2.0.5",
     "prop-types": "^15.6.1",
     "raw-loader": "^4.0.1",
-    "react-axe": "^3.4.1",
     "react-docgen-typescript-loader": "^3.7.2",
     "react-query-devtools": "^2.5.0",
     "react-router-dom": "^5.2.0",
@@ -85,11 +85,11 @@
   },
   "dependencies": {
     "@konveyor/lib-ui": "^1.9.0",
-    "@patternfly/react-core": "^4.60.1",
-    "@patternfly/react-icons": "^4.7.6",
-    "@patternfly/react-styles": "^4.7.5",
-    "@patternfly/react-table": "^4.18.5",
-    "@patternfly/react-tokens": "^4.9.8",
+    "@patternfly/react-core": "^4.75.2",
+    "@patternfly/react-icons": "^4.7.16",
+    "@patternfly/react-styles": "^4.7.12",
+    "@patternfly/react-table": "^4.19.5",
+    "@patternfly/react-tokens": "^4.9.16",
     "axios": "^0.20.0",
     "dayjs": "^1.9.3",
     "ejs": "^3.1.5",
