@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Pagination,
-  TextContent,
-  Text,
-  Alert,
-  Level,
-  LevelItem,
-  Flex,
-} from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
