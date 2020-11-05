@@ -25,6 +25,7 @@ import {
   IVMwareProvider,
   IOpenShiftProvider,
   IVMwareVM,
+  IPlan,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
@@ -44,6 +45,7 @@ interface IMappingFormProps {
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
   selectedVMs: IVMwareVM[];
+  planBeingEdited: IPlan | null;
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
@@ -52,6 +54,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   targetProvider,
   mappingType,
   selectedVMs,
+  planBeingEdited,
 }: IMappingFormProps) => {
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -101,6 +104,11 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   const hasAddedItems = form.values.selectedExistingMapping
     ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
+    : planBeingEdited
+    ? (mappingType === MappingType.Network
+        ? planBeingEdited.spec.map.networks
+        : planBeingEdited.spec.map.datastores
+      ).length < form.values.builderItems.length
     : false;
 
   if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
@@ -115,12 +123,14 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   return (
     <Form>
-      <TextContent>
-        <Text component="p">
-          Start with an existing {mappingType.toLowerCase()} mapping between your source and target
-          providers, or create a new one.
-        </Text>
-      </TextContent>
+      {!form.values.isPrefilled ? (
+        <TextContent>
+          <Text component="p">
+            Start with an existing {mappingType.toLowerCase()} mapping between your source and
+            target providers, or create a new one.
+          </Text>
+        </TextContent>
+      ) : null}
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
         {!form.values.isPrefilled ? (
           <FlexItem>
