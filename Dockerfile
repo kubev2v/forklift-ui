@@ -1,5 +1,5 @@
 # Builder image
-FROM registry.access.redhat.com/ubi8/nodejs-12 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-14 as builder
 COPY . /virt-ui
 WORKDIR /virt-ui
 USER root
@@ -8,7 +8,7 @@ RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
 
 
 # Runner image
-FROM registry.access.redhat.com/ubi8/nodejs-12
+FROM registry.access.redhat.com/ubi8/nodejs-14
 
 LABEL name="konveyor/virt-ui" \
       description="Konveyor for Virtualization - User Interface" \
@@ -22,7 +22,7 @@ LABEL name="konveyor/virt-ui" \
       io.k8s.display-name="virt-ui" \
       io.k8s.description="Konveyor for Virtualization - User Interface" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="operator,konveyor,ui,nodejs12" \
+      io.openshift.tags="operator,konveyor,ui,nodejs14" \
       io.openshift.min-cpu="100m" \
       io.openshift.min-memory="350Mi"
 
