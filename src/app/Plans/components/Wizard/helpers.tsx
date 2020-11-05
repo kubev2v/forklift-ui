@@ -213,7 +213,6 @@ export const findMatchingNodeAndDescendants = (
     ?.slice()
     .reverse()
     .find((node) => node.kind !== 'VM');
-  console.log({ vmSelfLink, matchingNode });
   if (!matchingNode) return [];
   const nodeAndDescendants: VMwareTree[] = [];
   const pushNodeAndDescendants = (n: VMwareTree) => {

@@ -222,7 +222,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} />
+          <GeneralForm form={forms.general} planBeingEdited={planBeingEdited} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
