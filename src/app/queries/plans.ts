@@ -52,6 +52,25 @@ export const useCreatePlanMutation = (
   );
 };
 
+export const usePatchPlanMutation = (
+  existingPlanName: string,
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
+  return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPlan>(
+    (plan: IPlan) => client.patch(planResource, existingPlanName, plan),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
 export const useDeletePlanMutation = (
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {

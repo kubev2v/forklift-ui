@@ -11,6 +11,7 @@ import {
   Wizard,
 } from '@patternfly/react-core';
 import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { QueryResult, QueryStatus } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
 
@@ -36,10 +37,14 @@ import {
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
 import { generateMappings, generatePlan, useEditingPrefillEffect } from './helpers';
-import { getPlanNameSchema, useCreatePlanMutation, usePlansQuery } from '@app/queries/plans';
+import {
+  getPlanNameSchema,
+  useCreatePlanMutation,
+  usePatchPlanMutation,
+  usePlansQuery,
+} from '@app/queries/plans';
 import { getMappingNameSchema, useCreateMappingMutation, useMappingsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
-import { QueryResult, QueryStatus } from 'react-query';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -176,6 +181,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const onClose = () => history.push('/plans');
 
   const [createPlan, createPlanResult] = useCreatePlanMutation();
+  const [patchPlan, patchPlanResult] = usePatchPlanMutation(planBeingEdited?.metadata.name || '');
   const [createNetworkMapping, createNetworkMappingResult] = useCreateMappingMutation(
     MappingType.Network
   );
@@ -185,7 +191,12 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onSave = () => {
     const { networkMapping, storageMapping } = generateMappings(forms);
-    createPlan(generatePlan(forms, networkMapping, storageMapping));
+    const plan = generatePlan(forms, networkMapping, storageMapping);
+    if (!planBeingEdited) {
+      createPlan(plan);
+    } else {
+      patchPlan(plan);
+    }
     if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
       createNetworkMapping(networkMapping);
     }
@@ -195,19 +206,15 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const mutationStatus = getAggregateQueryStatus([
-    createPlanResult,
-    createNetworkMappingResult,
-    createStorageMappingResult,
+    !editRouteMatch ? createPlanResult : patchPlanResult,
+    ...(forms.networkMapping.values.isSaveNewMapping ? [createNetworkMappingResult] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? [createStorageMappingResult] : []),
   ]);
-  const mutationsSucceeded =
-    createPlanResult.isSuccess &&
-    (!forms.networkMapping.values.isSaveNewMapping || createNetworkMappingResult.isSuccess) &&
-    (!forms.storageMapping.values.isSaveNewMapping || createStorageMappingResult.isSuccess);
 
   React.useEffect(() => {
-    if (mutationsSucceeded) onClose();
+    if (mutationStatus === QueryStatus.Success) onClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mutationsSucceeded]);
+  }, [mutationStatus]);
 
   const steps = [
     {
@@ -301,8 +308,10 @@ const PlanWizard: React.FunctionComponent = () => {
           <Review
             forms={forms}
             createPlanResult={createPlanResult}
+            patchPlanResult={patchPlanResult}
             createNetworkMappingResult={createNetworkMappingResult}
             createStorageMappingResult={createStorageMappingResult}
+            planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
       ),
