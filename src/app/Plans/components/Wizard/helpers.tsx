@@ -12,6 +12,7 @@ import {
   MappingSource,
   MappingType,
   VMwareTree,
+  VMwareTreeType,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 import {
@@ -208,7 +209,11 @@ export const findMatchingNodeAndDescendants = (
   vmSelfLink: string
 ): VMwareTree[] => {
   const matchingPath = tree && findVMTreePath(tree, vmSelfLink);
-  const matchingNode = matchingPath && matchingPath[matchingPath.length - 1];
+  const matchingNode = matchingPath
+    ?.slice()
+    .reverse()
+    .find((node) => node.kind !== 'VM');
+  console.log({ vmSelfLink, matchingNode });
   if (!matchingNode) return [];
   const nodeAndDescendants: VMwareTree[] = [];
   const pushNodeAndDescendants = (n: VMwareTree) => {
@@ -329,17 +334,27 @@ export const getSelectedVMsFromPlan = (
     .filter((vm) => !!vm) as IVMwareVM[];
 };
 
+interface IEditingPrefillResults {
+  prefillQueryStatus: QueryStatus;
+  prefillQueryError: unknown;
+  isDonePrefilling: boolean;
+}
+
 export const useEditingPrefillEffect = (
   forms: PlanWizardFormState,
-  planBeingEdited: IPlan | null
-): { prefillQueryStatus: QueryStatus; prefillQueryError: unknown } => {
+  planBeingEdited: IPlan | null,
+  isEditMode: boolean
+): IEditingPrefillResults => {
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
+
   const providersQuery = useProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
     planBeingEdited?.spec.provider || null,
     providersQuery
   );
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
-  const treeQuery = useVMwareTreeQuery(sourceProvider, forms.filterVMs.values.treeType);
+  const hostTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.Host);
+  const vmTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.VM);
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -355,7 +370,8 @@ export const useEditingPrefillEffect = (
   const queries = [
     providersQuery,
     vmsQuery,
-    treeQuery,
+    hostTreeQuery,
+    vmTreeQuery,
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
   ];
@@ -365,6 +381,8 @@ export const useEditingPrefillEffect = (
   React.useEffect(() => {
     if (queryStatus === QueryStatus.Success && !forms.isSomeFormDirty && planBeingEdited) {
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
+      const treeQuery =
+        forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
 
       forms.general.fields.planName.setValue(planBeingEdited.metadata.name);
@@ -418,6 +436,11 @@ export const useEditingPrefillEffect = (
       );
       forms.storageMapping.fields.builderItems.setIsTouched(true);
       forms.storageMapping.fields.isPrefilled.setValue(true);
+
+      // Wait for effects to run based on field changes first
+      window.setTimeout(() => {
+        setIsDonePrefilling(true);
+      }, 0);
     }
   }, [
     queryStatus,
@@ -428,8 +451,13 @@ export const useEditingPrefillEffect = (
     networkMappingResourceQueries,
     storageMappingResourceQueries,
     vmsQuery,
-    treeQuery,
+    hostTreeQuery,
+    vmTreeQuery,
   ]);
 
-  return { prefillQueryStatus: queryStatus, prefillQueryError: queryError };
+  return {
+    prefillQueryStatus: queryStatus,
+    prefillQueryError: queryError,
+    isDonePrefilling,
+  };
 };

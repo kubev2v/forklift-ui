@@ -127,7 +127,11 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const { prefillQueryStatus, prefillQueryError } = useEditingPrefillEffect(forms, planBeingEdited);
+  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPrefillEffect(
+    forms,
+    planBeingEdited,
+    !!editRouteMatch
+  );
 
   enum StepId {
     General = 1,
@@ -151,15 +155,16 @@ const PlanWizard: React.FunctionComponent = () => {
 
   // When providers change, reset dependent forms (filter selections)
   React.useEffect(() => {
-    if (!isFirstRender.current) {
+    if (!isFirstRender.current && isDonePrefilling) {
       forms.filterVMs.reset();
+      console.log('RESETTING from change?');
     }
     isFirstRender.current = false;
   }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
 
   // When filter selections change, reset dependent forms (VM selections)
   React.useEffect(() => {
-    if (!isFirstRender.current) {
+    if (!isFirstRender.current && isDonePrefilling) {
       forms.selectVMs.reset();
     }
     isFirstRender.current = false;
@@ -167,7 +172,7 @@ const PlanWizard: React.FunctionComponent = () => {
 
   // When VM selections change, reset dependent forms (mappings)
   React.useEffect(() => {
-    if (!isFirstRender.current) {
+    if (!isFirstRender.current && isDonePrefilling) {
       forms.networkMapping.reset();
       forms.storageMapping.reset();
     }
@@ -317,7 +322,8 @@ const PlanWizard: React.FunctionComponent = () => {
     plansQuery.isLoading ||
     networkMappingsQuery.isLoading ||
     storageMappingsQuery.isLoading ||
-    prefillQueryStatus === QueryStatus.Loading
+    prefillQueryStatus === QueryStatus.Loading ||
+    !isDonePrefilling
   ) {
     return <LoadingEmptyState />;
   }
