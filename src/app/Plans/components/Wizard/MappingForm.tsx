@@ -38,6 +38,7 @@ import {
 import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
+import { QueryStatus } from 'react-query';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -61,6 +62,30 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     targetProvider,
     mappingType
   );
+
+  const hasInitialized = React.useRef(false);
+  React.useEffect(() => {
+    if (!hasInitialized.current && mappingResourceQueries.status === QueryStatus.Success) {
+      hasInitialized.current = true;
+      if (form.values.builderItems.length > 0) {
+        form.fields.builderItems.setValue(
+          getBuilderItemsWithMissingSources(
+            form.values.builderItems,
+            mappingResourceQueries,
+            selectedVMs,
+            mappingType
+          )
+        );
+      }
+    }
+  }, [
+    form.fields.builderItems,
+    form.values.builderItems,
+    mappingResourceQueries,
+    mappingType,
+    selectedVMs,
+  ]);
+
   const mappingsQuery = useMappingsQuery(mappingType);
 
   const filteredMappings = (mappingsQuery.data?.items || []).filter(

@@ -153,31 +153,23 @@ const PlanWizard: React.FunctionComponent = () => {
 
   /* eslint-disable react-hooks/exhaustive-deps */
 
-  // When providers change, reset dependent forms (filter selections)
+  // When providers change, reset dependent forms
   React.useEffect(() => {
     if (!isFirstRender.current && isDonePrefilling) {
       forms.filterVMs.reset();
-      console.log('RESETTING from change?');
+      forms.networkMapping.reset();
+      forms.storageMapping.reset();
     }
     isFirstRender.current = false;
   }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
 
-  // When filter selections change, reset dependent forms (VM selections)
+  // When filter selections change, reset dependent forms
   React.useEffect(() => {
     if (!isFirstRender.current && isDonePrefilling) {
       forms.selectVMs.reset();
     }
     isFirstRender.current = false;
   }, [forms.filterVMs.values.selectedTreeNodes]);
-
-  // When VM selections change, reset dependent forms (mappings)
-  React.useEffect(() => {
-    if (!isFirstRender.current && isDonePrefilling) {
-      forms.networkMapping.reset();
-      forms.storageMapping.reset();
-    }
-    isFirstRender.current = false;
-  }, [forms.selectVMs.values.selectedVMs]);
 
   /* eslint-enable react-hooks/exhaustive-deps */
 
