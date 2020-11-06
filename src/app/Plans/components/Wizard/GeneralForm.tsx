@@ -4,7 +4,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { IOpenShiftProvider, IPlan, IVMwareProvider } from '@app/queries/types';
 import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
@@ -12,9 +12,13 @@ import { useNamespacesQuery } from '@app/queries/namespaces';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
+  planBeingEdited: IPlan | null;
 }
 
-const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGeneralFormProps) => {
+const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
+  form,
+  planBeingEdited,
+}: IGeneralFormProps) => {
   const providersQuery = useProvidersQuery();
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
@@ -48,6 +52,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({ form }: IGene
         label="Plan name"
         isRequired
         fieldId="plan-name"
+        inputProps={{ isDisabled: !!planBeingEdited }}
       />
       <ValidatedTextInput
         component={TextArea}

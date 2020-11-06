@@ -99,6 +99,13 @@ export const routes: AppRouteConfig[] = [
     isProtected: true,
   },
   {
+    component: PlanWizard,
+    exact: false,
+    path: '/plans/:planName/edit',
+    title: `${APP_TITLE} | Create Migration Plan`,
+    isProtected: true,
+  },
+  {
     component: VMMigrationDetails,
     exact: false,
     path: '/plans/:planName',

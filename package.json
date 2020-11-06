@@ -84,7 +84,7 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "@konveyor/lib-ui": "^1.9.0",
+    "@konveyor/lib-ui": "^1.10.5",
     "@patternfly/react-core": "^4.75.2",
     "@patternfly/react-icons": "^4.7.16",
     "@patternfly/react-styles": "^4.7.12",

@@ -25,16 +25,20 @@ import {
   IVMwareProvider,
   IOpenShiftProvider,
   IVMwareVM,
+  IPlan,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
-import { getBuilderItemsFromMapping } from '@app/Mappings/components/MappingBuilder/helpers';
-import { filterSourcesBySelectedVMs } from './helpers';
+import {
+  getBuilderItemsFromMapping,
+  getBuilderItemsWithMissingSources,
+} from '@app/Mappings/components/MappingBuilder/helpers';
 import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
+import { QueryStatus } from 'react-query';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -42,6 +46,7 @@ interface IMappingFormProps {
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
   selectedVMs: IVMwareVM[];
+  planBeingEdited: IPlan | null;
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
@@ -50,19 +55,38 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   targetProvider,
   mappingType,
   selectedVMs,
+  planBeingEdited,
 }: IMappingFormProps) => {
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
     mappingType
   );
-  const mappingsQuery = useMappingsQuery(mappingType);
 
-  const requiredSources = filterSourcesBySelectedVMs(
-    mappingResourceQueries.availableSources,
+  const hasInitialized = React.useRef(false);
+  React.useEffect(() => {
+    if (!hasInitialized.current && mappingResourceQueries.status === QueryStatus.Success) {
+      hasInitialized.current = true;
+      if (form.values.builderItems.length > 0) {
+        form.fields.builderItems.setValue(
+          getBuilderItemsWithMissingSources(
+            form.values.builderItems,
+            mappingResourceQueries,
+            selectedVMs,
+            mappingType
+          )
+        );
+      }
+    }
+  }, [
+    form.fields.builderItems,
+    form.values.builderItems,
+    mappingResourceQueries,
+    mappingType,
     selectedVMs,
-    mappingType
-  );
+  ]);
+
+  const mappingsQuery = useMappingsQuery(mappingType);
 
   const filteredMappings = (mappingsQuery.data?.items || []).filter(
     ({
@@ -84,7 +108,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   })) as OptionWithValue<Mapping>[];
 
   const populateMappingBuilder = (mapping?: Mapping) => {
-    let newBuilderItems: IMappingBuilderItem[] = !mapping
+    const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
       : getBuilderItemsFromMapping(
           mapping,
@@ -92,21 +116,24 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
           mappingResourceQueries.availableSources,
           mappingResourceQueries.availableTargets
         );
-    const missingSources = requiredSources.filter(
-      (source) => !newBuilderItems.some((item) => item.source?.selfLink === source.selfLink)
+    form.fields.builderItems.setValue(
+      getBuilderItemsWithMissingSources(
+        newBuilderItems,
+        mappingResourceQueries,
+        selectedVMs,
+        mappingType
+      )
     );
-    newBuilderItems = [
-      ...newBuilderItems,
-      ...missingSources.map(
-        (source): IMappingBuilderItem => ({ source, target: null, highlight: !!mapping })
-      ),
-    ];
-    form.fields.builderItems.setValue(newBuilderItems);
     form.fields.isSaveNewMapping.setValue(false);
   };
 
   const hasAddedItems = form.values.selectedExistingMapping
     ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
+    : planBeingEdited
+    ? (mappingType === MappingType.Network
+        ? planBeingEdited.spec.map.networks
+        : planBeingEdited.spec.map.datastores
+      ).length < form.values.builderItems.length
     : false;
 
   if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
@@ -121,67 +148,73 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   return (
     <Form>
-      <TextContent>
-        <Text component="p">
-          Start with an existing {mappingType.toLowerCase()} mapping between your source and target
-          providers, or create a new one.
-        </Text>
-      </TextContent>
+      {!form.values.isPrefilled ? (
+        <TextContent>
+          <Text component="p">
+            Start with an existing {mappingType.toLowerCase()} mapping between your source and
+            target providers, or create a new one.
+          </Text>
+        </TextContent>
+      ) : null}
       <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
-        <FlexItem>
-          <FormGroup isRequired fieldId="mappingSelect">
-            <Select
-              id="mappingSelect"
-              aria-label="Select mapping"
-              placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
-              isGrouped
-              isOpen={isMappingSelectOpen}
-              onToggle={setIsMappingSelectOpen}
-              onSelect={(_event, selection: SelectOptionObject) => {
-                const sel = selection as OptionWithValue<Mapping | 'new'>;
-                if (sel.value === 'new') {
-                  form.fields.isCreateMappingSelected.setValue(true);
-                  form.fields.selectedExistingMapping.setValue(null);
-                  populateMappingBuilder();
-                } else {
-                  form.fields.isCreateMappingSelected.setValue(false);
-                  form.fields.selectedExistingMapping.setValue(sel.value);
-                  populateMappingBuilder(sel.value);
-                }
-                setIsMappingSelectOpen(false);
-              }}
-              selections={
-                form.values.isCreateMappingSelected
-                  ? [newMappingOption]
-                  : form.values.selectedExistingMapping
-                  ? [
-                      mappingOptions.find((option) =>
-                        isSameResource(
-                          option.value.metadata,
-                          form.values.selectedExistingMapping?.metadata
-                        )
-                      ),
-                    ]
-                  : []
-              }
-            >
-              <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
-              <SelectGroup
-                label={
-                  mappingOptions.length > 0
-                    ? 'Existing mappings'
-                    : 'No existing mappings match your selected providers'
+        {!form.values.isPrefilled ? (
+          <FlexItem>
+            <FormGroup isRequired fieldId="mappingSelect">
+              <Select
+                id="mappingSelect"
+                aria-label="Select mapping"
+                placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
+                isGrouped
+                isOpen={isMappingSelectOpen}
+                onToggle={setIsMappingSelectOpen}
+                onSelect={(_event, selection: SelectOptionObject) => {
+                  const sel = selection as OptionWithValue<Mapping | 'new'>;
+                  if (sel.value === 'new') {
+                    form.fields.isCreateMappingSelected.setValue(true);
+                    form.fields.selectedExistingMapping.setValue(null);
+                    populateMappingBuilder();
+                  } else {
+                    form.fields.isCreateMappingSelected.setValue(false);
+                    form.fields.selectedExistingMapping.setValue(sel.value);
+                    populateMappingBuilder(sel.value);
+                  }
+                  setIsMappingSelectOpen(false);
+                }}
+                selections={
+                  form.values.isCreateMappingSelected
+                    ? [newMappingOption]
+                    : form.values.selectedExistingMapping
+                    ? [
+                        mappingOptions.find((option) =>
+                          isSameResource(
+                            option.value.metadata,
+                            form.values.selectedExistingMapping?.metadata
+                          )
+                        ),
+                      ]
+                    : []
                 }
               >
-                {mappingOptions.map((option) => (
-                  <SelectOption key={option.toString()} value={option} />
-                ))}
-              </SelectGroup>
-            </Select>
-          </FormGroup>
-        </FlexItem>
+                <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
+                <SelectGroup
+                  label={
+                    mappingOptions.length > 0
+                      ? 'Existing mappings'
+                      : 'No existing mappings match your selected providers'
+                  }
+                >
+                  {mappingOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} />
+                  ))}
+                </SelectGroup>
+              </Select>
+            </FormGroup>
+          </FlexItem>
+        ) : null}
 
-        {(form.values.isCreateMappingSelected || form.values.selectedExistingMapping) && (
+        {(form.values.isCreateMappingSelected ||
+          form.values.selectedExistingMapping ||
+          form.values.isPrefilled) && (
           <>
             <MappingBuilder
               mappingType={mappingType}
@@ -192,7 +225,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
               isWizardMode
               hasItemsAddedMessage={hasAddedItems}
             />
-            {form.values.isCreateMappingSelected || hasAddedItems ? (
+            {form.values.isCreateMappingSelected || form.values.isPrefilled || hasAddedItems ? (
               <>
                 <Checkbox
                   label="Save mapping to use again"
