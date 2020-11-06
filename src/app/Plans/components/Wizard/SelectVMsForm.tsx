@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  Pagination,
-  TextContent,
-  Text,
-  Alert,
-  Level,
-  LevelItem,
-  Flex,
-} from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -61,15 +53,23 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
+  // Even if some of the already-selected VMs don't match the filter, include them in the list.
+  const selectedVMsOnMount = React.useRef(form.values.selectedVMs);
   const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
-    const availableVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
+    const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
+    const availableVMs = [
+      ...selectedVMsOnMount.current,
+      ...filteredVMs.filter(
+        (vm) => !selectedVMsOnMount.current.some((selectedVM) => vm.id === selectedVM.id)
+      ),
+    ];
     const treePathInfoByVM = getVMTreePathInfoByVM(
       availableVMs,
       hostTreeQuery.data || null,
       vmTreeQuery.data || null
     );
     return { availableVMs, treePathInfoByVM };
-  }, [selectedTreeNodes, hostTreeQuery.data, vmTreeQuery.data, vmsQuery.data]);
+  }, [selectedTreeNodes, vmsQuery.data, hostTreeQuery.data, vmTreeQuery.data]);
 
   const filterCategories: FilterCategory<IVMwareVM>[] = [
     {

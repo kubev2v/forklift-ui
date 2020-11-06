@@ -90,8 +90,7 @@ export const getAggregateQueryStatus = (
   if (queryResults.some((result) => result.isError)) return QueryStatus.Error;
   if (queryResults.some((result) => result.isLoading)) return QueryStatus.Loading;
   if (queryResults.every((result) => result.isIdle)) return QueryStatus.Idle;
-  if (queryResults.every((result) => result.isSuccess)) return QueryStatus.Success;
-  return QueryStatus.Error; // Should never reach this, just makes TS happy
+  return QueryStatus.Success;
 };
 
 export const getFirstQueryError = <TError>(

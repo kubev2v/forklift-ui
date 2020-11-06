@@ -10,9 +10,15 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { useVMwareTreeQuery } from '@app/queries';
-import { IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
-import { filterAndConvertVMwareTree, findVMTreePath, flattenVMwareTreeNodes } from './helpers';
+import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
+import { IPlan, IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
+import {
+  filterAndConvertVMwareTree,
+  findMatchingNodeAndDescendants,
+  findNodesMatchingSelectedVMs,
+  flattenVMwareTreeNodes,
+  getSelectedVMsFromPlan,
+} from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
@@ -21,14 +27,17 @@ import './FilterVMsForm.css';
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
   sourceProvider: IVMwareProvider | null;
+  planBeingEdited: IPlan | null;
 }
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
+  planBeingEdited,
 }: IFilterVMsFormProps) => {
   const [searchText, setSearchText] = React.useState('');
 
+  const vmsQuery = useVMwareVMsQuery(sourceProvider);
   const treeQuery = useVMwareTreeQuery(sourceProvider, form.values.treeType);
 
   const treeSelection = useSelectionState({
@@ -38,14 +47,30 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   });
 
   const isFirstRender = React.useRef(true);
+  const lastTreeType = React.useRef(form.values.treeType);
   React.useEffect(() => {
-    // Clear selection when the tree type tab changes
-    if (!isFirstRender.current) {
-      treeSelection.selectAll(false);
+    // Clear or reset selection when the tree type tab changes
+    const treeTypeChanged = form.values.treeType !== lastTreeType.current;
+    if (!isFirstRender.current && treeTypeChanged) {
+      if (!planBeingEdited || !form.values.isPrefilled) {
+        treeSelection.selectAll(false);
+        lastTreeType.current = form.values.treeType;
+      } else if (vmsQuery.isSuccess && treeQuery.isSuccess) {
+        const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
+        const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+        treeSelection.setSelectedItems(selectedTreeNodes);
+        lastTreeType.current = form.values.treeType;
+      }
     }
     isFirstRender.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.values.treeType]);
+  }, [
+    form.values.treeType,
+    form.values.isPrefilled,
+    planBeingEdited,
+    treeQuery,
+    vmsQuery,
+    treeSelection,
+  ]);
 
   return (
     <div className="plan-wizard-filter-vms-form">
@@ -68,8 +93,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           title={<TabTitleText>By folders</TabTitleText>}
         />
       </Tabs>
-      {treeQuery.isLoading ? (
+      {vmsQuery.isLoading || treeQuery.isLoading ? (
         <LoadingEmptyState />
+      ) : vmsQuery.isError ? (
+        <Alert variant="danger" isInline title="Error loading VMs" />
       ) : treeQuery.isError ? (
         <Alert variant="danger" isInline title="Error loading VMware tree data" />
       ) : (
@@ -87,23 +114,14 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else {
-              const matchingPath =
-                treeQuery.data && findVMTreePath(treeQuery.data, treeViewItem.id || '');
-              const matchingNode = matchingPath && matchingPath[matchingPath.length - 1];
-              if (matchingNode) {
-                const nodesToSelect: VMwareTree[] = [];
-                const pushNodeAndDescendants = (n: VMwareTree) => {
-                  nodesToSelect.push(n);
-                  if (n.children) {
-                    n.children.forEach(pushNodeAndDescendants);
-                  }
-                };
-                pushNodeAndDescendants(matchingNode);
-                treeSelection.selectMultiple(
-                  nodesToSelect,
-                  !treeSelection.isItemSelected(matchingNode)
-                );
-              }
+              const nodesToSelect = findMatchingNodeAndDescendants(
+                treeQuery.data || null,
+                treeViewItem.id || ''
+              );
+              treeSelection.selectMultiple(
+                nodesToSelect,
+                !treeSelection.isItemSelected(nodesToSelect[0])
+              );
             }
           }}
           searchProps={{

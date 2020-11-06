@@ -94,13 +94,14 @@ export const useDeleteMappingMutation = (
   );
 };
 
-interface IMappingResourcesResult {
+export interface IMappingResourcesResult {
   availableSources: MappingSource[];
   availableTargets: MappingTarget[];
   isLoading: boolean;
   isError: boolean;
   status: QueryStatus;
   error: unknown; // TODO not sure how to handle error types yet
+  queries: QueryResult<unknown>[];
 }
 
 export const useMappingResourceQueries = (
@@ -148,6 +149,7 @@ export const useMappingResourceQueries = (
     isError: status === QueryStatus.Error,
     status,
     error,
+    queries: queriesToWatch,
   };
 };
 

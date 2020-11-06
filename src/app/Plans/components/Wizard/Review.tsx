@@ -12,15 +12,19 @@ import { generateMappings } from './helpers';
 interface IReviewProps {
   forms: PlanWizardFormState;
   createPlanResult: MutationResult<IKubeResponse<IPlan>, KubeClientError>;
+  patchPlanResult: MutationResult<IKubeResponse<IPlan>, KubeClientError>;
   createNetworkMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
   createStorageMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
+  planBeingEdited: IPlan | null;
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   createPlanResult,
+  patchPlanResult,
   createNetworkMappingResult,
   createStorageMappingResult,
+  planBeingEdited,
 }: IReviewProps) => {
   // Reset mutation state on unmount (going back in the wizard clears errors)
   React.useEffect(() => {
@@ -36,8 +40,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
     <Form>
       <TextContent>
         <Text component="p">
-          Review the information below and click Finish to create your migration plan. Use the Back
-          button to make changes.
+          Review the information below and click Finish to {!planBeingEdited ? 'create' : 'save'}{' '}
+          your migration plan. Use the Back button to make changes.
         </Text>
       </TextContent>
       <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
@@ -64,9 +68,13 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9}>{forms.selectVMs.values.selectedVMs.length}</GridItem>
       </Grid>
       <MutationStatus
-        results={[createPlanResult, createNetworkMappingResult, createStorageMappingResult]}
+        results={[
+          !planBeingEdited ? createPlanResult : patchPlanResult,
+          createNetworkMappingResult,
+          createStorageMappingResult,
+        ]}
         errorTitles={[
-          'Error creating migration plan',
+          `Error ${!planBeingEdited ? 'creating' : 'patching'} migration plan`,
           'Error creating network mapping',
           'Error creating storage mapping',
         ]}

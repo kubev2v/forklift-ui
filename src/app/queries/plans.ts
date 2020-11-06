@@ -52,6 +52,25 @@ export const useCreatePlanMutation = (
   );
 };
 
+export const usePatchPlanMutation = (
+  existingPlanName: string,
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
+  return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPlan>(
+    (plan: IPlan) => client.patch(planResource, existingPlanName, plan),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
 export const useDeletePlanMutation = (
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
@@ -68,8 +87,12 @@ export const useDeletePlanMutation = (
   );
 };
 
-export const getPlanNameSchema = (plansQuery: QueryResult<IKubeList<IPlan>>): yup.StringSchema =>
+export const getPlanNameSchema = (
+  plansQuery: QueryResult<IKubeList<IPlan>>,
+  planBeingEdited: IPlan | null
+): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {
+    if (planBeingEdited?.metadata.name === value) return true;
     if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
     return true;
   });
