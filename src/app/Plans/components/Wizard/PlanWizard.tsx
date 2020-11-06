@@ -353,7 +353,7 @@ const PlanWizard: React.FunctionComponent = () => {
         </Breadcrumb>
         <Level>
           <LevelItem>
-            <Title headingLevel="h1">{!planBeingEdited ? 'Create' : 'Edit'} Migration Plan</Title>
+            <Title headingLevel="h1">{!planBeingEdited ? 'Create' : 'Edit'} migration plan</Title>
           </LevelItem>
         </Level>
       </PageSection>
