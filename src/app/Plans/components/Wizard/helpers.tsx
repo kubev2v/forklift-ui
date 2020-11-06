@@ -339,7 +339,7 @@ interface IEditingPrefillResults {
   isDonePrefilling: boolean;
 }
 
-export const useEditingPrefillEffect = (
+export const useEditingPlanPrefillEffect = (
   forms: PlanWizardFormState,
   planBeingEdited: IPlan | null,
   isEditMode: boolean

@@ -76,6 +76,26 @@ export const useCreateMappingMutation = (
   );
 };
 
+export const usePatchMappingMutation = (
+  mappingType: MappingType,
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<Mapping>, KubeClientError, Mapping, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
+    async (mapping: Mapping) => {
+      const { resource } = getMappingResource(mappingType);
+      return await client.patch(resource, mapping.metadata.name, mapping);
+    },
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries(['mappings', mappingType]);
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
 export const useDeleteMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
@@ -154,9 +174,11 @@ export const useMappingResourceQueries = (
 };
 
 export const getMappingNameSchema = (
-  mappingsQuery: QueryResult<IKubeList<Mapping>>
+  mappingsQuery: QueryResult<IKubeList<Mapping>>,
+  mappingBeingEdited: Mapping | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A mapping with this name already exists', (value) => {
+    if (mappingBeingEdited?.metadata.name === value) return true;
     if (mappingsQuery.data?.items.find((mapping) => mapping.metadata.name === value)) return false;
     return true;
   });

@@ -36,7 +36,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, generatePlan, useEditingPrefillEffect } from './helpers';
+import { generateMappings, generatePlan, useEditingPlanPrefillEffect } from './helpers';
 import {
   getPlanNameSchema,
   useCreatePlanMutation,
@@ -132,7 +132,7 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPrefillEffect(
+  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPlanPrefillEffect(
     forms,
     planBeingEdited,
     !!editRouteMatch
@@ -171,7 +171,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const onClose = () => history.push('/plans');
 
   const [createPlan, createPlanResult] = useCreatePlanMutation();
-  const [patchPlan, patchPlanResult] = usePatchPlanMutation(planBeingEdited?.metadata.name || '');
+  const [patchPlan, patchPlanResult] = usePatchPlanMutation();
   const [createNetworkMapping, createNetworkMappingResult] = useCreateMappingMutation(
     MappingType.Network
   );
