@@ -51,7 +51,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
-  const newMappingNameSchema = getMappingNameSchema(mappingsQuery).label('Name');
+  const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
   return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
