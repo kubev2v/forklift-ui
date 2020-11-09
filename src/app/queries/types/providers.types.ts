@@ -22,7 +22,7 @@ export interface INewSecret extends IMetaTypeMeta {
   };
   metadata: {
     name?: string;
-    generateName: string;
+    generateName?: string;
     namespace: string;
     labels: {
       createdForResourceType: string;

@@ -68,7 +68,11 @@ export const useCreateProviderMutation = (
       provider.metadata.name
     );
     try {
-      const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider);
+      const secret: INewSecret = convertFormValuesToSecret(
+        values,
+        VirtResourceKind.Provider,
+        false
+      );
 
       const providerAddResults: Array<IKubeResponse<INewSecret | ICommonProviderObject>> = [];
       const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
@@ -159,6 +163,26 @@ export const useCreateProviderMutation = (
       onSuccess();
     },
   });
+};
+
+export const usePatchProviderMutation = (
+  providerType: ProviderType,
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<unknown>, KubeClientError, AddProviderFormValues, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  const { pollFasterAfterMutation } = usePollingContext();
+  return useMockableMutation<IKubeResponse<unknown>, KubeClientError, AddProviderFormValues>(
+    // TODO factor out a helper for converting the form values to a provider obj
+    (formValues: AddProviderFormValues) => client.patch(providerResource, 'TODO: name', {}),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        pollFasterAfterMutation();
+        onSuccess && onSuccess();
+      },
+    }
+  );
 };
 
 export const useDeleteProviderMutation = (

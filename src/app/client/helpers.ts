@@ -48,12 +48,13 @@ export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT
 
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
-  createdForResourceType: VirtResourceKind
+  createdForResourceType: VirtResourceKind,
+  isEditMode: boolean
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
     // btoa => to base64, atob => from base64
-    const encodedToken = btoa(openshiftValues.saToken);
+    const encodedToken = openshiftValues.saToken && btoa(openshiftValues.saToken);
     return {
       apiVersion: 'v1',
       data: {
@@ -61,7 +62,7 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        generateName: `${openshiftValues.clusterName}-`,
+        ...(!isEditMode ? { generateName: `${openshiftValues.clusterName}-` } : null),
         namespace: VIRT_META.namespace,
         labels: {
           createdForResourceType,
@@ -73,9 +74,9 @@ export function convertFormValuesToSecret(
   } else {
     // default to vmware
     const vmwareValues = values as VMwareProviderFormValues;
-    const encodedUser = btoa(vmwareValues.username);
-    const encodedPassword = btoa(vmwareValues.password);
-    const encodedThumbprint = btoa(vmwareValues.fingerprint);
+    const encodedUser = vmwareValues.username && btoa(vmwareValues.username);
+    const encodedPassword = vmwareValues.password && btoa(vmwareValues.password);
+    const encodedThumbprint = vmwareValues.fingerprint && btoa(vmwareValues.fingerprint);
     return {
       apiVersion: 'v1',
       data: {
@@ -85,7 +86,7 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        generateName: `${vmwareValues.name}-`,
+        ...(!isEditMode ? { generateName: `${vmwareValues.name}-` } : null),
         namespace: VIRT_META.namespace,
         labels: {
           createdForResourceType,
