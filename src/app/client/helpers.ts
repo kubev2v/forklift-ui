@@ -12,7 +12,7 @@ import {
   AddProviderFormValues,
   OpenshiftProviderFormValues,
   VMwareProviderFormValues,
-} from '@app/Providers/components/AddProviderModal/AddProviderModal';
+} from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { AuthorizedClusterClient } from './types';
 
 export class VirtResource extends NamespacedResource {
@@ -97,6 +97,12 @@ export function convertFormValuesToSecret(
   }
 }
 
+export const vmwareUrlToHostname = (url: string): string => {
+  const match = url.match(/^https:\/\/(.+)\/sdk$/);
+  return match ? match[1] : '';
+};
+export const vmwareHostnameToUrl = (hostname: string): string => `https://${hostname}/sdk`;
+
 export const convertFormValuesToProvider = (
   values: AddProviderFormValues,
   providerType: ProviderType | null
@@ -106,7 +112,7 @@ export const convertFormValuesToProvider = (
   if (providerType === 'vsphere') {
     const vmwareValues = values as VMwareProviderFormValues;
     name = vmwareValues.name;
-    url = 'https://' + vmwareValues.hostname + '/sdk';
+    url = vmwareHostnameToUrl(vmwareValues.hostname);
   } else {
     const openshiftValues = values as OpenshiftProviderFormValues;
     name = openshiftValues.clusterName;

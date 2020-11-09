@@ -4,6 +4,7 @@ import { useDeleteProviderMutation } from '@app/queries';
 import { Provider } from '@app/queries/types';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import { EditProviderContext } from '@app/Providers/ProvidersPage';
 
 interface IProviderActionsDropdownProps {
   provider: Provider;
@@ -20,6 +21,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
     providerType,
     toggleDeleteModal
   );
+  const { openEditProviderModal } = React.useContext(EditProviderContext);
   return (
     <>
       <Dropdown
@@ -31,7 +33,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
-              alert('TODO');
+              openEditProviderModal(provider);
             }}
             key="edit"
           >

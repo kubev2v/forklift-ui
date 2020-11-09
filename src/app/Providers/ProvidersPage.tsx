@@ -23,11 +23,16 @@ import { useProvidersQuery } from '@app/queries';
 
 import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
-import AddProviderModal from './components/AddProviderModal';
+import AddEditProviderModal from './components/AddEditProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
-import { IProvidersByType } from '@app/queries/types';
+import { IProvidersByType, Provider } from '@app/queries/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+
+export const EditProviderContext = React.createContext({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  openEditProviderModal: (provider: Provider): void => undefined,
+});
 
 const ProvidersPage: React.FunctionComponent = () => {
   const providersQuery = useProvidersQuery();
@@ -48,7 +53,19 @@ const ProvidersPage: React.FunctionComponent = () => {
     }
   }, [activeProviderType, availableProviderTypes]);
 
-  const [isAddModalOpen, toggleAddModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [providerBeingEdited, setProviderBeingEdited] = React.useState<Provider | null>(null);
+
+  const toggleModalAndResetEdit = () => {
+    setProviderBeingEdited(null);
+    toggleAddEditModal();
+  };
+
+  const openEditProviderModal = (provider: Provider) => {
+    setProviderBeingEdited(provider);
+    toggleAddEditModal();
+  };
+
   return (
     <>
       <PageSection variant="light" className={areTabsVisible ? spacing.pb_0 : ''}>
@@ -57,7 +74,7 @@ const ProvidersPage: React.FunctionComponent = () => {
             <Title headingLevel="h1">Providers</Title>
           </LevelItem>
           <LevelItem>
-            <Button variant="secondary" onClick={toggleAddModal}>
+            <Button variant="secondary" onClick={toggleModalAndResetEdit}>
               Add provider
             </Button>
           </LevelItem>
@@ -94,21 +111,28 @@ const ProvidersPage: React.FunctionComponent = () => {
                     No providers
                   </Title>
                   <EmptyStateBody>Add source and target providers for migrations.</EmptyStateBody>
-                  <Button onClick={toggleAddModal} variant="primary">
+                  <Button onClick={toggleModalAndResetEdit} variant="primary">
                     Add provider
                   </Button>
                 </EmptyState>
               ) : !activeProviderType ? null : (
-                <ProvidersTable
-                  providersByType={providersQuery.data}
-                  activeProviderType={activeProviderType}
-                />
+                <EditProviderContext.Provider value={{ openEditProviderModal }}>
+                  <ProvidersTable
+                    providersByType={providersQuery.data}
+                    activeProviderType={activeProviderType}
+                  />
+                </EditProviderContext.Provider>
               )}
             </CardBody>
           </Card>
         )}
       </PageSection>
-      {isAddModalOpen ? <AddProviderModal onClose={toggleAddModal} /> : null}
+      {isAddEditModalOpen ? (
+        <AddEditProviderModal
+          onClose={toggleModalAndResetEdit}
+          providerBeingEdited={providerBeingEdited}
+        />
+      ) : null}
     </>
   );
 };

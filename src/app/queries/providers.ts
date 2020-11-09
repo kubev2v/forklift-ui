@@ -29,7 +29,7 @@ import {
   convertFormValuesToSecret,
   checkIfResourceExists,
 } from '@app/client/helpers';
-import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
+import { AddProviderFormValues } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
@@ -232,9 +232,11 @@ export const findProvidersByRefs = (
 
 export const getProviderNameSchema = (
   providersQuery: QueryResult<IProvidersByType>,
-  providerType: ProviderType
+  providerType: ProviderType,
+  providerBeingEdited: Provider | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A provider with this name already exists', (value) => {
+    if (providerBeingEdited?.name === value) return true;
     const providers: Provider[] = (providersQuery.data && providersQuery.data[providerType]) || [];
     if (providers.find((provider) => provider.name === value)) return false;
     return true;

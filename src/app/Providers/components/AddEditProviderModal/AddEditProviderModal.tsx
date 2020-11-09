@@ -9,7 +9,9 @@ import {
   Stack,
   FileUpload,
   Alert,
+  Checkbox,
 } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   useFormState,
   useFormField,
@@ -23,13 +25,15 @@ import { usePausedPollingEffect } from '@app/common/context';
 import { getProviderNameSchema, useCreateProviderMutation, useProvidersQuery } from '@app/queries';
 import MutationStatus from '@app/common/components/MutationStatus';
 
-import './AddProviderModal.css';
-import { IProvidersByType } from '@app/queries/types';
+import './AddEditProviderModal.css';
+import { IProvidersByType, Provider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { vmwareUrlToHostname } from '@app/client/helpers';
 
-interface IAddProviderModalProps {
+interface IAddEditProviderModalProps {
   onClose: () => void;
+  providerBeingEdited: Provider | null;
 }
 
 const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
@@ -37,35 +41,65 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
   value: type,
 })) as OptionWithValue<ProviderType>[];
 
-const useAddProviderFormState = (providersQuery: QueryResult<IProvidersByType>) => {
-  // TODO determine the actual validation criteria for this form -- these are for testing
+const useAddProviderFormState = (
+  providersQuery: QueryResult<IProvidersByType>,
+  providerBeingEdited: Provider | null
+) => {
+  console.log({ providerBeingEdited });
+
   const providerTypeField = useFormField<ProviderType | null>(
-    null,
+    providerBeingEdited?.type || null,
     yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
   );
+  const isReplacingCredentialsField = useFormField(false, yup.boolean().required());
+  const areCredentialsRequired = !providerBeingEdited || isReplacingCredentialsField.value;
+  const usernameSchema = yup.string().max(320).label('Username');
+  const passwordSchema = yup.string().max(256).label('Password');
+  const fingerprintSchema = yup.string().label('Certificate SHA1 Fingerprint');
+  const saTokenSchema = yup.string().label('Service account token');
+
   return {
     [ProviderType.vsphere]: useFormState({
       providerType: providerTypeField,
+      isReplacingCredentials: isReplacingCredentialsField,
       name: useFormField(
-        '',
-        getProviderNameSchema(providersQuery, ProviderType.vsphere).label('Name').required()
+        providerBeingEdited?.name || '',
+        getProviderNameSchema(providersQuery, ProviderType.vsphere, providerBeingEdited)
+          .label('Name')
+          .required()
       ),
-      hostname: useFormField('', yup.string().max(255).label('Hostname').required()),
-      username: useFormField('', yup.string().max(320).label('Username').required()),
-      password: useFormField('', yup.string().max(256).label('Password').required()),
-      fingerprint: useFormField('', yup.string().label('Certificate SHA1 Fingerprint').required()),
+      hostname: useFormField(
+        vmwareUrlToHostname(providerBeingEdited?.object.spec.url || ''),
+        yup.string().max(255).label('Hostname').required()
+      ),
+      fingerprint: useFormField(
+        '',
+        areCredentialsRequired ? fingerprintSchema.required() : fingerprintSchema
+      ),
       fingerprintFilename: useFormField('', yup.string()),
+      username: useFormField(
+        '',
+        areCredentialsRequired ? usernameSchema.required() : usernameSchema
+      ),
+      password: useFormField(
+        '',
+        areCredentialsRequired ? passwordSchema.required() : passwordSchema
+      ),
     }),
     [ProviderType.openshift]: useFormState({
       providerType: providerTypeField,
+      isReplacingCredentials: isReplacingCredentialsField,
       clusterName: useFormField(
-        '',
-        getProviderNameSchema(providersQuery, ProviderType.openshift)
+        providerBeingEdited?.name || '',
+        getProviderNameSchema(providersQuery, ProviderType.openshift, providerBeingEdited)
           .label('Cluster name')
           .required()
       ),
-      url: useFormField('', urlSchema.label('URL').required()),
-      saToken: useFormField('', yup.string().label('Service account token').required()),
+      url: useFormField(
+        providerBeingEdited?.object.spec.url || '',
+        urlSchema.label('URL').required()
+      ),
+      saToken: useFormField('', areCredentialsRequired ? saTokenSchema.required() : saTokenSchema),
     }),
   };
 };
@@ -75,14 +109,15 @@ export type VMwareProviderFormValues = AddProviderFormState[ProviderType.vsphere
 export type OpenshiftProviderFormValues = AddProviderFormState[ProviderType.openshift]['values'];
 export type AddProviderFormValues = VMwareProviderFormValues | OpenshiftProviderFormValues;
 
-const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
+const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> = ({
   onClose,
-}: IAddProviderModalProps) => {
+  providerBeingEdited,
+}: IAddEditProviderModalProps) => {
   usePausedPollingEffect();
 
   const providersQuery = useProvidersQuery();
 
-  const forms = useAddProviderFormState(providersQuery);
+  const forms = useAddProviderFormState(providersQuery, providerBeingEdited);
   const vmwareForm = forms[ProviderType.vsphere];
   const openshiftForm = forms[ProviderType.openshift];
   const providerTypeField = vmwareForm.fields.providerType;
@@ -92,18 +127,30 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
 
   const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
 
+  const replaceCredentialsCheckbox = (
+    <Checkbox
+      label="Replace credentials"
+      id="replace-credentials-checkbox"
+      isChecked={vmwareForm.values.isReplacingCredentials}
+      onChange={() =>
+        vmwareForm.fields.isReplacingCredentials.setValue(!vmwareForm.values.isReplacingCredentials)
+      }
+      className={spacing.mtMd}
+    />
+  );
+
   return (
     <Modal
-      className="addProviderModal"
+      className="AddEditProviderModal"
       variant="small"
-      title="Add provider"
+      title={`${!providerBeingEdited ? 'Add' : 'Edit'} provider`}
       isOpen
       onClose={onClose}
       footer={
         <Stack hasGutter>
           <MutationStatus
             results={[createProviderResult]}
-            errorTitles={['Error adding provider']}
+            errorTitles={[`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`]}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -114,7 +161,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 createProvider(formValues);
               }}
             >
-              Add
+              {!providerBeingEdited ? 'Add' : 'Edit'}
             </Button>
             <Button
               key="cancel"
@@ -151,6 +198,7 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 providerTypeField.setIsTouched(true);
               }}
               placeholderText="Select a provider type..."
+              isDisabled={!!providerBeingEdited}
             />
           </FormGroup>
           {providerType === ProviderType.vsphere ? (
@@ -160,6 +208,9 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 label="Name"
                 isRequired
                 fieldId="vmware-name"
+                inputProps={{
+                  isDisabled: !!providerBeingEdited,
+                }}
               />
               <ValidatedTextInput
                 field={vmwareForm.fields.hostname}
@@ -167,38 +218,43 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 isRequired
                 fieldId="vmware-hostname"
               />
-              <ValidatedTextInput
-                field={vmwareForm.fields.username}
-                label="Username"
-                isRequired
-                fieldId="vmware-username"
-              />
-              <ValidatedTextInput
-                field={vmwareForm.fields.password}
-                type="password"
-                label="Password"
-                isRequired
-                fieldId="vmware-password"
-              />
-              <FormGroup
-                label="Certificate SHA1 Fingerprint"
-                isRequired
-                fieldId="fingerprint"
-                {...getFormGroupProps(vmwareForm.fields.fingerprint)}
-              >
-                <FileUpload
-                  id="fingerprint"
-                  type="text"
-                  value={vmwareForm.values.fingerprint}
-                  filename={vmwareForm.values.fingerprintFilename}
-                  onChange={(value, filename) => {
-                    vmwareForm.fields.fingerprint.setValue(value as string);
-                    vmwareForm.fields.fingerprintFilename.setValue(filename);
-                  }}
-                  onBlur={() => vmwareForm.fields.fingerprint.setIsTouched(true)}
-                  validated={vmwareForm.fields.fingerprint.isValid ? 'default' : 'error'}
-                />
-              </FormGroup>
+              {providerBeingEdited ? replaceCredentialsCheckbox : null}
+              {!providerBeingEdited || vmwareForm.values.isReplacingCredentials ? (
+                <>
+                  <ValidatedTextInput
+                    field={vmwareForm.fields.username}
+                    label="Username"
+                    isRequired
+                    fieldId="vmware-username"
+                  />
+                  <ValidatedTextInput
+                    field={vmwareForm.fields.password}
+                    type="password"
+                    label="Password"
+                    isRequired
+                    fieldId="vmware-password"
+                  />
+                  <FormGroup
+                    label="Certificate SHA1 Fingerprint"
+                    isRequired
+                    fieldId="fingerprint"
+                    {...getFormGroupProps(vmwareForm.fields.fingerprint)}
+                  >
+                    <FileUpload
+                      id="fingerprint"
+                      type="text"
+                      value={vmwareForm.values.fingerprint}
+                      filename={vmwareForm.values.fingerprintFilename}
+                      onChange={(value, filename) => {
+                        vmwareForm.fields.fingerprint.setValue(value as string);
+                        vmwareForm.fields.fingerprintFilename.setValue(filename);
+                      }}
+                      onBlur={() => vmwareForm.fields.fingerprint.setIsTouched(true)}
+                      validated={vmwareForm.fields.fingerprint.isValid ? 'default' : 'error'}
+                    />
+                  </FormGroup>
+                </>
+              ) : null}
             </>
           ) : null}
           {providerType === ProviderType.openshift ? (
@@ -208,6 +264,9 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 label="Cluster name"
                 isRequired
                 fieldId="openshift-cluster-name"
+                inputProps={{
+                  isDisabled: !!providerBeingEdited,
+                }}
               />
               <ValidatedTextInput
                 field={openshiftForm.fields.url}
@@ -215,13 +274,16 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
                 isRequired
                 fieldId="openshift-url"
               />
-              <ValidatedTextInput
-                field={openshiftForm.fields.saToken}
-                type="password"
-                label="Service account token"
-                isRequired
-                fieldId="openshift-sa-token"
-              />
+              {providerBeingEdited ? replaceCredentialsCheckbox : null}
+              {!providerBeingEdited || openshiftForm.values.isReplacingCredentials ? (
+                <ValidatedTextInput
+                  field={openshiftForm.fields.saToken}
+                  type="password"
+                  label="Service account token"
+                  isRequired
+                  fieldId="openshift-sa-token"
+                />
+              ) : null}
             </>
           ) : null}
           {/* TODO re-enable this when we have the API capability
@@ -239,4 +301,4 @@ const AddProviderModal: React.FunctionComponent<IAddProviderModalProps> = ({
   );
 };
 
-export default AddProviderModal;
+export default AddEditProviderModal;
