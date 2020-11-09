@@ -135,7 +135,8 @@ export const getBuilderItemsWithMissingSources = (
   builderItems: IMappingBuilderItem[],
   mappingResourceQueries: IMappingResourcesResult,
   selectedVMs: IVMwareVM[],
-  mappingType: MappingType
+  mappingType: MappingType,
+  keepNonRequiredSources: boolean
 ): IMappingBuilderItem[] => {
   const nonEmptyItems = builderItems.filter((item) => item.source && item.target);
   const requiredSources = filterSourcesBySelectedVMs(
@@ -143,11 +144,16 @@ export const getBuilderItemsWithMissingSources = (
     selectedVMs,
     mappingType
   );
+  const itemsToKeep = keepNonRequiredSources
+    ? nonEmptyItems
+    : nonEmptyItems.filter((item) =>
+        requiredSources.some((source) => item.source?.selfLink === source.selfLink)
+      );
   const missingSources = requiredSources.filter(
-    (source) => !nonEmptyItems.some((item) => item.source?.selfLink === source.selfLink)
+    (source) => !itemsToKeep.some((item) => item.source?.selfLink === source.selfLink)
   );
   return [
-    ...nonEmptyItems,
+    ...itemsToKeep,
     ...missingSources.map(
       (source): IMappingBuilderItem => ({
         source,
