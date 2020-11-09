@@ -21,7 +21,7 @@ cd virt-ui
 yarn install
 ```
 
-Create a virtMeta.config.json file in the config directory using [`config/virtMeta.example.json`](https://github.com/konveyor/virt-ui/blob/master/config/virtMeta.example.json) as a template. Set the `inventoryApi` property to the root URL of your virt-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API.
+Create a virtMeta.config.json file in the config directory using [`config/virtMeta.example.json`](https://github.com/konveyor/virt-ui/blob/master/config/virtMeta.example.json) as a template. Set the `inventoryApi` property to the root URL of your virt-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your virt-controller inventory Payload API.
 
 **Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `yarn [start:dev|build]:[mock|remote]` commands will override it.
 

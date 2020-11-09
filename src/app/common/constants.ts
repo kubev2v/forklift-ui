@@ -79,6 +79,7 @@ export const VIRT_META: IVirtMetaVars =
         namespace: 'mock-namespace',
         configNamespace: 'mock-namespace',
         inventoryApi: '/mock/api',
+        inventoryPayloadApi: '/mock/api',
       };
 
 export const dnsLabelNameSchema = yup
