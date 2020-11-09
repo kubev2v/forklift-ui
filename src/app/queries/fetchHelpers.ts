@@ -22,6 +22,7 @@ export const useFetchContext = (): IFetchContext => ({
 export const authorizedFetch = async <T>(
   url: string,
   fetchContext: IFetchContext,
+  isBlob: boolean,
   extraHeaders: RequestInit['headers'] = {}
 ): Promise<T> => {
   const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
@@ -32,7 +33,7 @@ export const authorizedFetch = async <T>(
         ...extraHeaders,
       },
     });
-    if (response.ok && response.json) {
+    if (!isBlob && response.ok && response.json) {
       return response.json();
     } else {
       throw response;
@@ -52,16 +53,16 @@ export const authorizedFetch = async <T>(
   }
 };
 
-export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
+export const useAuthorizedFetch = <T>(url: string, isBlob = false): QueryFunction<T> => {
   const fetchContext = useFetchContext();
-  return () => authorizedFetch(url, fetchContext);
+  return () => authorizedFetch(url, fetchContext, isBlob);
 };
 
 export const authorizedPost = async <T, TData>(
   url: string,
   fetchContext: IFetchContext,
   data?: TData
-): Promise<T> => authorizedFetch(url, fetchContext, { body: JSON.stringify(data) });
+): Promise<T> => authorizedFetch(url, fetchContext, false, { body: JSON.stringify(data) });
 
 export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFunction<T, TData> => {
   const fetchContext = useFetchContext();
