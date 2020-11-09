@@ -27,7 +27,12 @@ import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import { PlanWizardFormState } from './PlanWizard';
-import { getAvailableVMs, getMostSevereVMConcern, getVMTreePathInfoByVM } from './helpers';
+import {
+  getAvailableVMs,
+  getMostSevereVMConcern,
+  getVMName,
+  getVMTreePathInfoByVM,
+} from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
@@ -77,6 +82,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       title: 'VM name',
       type: FilterType.search,
       placeholderText: 'Filter by VM ...',
+      getItemValue: getVMName,
     },
     {
       key: 'migrationAnalysis',
@@ -140,7 +146,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       '', // Expand control column
       '', // Checkbox column
       'TBD', // Analytics column
-      vm.name,
+      getVMName(vm),
       datacenter?.name || '',
       cluster?.name || '',
       host?.name || '',
@@ -209,7 +215,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           title: (
             <input
               type="checkbox"
-              aria-label={`Select vm ${vm.name}`}
+              aria-label={`Select vm ${getVMName(vm)}`}
               onChange={(event: React.FormEvent<HTMLInputElement>) => {
                 toggleItemSelected(vm, event.currentTarget.checked);
               }}
@@ -220,7 +226,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         {
           title: <VMConcernsIcon vm={vm} />,
         },
-        vm.name,
+        getVMName(vm),
         datacenter?.name || '',
         cluster?.name || '',
         host?.name || '',
