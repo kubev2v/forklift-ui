@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, Button, Level, LevelItem, Text } from '@patternfly/react-core';
+import { Pagination, Button, Level, LevelItem, Text, Spinner } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -19,9 +19,10 @@ import ProviderStatus from '../ProviderStatus';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
-import { ProviderType } from '@app/common/constants';
+import { ProviderType, VIRT_META } from '@app/common/constants';
 
-import InventoryDownload from './InventoryDownload';
+import { useFetchContext, authorizedFetch, useAuthorizedFetch } from '@app/queries/fetchHelpers';
+import { useQuery } from 'react-query';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -64,6 +65,35 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
   });
+
+  const [isDownloadSpinner, setDownloadSpinner] = React.useReducer(
+    (isDownloadSpinner) => !isDownloadSpinner,
+    false
+  );
+
+  const fetchContext = useFetchContext();
+
+  const fetchPayload = async () => {
+    const url = `${VIRT_META.inventoryPayloadApi}/api/v1/extract?providers=${selectedItems
+      .map((provider) => provider.name)
+      .join()}`;
+
+    try {
+      const payloadBlob = await authorizedFetch(url, fetchContext, true);
+      if (payloadBlob) {
+        return payloadBlob;
+      }
+    } catch (error) {
+      console.log('Inventory download error:', error);
+      throw error;
+    }
+  };
+
+  const getPayload = () => {
+    setDownloadSpinner();
+    fetchPayload();
+    setDownloadSpinner();
+  };
 
   const columns: ICell[] = [
     {
@@ -143,15 +173,12 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     });
   });
 
-  const [isDownload, setDownload] = React.useReducer((isDownload) => !isDownload, false);
-
   return (
     <>
       <Level>
-        {isDownload ? <InventoryDownload providers={selectedItems} /> : null}
         <LevelItem>
-          <Button variant="secondary" onClick={setDownload} isDisabled={selectedItems.length === 0}>
-            Download data
+          <Button variant="secondary" onClick={getPayload} isDisabled={selectedItems.length === 0}>
+            {isDownloadSpinner ? <Spinner size="md" /> : 'Download data'}
           </Button>
         </LevelItem>
         <LevelItem>

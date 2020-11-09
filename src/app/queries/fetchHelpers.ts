@@ -33,9 +33,9 @@ export const authorizedFetch = async <T>(
         ...extraHeaders,
       },
     });
-    const responseBodyFn = !isBlob ? response.json : response.blob;
+    const responseBodyFn = !isBlob ? response.json() : response.blob();
     if (response.ok && responseBodyFn) {
-      return responseBodyFn();
+      return responseBodyFn;
     } else {
       throw response;
     }
