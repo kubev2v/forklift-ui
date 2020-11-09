@@ -21,7 +21,8 @@ export const useStorageClassesQuery = (
           (providers || []).map((provider) =>
             authorizedFetch<IStorageClass[]>(
               getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses`),
-              fetchContext
+              fetchContext,
+              false
             )
           )
         );

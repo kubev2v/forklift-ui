@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, Button, Level, LevelItem } from '@patternfly/react-core';
+import { Pagination, Button, Level, LevelItem, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -20,6 +20,8 @@ import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
+
+import InventoryDownload from './InventoryDownload';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -141,15 +143,14 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     });
   });
 
+  const [isDownload, setDownload] = React.useReducer((isDownload) => !isDownload, false);
+
   return (
     <>
       <Level>
+        {isDownload ? <InventoryDownload providers={selectedItems} /> : null}
         <LevelItem>
-          <Button
-            variant="secondary"
-            onClick={() => alert('TODO')}
-            isDisabled={selectedItems.length === 0}
-          >
+          <Button variant="secondary" onClick={setDownload} isDisabled={selectedItems.length === 0}>
             Download data
           </Button>
         </LevelItem>
