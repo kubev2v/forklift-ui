@@ -4,7 +4,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import { getMappingTargetName, groupMappingItemsByTarget } from './helpers';
+import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
@@ -63,7 +63,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         </GridItem>
       </Grid>
       {mappingItemGroups.map((items, index) => {
-        const targetName = getMappingTargetName(items[0], mappingType);
+        const targetName = getMappingItemTargetName(items[0], mappingType);
         const isLastGroup = index === mappingItemGroups.length - 1;
         return (
           <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
