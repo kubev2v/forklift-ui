@@ -1,10 +1,10 @@
+import Q from 'q';
 import KubeClient, {
   ClientFactory,
   NamespacedResource,
   CoreNamespacedResourceKind,
   CoreNamespacedResource,
-  ClusterClient,
-} from '@konveyor/lib-ui/dist/';
+} from '@konveyor/lib-ui';
 import { VIRT_META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
 import { ICommonProviderObject, INewSecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
@@ -147,7 +147,7 @@ export const checkIfResourceExists = async (
   resource: VirtResource,
   resourceName: string
 ): Promise<void> => {
-  const results = await Promise.allSettled([
+  const results = await Q.allSettled([
     client.list(secretResource, getTokenSecretLabelSelector(resourceKind, resourceName)),
     client.get(resource, resourceName),
   ]);
