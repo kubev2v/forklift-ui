@@ -22,13 +22,15 @@ import CreateMappingButton from './CreateMappingButton';
 interface IMappingsTableProps {
   mappings: Mapping[];
   mappingType: MappingType;
-  toggleAddEditModal: () => void;
+  openCreateMappingModal: () => void;
+  openEditMappingModal: (mapping: Mapping) => void;
 }
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,
-  toggleAddEditModal,
+  openCreateMappingModal,
+  openEditMappingModal,
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
     const {
@@ -78,7 +80,13 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         provider.source.name,
         provider.destination.name,
         {
-          title: <MappingsActionsDropdown mappingType={mappingType} mapping={mapping} />,
+          title: (
+            <MappingsActionsDropdown
+              mappingType={mappingType}
+              mapping={mapping}
+              openEditMappingModal={openEditMappingModal}
+            />
+          ),
         },
       ],
     });
@@ -110,7 +118,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <CreateMappingButton label="Create mapping" onClick={toggleAddEditModal} />
+          <CreateMappingButton label="Create mapping" onClick={openCreateMappingModal} />
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />

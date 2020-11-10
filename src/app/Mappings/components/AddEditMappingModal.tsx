@@ -22,38 +22,41 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, IOpenShiftProvider, IVMwareProvider } from '@app/queries/types';
+import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
 import {
   useProvidersQuery,
   useMappingResourceQueries,
   useCreateMappingMutation,
   getMappingNameSchema,
   useMappingsQuery,
+  usePatchMappingMutation,
+  findProvidersByRefs,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
 import MutationStatus from '@app/common/components/MutationStatus';
+import { QueryResult } from 'react-query';
+import { useEditingMappingPrefillEffect } from './helpers';
+import { IKubeList } from '@app/client/types';
 
 interface IAddEditMappingModalProps {
   title: string;
   onClose: () => void;
   mappingType: MappingType;
+  mappingBeingEdited: Mapping | null;
 }
 
-const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
-  title,
-  onClose,
-  mappingType,
-}: IAddEditMappingModalProps) => {
-  usePausedPollingEffect();
-
-  const mappingsQuery = useMappingsQuery(mappingType);
-
-  // TODO add support for prefilling form for editing an API mapping
-  const form = useFormState({
-    name: useFormField('', getMappingNameSchema(mappingsQuery).label('Mapping name').required()),
+const useMappingFormState = (
+  mappingsQuery: QueryResult<IKubeList<Mapping>>,
+  mappingBeingEdited: Mapping | null
+) =>
+  useFormState({
+    name: useFormField(
+      '',
+      getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
+    ),
     sourceProvider: useFormField<IVMwareProvider | null>(
       null,
       yup.mixed<IVMwareProvider>().label('Source provider').required()
@@ -68,7 +71,40 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     ),
   });
 
+export type MappingFormState = ReturnType<typeof useMappingFormState>;
+
+const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
+  title,
+  onClose,
+  mappingType,
+  mappingBeingEdited,
+}: IAddEditMappingModalProps) => {
+  usePausedPollingEffect();
+
+  const mappingsQuery = useMappingsQuery(mappingType);
   const providersQuery = useProvidersQuery();
+
+  const form = useMappingFormState(mappingsQuery, mappingBeingEdited);
+
+  const mappingBeingEditedProviders = findProvidersByRefs(
+    mappingBeingEdited?.spec.provider || null,
+    providersQuery
+  );
+
+  const mappingResourceQueries = useMappingResourceQueries(
+    form.values.sourceProvider || mappingBeingEditedProviders.sourceProvider,
+    form.values.targetProvider || mappingBeingEditedProviders.targetProvider,
+    mappingType
+  );
+
+  const { isDonePrefilling } = useEditingMappingPrefillEffect(
+    form,
+    mappingBeingEdited,
+    mappingType,
+    mappingBeingEditedProviders,
+    providersQuery,
+    mappingResourceQueries
+  );
 
   // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
   const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
@@ -86,19 +122,18 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           toString: () => provider.name,
         }));
 
-  const mappingResourceQueries = useMappingResourceQueries(
-    form.values.sourceProvider,
-    form.values.targetProvider,
-    mappingType
-  );
-
+  // If you change providers, reset the mapping selections.
   React.useEffect(() => {
-    // If you change providers, reset the mapping selections.
-    form.fields.builderItems.setValue([{ source: null, target: null, highlight: false }]);
+    if (isDonePrefilling) {
+      form.fields.builderItems.setValue([{ source: null, target: null, highlight: false }]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
   const [createMapping, createMappingResult] = useCreateMappingMutation(mappingType, onClose);
+  const [patchMapping, patchMappingResult] = usePatchMappingMutation(mappingType, onClose);
+  const mutateMapping = !mappingBeingEdited ? createMapping : patchMapping;
+  const mutationResult = !mappingBeingEdited ? createMappingResult : patchMappingResult;
 
   return (
     <Modal
@@ -110,8 +145,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       footer={
         <Stack hasGutter>
           <MutationStatus
-            results={[createMappingResult]}
-            errorTitles={['Error creating mapping']}
+            results={[mutationResult]}
+            errorTitles={[`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`]}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -126,18 +161,18 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     targetProvider: form.values.targetProvider,
                     builderItems: form.values.builderItems,
                   });
-                  createMapping(generatedMapping);
+                  mutateMapping(generatedMapping);
                 }
               }}
-              isDisabled={!form.isValid || createMappingResult.isLoading}
+              isDisabled={!form.isValid || mutationResult.isLoading}
             >
-              Create
+              {!mappingBeingEdited ? 'Create' : 'Save'}
             </Button>
             <Button
               key="cancel"
               variant="link"
               onClick={onClose}
-              isDisabled={createMappingResult.isLoading}
+              isDisabled={mutationResult.isLoading}
             >
               Cancel
             </Button>
@@ -146,7 +181,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       }
     >
       <Form className="extraSelectMargin">
-        {providersQuery.isLoading ? (
+        {providersQuery.isLoading || !isDonePrefilling ? (
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
           <Alert variant="danger" isInline title="Error loading providers" />
@@ -159,6 +194,9 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   label="Name"
                   isRequired
                   fieldId="mapping-name"
+                  inputProps={{
+                    isDisabled: !!mappingBeingEdited,
+                  }}
                 />
               </GridItem>
               <GridItem />
