@@ -7,7 +7,7 @@ export let MOCK_VMWARE_VMS: IVMwareVM[] = [];
 MOCK_VMWARE_VMS = [
   {
     id: 'vm-1630',
-    parent: { Kind: 'Folder', ID: 'group-v22' },
+    parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test-migration',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
     uuid: '42251a15-2353-990c-66dc-e8a406a0b97b',
@@ -22,22 +22,22 @@ MOCK_VMWARE_VMS = [
     guestName: 'Red Hat Enterprise Linux 7 (64-bit)',
     balloonedMemory: 0,
     ipAddress: '',
-    networks: [{ Kind: 'Network', ID: '1' }],
+    networks: [{ kind: 'Network', id: '1' }],
     disks: [
       {
         file: '[datastore13] fdupont-test-migration/fdupont-test-migration.vmdk',
-        datastore: { Kind: 'Datastore', ID: '1' },
+        datastore: { kind: 'Datastore', id: '1' },
       },
       {
         file: '[datastore13] fdupont-test-migration/fdupont-test-migration_1.vmdk',
-        datastore: { Kind: 'Datastore', ID: '1' },
+        datastore: { kind: 'Datastore', id: '1' },
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
   },
   {
     id: 'vm-2844',
-    parent: { Kind: 'Folder', ID: 'group-v22' },
+    parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
     uuid: '422558fb-928d-8eed-a06c-5aacfb4a4fb6',
@@ -52,18 +52,18 @@ MOCK_VMWARE_VMS = [
     guestName: 'Red Hat Enterprise Linux 7 (64-bit)',
     balloonedMemory: 0,
     ipAddress: '',
-    networks: [{ Kind: 'Network', ID: '1' }],
+    networks: [{ kind: 'Network', id: '1' }],
     disks: [
       {
         file: '[NFS_Datastore] fdupont%2ftest/fdupont%2ftest.vmdk',
-        datastore: { Kind: 'Datastore', ID: '2' },
+        datastore: { kind: 'Datastore', id: '2' },
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
   },
   {
     id: 'vm-1008',
-    parent: { Kind: 'Folder', ID: 'group-v22' },
+    parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test-migration-centos',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
     uuid: '4225792d-5266-11c5-87b9-ad69243f86ef',
@@ -79,20 +79,20 @@ MOCK_VMWARE_VMS = [
     balloonedMemory: 0,
     ipAddress: '',
     networks: [
-      { Kind: 'Network', ID: '1' },
-      { Kind: 'Network', ID: '2' },
+      { kind: 'Network', id: '1' },
+      { kind: 'Network', id: '2' },
     ],
     disks: [
       {
         file: '[datastore13] fdupont-test-migration-centos/fdupont-test-migration-centos.vmdk',
-        datastore: { Kind: 'Datastore', ID: '1' },
+        datastore: { kind: 'Datastore', id: '1' },
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
   },
   {
     id: 'vm-2685',
-    parent: { Kind: 'Folder', ID: 'group-v22' },
+    parent: { kind: 'Folder', id: 'group-v22' },
     name: 'pemcg-discovery01',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2685',
     uuid: '4225bf92-306a-15ee-c3ad-cb39a6f815bb',
@@ -107,18 +107,18 @@ MOCK_VMWARE_VMS = [
     guestName: 'Red Hat Enterprise Linux 7 (64-bit)',
     balloonedMemory: 0,
     ipAddress: '',
-    networks: [{ Kind: 'Network', ID: '1' }],
+    networks: [{ kind: 'Network', id: '1' }],
     disks: [
       {
         file: '[NFS_Datastore] pemcg-discovery01/pemcg-discovery01.vmdk',
-        datastore: { Kind: 'Datastore', ID: '2' },
+        datastore: { kind: 'Datastore', id: '2' },
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
   },
   {
     id: 'vm-431',
-    parent: { Kind: 'Folder', ID: 'group-v22' },
+    parent: { kind: 'Folder', id: 'group-v22' },
     name: 'pemcg-iscsi-target',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-431',
     uuid: '42256329-8c3a-2a82-54fd-01d845a8bf49',
@@ -134,17 +134,17 @@ MOCK_VMWARE_VMS = [
     balloonedMemory: 0,
     ipAddress: '',
     networks: [
-      { Kind: 'Network', ID: '1' },
-      { Kind: 'Network', ID: 'network-33' },
+      { kind: 'Network', id: '1' },
+      { kind: 'Network', id: 'network-33' },
     ],
     disks: [
       {
         file: '[iSCSI_Datastore] pemcg-iscsi-target/pemcg-iscsi-target.vmdk',
-        datastore: { Kind: 'Datastore', ID: '3' },
+        datastore: { kind: 'Datastore', id: '3' },
       },
       {
         file: '[iSCSI_Datastore] pemcg-iscsi-target/pemcg-iscsi-target_1.vmdk',
-        datastore: { Kind: 'Datastore', ID: '3' },
+        datastore: { kind: 'Datastore', id: '3' },
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
