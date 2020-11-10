@@ -414,7 +414,8 @@ export const useEditingPlanPrefillEffect = (
           ),
           networkMappingResourceQueries,
           selectedVMs,
-          MappingType.Network
+          MappingType.Network,
+          false
         )
       );
       forms.networkMapping.fields.builderItems.setIsTouched(true);
@@ -430,7 +431,8 @@ export const useEditingPlanPrefillEffect = (
           ),
           storageMappingResourceQueries,
           selectedVMs,
-          MappingType.Storage
+          MappingType.Storage,
+          false
         )
       );
       forms.storageMapping.fields.builderItems.setIsTouched(true);
