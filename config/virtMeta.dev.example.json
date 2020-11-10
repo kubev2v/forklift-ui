@@ -1,5 +1,6 @@
 {
   "inventoryApi": "https://inventory-openshift-migration.apps.cluster-foo.example.com",
+  "inventoryPayloadApi": "https://inventory-payload-openshift-migration.apps.cluster-foo.example.com",
   "clusterApi": "https://api.cluster-foo.example.com:6443",
   "devServerPort": 9000,
   "oauth": {

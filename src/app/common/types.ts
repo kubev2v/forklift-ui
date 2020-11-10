@@ -10,4 +10,5 @@ export interface IVirtMetaVars {
   namespace: string;
   configNamespace: string;
   inventoryApi: string;
+  inventoryPayloadApi: string;
 }

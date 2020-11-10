@@ -19,7 +19,7 @@ import ProviderStatus from '../ProviderStatus';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
-import { ProviderType } from '@app/common/constants';
+import { ProviderType, VIRT_META } from '@app/common/constants';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -62,6 +62,10 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
   });
+
+  const inventoryDownloadURL = `${
+    VIRT_META.inventoryPayloadApi
+  }/api/v1/extract?providers=${selectedItems.map((provider) => provider.name).join()}`;
 
   const columns: ICell[] = [
     {
@@ -147,7 +151,8 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         <LevelItem>
           <Button
             variant="secondary"
-            onClick={() => alert('TODO')}
+            component="a"
+            href={inventoryDownloadURL}
             isDisabled={selectedItems.length === 0}
           >
             Download data
