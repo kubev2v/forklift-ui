@@ -32,8 +32,8 @@ export interface IStatusCondition {
 }
 
 export interface IVMwareObjRef {
-  Kind: string;
-  ID: string;
+  kind: string;
+  id: string;
 }
 
 export interface INameNamespaceRef {
