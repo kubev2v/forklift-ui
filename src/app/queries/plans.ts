@@ -53,14 +53,13 @@ export const useCreatePlanMutation = (
 };
 
 export const usePatchPlanMutation = (
-  existingPlanName: string,
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPlan>(
-    (plan: IPlan) => client.patch(planResource, existingPlanName, plan),
+    (plan: IPlan) => client.patch(planResource, plan.metadata.name, plan),
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');

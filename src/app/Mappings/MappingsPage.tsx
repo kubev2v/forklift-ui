@@ -10,7 +10,7 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { MappingType } from '@app/queries/types';
+import { Mapping, MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
@@ -29,6 +29,17 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
   const mappingsQuery = useMappingsQuery(mappingType);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [mappingBeingEdited, setMappingBeingEdited] = React.useState<Mapping | null>(null);
+
+  const toggleModalAndResetEdit = () => {
+    setMappingBeingEdited(null);
+    toggleAddEditModal();
+  };
+
+  const openEditMappingModal = (mapping: Mapping) => {
+    setMappingBeingEdited(mapping);
+    toggleAddEditModal();
+  };
 
   return (
     <>
@@ -58,13 +69,14 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
                       ? 'Map source provider networks to target provider networks.'
                       : 'Map source provider datastores to target provider storage classes.'}
                   </EmptyStateBody>
-                  <CreateMappingButton onClick={toggleAddEditModal} />
+                  <CreateMappingButton onClick={toggleModalAndResetEdit} />
                 </EmptyState>
               ) : (
                 <MappingsTable
                   mappings={mappingsQuery.data?.items || []}
                   mappingType={mappingType}
-                  toggleAddEditModal={toggleAddEditModal}
+                  openCreateMappingModal={toggleModalAndResetEdit}
+                  openEditMappingModal={openEditMappingModal}
                 />
               )}
             </CardBody>
@@ -73,9 +85,10 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title={`Create ${mappingType.toLowerCase()} mapping`}
-          onClose={toggleAddEditModal}
+          title={`${!mappingBeingEdited ? 'Create' : 'Edit'} ${mappingType.toLowerCase()} mapping`}
+          onClose={toggleModalAndResetEdit}
           mappingType={mappingType}
+          mappingBeingEdited={mappingBeingEdited}
         />
       ) : null}
     </>

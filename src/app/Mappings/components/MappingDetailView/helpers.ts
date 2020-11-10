@@ -1,16 +1,10 @@
-import { isSameResource } from '@app/queries/helpers';
 import {
   INetworkMappingItem,
-  IOpenShiftProvider,
-  IProvidersByType,
   IStorageMappingItem,
-  IVMwareProvider,
-  Mapping,
   MappingItem,
   MappingType,
   POD_NETWORK,
 } from '@app/queries/types';
-import { QueryResult } from 'react-query';
 
 export const getMappingTargetName = (item: MappingItem, mappingType: MappingType): string => {
   if (mappingType === MappingType.Network) {
