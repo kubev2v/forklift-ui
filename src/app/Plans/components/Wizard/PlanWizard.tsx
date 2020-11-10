@@ -36,7 +36,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, generatePlan, useEditingPrefillEffect } from './helpers';
+import { generateMappings, generatePlan, useEditingPlanPrefillEffect } from './helpers';
 import {
   getPlanNameSchema,
   useCreatePlanMutation,
@@ -51,7 +51,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
-  const newMappingNameSchema = getMappingNameSchema(mappingsQuery).label('Name');
+  const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
   return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
     selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
@@ -132,7 +132,7 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPrefillEffect(
+  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPlanPrefillEffect(
     forms,
     planBeingEdited,
     !!editRouteMatch
@@ -171,7 +171,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const onClose = () => history.push('/plans');
 
   const [createPlan, createPlanResult] = useCreatePlanMutation();
-  const [patchPlan, patchPlanResult] = usePatchPlanMutation(planBeingEdited?.metadata.name || '');
+  const [patchPlan, patchPlanResult] = usePatchPlanMutation();
   const [createNetworkMapping, createNetworkMappingResult] = useCreateMappingMutation(
     MappingType.Network
   );

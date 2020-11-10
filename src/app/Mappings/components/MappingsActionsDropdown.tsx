@@ -7,11 +7,13 @@ import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 interface IMappingsActionsDropdownProps {
   mappingType: MappingType;
   mapping: Mapping;
+  openEditMappingModal: (mapping: Mapping) => void;
 }
 
 const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownProps> = ({
   mappingType,
   mapping,
+  openEditMappingModal,
 }: IMappingsActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -30,7 +32,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
-              alert('TODO');
+              openEditMappingModal(mapping);
             }}
             key="edit"
           >

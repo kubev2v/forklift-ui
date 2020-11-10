@@ -73,7 +73,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             form.values.builderItems,
             mappingResourceQueries,
             selectedVMs,
-            mappingType
+            mappingType,
+            !!form.values.selectedExistingMapping
           )
         );
       }
@@ -81,6 +82,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   }, [
     form.fields.builderItems,
     form.values.builderItems,
+    form.values.selectedExistingMapping,
     mappingResourceQueries,
     mappingType,
     selectedVMs,
@@ -121,7 +123,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         newBuilderItems,
         mappingResourceQueries,
         selectedVMs,
-        mappingType
+        mappingType,
+        true
       )
     );
     form.fields.isSaveNewMapping.setValue(false);
