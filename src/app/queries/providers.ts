@@ -30,7 +30,7 @@ import {
   checkIfResourceExists,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddProviderModal/AddProviderModal';
-import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
+import { dnsLabelNameSchema, ProviderType, VIRT_META } from '@app/common/constants';
 import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
@@ -45,6 +45,26 @@ export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   );
 
   return sortIndexedResultsByName<Provider, IProvidersByType>(result);
+};
+
+const MOCK_INVENTORY_DOWNLOAD = {};
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const useDownloadQuery = (providers: Provider[]): QueryResult<any> => {
+  const result = useMockableQuery<any>(
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    {
+      queryKey: 'payload',
+      queryFn: useAuthorizedFetch(
+        `${VIRT_META.inventoryPayloadApi}/api/v1/extract?providers=${providers
+          .map((provider) => provider.name)
+          .join()}`
+      ),
+      // config: { refetchInterval: usePollingContext().refetchInterval },
+    },
+    MOCK_INVENTORY_DOWNLOAD
+  );
+
+  return result;
 };
 
 export const useCreateProviderMutation = (
