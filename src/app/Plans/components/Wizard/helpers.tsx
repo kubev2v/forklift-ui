@@ -242,10 +242,10 @@ export const filterSourcesBySelectedVMs = (
     new Set(
       selectedVMs.flatMap((vm) => {
         if (mappingType === MappingType.Network) {
-          return vm.networks.map((network) => network.ID);
+          return vm.networks.map((network) => network.id);
         }
         if (mappingType === MappingType.Storage) {
-          return vm.disks.map((disk) => disk.datastore.ID);
+          return vm.disks.map((disk) => disk.datastore.id);
         }
         return [];
       })

@@ -7,8 +7,8 @@ export let MOCK_VMWARE_DATASTORES: IVMwareDatastore[] = [];
 const mockVmwareDatastore1: IVMwareDatastore = {
   id: '1',
   parent: {
-    Kind: 'Folder',
-    ID: 'group-1',
+    kind: 'Folder',
+    id: 'group-1',
   },
   name: 'vmware-datastore-1',
   selfLink: '/foo/vmwaredatastore/1',

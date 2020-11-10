@@ -9,8 +9,8 @@ MOCK_VMWARE_NETWORKS = [
   {
     id: '1',
     parent: {
-      Kind: 'Folder',
-      ID: 'group-123',
+      kind: 'Folder',
+      id: 'group-123',
     },
     name: 'vmware-network-1',
     selfLink: '/foo/vmwarenetwork/1',
@@ -18,8 +18,8 @@ MOCK_VMWARE_NETWORKS = [
   {
     id: '2',
     parent: {
-      Kind: 'Folder',
-      ID: 'group-123',
+      kind: 'Folder',
+      id: 'group-123',
     },
     name: 'vmware-network-2',
     selfLink: '/foo/vmwarenetwork/2',
@@ -27,8 +27,8 @@ MOCK_VMWARE_NETWORKS = [
   {
     id: '3',
     parent: {
-      Kind: 'Folder',
-      ID: 'group-123',
+      kind: 'Folder',
+      id: 'group-123',
     },
     name: 'vmware-network-3',
     selfLink: '/foo/vmwarenetwork/3',
@@ -36,8 +36,8 @@ MOCK_VMWARE_NETWORKS = [
   {
     id: '4',
     parent: {
-      Kind: 'Folder',
-      ID: 'group-123',
+      kind: 'Folder',
+      id: 'group-123',
     },
     name: 'vmware-network-4',
     selfLink: '/foo/vmwarenetwork/4',
@@ -45,8 +45,8 @@ MOCK_VMWARE_NETWORKS = [
   {
     id: '5',
     parent: {
-      Kind: 'Folder',
-      ID: 'group-123',
+      kind: 'Folder',
+      id: 'group-123',
     },
     name: 'vmware-network-5',
     selfLink: '/foo/vmwarenetwork/5',
