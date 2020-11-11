@@ -61,8 +61,6 @@ const useAddProviderFormState = (
   const fingerprintSchema = yup.string().label('Certificate SHA1 Fingerprint');
   const saTokenSchema = yup.string().label('Service account token');
 
-  console.log(providerBeingEdited?.object.spec.url || '');
-
   return {
     [ProviderType.vsphere]: useFormState({
       providerType: providerTypeField,
@@ -150,6 +148,8 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       className={spacing.mtMd}
     />
   );
+
+  console.log(forms);
 
   return (
     <Modal
