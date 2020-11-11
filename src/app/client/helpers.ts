@@ -106,7 +106,7 @@ export function convertFormValuesToSecret(
 
 export const vmwareUrlToHostname = (url: string): string => {
   const match = url.match(/^https:\/\/(.+)\/sdk$/);
-  return match ? match[1] : '';
+  return match ? match[1] : url;
 };
 export const vmwareHostnameToUrl = (hostname: string): string => `https://${hostname}/sdk`;
 

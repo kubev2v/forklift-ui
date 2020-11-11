@@ -103,6 +103,7 @@ const openshiftProvider1: IOpenShiftProvider = {
   uid: '1',
   name: 'OCPv_1',
   selfLink: '/foo/openshiftprovider/1',
+  type: ProviderType.openshift,
   object: {
     ...vmwareProvider1.object,
     metadata: {
