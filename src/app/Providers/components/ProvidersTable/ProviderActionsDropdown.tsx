@@ -45,7 +45,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
               setKebabIsOpen(false);
               toggleDeleteModal();
             }}
-            isDisabled={deleteProviderResult.isLoading}
+            isDisabled={deleteProviderResult.isLoading || !provider.object.spec.url}
             key="remove"
           >
             Remove
