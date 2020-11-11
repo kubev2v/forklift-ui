@@ -36,9 +36,9 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
-import { usePlansQuery } from '@app/queries/plans';
+import { usePlansQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { formatTimestamp, getStepType } from '@app/common/helpers';
+import { formatTimestamp } from '@app/common/helpers';
 import {
   useProvidersQuery,
   findProvidersByRefs,

@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { useDeleteProviderMutation } from '@app/queries';
 import { Provider } from '@app/queries/types';
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { PlanStatusAPIType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { hasCondition } from '@app/common/helpers';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderActionsDropdownProps {
   provider: Provider;
@@ -22,7 +24,14 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
     providerType,
     toggleDeleteModal
   );
-  const { openEditProviderModal } = React.useContext(EditProviderContext);
+  const { openEditProviderModal, plans } = React.useContext(EditProviderContext);
+  const hasRunningMigration = !!plans
+    .filter((plan) => hasCondition(plan.status?.conditions || [], PlanStatusAPIType.Executing))
+    .find((runningPlan) => {
+      const { source, destination } = runningPlan.spec.provider;
+      return isSameResource(provider, source) || isSameResource(provider, destination);
+    });
+  const isEditDeleteDisabled = !provider.object.spec.url || hasRunningMigration;
   return (
     <>
       <Dropdown
@@ -33,31 +42,42 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         dropdownItems={[
           <ConditionalTooltip
             key="edit"
-            isTooltipEnabled={!provider.object.spec.url}
-            content="The host provider cannot be edited"
+            isTooltipEnabled={isEditDeleteDisabled}
+            content={
+              !provider.object.spec.url
+                ? 'The host provider cannot be edited'
+                : hasRunningMigration
+                ? 'This provider cannot be edited because it has running migrations'
+                : ''
+            }
           >
             <DropdownItem
               onClick={() => {
                 setKebabIsOpen(false);
                 openEditProviderModal(provider);
               }}
-              isDisabled={!provider.object.spec.url}
+              isDisabled={isEditDeleteDisabled}
             >
               Edit
             </DropdownItem>
           </ConditionalTooltip>,
           <ConditionalTooltip
-            key="edit"
-            isTooltipEnabled={!provider.object.spec.url}
-            content="The host provider cannot be removed"
+            key="remove"
+            isTooltipEnabled={isEditDeleteDisabled}
+            content={
+              !provider.object.spec.url
+                ? 'The host provider cannot be removed'
+                : hasRunningMigration
+                ? 'This provider cannot be removed because it has running migrations'
+                : ''
+            }
           >
             <DropdownItem
               onClick={() => {
                 setKebabIsOpen(false);
                 toggleDeleteModal();
               }}
-              isDisabled={deleteProviderResult.isLoading || !provider.object.spec.url}
-              key="remove"
+              isDisabled={deleteProviderResult.isLoading || isEditDeleteDisabled}
             >
               Remove
             </DropdownItem>

@@ -38,12 +38,14 @@ import {
 } from '@app/Mappings/components/MappingBuilder';
 import { generateMappings, generatePlan, useEditingPlanPrefillEffect } from './helpers';
 import {
+  getMappingNameSchema,
+  useCreateMappingMutation,
+  useMappingsQuery,
   getPlanNameSchema,
   useCreatePlanMutation,
   usePatchPlanMutation,
   usePlansQuery,
-} from '@app/queries/plans';
-import { getMappingNameSchema, useCreateMappingMutation, useMappingsQuery } from '@app/queries';
+} from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';

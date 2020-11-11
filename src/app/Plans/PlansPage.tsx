@@ -12,13 +12,15 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
-import { useHasSufficientProvidersQuery } from '@app/queries';
+import {
+  useHasSufficientProvidersQuery,
+  usePlansQuery,
+  useCreateMigrationMutation,
+} from '@app/queries';
 
 import PlansTable from './components/PlansTable';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
-import { usePlansQuery } from '@app/queries/plans';
-import { useCreateMigrationMutation } from '@app/queries/migrations';
 import MutationStatus from '@app/common/components/MutationStatus';
 import { IPlan } from '@app/queries/types';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
