@@ -171,7 +171,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 mutateProvider(formValues);
               }}
             >
-              {!providerBeingEdited ? 'Add' : 'Edit'}
+              {!providerBeingEdited ? 'Add' : 'Save'}
             </Button>
             <Button
               key="cancel"
