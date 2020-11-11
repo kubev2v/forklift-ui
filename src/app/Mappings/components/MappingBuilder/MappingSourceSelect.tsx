@@ -2,6 +2,7 @@ import * as React from 'react';
 import { MappingSource } from '@app/queries/types';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IMappingBuilderItem } from './MappingBuilder';
+import TruncatedText from '@app/common/components/TruncatedText';
 
 interface IMappingSourceSelectProps {
   id: string;
@@ -34,6 +35,9 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   const options: OptionWithValue<MappingSource>[] = filteredSources.map((source) => ({
     value: source,
     toString: () => source.name,
+    props: {
+      children: <TruncatedText>{source.name}</TruncatedText>,
+    },
   }));
   const selectedOption = options.filter(
     (option) => option.value.selfLink === builderItems[itemIndex].source?.selfLink

@@ -3,6 +3,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import { MappingTarget, MappingType } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingTargetName } from '../MappingDetailView/helpers';
+import TruncatedText from '@app/common/components/TruncatedText';
 
 interface IMappingTargetSelectProps {
   id: string;
@@ -27,10 +28,16 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     setBuilderItems(newItems);
   };
 
-  const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => ({
-    value: target,
-    toString: () => getMappingTargetName(target, mappingType),
-  }));
+  const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => {
+    const name = getMappingTargetName(target, mappingType);
+    return {
+      value: target,
+      toString: () => name,
+      props: {
+        children: <TruncatedText>{name}</TruncatedText>,
+      },
+    };
+  });
 
   const selectedOption = targetOptions.find(
     (option: OptionWithValue<MappingTarget>) =>

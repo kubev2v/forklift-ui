@@ -9,6 +9,7 @@ import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import TruncatedText from '@app/common/components/TruncatedText';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -75,7 +76,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                     item.source.id
                   );
                   const sourceName = source ? source.name : '';
-                  return <li key={sourceName}>{sourceName}</li>;
+                  return (
+                    <li key={sourceName}>
+                      <TruncatedText>{sourceName}</TruncatedText>
+                    </li>
+                  );
                 })}
               </ul>
             </GridItem>
@@ -83,7 +88,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
               <LineArrow />
             </GridItem>
             <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-              {targetName}
+              <TruncatedText>{targetName}</TruncatedText>
             </GridItem>
           </Grid>
         );
