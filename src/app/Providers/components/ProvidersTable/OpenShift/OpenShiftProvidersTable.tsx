@@ -47,7 +47,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   const getSortValues = (provider: IOpenShiftProvider) => {
     const { name, namespaceCount, vmCount, networkCount } = provider;
-    const storageClasses = storageClassesQuery.data ? storageClassesQuery.data[name] : [];
+    const storageClasses = (storageClassesQuery.data && storageClassesQuery.data[name]) || [];
     return [
       name,
       provider.object.spec.url || '',
