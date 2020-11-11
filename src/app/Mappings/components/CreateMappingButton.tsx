@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import AddTooltip from '@app/common/components/AddTooltip';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 
 interface ICreateMappingButtonProps {
@@ -18,7 +18,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const { hasSufficientProviders } = sufficientProvidersQuery;
   return (
-    <AddTooltip
+    <ConditionalTooltip
       isTooltipEnabled={!hasSufficientProviders}
       content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a mapping."
     >
@@ -27,7 +27,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
           {label}
         </Button>
       </div>
-    </AddTooltip>
+    </ConditionalTooltip>
   );
 };
 

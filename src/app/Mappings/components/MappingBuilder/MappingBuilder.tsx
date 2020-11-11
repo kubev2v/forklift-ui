@@ -8,7 +8,7 @@ import LineArrow from '@app/common/components/LineArrow';
 import MappingSourceSelect from './MappingSourceSelect';
 import MappingTargetSelect from './MappingTargetSelect';
 import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import AddTooltip from '@app/common/components/AddTooltip';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 import './MappingBuilder.css';
 
@@ -164,7 +164,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           justifyContent={{ default: 'justifyContentCenter' }}
           spaceItems={{ default: 'spaceItemsMd' }}
         >
-          <AddTooltip
+          <ConditionalTooltip
             isTooltipEnabled={
               !builderItems.every((item) => item.source && item.target) ||
               builderItems.length === availableSources.length
@@ -185,7 +185,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 Add
               </Button>
             </div>
-          </AddTooltip>
+          </ConditionalTooltip>
           <Button variant="secondary" onClick={reset} isDisabled={isReset}>
             Remove all
           </Button>

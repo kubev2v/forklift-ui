@@ -5,6 +5,7 @@ import { Provider } from '@app/queries/types';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IProviderActionsDropdownProps {
   provider: Provider;
@@ -30,26 +31,37 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              openEditProviderModal(provider);
-            }}
+          <ConditionalTooltip
             key="edit"
-            isDisabled={!provider.object.spec.url}
+            isTooltipEnabled={!provider.object.spec.url}
+            content="The host provider cannot be edited"
           >
-            Edit
-          </DropdownItem>,
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleDeleteModal();
-            }}
-            isDisabled={deleteProviderResult.isLoading || !provider.object.spec.url}
-            key="remove"
+            <DropdownItem
+              onClick={() => {
+                setKebabIsOpen(false);
+                openEditProviderModal(provider);
+              }}
+              isDisabled={!provider.object.spec.url}
+            >
+              Edit
+            </DropdownItem>
+          </ConditionalTooltip>,
+          <ConditionalTooltip
+            key="edit"
+            isTooltipEnabled={!provider.object.spec.url}
+            content="The host provider cannot be removed"
           >
-            Remove
-          </DropdownItem>,
+            <DropdownItem
+              onClick={() => {
+                setKebabIsOpen(false);
+                toggleDeleteModal();
+              }}
+              isDisabled={deleteProviderResult.isLoading || !provider.object.spec.url}
+              key="remove"
+            >
+              Remove
+            </DropdownItem>
+          </ConditionalTooltip>,
         ]}
         position={DropdownPosition.right}
       />
