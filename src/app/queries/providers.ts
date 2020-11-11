@@ -160,7 +160,7 @@ export const useCreateProviderMutation = (
 };
 
 export const usePatchProviderMutation = (
-  providerType: ProviderType,
+  providerType: ProviderType | null,
   providerBeingEdited: Provider | null,
   onSuccess?: () => void
 ): MutationResultPair<

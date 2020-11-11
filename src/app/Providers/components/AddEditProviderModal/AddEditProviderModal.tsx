@@ -22,7 +22,12 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ProviderType, PROVIDER_TYPE_NAMES, urlSchema } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
-import { getProviderNameSchema, useCreateProviderMutation, useProvidersQuery } from '@app/queries';
+import {
+  getProviderNameSchema,
+  useCreateProviderMutation,
+  usePatchProviderMutation,
+  useProvidersQuery,
+} from '@app/queries';
 import MutationStatus from '@app/common/components/MutationStatus';
 
 import './AddEditProviderModal.css';
@@ -124,6 +129,13 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
   const isFormValid = providerType ? forms[providerType].isValid : false;
 
   const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
+  const [patchProvider, patchProviderResult] = usePatchProviderMutation(
+    providerType,
+    providerBeingEdited,
+    onClose
+  );
+  const mutateProvider = !providerBeingEdited ? createProvider : patchProvider;
+  const mutateProviderResult = !providerBeingEdited ? createProviderResult : patchProviderResult;
 
   const replaceCredentialsCheckbox = (
     <Checkbox
@@ -147,16 +159,16 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       footer={
         <Stack hasGutter>
           <MutationStatus
-            results={[createProviderResult]}
+            results={[mutateProviderResult]}
             errorTitles={[`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`]}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="confirm"
               variant="primary"
-              isDisabled={!isFormValid || createProviderResult.isLoading}
+              isDisabled={!isFormValid || mutateProviderResult.isLoading}
               onClick={() => {
-                createProvider(formValues);
+                mutateProvider(formValues);
               }}
             >
               {!providerBeingEdited ? 'Add' : 'Edit'}
@@ -165,7 +177,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               key="cancel"
               variant="link"
               onClick={onClose}
-              isDisabled={createProviderResult.isLoading}
+              isDisabled={mutateProviderResult.isLoading}
             >
               Cancel
             </Button>
