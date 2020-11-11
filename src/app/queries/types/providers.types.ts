@@ -5,7 +5,7 @@ export interface ICommonProviderObject extends ICR {
   spec: {
     type: ProviderType | null;
     url: string; // TODO is this the "Endpoint" column?
-    secret: INameNamespaceRef;
+    secret?: INameNamespaceRef;
   };
   status?: {
     conditions: IStatusCondition[];

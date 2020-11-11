@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { VIRT_META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { ICommonProviderObject, INewSecret } from '@app/queries/types';
+import { ICommonProviderObject, INewSecret, Provider } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -14,6 +14,7 @@ import {
   VMwareProviderFormValues,
 } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { AuthorizedClusterClient } from './types';
+import { nameAndNamespace } from '@app/queries/helpers';
 
 export class VirtResource extends NamespacedResource {
   private _gvk: KubeClient.IGroupVersionKindPlural;
@@ -49,7 +50,7 @@ export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: VirtResourceKind,
-  isEditMode: boolean
+  providerBeingEdited: Provider | null
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
@@ -62,8 +63,12 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        ...(!isEditMode ? { generateName: `${openshiftValues.clusterName}-` } : null),
-        namespace: VIRT_META.namespace,
+        ...(!providerBeingEdited
+          ? {
+              generateName: `${openshiftValues.clusterName}-`,
+              namespace: VIRT_META.namespace,
+            }
+          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: openshiftValues.clusterName,
@@ -86,8 +91,9 @@ export function convertFormValuesToSecret(
       },
       kind: 'Secret',
       metadata: {
-        ...(!isEditMode ? { generateName: `${vmwareValues.name}-` } : null),
-        namespace: VIRT_META.namespace,
+        ...(!providerBeingEdited
+          ? { generateName: `${vmwareValues.name}-`, namespace: VIRT_META.namespace }
+          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: vmwareValues.name,
@@ -129,12 +135,6 @@ export const convertFormValuesToProvider = (
     spec: {
       type: values.providerType,
       url,
-      secret: {
-        namespace: VIRT_META.namespace,
-        name,
-        // this wont work when we move to generate-name ...
-        // we will need to pull in secrets & find before this request
-      },
     },
   };
 };

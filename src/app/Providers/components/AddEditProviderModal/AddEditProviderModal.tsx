@@ -45,8 +45,6 @@ const useAddProviderFormState = (
   providersQuery: QueryResult<IProvidersByType>,
   providerBeingEdited: Provider | null
 ) => {
-  console.log({ providerBeingEdited });
-
   const providerTypeField = useFormField<ProviderType | null>(
     providerBeingEdited?.type || null,
     yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()

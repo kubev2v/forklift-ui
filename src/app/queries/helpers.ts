@@ -181,13 +181,12 @@ export const sortTreeResultsByName = <T extends VMwareTree>(
   data: sortTreeItemsByName(result.data),
 });
 
-export const nameAndNamespace = (ref: INameNamespaceRef | null | undefined): INameNamespaceRef => {
-  if (ref) {
-    const { name, namespace } = ref;
-    return { name, namespace };
-  }
-  return { name: '', namespace: '' };
-};
+export const nameAndNamespace = (
+  ref: Partial<INameNamespaceRef> | null | undefined
+): INameNamespaceRef => ({
+  name: ref?.name || '',
+  namespace: ref?.namespace || '',
+});
 
 export const isSameResource = (
   refA: INameNamespaceRef | null | undefined,
