@@ -33,7 +33,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     return [
       '',
       provider.name,
-      provider.object.spec.url,
+      provider.object.spec.url || '',
       clusterCount,
       hostCount,
       vmCount,

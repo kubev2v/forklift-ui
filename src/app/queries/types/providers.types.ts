@@ -4,7 +4,7 @@ import { ICR, IMetaTypeMeta, INameNamespaceRef, IStatusCondition } from '@app/qu
 export interface ICommonProviderObject extends ICR {
   spec: {
     type: ProviderType | null;
-    url: string; // TODO is this the "Endpoint" column?
+    url?: string; // No url = host provider
     secret?: INameNamespaceRef;
   };
   status?: {

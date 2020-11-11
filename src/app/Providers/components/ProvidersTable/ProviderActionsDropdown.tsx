@@ -36,6 +36,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
               openEditProviderModal(provider);
             }}
             key="edit"
+            isDisabled={!provider.object.spec.url}
           >
             Edit
           </DropdownItem>,

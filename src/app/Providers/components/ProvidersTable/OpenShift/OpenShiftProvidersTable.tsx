@@ -50,7 +50,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     const storageClasses = storageClassesQuery.data ? storageClassesQuery.data[name] : [];
     return [
       name,
-      provider.object.spec.url,
+      provider.object.spec.url || '',
       namespaceCount,
       vmCount,
       networkCount,
