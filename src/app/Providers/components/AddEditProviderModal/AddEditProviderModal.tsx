@@ -224,7 +224,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               />
               <ValidatedTextInput
                 field={vmwareForm.fields.hostname}
-                label="Hostname"
+                label="Hostname or IP address"
                 isRequired
                 fieldId="vmware-hostname"
               />
