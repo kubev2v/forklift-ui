@@ -149,8 +149,6 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
     />
   );
 
-  console.log(forms);
-
   return (
     <Modal
       className="AddEditProviderModal"

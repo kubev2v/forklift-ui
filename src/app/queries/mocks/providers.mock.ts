@@ -108,7 +108,7 @@ const openshiftProvider1: IOpenShiftProvider = {
     ...vmwareProvider1.object,
     metadata: {
       ...vmwareProvider1.object.metadata,
-      name: 'OCPv_1',
+      name: 'ocpv-1',
     },
     spec: {
       ...vmwareProvider1.object.spec,
@@ -130,7 +130,7 @@ const openshiftProvider2: IOpenShiftProvider = {
     ...openshiftProvider1.object,
     metadata: {
       ...openshiftProvider1.object.metadata,
-      name: 'OCPv_2',
+      name: 'ocpv-2',
     },
     status: {
       conditions: [
@@ -157,7 +157,7 @@ const openshiftProvider3: IOpenShiftProvider = {
     ...openshiftProvider1.object,
     metadata: {
       ...openshiftProvider1.object.metadata,
-      name: 'OCPv_3',
+      name: 'ocpv-3',
     },
   },
 };
