@@ -63,7 +63,8 @@ const useAddProviderFormState = (
     .string()
     .label('Certificate SHA1 Fingerprint')
     .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
-      message: 'Must consist of 16 or 20 pairs of hexadecimal characters separated by colons (:)',
+      message:
+        'Fingerprint must consist of 16 or 20 pairs of hexadecimal characters separated by colons, e.g. XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
       excludeEmptyString: true,
     });
   const saTokenSchema = yup.string().label('Service account token');
