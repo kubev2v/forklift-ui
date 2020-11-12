@@ -8,6 +8,8 @@ const dayjs = require('dayjs');
 const helpers = require('../config/helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
 
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 let virtMetaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
   virtMetaStr = '{ "oauth": {} }';
@@ -69,7 +71,59 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 }
 
-app.get('*', (req, res) => {
+let clusterApiProxyOptions = {
+  target: virtMeta.clusterApi,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/cluster-api/': '/',
+  },
+};
+
+let inventoryApiProxyOptions = {
+  target: virtMeta.inventoryApi,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/inventory-api/': '/',
+  },
+};
+
+let inventoryPayloadApiProxyOptions = {
+  target: virtMeta.inventoryPayloadApi,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/inventory-payload-api/': '/',
+  },
+};
+
+if (process.env['NODE_ENV'] === 'development') {
+  clusterApiProxyOptions = {
+    ...clusterApiProxyOptions,
+    logLevel: 'debug',
+    secure: false,
+  };
+
+  inventoryApiProxyOptions = {
+    ...inventoryApiProxyOptions,
+    logLevel: 'debug',
+    secure: false,
+  };
+
+  inventoryPayloadApiProxyOptions = {
+    ...inventoryPayloadApiProxyOptions,
+    logLevel: 'debug',
+    secure: false,
+  };
+}
+
+const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
+const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
+const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
+
+app.use('/cluster-api/', clusterApiProxy);
+app.use('/inventory-api/', inventoryApiProxy);
+app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
+
+app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
     // In dev and mock-prod modes, window._virt_meta was populated at build time
     res.sendFile(path.join(__dirname, '../dist/index.html'));
