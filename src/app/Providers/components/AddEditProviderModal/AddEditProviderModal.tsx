@@ -9,6 +9,7 @@ import {
   Stack,
   Alert,
   Checkbox,
+  Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
@@ -34,6 +35,7 @@ import { IProvidersByType, Provider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
+import { HelpIcon } from '@patternfly/react-icons';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
@@ -248,6 +250,20 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     label="Certificate SHA1 Fingerprint"
                     isRequired
                     fieldId="vmware-fingerprint"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover bodyContent="See product documentation for instructions on how to retrieve the fingerprint.">
+                          <button
+                            aria-label="More info for SHA1 Fingerprint field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="vmware-fingerprint"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </button>
+                        </Popover>
+                      ),
+                    }}
                   />
                 </>
               ) : null}
