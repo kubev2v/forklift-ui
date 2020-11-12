@@ -140,6 +140,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 itemIndex={itemIndex}
                 setBuilderItems={setBuilderItems}
                 availableTargets={availableTargets}
+                mappingType={mappingType}
               />
             </GridItem>
             {isWizardMode ? null : (
