@@ -7,7 +7,6 @@ import {
   FormGroup,
   Flex,
   Stack,
-  FileUpload,
   Alert,
   Checkbox,
 } from '@patternfly/react-core';
@@ -244,25 +243,12 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     isRequired
                     fieldId="vmware-password"
                   />
-                  <FormGroup
+                  <ValidatedTextInput
+                    field={vmwareForm.fields.fingerprint}
                     label="Certificate SHA1 Fingerprint"
                     isRequired
-                    fieldId="fingerprint"
-                    {...getFormGroupProps(vmwareForm.fields.fingerprint)}
-                  >
-                    <FileUpload
-                      id="fingerprint"
-                      type="text"
-                      value={vmwareForm.values.fingerprint}
-                      filename={vmwareForm.values.fingerprintFilename}
-                      onChange={(value, filename) => {
-                        vmwareForm.fields.fingerprint.setValue(value as string);
-                        vmwareForm.fields.fingerprintFilename.setValue(filename);
-                      }}
-                      onBlur={() => vmwareForm.fields.fingerprint.setIsTouched(true)}
-                      validated={vmwareForm.fields.fingerprint.isValid ? 'default' : 'error'}
-                    />
-                  </FormGroup>
+                    fieldId="vmware-fingerprint"
+                  />
                 </>
               ) : null}
             </>
