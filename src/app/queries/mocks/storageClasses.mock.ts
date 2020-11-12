@@ -29,8 +29,8 @@ const exampleStorageClasses: IStorageClass[] = [
 ];
 
 MOCK_STORAGE_CLASSES_BY_PROVIDER = {
-  OCPv_1: [...exampleStorageClasses],
-  OCPv_2: [...exampleStorageClasses],
-  OCPv_3: [...exampleStorageClasses],
+  'ocpv-1': [...exampleStorageClasses],
+  'ocpv-2': [...exampleStorageClasses],
+  'ocpv-3': [...exampleStorageClasses],
 };
 //}

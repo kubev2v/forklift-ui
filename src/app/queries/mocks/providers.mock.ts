@@ -12,7 +12,7 @@ const vmwareProvider1: IVMwareProvider = {
   uid: '1',
   version: '12345',
   namespace: 'openshift-migration',
-  name: 'VCenter1',
+  name: 'vcenter-1',
   selfLink: '/foo/vmwareprovider/1',
   type: ProviderType.vsphere,
   object: {
@@ -60,7 +60,7 @@ const vmwareProvider1: IVMwareProvider = {
 const vmwareProvider2: IVMwareProvider = {
   ...vmwareProvider1,
   uid: '2',
-  name: 'VCenter2',
+  name: 'vcenter-2',
   selfLink: '/foo/vmwareprovider/2',
   object: {
     ...vmwareProvider1.object,
@@ -87,7 +87,7 @@ const vmwareProvider2: IVMwareProvider = {
 const vmwareProvider3: IVMwareProvider = {
   ...vmwareProvider1,
   uid: '3',
-  name: 'VCenter3',
+  name: 'vcenter-3',
   selfLink: '/foo/vmwareprovider/3',
   object: {
     ...vmwareProvider1.object,
@@ -101,13 +101,14 @@ const vmwareProvider3: IVMwareProvider = {
 const openshiftProvider1: IOpenShiftProvider = {
   ...vmwareProvider1,
   uid: '1',
-  name: 'OCPv_1',
+  name: 'ocpv-1',
   selfLink: '/foo/openshiftprovider/1',
+  type: ProviderType.openshift,
   object: {
     ...vmwareProvider1.object,
     metadata: {
       ...vmwareProvider1.object.metadata,
-      name: 'OCPv_1',
+      name: 'ocpv-1',
     },
     spec: {
       ...vmwareProvider1.object.spec,
@@ -123,13 +124,13 @@ const openshiftProvider1: IOpenShiftProvider = {
 const openshiftProvider2: IOpenShiftProvider = {
   ...openshiftProvider1,
   uid: '2',
-  name: 'OCPv_2',
+  name: 'ocpv-2',
   selfLink: '/foo/openshiftprovider/2',
   object: {
     ...openshiftProvider1.object,
     metadata: {
       ...openshiftProvider1.object.metadata,
-      name: 'OCPv_2',
+      name: 'ocpv-2',
     },
     status: {
       conditions: [
@@ -150,13 +151,13 @@ const openshiftProvider2: IOpenShiftProvider = {
 const openshiftProvider3: IOpenShiftProvider = {
   ...openshiftProvider1,
   uid: '3',
-  name: 'OCPv_3',
+  name: 'ocpv-3',
   selfLink: '/foo/openshiftprovider/3',
   object: {
     ...openshiftProvider1.object,
     metadata: {
       ...openshiftProvider1.object.metadata,
-      name: 'OCPv_3',
+      name: 'ocpv-3',
     },
   },
 };

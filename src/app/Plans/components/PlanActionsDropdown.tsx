@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusAPIType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { useDeletePlanMutation } from '@app/queries/plans';
+import { useDeletePlanMutation } from '@app/queries';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 
 interface IPlansActionDropdownProps {

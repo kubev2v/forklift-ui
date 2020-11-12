@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import AddTooltip from '@app/common/components/AddTooltip';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 import { useHistory } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
   const { hasSufficientProviders } = sufficientProvidersQuery;
   const history = useHistory();
   return (
-    <AddTooltip
+    <ConditionalTooltip
       isTooltipEnabled={!hasSufficientProviders}
       content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a migration plan."
     >
@@ -31,7 +31,7 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
           {label}
         </Button>
       </div>
-    </AddTooltip>
+    </ConditionalTooltip>
   );
 };
 

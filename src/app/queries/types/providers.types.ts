@@ -4,8 +4,8 @@ import { ICR, IMetaTypeMeta, INameNamespaceRef, IStatusCondition } from '@app/qu
 export interface ICommonProviderObject extends ICR {
   spec: {
     type: ProviderType | null;
-    url: string; // TODO is this the "Endpoint" column?
-    secret: INameNamespaceRef;
+    url?: string; // No url = host provider
+    secret?: INameNamespaceRef;
   };
   status?: {
     conditions: IStatusCondition[];
@@ -22,7 +22,7 @@ export interface INewSecret extends IMetaTypeMeta {
   };
   metadata: {
     name?: string;
-    generateName: string;
+    generateName?: string;
     namespace: string;
     labels: {
       createdForResourceType: string;

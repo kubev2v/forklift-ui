@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'StorageMap',
     metadata: {
-      name: 'vcenter1_datastore_to_OCPv_storageclass1',
+      name: 'vcenter1-datastore-to-ocpv-storageclass1',
       namespace: VIRT_META.namespace,
     },
     spec: {
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: MOCK_VMWARE_DATASTORES[0].id,
           },
           destination: {
-            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[0].name,
+            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][0].name,
           },
         },
       ],
@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'StorageMap',
     metadata: {
-      name: 'vcenter1_datastore_to_OCPv_storageclass2',
+      name: 'vcenter1-datastore-to-ocpv-storageclass1',
       namespace: VIRT_META.namespace,
     },
     spec: {
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: MOCK_VMWARE_DATASTORES[1].id,
           },
           destination: {
-            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER.OCPv_1[1].name,
+            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][1].name,
           },
         },
       ],
@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'NetworkMap',
     metadata: {
-      name: 'vcenter1_netstore_to_OCP1_network1',
+      name: 'vcenter1-netstore-to-ocp1-network1',
       namespace: VIRT_META.namespace,
     },
     spec: {
@@ -92,7 +92,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'NetworkMap',
     metadata: {
-      name: 'vcenter1_netstore_to_OCP1_network2',
+      name: 'vcenter1-netstore-to-ocp1-network2',
       namespace: VIRT_META.namespace,
     },
     spec: {
@@ -118,7 +118,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'StorageMap',
     metadata: {
-      name: 'vcenter1_netstore_to_pod',
+      name: 'vcenter1-netstore-to-pod',
       namespace: VIRT_META.namespace,
     },
     spec: {
