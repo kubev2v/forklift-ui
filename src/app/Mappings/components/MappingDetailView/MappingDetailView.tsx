@@ -4,11 +4,12 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import { getMappingTargetName, groupMappingItemsByTarget } from './helpers';
+import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import TruncatedText from '@app/common/components/TruncatedText';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -63,7 +64,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         </GridItem>
       </Grid>
       {mappingItemGroups.map((items, index) => {
-        const targetName = getMappingTargetName(items[0], mappingType);
+        const targetName = getMappingItemTargetName(items[0], mappingType);
         const isLastGroup = index === mappingItemGroups.length - 1;
         return (
           <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
@@ -75,7 +76,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                     item.source.id
                   );
                   const sourceName = source ? source.name : '';
-                  return <li key={sourceName}>{sourceName}</li>;
+                  return (
+                    <li key={sourceName}>
+                      <TruncatedText>{sourceName}</TruncatedText>
+                    </li>
+                  );
                 })}
               </ul>
             </GridItem>
@@ -83,7 +88,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
               <LineArrow />
             </GridItem>
             <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-              {targetName}
+              <TruncatedText>{targetName}</TruncatedText>
             </GridItem>
           </Grid>
         );

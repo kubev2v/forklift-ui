@@ -51,7 +51,7 @@ export const getMappingSourceTitle = (mappingType: MappingType): string => {
 
 export const getMappingTargetTitle = (mappingType: MappingType): string => {
   if (mappingType === MappingType.Network) {
-    return 'Target networks';
+    return 'Target namespaces / networks';
   }
   if (mappingType === MappingType.Storage) {
     return 'Target storage classes';

@@ -65,7 +65,7 @@ MOCK_OPENSHIFT_NETWORKS = [
     uid: 'foo-network-uid-2',
     version: '12345',
     namespace: 'foo-namespace',
-    name: 'ocp-network-2',
+    name: 'ocp-network-2-which-has-a-really-long-name',
     selfLink: '/foo/openshiftnetwork/2',
   },
   {
