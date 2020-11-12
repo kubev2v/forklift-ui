@@ -59,7 +59,13 @@ const useAddProviderFormState = (
   const areCredentialsRequired = !providerBeingEdited || isReplacingCredentialsField.value;
   const usernameSchema = yup.string().max(320).label('Username');
   const passwordSchema = yup.string().max(256).label('Password');
-  const fingerprintSchema = yup.string().label('Certificate SHA1 Fingerprint');
+  const fingerprintSchema = yup
+    .string()
+    .label('Certificate SHA1 Fingerprint')
+    .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
+      message: 'Must consist of 16 or 20 pairs of hexadecimal characters separated by colons (:)',
+      excludeEmptyString: true,
+    });
   const saTokenSchema = yup.string().label('Service account token');
 
   return {
