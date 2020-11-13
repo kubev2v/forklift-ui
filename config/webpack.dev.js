@@ -22,7 +22,13 @@ module.exports = merge(common('development'), {
     proxy: [
       {
         // NOTE: Any future backend-only routes added to server.js need to be listed here:
-        context: ['/login', '/login/callback'],
+        context: [
+          '/login',
+          '/login/callback',
+          '/cluster-api',
+          '/inventory-api',
+          '/inventory-payload-api',
+        ],
         target: `http://localhost:${EXPRESS_PORT}`,
       },
     ],

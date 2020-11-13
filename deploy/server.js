@@ -8,6 +8,8 @@ const dayjs = require('dayjs');
 const helpers = require('../config/helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
 
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 let virtMetaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
   virtMetaStr = '{ "oauth": {} }';
@@ -69,7 +71,62 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 }
 
-app.get('*', (req, res) => {
+let clusterApiProxyOptions = {
+  target: 'https://api.openshift-apiserver.svc.cluster.local',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/cluster-api/': '/',
+  },
+  secure: false,
+};
+
+let inventoryApiProxyOptions = {
+  target: 'http://inventory.openshift-migration.svc.cluster.local',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/inventory-api/': '/',
+  },
+  secure: false,
+};
+
+let inventoryPayloadApiProxyOptions = {
+  target: 'http://inventory-payload.openshift-migration.svc.cluster.local:8080',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/inventory-payload-api/': '/',
+  },
+  secure: false,
+};
+
+if (process.env['NODE_ENV'] === 'development') {
+  clusterApiProxyOptions = {
+    ...clusterApiProxyOptions,
+    target: virtMeta.clusterApi,
+    logLevel: 'debug',
+  };
+
+  inventoryApiProxyOptions = {
+    ...inventoryApiProxyOptions,
+    target: virtMeta.inventoryApi,
+    logLevel: 'debug',
+  };
+
+  inventoryPayloadApiProxyOptions = {
+    ...inventoryPayloadApiProxyOptions,
+    target: virtMeta.inventoryPayloadApi,
+    logLevel: 'debug',
+  };
+}
+
+const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
+const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
+const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
+
+app.use('/cluster-api/', clusterApiProxy);
+app.use('/inventory-api/', inventoryApiProxy);
+app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
+
+app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
     // In dev and mock-prod modes, window._virt_meta was populated at build time
     res.sendFile(path.join(__dirname, '../dist/index.html'));
