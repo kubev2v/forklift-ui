@@ -112,8 +112,8 @@ if (process.env['NODE_ENV'] === 'development') {
   };
 
   inventoryPayloadApiProxyOptions = {
-    target: virtMeta.inventoryPayloadApi,
     ...inventoryPayloadApiProxyOptions,
+    target: virtMeta.inventoryPayloadApi,
     logLevel: 'debug',
   };
 }
