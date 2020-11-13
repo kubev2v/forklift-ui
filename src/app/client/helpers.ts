@@ -192,5 +192,5 @@ export const useClientInstance = (): KubeClient.ClusterClient => {
     access_token: currentUserString.access_token,
     expiry_time: currentUserString.expiry_time,
   };
-  return ClientFactory.cluster(user, VIRT_META.clusterApi);
+  return ClientFactory.cluster(user, '/cluster-api');
 };

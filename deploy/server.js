@@ -72,46 +72,49 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 }
 
 let clusterApiProxyOptions = {
-  target: virtMeta.clusterApi,
+  target: 'https://api.openshift-apiserver.svc.cluster.local',
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
   },
+  secure: false,
 };
 
 let inventoryApiProxyOptions = {
-  target: virtMeta.inventoryApi,
+  target: 'http://inventory.openshift-migration.svc.cluster.local',
   changeOrigin: true,
   pathRewrite: {
     '^/inventory-api/': '/',
   },
+  secure: false,
 };
 
 let inventoryPayloadApiProxyOptions = {
-  target: virtMeta.inventoryPayloadApi,
+  target: 'http://inventory-payload.openshift-migration.svc.cluster.local:8080',
   changeOrigin: true,
   pathRewrite: {
     '^/inventory-payload-api/': '/',
   },
+  secure: false,
 };
 
 if (process.env['NODE_ENV'] === 'development') {
   clusterApiProxyOptions = {
     ...clusterApiProxyOptions,
+    target: virtMeta.clusterApi,
     logLevel: 'debug',
-    secure: false,
   };
 
   inventoryApiProxyOptions = {
     ...inventoryApiProxyOptions,
+    target: virtMeta.inventoryApi,
     logLevel: 'debug',
-    secure: false,
   };
 
   inventoryPayloadApiProxyOptions = {
+    target: virtMeta.inventoryPayloadApi,
     ...inventoryPayloadApiProxyOptions,
     logLevel: 'debug',
-    secure: false,
   };
 }
 

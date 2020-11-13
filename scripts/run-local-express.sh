@@ -2,7 +2,6 @@
 _dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export VIRTMETA_FILE="$_dir/../config/virtMeta.dev.json"
 export STATIC_DIR="$_dir/../dist"
-export NODE_TLS_REJECT_UNAUTHORIZED="0"
 mkdir -p "$STATIC_DIR"
 cd $_dir/..
 if [ "$1" == "--auto-reload" ]; then

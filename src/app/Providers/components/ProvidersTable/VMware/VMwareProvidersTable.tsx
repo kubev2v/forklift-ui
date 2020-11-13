@@ -63,9 +63,9 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     isEqual: (a, b) => a.name === b.name,
   });
 
-  const inventoryDownloadURL = `${
-    VIRT_META.inventoryPayloadApi
-  }/api/v1/extract?providers=${selectedItems.map((provider) => provider.name).join()}`;
+  const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
+    .map((provider) => provider.name)
+    .join()}`;
 
   const columns: ICell[] = [
     {
