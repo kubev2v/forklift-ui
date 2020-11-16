@@ -7,9 +7,9 @@ import {
   FormGroup,
   Flex,
   Stack,
-  FileUpload,
   Alert,
   Checkbox,
+  Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
@@ -35,6 +35,7 @@ import { IProvidersByType, Provider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
+import { HelpIcon } from '@patternfly/react-icons';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
@@ -58,7 +59,14 @@ const useAddProviderFormState = (
   const areCredentialsRequired = !providerBeingEdited || isReplacingCredentialsField.value;
   const usernameSchema = yup.string().max(320).label('Username');
   const passwordSchema = yup.string().max(256).label('Password');
-  const fingerprintSchema = yup.string().label('Certificate SHA1 Fingerprint');
+  const fingerprintSchema = yup
+    .string()
+    .label('Certificate SHA1 Fingerprint')
+    .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
+      message:
+        'Fingerprint must consist of 16 or 20 pairs of hexadecimal characters separated by colons, e.g. XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
+      excludeEmptyString: true,
+    });
   const saTokenSchema = yup.string().label('Service account token');
 
   return {
@@ -244,25 +252,26 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     isRequired
                     fieldId="vmware-password"
                   />
-                  <FormGroup
+                  <ValidatedTextInput
+                    field={vmwareForm.fields.fingerprint}
                     label="Certificate SHA1 Fingerprint"
                     isRequired
-                    fieldId="fingerprint"
-                    {...getFormGroupProps(vmwareForm.fields.fingerprint)}
-                  >
-                    <FileUpload
-                      id="fingerprint"
-                      type="text"
-                      value={vmwareForm.values.fingerprint}
-                      filename={vmwareForm.values.fingerprintFilename}
-                      onChange={(value, filename) => {
-                        vmwareForm.fields.fingerprint.setValue(value as string);
-                        vmwareForm.fields.fingerprintFilename.setValue(filename);
-                      }}
-                      onBlur={() => vmwareForm.fields.fingerprint.setIsTouched(true)}
-                      validated={vmwareForm.fields.fingerprint.isValid ? 'default' : 'error'}
-                    />
-                  </FormGroup>
+                    fieldId="vmware-fingerprint"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover bodyContent="See product documentation for instructions on how to retrieve the fingerprint.">
+                          <button
+                            aria-label="More info for SHA1 Fingerprint field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="vmware-fingerprint"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </button>
+                        </Popover>
+                      ),
+                    }}
+                  />
                 </>
               ) : null}
             </>
