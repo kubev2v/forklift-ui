@@ -72,16 +72,16 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 }
 
 let clusterApiProxyOptions = {
-  target: 'https://api.openshift-apiserver.svc.cluster.local',
+  target: virtMeta.clusterApi,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
   },
-  secure: false,
+  secure: true,
 };
 
 let inventoryApiProxyOptions = {
-  target: 'http://inventory.openshift-migration.svc.cluster.local',
+  target: virtMeta.inventoryApi,
   changeOrigin: true,
   pathRewrite: {
     '^/inventory-api/': '/',
@@ -90,7 +90,7 @@ let inventoryApiProxyOptions = {
 };
 
 let inventoryPayloadApiProxyOptions = {
-  target: 'http://inventory-payload.openshift-migration.svc.cluster.local:8080',
+  target: virtMeta.inventoryPayloadApi,
   changeOrigin: true,
   pathRewrite: {
     '^/inventory-payload-api/': '/',
@@ -98,22 +98,20 @@ let inventoryPayloadApiProxyOptions = {
   secure: false,
 };
 
-if (process.env['NODE_ENV'] === 'development') {
+// Enable debug log level when in development or when DEBUG env variable is '*'
+if (process.env['NODE_ENV'] === 'development' || process.env['DEBUG'] === '*') {
   clusterApiProxyOptions = {
     ...clusterApiProxyOptions,
-    target: virtMeta.clusterApi,
     logLevel: 'debug',
   };
 
   inventoryApiProxyOptions = {
     ...inventoryApiProxyOptions,
-    target: virtMeta.inventoryApi,
     logLevel: 'debug',
   };
 
   inventoryPayloadApiProxyOptions = {
     ...inventoryPayloadApiProxyOptions,
-    target: virtMeta.inventoryPayloadApi,
     logLevel: 'debug',
   };
 }
