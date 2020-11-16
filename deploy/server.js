@@ -77,7 +77,7 @@ let clusterApiProxyOptions = {
   pathRewrite: {
     '^/cluster-api/': '/',
   },
-  logLevel: process.env.DEBUG ? 'debug' : '',
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
 };
 
 let inventoryApiProxyOptions = {
@@ -86,7 +86,7 @@ let inventoryApiProxyOptions = {
   pathRewrite: {
     '^/inventory-api/': '/',
   },
-  logLevel: process.env.DEBUG ? 'debug' : '',
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
 };
 
 let inventoryPayloadApiProxyOptions = {
@@ -95,7 +95,7 @@ let inventoryPayloadApiProxyOptions = {
   pathRewrite: {
     '^/inventory-payload-api/': '/',
   },
-  logLevel: process.env.DEBUG ? 'debug' : '',
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
 };
 
 if (process.env['NODE_ENV'] === 'development') {
