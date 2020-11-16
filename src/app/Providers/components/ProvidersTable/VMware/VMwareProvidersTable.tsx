@@ -64,7 +64,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   });
 
   const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
-    .map((provider) => provider.name)
+    .map((provider) => `${provider.namespace}/${provider.name}`)
     .join()}`;
 
   const columns: ICell[] = [
