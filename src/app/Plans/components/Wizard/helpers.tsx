@@ -118,22 +118,16 @@ export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
 // TODO just use only the immediate children of each node
 // TODO add logic to display a checkbox as indeterminate if not all of its descendants are selected (or just immediate children?)
-export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
+export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
   Array.from(
-    new Set(
-      nodes.flatMap((node) => {
-        const thisNode = node.kind === 'VM' ? [node] : [];
-        const childNodes = node.children ? getAllVMNodes(node.children) : [];
-        return [...thisNode, ...childNodes];
-      })
-    )
+    new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
   );
 
 export const getAvailableVMs = (
   selectedTreeNodes: VMwareTree[],
   allVMs: IVMwareVM[]
 ): IVMwareVM[] => {
-  const treeVMs = getAllVMNodes(selectedTreeNodes)
+  const treeVMs = getAllVMChildren(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
   const vmSelfLinks = treeVMs.map((object) => object.selfLink);
