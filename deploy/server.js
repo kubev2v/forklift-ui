@@ -71,57 +71,59 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 }
 
-let clusterApiProxyOptions = {
-  target: virtMeta.clusterApi,
-  changeOrigin: true,
-  pathRewrite: {
-    '^/cluster-api/': '/',
-  },
-  logLevel: process.env.DEBUG ? 'debug' : 'info',
-};
-
-let inventoryApiProxyOptions = {
-  target: virtMeta.inventoryApi,
-  changeOrigin: true,
-  pathRewrite: {
-    '^/inventory-api/': '/',
-  },
-  logLevel: process.env.DEBUG ? 'debug' : 'info',
-};
-
-let inventoryPayloadApiProxyOptions = {
-  target: virtMeta.inventoryPayloadApi,
-  changeOrigin: true,
-  pathRewrite: {
-    '^/inventory-payload-api/': '/',
-  },
-  logLevel: process.env.DEBUG ? 'debug' : 'info',
-};
-
-if (process.env['NODE_ENV'] === 'development') {
-  clusterApiProxyOptions = {
-    ...clusterApiProxyOptions,
-    secure: false,
+if (process.env['DATA_SOURCE'] !== 'mock') {
+  let clusterApiProxyOptions = {
+    target: virtMeta.clusterApi,
+    changeOrigin: true,
+    pathRewrite: {
+      '^/cluster-api/': '/',
+    },
+    logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
 
-  inventoryApiProxyOptions = {
-    ...inventoryApiProxyOptions,
-    secure: false,
+  let inventoryApiProxyOptions = {
+    target: virtMeta.inventoryApi,
+    changeOrigin: true,
+    pathRewrite: {
+      '^/inventory-api/': '/',
+    },
+    logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
 
-  inventoryPayloadApiProxyOptions = {
-    ...inventoryPayloadApiProxyOptions,
-    secure: false,
+  let inventoryPayloadApiProxyOptions = {
+    target: virtMeta.inventoryPayloadApi,
+    changeOrigin: true,
+    pathRewrite: {
+      '^/inventory-payload-api/': '/',
+    },
+    logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
+
+  if (process.env['NODE_ENV'] === 'development') {
+    clusterApiProxyOptions = {
+      ...clusterApiProxyOptions,
+      secure: false,
+    };
+
+    inventoryApiProxyOptions = {
+      ...inventoryApiProxyOptions,
+      secure: false,
+    };
+
+    inventoryPayloadApiProxyOptions = {
+      ...inventoryPayloadApiProxyOptions,
+      secure: false,
+    };
+  }
+
+  const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
+  const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
+  const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
+
+  app.use('/cluster-api/', clusterApiProxy);
+  app.use('/inventory-api/', inventoryApiProxy);
+  app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
 }
-
-const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
-const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
-const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
-
-app.use('/cluster-api/', clusterApiProxy);
-app.use('/inventory-api/', inventoryApiProxy);
-app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
 
 app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
