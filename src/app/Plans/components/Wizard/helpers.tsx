@@ -53,16 +53,21 @@ const areAllDescendantsSelected = (
   isNodeSelected: (node: VMwareTree) => boolean
 ) =>
   node.children
-    ? node.children.every((child) => areAllDescendantsSelected(child, isNodeSelected))
+    ? node.children
+        .filter((child) => child.kind !== 'VM')
+        .every((child) => areAllDescendantsSelected(child, isNodeSelected))
     : isNodeSelected(node);
 
 const areSomeDescendantsSelected = (
   node: VMwareTree,
   isNodeSelected: (node: VMwareTree) => boolean
-) =>
-  node.children
-    ? node.children.some((child) => areSomeDescendantsSelected(child, isNodeSelected))
-    : isNodeSelected(node);
+) => {
+  if (isNodeSelected(node)) return true;
+  if (node.children) {
+    return node.children.some((child) => areSomeDescendantsSelected(child, isNodeSelected));
+  }
+  return false;
+};
 
 // Helper for filterAndConvertVMwareTree
 const convertVMwareTreeNode = (
@@ -71,6 +76,7 @@ const convertVMwareTreeNode = (
   isNodeSelected: (node: VMwareTree) => boolean
 ): TreeViewDataItem => {
   const isPartiallyChecked =
+    !isNodeSelected(node) &&
     !areAllDescendantsSelected(node, isNodeSelected) &&
     areSomeDescendantsSelected(node, isNodeSelected);
   return {
@@ -117,6 +123,7 @@ export const filterAndConvertVMwareTree = (
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   const isPartiallyChecked =
+    !areAllSelected &&
     !areAllDescendantsSelected(rootNode, isNodeSelected) &&
     areSomeDescendantsSelected(rootNode, isNodeSelected);
   return [
