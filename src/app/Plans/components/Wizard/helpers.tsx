@@ -48,28 +48,51 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   return node.children && node.children.some((child) => subtreeMatchesSearch(child, searchText));
 };
 
+const areAllDescendantsSelected = (
+  node: VMwareTree,
+  isNodeSelected: (node: VMwareTree) => boolean
+) =>
+  node.children
+    ? node.children.every((child) => areAllDescendantsSelected(child, isNodeSelected))
+    : isNodeSelected(node);
+
+const areSomeDescendantsSelected = (
+  node: VMwareTree,
+  isNodeSelected: (node: VMwareTree) => boolean
+) =>
+  node.children
+    ? node.children.some((child) => areSomeDescendantsSelected(child, isNodeSelected))
+    : isNodeSelected(node);
+
 // Helper for filterAndConvertVMwareTree
 const convertVMwareTreeNode = (
   node: VMwareTree,
   searchText: string,
   isNodeSelected: (node: VMwareTree) => boolean
-): TreeViewDataItem => ({
-  name: node.object?.name || '',
-  id: node.object?.selfLink,
-  children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
-  checkProps: {
-    'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
-    checked: isNodeSelected(node),
-  },
-  icon:
-    node.kind === 'Cluster' ? (
-      <ClusterIcon />
-    ) : node.kind === 'Host' ? (
-      <OutlinedHddIcon />
-    ) : node.kind === 'Folder' ? (
-      <FolderIcon />
-    ) : null,
-});
+): TreeViewDataItem => {
+  const isPartiallyChecked =
+    !areAllDescendantsSelected(node, isNodeSelected) &&
+    areSomeDescendantsSelected(node, isNodeSelected);
+  return {
+    name: node.object?.name || '',
+    id: node.object?.selfLink,
+    children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
+    checkProps: {
+      'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
+      checked: isNodeSelected(node),
+      // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
+      ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
+    },
+    icon:
+      node.kind === 'Cluster' ? (
+        <ClusterIcon />
+      ) : node.kind === 'Host' ? (
+        <OutlinedHddIcon />
+      ) : node.kind === 'Folder' ? (
+        <FolderIcon />
+      ) : null,
+  };
+};
 
 // Helper for filterAndConvertVMwareTree
 const filterAndConvertVMwareTreeChildren = (
@@ -93,13 +116,18 @@ export const filterAndConvertVMwareTree = (
   areAllSelected: boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
+  const isPartiallyChecked =
+    !areAllDescendantsSelected(rootNode, isNodeSelected) &&
+    areSomeDescendantsSelected(rootNode, isNodeSelected);
   return [
     {
       name: 'All datacenters',
       id: 'converted-root',
       checkProps: {
         'aria-label': 'Select all datacenters',
-        checked: areAllSelected, // TODO handle indeterminate at the top level
+        checked: areAllSelected,
+        // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
+        ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
       },
       children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
     },
