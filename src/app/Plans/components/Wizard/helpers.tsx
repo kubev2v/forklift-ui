@@ -109,13 +109,15 @@ export const filterAndConvertVMwareTree = (
 // To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
 export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
   if (rootNode?.children) {
-    const children = rootNode.children as VMwareTree[];
+    const children = (rootNode.children as VMwareTree[]).filter((node) => node.kind !== 'VM');
     return [...children, ...children.flatMap(flattenVMwareTreeNodes)];
   }
   return [];
 };
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
+// TODO just use only the immediate children of each node
+// TODO add logic to display a checkbox as indeterminate if not all of its descendants are selected (or just immediate children?)
 export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
   Array.from(
     new Set(
@@ -218,7 +220,7 @@ export const findMatchingNodeAndDescendants = (
   const pushNodeAndDescendants = (n: VMwareTree) => {
     nodeAndDescendants.push(n);
     if (n.children) {
-      n.children.forEach(pushNodeAndDescendants);
+      n.children.filter((node) => node.kind !== 'VM').forEach(pushNodeAndDescendants);
     }
   };
   pushNodeAndDescendants(matchingNode);
