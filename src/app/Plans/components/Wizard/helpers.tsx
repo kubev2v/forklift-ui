@@ -99,7 +99,7 @@ export const filterAndConvertVMwareTree = (
       id: 'converted-root',
       checkProps: {
         'aria-label': 'Select all datacenters',
-        checked: areAllSelected,
+        checked: areAllSelected, // TODO handle indeterminate at the top level
       },
       children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
     },
@@ -116,8 +116,6 @@ export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[
 };
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
-// TODO just use only the immediate children of each node
-// TODO add logic to display a checkbox as indeterminate if not all of its descendants are selected (or just immediate children?)
 export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
   Array.from(
     new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
