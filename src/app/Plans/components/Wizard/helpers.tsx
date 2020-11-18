@@ -48,28 +48,57 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   return node.children && node.children.some((child) => subtreeMatchesSearch(child, searchText));
 };
 
+const areAllDescendantsSelected = (
+  node: VMwareTree,
+  isNodeSelected: (node: VMwareTree) => boolean
+) =>
+  node.children
+    ? node.children
+        .filter((child) => child.kind !== 'VM')
+        .every((child) => areAllDescendantsSelected(child, isNodeSelected))
+    : isNodeSelected(node);
+
+const areSomeDescendantsSelected = (
+  node: VMwareTree,
+  isNodeSelected: (node: VMwareTree) => boolean
+) => {
+  if (isNodeSelected(node)) return true;
+  if (node.children) {
+    return node.children.some((child) => areSomeDescendantsSelected(child, isNodeSelected));
+  }
+  return false;
+};
+
 // Helper for filterAndConvertVMwareTree
 const convertVMwareTreeNode = (
   node: VMwareTree,
   searchText: string,
   isNodeSelected: (node: VMwareTree) => boolean
-): TreeViewDataItem => ({
-  name: node.object?.name || '',
-  id: node.object?.selfLink,
-  children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
-  checkProps: {
-    'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
-    checked: isNodeSelected(node),
-  },
-  icon:
-    node.kind === 'Cluster' ? (
-      <ClusterIcon />
-    ) : node.kind === 'Host' ? (
-      <OutlinedHddIcon />
-    ) : node.kind === 'Folder' ? (
-      <FolderIcon />
-    ) : null,
-});
+): TreeViewDataItem => {
+  const isPartiallyChecked =
+    !isNodeSelected(node) &&
+    !areAllDescendantsSelected(node, isNodeSelected) &&
+    areSomeDescendantsSelected(node, isNodeSelected);
+  return {
+    name: node.object?.name || '',
+    id: node.object?.selfLink,
+    children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
+    checkProps: {
+      'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
+      checked: isNodeSelected(node),
+      // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
+      ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
+    },
+    icon:
+      node.kind === 'Cluster' ? (
+        <ClusterIcon />
+      ) : node.kind === 'Host' ? (
+        <OutlinedHddIcon />
+      ) : node.kind === 'Folder' ? (
+        <FolderIcon />
+      ) : null,
+  };
+};
 
 // Helper for filterAndConvertVMwareTree
 const filterAndConvertVMwareTreeChildren = (
@@ -93,6 +122,10 @@ export const filterAndConvertVMwareTree = (
   areAllSelected: boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
+  const isPartiallyChecked =
+    !areAllSelected &&
+    !areAllDescendantsSelected(rootNode, isNodeSelected) &&
+    areSomeDescendantsSelected(rootNode, isNodeSelected);
   return [
     {
       name: 'All datacenters',
@@ -100,6 +133,8 @@ export const filterAndConvertVMwareTree = (
       checkProps: {
         'aria-label': 'Select all datacenters',
         checked: areAllSelected,
+        // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
+        ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
       },
       children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
     },
@@ -109,29 +144,23 @@ export const filterAndConvertVMwareTree = (
 // To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
 export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
   if (rootNode?.children) {
-    const children = rootNode.children as VMwareTree[];
+    const children = (rootNode.children as VMwareTree[]).filter((node) => node.kind !== 'VM');
     return [...children, ...children.flatMap(flattenVMwareTreeNodes)];
   }
   return [];
 };
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
-export const getAllVMNodes = (nodes: VMwareTree[]): VMwareTree[] =>
+export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
   Array.from(
-    new Set(
-      nodes.flatMap((node) => {
-        const thisNode = node.kind === 'VM' ? [node] : [];
-        const childNodes = node.children ? getAllVMNodes(node.children) : [];
-        return [...thisNode, ...childNodes];
-      })
-    )
+    new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
   );
 
 export const getAvailableVMs = (
   selectedTreeNodes: VMwareTree[],
   allVMs: IVMwareVM[]
 ): IVMwareVM[] => {
-  const treeVMs = getAllVMNodes(selectedTreeNodes)
+  const treeVMs = getAllVMChildren(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
   const vmSelfLinks = treeVMs.map((object) => object.selfLink);
@@ -218,7 +247,7 @@ export const findMatchingNodeAndDescendants = (
   const pushNodeAndDescendants = (n: VMwareTree) => {
     nodeAndDescendants.push(n);
     if (n.children) {
-      n.children.forEach(pushNodeAndDescendants);
+      n.children.filter((node) => node.kind !== 'VM').forEach(pushNodeAndDescendants);
     }
   };
   pushNodeAndDescendants(matchingNode);
