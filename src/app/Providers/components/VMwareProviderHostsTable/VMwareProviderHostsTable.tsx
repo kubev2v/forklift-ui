@@ -1,32 +1,39 @@
 import * as React from 'react';
 import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, sortable, ICell, IRow } from '@patternfly/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  sortable,
+  ICell,
+  IRow,
+  cellWidth,
+} from '@patternfly/react-table';
 import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { IHost } from '@app/queries/types';
-import { formatHostNetwork } from './helpers';
 import SelectNetworkModal from './SelectNetworkModal';
 
 interface IVMwareProviderHostsTableProps {
-  providerId?: string;
+  providerName: string;
   hosts: IHost[];
 }
 
 const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
-  providerId,
+  providerName,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
   console.log(hosts);
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
-    { title: 'Network for migration data transfer', transforms: [sortable] },
+    { title: 'Network for migration data transfer', transforms: [sortable, cellWidth(30)] },
     { title: 'Bandwidth', transforms: [sortable] },
     { title: 'MTU', transforms: [sortable] },
   ];
 
   const getSortValues = (host: IHost) => {
-    const { name, network, bandwidth, mtu } = host;
-    return ['', name, formatHostNetwork(network), bandwidth, mtu];
+    // TODO correlate inventory host with host CR to find selected network
+    return ['', host.name, '(default)', '', ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
@@ -36,11 +43,11 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   });
 
   const rows: IRow[] = sortedItems.map((host: IHost) => {
-    const { name } = host;
+    // TODO correlate inventory host with host CR to find selected network
     return {
       meta: { host },
       selected: selectedItems.includes(host),
-      cells: [name, formatHostNetwork(host.network), host.bandwidth, host.mtu],
+      cells: [host.name, '(default)', '', ''],
     };
   });
 
@@ -65,7 +72,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
         </Level>
         <Table
           className="provider-inner-hosts-table"
-          aria-label={`Hosts table for provider ${providerId}`}
+          aria-label={`Hosts table for provider ${providerName}`}
           cells={columns}
           rows={rows}
           sortBy={sortBy}

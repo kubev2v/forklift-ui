@@ -3,13 +3,11 @@ import {
   PageSection,
   Level,
   LevelItem,
-  Bullseye,
   Card,
   CardBody,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Spinner,
   Title,
   Alert,
 } from '@patternfly/react-core';
@@ -20,19 +18,20 @@ import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+
 export interface IHostsMatchParams {
   url: string;
-  providerId: string;
+  providerName: string;
 }
 
 export const HostsPage: React.FunctionComponent = () => {
   const match = useRouteMatch<IHostsMatchParams>({
-    path: '/providers/:providerId',
+    path: '/providers/:providerName',
     strict: true,
     sensitive: true,
   });
 
-  const hostsQuery = useHostsQuery(match?.params?.providerId);
+  const hostsQuery = useHostsQuery(match?.params.providerName);
 
   return (
     <>
@@ -43,21 +42,22 @@ export const HostsPage: React.FunctionComponent = () => {
               <BreadcrumbItem>
                 <Link to={`/providers`}>Providers</Link>
               </BreadcrumbItem>
-              <BreadcrumbItem isActive>{match?.params.providerId} - hosts</BreadcrumbItem>
+              <BreadcrumbItem>{match?.params.providerName}</BreadcrumbItem>
+              <BreadcrumbItem isActive>Hosts</BreadcrumbItem>
             </Breadcrumb>
           </LevelItem>
         </Level>
         <Level className={spacing.mtLg}>
           <LevelItem>
-            <Title headingLevel="h1">Hosts - {match?.params.providerId}</Title>
+            <Title headingLevel="h1">Hosts - {match?.params.providerName}</Title>
           </LevelItem>
         </Level>
       </PageSection>
       <PageSection>
         <Card>
-          {hostsQuery.isLoading ? (
+          {hostsQuery.isIdle || hostsQuery.isLoading ? (
             <LoadingEmptyState />
-          ) : hostsQuery.isError || !match?.params.providerId ? (
+          ) : hostsQuery.isError || !match?.params?.providerName ? (
             <Alert variant="danger" isInline title="Error loading hosts" />
           ) : (
             <CardBody>
@@ -71,7 +71,7 @@ export const HostsPage: React.FunctionComponent = () => {
                 </EmptyState>
               ) : (
                 <VMwareProviderHostsTable
-                  providerId={match?.params.providerId}
+                  providerName={match?.params.providerName || ''}
                   hosts={hostsQuery?.data}
                 />
               )}

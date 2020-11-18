@@ -1,9 +1,8 @@
-import { IHostNetwork } from '@app/queries/types';
+import { IHostNetworkAdapter } from '@app/queries/types';
 
-export const formatHostNetwork = (network: IHostNetwork): string => {
+export const formatHostNetworkAdapter = (network: IHostNetworkAdapter): string => {
   if (network) {
-    const { name, address, isDefault } = network;
-    return `${name} - ${address}${isDefault ? ' (default)' : ''}`;
+    return `${network.name} - ${network.ipAddress}`;
   }
   return 'Network not found';
 };

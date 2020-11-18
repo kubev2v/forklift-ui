@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 import { Modal, Button, Form, FormGroup } from '@patternfly/react-core';
-import { ConnectedIcon } from '@patternfly/react-icons';
 import {
   useFormState,
   useFormField,
@@ -10,55 +9,42 @@ import {
 } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IHost, IHostNetwork } from '@app/queries/types';
-import { formatHostNetwork } from './helpers';
+import { IHost, IHostNetworkAdapter } from '@app/queries/types';
 
 import './SelectNetworkModal.css';
+import { formatHostNetworkAdapter } from './helpers';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
   onClose: () => void;
 }
-// TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
-interface ITempHostNetwork {
-  name: string;
-  address: string;
-  bandwidth: string;
-  mtu: number;
-  isDefault?: boolean;
-}
-
-const MOCK_NETWORKS: ITempHostNetwork[] = [
-  {
-    name: 'storage_network',
-    address: '192.168.0.1/24',
-    bandwidth: '1 GB/s',
-    mtu: 1499,
-    isDefault: true,
-  },
-  { name: 'compute_network', address: '192.168.0.2/24', bandwidth: '2 GB/s', mtu: 1400 },
-  { name: 'other_network', address: '192.168.0.3/24', bandwidth: '3 GB/s', mtu: 1500 },
-];
-// End TODO
 
 const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   onClose,
 }: ISelectNetworkModalProps) => {
   const form = useFormState({
+    // TODO add a checkbox for reusing the vsphere creds and hiding these fields
     adminUserId: useFormField('', yup.string().max(320).label('User Id').required()),
     adminPassword: useFormField('', yup.string().max(256).label('Password').required()),
-    selectedNetwork: useFormField(null, yup.mixed<IHostNetwork>().label('Host network').required()),
+    selectedNetworkAdapter: useFormField<IHostNetworkAdapter | null>(
+      null,
+      yup.mixed<IHostNetworkAdapter>().label('Host network').required()
+    ),
   });
 
-  // TODO Replace once https://github.com/konveyor/virt-ui/issues/85 has been addressed.
-  console.log('TODO: generate options for selected hosts: ', selectedHosts);
-  const networkOptions = MOCK_NETWORKS.map((network) => ({
-    toString: () => formatHostNetwork(network),
-    value: network.name,
-    props: { description: `${network.bandwidth}; MTU:${network.mtu}` },
+  const commonNetworkAdapters: IHostNetworkAdapter[] = selectedHosts[0].networkAdapters.filter(
+    ({ name, ipAddress }) =>
+      selectedHosts.every((host) =>
+        host.networkAdapters.some((na) => na.name === name && na.ipAddress === ipAddress)
+      )
+  );
+
+  const networkOptions = commonNetworkAdapters.map((networkAdapter) => ({
+    toString: () => formatHostNetworkAdapter(networkAdapter),
+    value: networkAdapter,
+    props: { description: `${networkAdapter.linkSpeed} Mbps; MTU: ${networkAdapter.mtu}` },
   }));
-  // End TODO
 
   const add = () => {
     alert('TODO');
@@ -101,30 +87,34 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           label="Network"
           isRequired
           fieldId="network"
-          validated={form.fields.selectedNetwork.isValid ? 'default' : 'error'}
+          validated={form.fields.selectedNetworkAdapter.isValid ? 'default' : 'error'}
           className="extraSelectMargin"
-          {...getFormGroupProps(form.fields.selectedNetwork)}
+          {...getFormGroupProps(form.fields.selectedNetworkAdapter)}
         >
           <SimpleSelect
             id="network"
             aria-label="Network"
             options={networkOptions}
             value={[
-              networkOptions.find((option) => option.value === form.fields.selectedNetwork.value),
+              networkOptions.find(
+                (option) => option.value.ipAddress === form.values.selectedNetworkAdapter?.ipAddress
+              ),
             ]}
             onChange={(selection) =>
-              form.fields.selectedNetwork.setValue(
-                (selection as OptionWithValue<IHostNetwork>).value
+              form.fields.selectedNetworkAdapter.setValue(
+                (selection as OptionWithValue<IHostNetworkAdapter>).value
               )
             }
             placeholderText="Select a network..."
           />
         </FormGroup>
+        {/* TODO re-enable this when we have the API capability
         <div>
           <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
             Check connections
           </Button>
         </div>
+        */}
       </Form>
     </Modal>
   );

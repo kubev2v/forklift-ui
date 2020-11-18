@@ -51,7 +51,7 @@ const vmwareProvider1: IVMwareProvider = {
   },
   datacenterCount: 1,
   clusterCount: 2,
-  hostCount: 15,
+  hostCount: 2,
   vmCount: 41,
   networkCount: 8,
   datastoreCount: 3,
