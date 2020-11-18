@@ -13,7 +13,6 @@ import StorageMappingsPage from '@app/Mappings/StorageMappingsPage';
 import { HostsPage } from './Providers/HostsPage';
 import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
-import CertErrorPage from './common/CertErrorPage';
 import LoginHandlerComponent from './common/LoginHandlerComponent';
 import RedirectToLogin from './common/RedirectToLogin';
 
@@ -47,14 +46,6 @@ export const routes: AppRouteConfig[] = [
     path: '/welcome',
     title: `${APP_TITLE} | Welcome`,
     isProtected: true,
-    // No label property, so it won't be rendered in the nav
-  },
-  {
-    component: CertErrorPage,
-    exact: true,
-    path: '/cert-error',
-    title: `${APP_TITLE} | Cert error`,
-    isProtected: false,
     // No label property, so it won't be rendered in the nav
   },
   {

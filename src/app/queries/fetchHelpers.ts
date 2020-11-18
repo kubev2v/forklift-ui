@@ -45,7 +45,6 @@ export const authorizedFetch = async <T>(
       console.log('this is error', error);
       //TODO handle other CORS issues.
       setSelfSignedCertUrl(url);
-      history.push('/cert-error');
     }
     checkExpiry(error, history);
     throw error;
@@ -95,7 +94,6 @@ export const authorizedK8sRequest = async <T>(
     if (isAxiosSelfSignedCertError(error)) {
       const url = `${VIRT_META.clusterApi}/.well-known/oauth-authorization-server`;
       setSelfSignedCertUrl(url);
-      history.push('/cert-error');
     }
     throw error;
   }
