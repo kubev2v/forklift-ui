@@ -24,7 +24,7 @@ export const authorizedFetch = async <T>(
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {}
 ): Promise<T> => {
-  const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
+  const { history, checkExpiry } = fetchContext;
   try {
     const response = await fetch(url, {
       headers: {
@@ -38,14 +38,6 @@ export const authorizedFetch = async <T>(
       throw response;
     }
   } catch (error) {
-    // HACK: Doing our best to determine whether or not the
-    // error was produced due to a self signed cert error.
-    // It's an extremely barren object.
-    if (error instanceof TypeError) {
-      console.log('this is error', error);
-      //TODO handle other CORS issues.
-      setSelfSignedCertUrl(url);
-    }
     checkExpiry(error, history);
     throw error;
   }
@@ -71,7 +63,7 @@ export const authorizedK8sRequest = async <T>(
   fetchContext: IFetchContext,
   requestFn: () => Promise<IKubeResponse<T>>
 ): Promise<IKubeResponse<T>> => {
-  const { history, setSelfSignedCertUrl, checkExpiry } = fetchContext;
+  const { history, checkExpiry } = fetchContext;
 
   try {
     const response = await requestFn();
@@ -82,19 +74,6 @@ export const authorizedK8sRequest = async <T>(
     }
   } catch (error) {
     checkExpiry(error, history);
-
-    const isAxiosSelfSignedCertError = (err) => {
-      // HACK: Doing our best to determine whether or not the
-      // error was produced due to a self signed cert error.
-      // It's an extremely barren object.
-      const e = err.toJSON();
-      return !e.code && e.message === 'Network Error';
-    };
-
-    if (isAxiosSelfSignedCertError(error)) {
-      const url = `${VIRT_META.clusterApi}/.well-known/oauth-authorization-server`;
-      setSelfSignedCertUrl(url);
-    }
     throw error;
   }
 };
