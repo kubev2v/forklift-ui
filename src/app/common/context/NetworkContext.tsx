@@ -4,18 +4,12 @@ import { AxiosError } from 'axios';
 import { History } from 'history';
 
 export interface INetworkContext {
-  setSelfSignedCertUrl: (url: string) => void;
-  selfSignedCertUrl: string;
   saveLoginToken: (user: string, history: History) => void;
   currentUser: string;
   checkExpiry: (error: Response | AxiosError<unknown>, history: History) => void;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
-  selfSignedCertUrl: '',
-  setSelfSignedCertUrl: () => {
-    console.error('setSelfSignedCertUrl was called without a NetworkContextProvider in the tree');
-  },
   saveLoginToken: () => {
     console.error('saveLoginToken was called without a NetworkContextProvider in the tree');
   },
@@ -32,7 +26,6 @@ interface INetworkContextProviderProps {
 export const NetworkContextProvider: React.FunctionComponent<INetworkContextProviderProps> = ({
   children,
 }: INetworkContextProviderProps) => {
-  const [selfSignedCertUrl, setSelfSignedCertUrl] = React.useState('');
   const [currentUser, setCurrentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
 
   const saveLoginToken = (user: string | null, history: History) => {
@@ -51,8 +44,6 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
   return (
     <NetworkContext.Provider
       value={{
-        selfSignedCertUrl,
-        setSelfSignedCertUrl,
         saveLoginToken,
         currentUser: currentUser || '',
         checkExpiry,
