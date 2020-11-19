@@ -9,6 +9,7 @@ export interface IProgress {
 
 export interface IStep {
   name: string;
+  description: string;
   progress: IProgress;
   phase?: string;
   annotations?: {
