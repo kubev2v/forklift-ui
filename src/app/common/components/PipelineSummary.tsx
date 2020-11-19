@@ -13,7 +13,7 @@ import {
 } from '@patternfly/react-tokens';
 
 import { IVMStatus } from '@app/queries/types';
-import { MigrationVMStepsType, StepType } from '@app/common/constants';
+import { StepType } from '@app/common/constants';
 import './PipelineSummary.css';
 import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
 
@@ -32,17 +32,17 @@ const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) =>
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
   const { currentStep } = findCurrentStep(status.pipeline);
   if (status.completed) {
-    return MigrationVMStepsType.Completed;
+    return 'Complete';
   }
   if (status.started && !status.completed) {
     let title: string;
-    title = status.error?.phase ? `${MigrationVMStepsType.Error} - ` : '';
+    title = status.error?.phase ? `Error - ` : '';
     if (currentStep) {
-      title = `${title}${MigrationVMStepsType[currentStep.name] || currentStep.name}`;
+      title = `${title}${[currentStep.description.replace(/\.$/, '')]}`;
     }
     return title;
   }
-  return MigrationVMStepsType.NotStarted;
+  return 'Not started';
 };
 
 interface IGetStepTypeIcon {

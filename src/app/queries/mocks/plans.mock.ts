@@ -29,6 +29,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     pipeline: [
       {
         name: 'PreHook',
+        description: 'Pre hook',
         progress: { total: 2, completed: 2 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T14:04:10Z',
@@ -36,6 +37,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       {
         name: 'DiskTransfer',
+        description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 30 },
         phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
@@ -43,13 +45,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T14:21:10Z',
       },
       {
-        name: 'Import',
+        name: 'ImageConversion',
+        description: 'Convert image to kubevirt.',
         progress: { total: 2, completed: 0 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T14:21:10Z',
       },
       {
         name: 'PostHook',
+        description: 'Post hook',
         progress: { total: 2, completed: 0 },
         phase: 'Mock Step Phase',
       },
@@ -67,6 +71,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     pipeline: [
       {
         name: 'PreHook',
+        description: 'Pre hook',
         progress: { total: 1, completed: 1 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T14:04:10Z',
@@ -74,6 +79,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       {
         name: 'DiskTransfer',
+        description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 64 },
         phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
@@ -81,13 +87,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T15:57:10Z',
       },
       {
-        name: 'Import',
+        name: 'ImageConversion',
+        description: 'Convert image to kubevirt.',
         progress: { total: 1, completed: 0 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
       },
       {
         name: 'PostHook',
+        description: 'Pre hook',
         progress: { total: 1, completed: 0 },
         phase: 'Mock Step Phase',
       },
@@ -105,6 +113,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     pipeline: [
       {
         name: 'PreHook',
+        description: 'Pre hook',
         progress: { total: 2, completed: 2 },
         phase: 'Latest message from controller',
         started: '2020-10-10T14:04:10Z',
@@ -112,6 +121,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       {
         name: 'DiskTransfer',
+        description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 64 },
         phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
@@ -119,7 +129,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T15:57:10Z',
       },
       {
-        name: 'Import',
+        name: 'ImageConversion',
+        description: 'Convert image to kubevirt.',
         progress: { total: 3, completed: 3 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
@@ -140,6 +151,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     pipeline: [
       {
         name: 'PreHook',
+        description: 'Pre Hook',
         progress: { total: 2, completed: 2 },
         phase: 'Latest message from controller',
         started: '2020-10-10T14:04:10Z',
@@ -147,6 +159,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       {
         name: 'DiskTransfer',
+        description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 64 },
         phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
@@ -154,7 +167,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T15:57:10Z',
       },
       {
-        name: 'Import',
+        name: 'ImageConversion',
+        description: 'Convert image to kubevirt.',
         progress: { total: 3, completed: 1 },
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
@@ -165,6 +179,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       {
         name: 'PostHook',
+        description: 'Post Hook',
         progress: { total: 1, completed: 0 },
         phase: 'Mock Step Phase',
       },
