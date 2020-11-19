@@ -22,7 +22,6 @@ export enum StatusCategoryType {
   Error = 'Error',
   Advisory = 'Advisory',
   Warn = 'Warn',
-  Unknown = 'Unknown',
 }
 
 export enum PlanStatusAPIType {
