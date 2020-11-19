@@ -39,17 +39,6 @@ export enum PlanStatusDisplayType {
   Pending = 'Pending',
 }
 
-export enum MigrationVMStepsType {
-  PreHook = 'Pre Hook',
-  DiskTransfer = 'Copying data',
-  ImageConversion = 'Converting guest image',
-  Import = 'Importing',
-  PostHook = 'Post Hook',
-  NotStarted = 'Not started',
-  Completed = 'Complete',
-  Error = 'Failed',
-}
-
 export enum StepType {
   Full = 'Full',
   Half = 'Half',
