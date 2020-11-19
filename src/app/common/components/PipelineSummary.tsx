@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Flex, FlexItem, Text } from '@patternfly/react-core';
 import {
-  ResourcesAlmostEmptyIcon,
+  ResourcesEmptyIcon,
   ResourcesAlmostFullIcon,
   ResourcesFullIcon,
 } from '@patternfly/react-icons';
@@ -73,7 +73,7 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
         {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
       </>
     );
-  } else return <ResourcesAlmostEmptyIcon key={index} color={disabledColor.value} />;
+  } else return <ResourcesEmptyIcon key={index} color={disabledColor.value} />;
 };
 
 interface IPipelineSummaryProps {
