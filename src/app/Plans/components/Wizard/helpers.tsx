@@ -85,9 +85,7 @@ const convertVMwareTreeNode = (
     children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
     checkProps: {
       'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
-      checked: isNodeSelected(node),
-      // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
-      ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
+      checked: isPartiallyChecked ? null : isNodeSelected(node),
     },
     icon:
       node.kind === 'Cluster' ? (
@@ -132,9 +130,7 @@ export const filterAndConvertVMwareTree = (
       id: 'converted-root',
       checkProps: {
         'aria-label': 'Select all datacenters',
-        checked: areAllSelected,
-        // TODO: replace this ref with a null `checked` value when https://github.com/patternfly/patternfly-react/pull/5150 is released
-        ref: (elem: HTMLInputElement) => elem && (elem.indeterminate = isPartiallyChecked),
+        checked: isPartiallyChecked ? null : areAllSelected,
       },
       children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
     },
