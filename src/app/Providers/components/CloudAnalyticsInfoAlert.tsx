@@ -9,7 +9,11 @@ const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
     LocalStorageKey.isProvidersPageMAAlertHidden
   );
 
-  const link = <a href={CLOUD_MA_LINK.href}>{CLOUD_MA_LINK.label}</a>;
+  const link = (
+    <a href={CLOUD_MA_LINK.href} target="_blank" rel="noreferrer">
+      {CLOUD_MA_LINK.label}
+    </a>
+  );
 
   const alertMessage = (
     <Text>
