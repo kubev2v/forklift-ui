@@ -9,13 +9,11 @@ import { IKubeResponse, IKubeStatus } from '@app/client/types';
 
 interface IFetchContext {
   history: History<LocationState>;
-  setSelfSignedCertUrl: INetworkContext['setSelfSignedCertUrl'];
   checkExpiry: INetworkContext['checkExpiry'];
 }
 
 export const useFetchContext = (): IFetchContext => ({
   history: useHistory(),
-  setSelfSignedCertUrl: useNetworkContext().setSelfSignedCertUrl,
   checkExpiry: useNetworkContext().checkExpiry,
 });
 
