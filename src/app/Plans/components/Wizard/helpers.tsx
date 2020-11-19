@@ -48,16 +48,6 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
   return node.children && node.children.some((child) => subtreeMatchesSearch(child, searchText));
 };
 
-const areAllDescendantsSelected = (
-  node: VMwareTree,
-  isNodeSelected: (node: VMwareTree) => boolean
-) =>
-  node.children
-    ? node.children
-        .filter((child) => child.kind !== 'VM')
-        .every((child) => areAllDescendantsSelected(child, isNodeSelected))
-    : isNodeSelected(node);
-
 const areSomeDescendantsSelected = (
   node: VMwareTree,
   isNodeSelected: (node: VMwareTree) => boolean
@@ -76,9 +66,7 @@ const convertVMwareTreeNode = (
   isNodeSelected: (node: VMwareTree) => boolean
 ): TreeViewDataItem => {
   const isPartiallyChecked =
-    !isNodeSelected(node) &&
-    !areAllDescendantsSelected(node, isNodeSelected) &&
-    areSomeDescendantsSelected(node, isNodeSelected);
+    !isNodeSelected(node) && areSomeDescendantsSelected(node, isNodeSelected);
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
@@ -121,9 +109,7 @@ export const filterAndConvertVMwareTree = (
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   const isPartiallyChecked =
-    !areAllSelected &&
-    !areAllDescendantsSelected(rootNode, isNodeSelected) &&
-    areSomeDescendantsSelected(rootNode, isNodeSelected);
+    !areAllSelected && areSomeDescendantsSelected(rootNode, isNodeSelected);
   return [
     {
       name: 'All datacenters',
