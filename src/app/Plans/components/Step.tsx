@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  ResourcesAlmostEmptyIcon,
+  ResourcesEmptyIcon,
   ResourcesAlmostFullIcon,
   ResourcesFullIcon,
 } from '@patternfly/react-icons';
@@ -42,7 +42,7 @@ const Step: React.FunctionComponent<IStepProps> = ({ type, error }: IStepProps) 
   }
   if (type === StepType.Empty) {
     step = (
-      <ResourcesAlmostEmptyIcon
+      <ResourcesEmptyIcon
         className={spacing.mlSm}
         height="1em"
         width="1em"
