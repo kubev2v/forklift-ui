@@ -150,7 +150,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
-    let isInitializing = false;
+    let isPending = false;
     let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
@@ -170,7 +170,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else if (!plan.status) {
-      isInitializing = true;
+      isPending = true;
     } else {
       console.log('Migration plan Status Error:', plan);
     }
@@ -199,8 +199,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         targetProvider?.name || '',
         plan.spec.vms.length,
         {
-          title: isInitializing ? (
-            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Initializing} />
+          title: isPending ? (
+            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
           ) : isStatusReady ? (
             <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
           ) : (
@@ -253,7 +253,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </FlexItem>
                 </Flex>
               </>
-            ) : !isInitializing ? (
+            ) : !isPending ? (
               <PlanActionsDropdown plan={plan} />
             ) : null,
         },
