@@ -11,6 +11,10 @@ interface IVMConcernsIconProps {
 const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
+  if (vm.revisionAnalyzed < vm.revision) {
+    return <StatusIcon status={StatusType.Unknown} label="Unknown" />;
+  }
+
   const worstConcern = getMostSevereVMConcern(vm);
   if (!worstConcern) {
     return <StatusIcon status={StatusType.Ok} label="Ok" />;
