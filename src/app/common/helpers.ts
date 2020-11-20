@@ -47,9 +47,8 @@ export const findCurrentStep = (
   return { currentStep, currentStepIndex };
 };
 
-export const formatTimestamp = (timestamp?: string): string => {
-  return timestamp ? new Date(timestamp).toString() : '';
-};
+export const formatTimestamp = (timestamp?: string): string =>
+  timestamp ? new Date(timestamp).toString() : '';
 
 const padNum = (num: number) => (num < 10 ? `0${num}` : `${num}`);
 
