@@ -134,7 +134,7 @@ export const useConfigureHostsMutation = (
       // Else, patches the first available secret and reuses it for all hosts.
       const existingSecrets = existingHostConfigs
         .map((hostConfig) => hostConfig?.spec.secret)
-        .filter((secret) => !!secret) as INameNamespaceRef[];
+        .filter((secret) => secret?.name && secret?.namespace) as INameNamespaceRef[];
       const secretBeingReusedRef = existingSecrets.length > 0 ? existingSecrets[0] : null;
       const newSecret = generateSecret(values, secretBeingReusedRef, provider);
       let secretResult: IKubeResponse<INewSecret>;
