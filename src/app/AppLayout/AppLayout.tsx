@@ -93,7 +93,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           (route, idx) =>
             route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
         )}
-        <NavItem to={CLOUD_MA_LINK.href}>
+        <NavItem onClick={() => window.open(CLOUD_MA_LINK.href, '_blank')}>
           {CLOUD_MA_LINK.label}{' '}
           <ExternalLinkAltIcon className={spacing.mlSm} height="0.8em" width="0.8em" />
         </NavItem>
