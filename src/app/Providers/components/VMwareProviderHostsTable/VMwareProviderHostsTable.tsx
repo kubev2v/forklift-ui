@@ -15,6 +15,7 @@ import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 
 interface IVMwareProviderHostsTableProps {
   providerName: string;
@@ -26,9 +27,10 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   hosts,
 }: IVMwareProviderHostsTableProps) => {
   const providersQuery = useProvidersQuery();
-  const hostConfigsQuery = useHostConfigsQuery();
-
   const provider = providersQuery.data?.vsphere.find((provider) => provider.name === providerName);
+
+  const hostConfigsQuery = useHostConfigsQuery();
+  const hostConfigs = hostConfigsQuery.data?.items || [];
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
@@ -37,25 +39,32 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     { title: 'MTU', transforms: [sortable] },
   ];
 
-  const getSortValues = (host: IHost) => {
-    // TODO correlate inventory host with host CR to find selected network
-    return ['', host.name, '(default)', '', ''];
+  const getCells = (host: IHost) => {
+    const networkAdapter = findSelectedNetworkAdapter(host, hostConfigs, provider || null);
+    return [
+      host.name,
+      networkAdapter ? formatHostNetworkAdapter(networkAdapter) : '(default)',
+      networkAdapter ? `${networkAdapter.linkSpeed} Mbps` : '',
+      networkAdapter?.mtu || '',
+    ];
   };
+
+  const getSortValues = (host: IHost) => ['', ...getCells(host)];
 
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
   const { paginationProps } = usePaginationState(sortedItems, 10);
-  const { selectedItems, toggleItemSelected, selectAll } = useSelectionState<IHost>({
-    items: sortedItems,
-  });
+  const { selectedItems, isItemSelected, toggleItemSelected, selectAll } = useSelectionState<IHost>(
+    {
+      items: sortedItems,
+      isEqual: (a, b) => a.id === b.id,
+    }
+  );
 
-  const rows: IRow[] = sortedItems.map((host: IHost) => {
-    // TODO correlate inventory host with host CR to find selected network
-    return {
-      meta: { host },
-      selected: selectedItems.includes(host),
-      cells: [host.name, '(default)', '', ''],
-    };
-  });
+  const rows: IRow[] = sortedItems.map((host: IHost) => ({
+    meta: { host },
+    selected: isItemSelected(host),
+    cells: getCells(host),
+  }));
 
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
@@ -101,7 +110,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       {isSelectNetworkModalOpen && (
         <SelectNetworkModal
           selectedHosts={selectedItems}
-          hostConfigs={hostConfigsQuery.data?.items || []}
+          hostConfigs={hostConfigs}
           provider={provider as IVMwareProvider}
           onClose={() => setIsSelectNetworkModalOpen(false)}
         />
