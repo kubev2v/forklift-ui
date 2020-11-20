@@ -1,4 +1,4 @@
-import { IVMwareObjRef } from './common.types';
+import { ICR, INameNamespaceRef, IVMwareObjRef } from './common.types';
 
 export interface IHostNetworkAdapter {
   name: string;
@@ -47,4 +47,19 @@ export interface IHost {
   datastores: IVMwareObjRef[];
   vms: IVMwareObjRef[];
   networkAdapters: IHostNetworkAdapter[];
+}
+
+export interface IHostConfig extends ICR {
+  apiVersion: string;
+  kind: 'Host';
+  spec: {
+    id: string;
+    ipAddress: string;
+    provider: INameNamespaceRef;
+    secret?: INameNamespaceRef;
+    thumbprint?: string;
+  };
+  status?: {
+    observedGeneration: string;
+  };
 }

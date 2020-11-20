@@ -20,14 +20,12 @@ interface ISelectNetworkModalProps {
   onClose: () => void;
 }
 
-const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
-  selectedHosts,
-  onClose,
-}: ISelectNetworkModalProps) => {
+// TODO support prefilling if all hosts already have the same network?
+const useSelectNetworkFormState = () => {
   const isReusingCredentials = useFormField(true, yup.boolean().required());
   const usernameSchema = yup.string().max(320).label('Host admin username');
   const passwordSchema = yup.string().max(256).label('Host admin password');
-  const form = useFormState({
+  return useFormState({
     selectedNetworkAdapter: useFormField<IHostNetworkAdapter | null>(
       null,
       yup.mixed<IHostNetworkAdapter>().label('Host network').required()
@@ -42,6 +40,15 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     ),
     isReusingCredentials,
   });
+};
+
+export type SelectNetworkFormValues = ReturnType<typeof useSelectNetworkFormState>['values'];
+
+const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
+  selectedHosts,
+  onClose,
+}: ISelectNetworkModalProps) => {
+  const form = useSelectNetworkFormState();
 
   const commonNetworkAdapters: IHostNetworkAdapter[] = selectedHosts[0].networkAdapters.filter(
     ({ name, ipAddress }) =>
