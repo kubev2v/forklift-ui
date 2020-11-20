@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
+import timeZone from 'dayjs-ext/plugin/timeZone';
 import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
 import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
+
+dayjs.extend(timeZone);
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
   return !!conditions.find((condition) => condition.type === type);
@@ -48,7 +51,7 @@ export const findCurrentStep = (
 };
 
 export const formatTimestamp = (timestamp?: string): string =>
-  timestamp ? new Date(timestamp).toString() : '';
+  timestamp ? dayjs(timestamp).format('DD MMM YYYY, HH:mm:ss z') : '';
 
 const padNum = (num: number) => (num < 10 ? `0${num}` : `${num}`);
 

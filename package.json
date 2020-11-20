@@ -93,6 +93,7 @@
     "@patternfly/react-tokens": "^4.9.18",
     "axios": "^0.20.0",
     "dayjs": "^1.9.3",
+    "dayjs-ext": "^2.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "fast-deep-equal": "^3.1.3",
