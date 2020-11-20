@@ -11,7 +11,6 @@ import {
 } from './helpers';
 import { MOCK_HOSTS, MOCK_HOST_CONFIGS } from './mocks/hosts.mock';
 import { IHost, IHostConfig, INameNamespaceRef, INewSecret, IVMwareProvider } from './types';
-import { useProvidersQuery } from '.';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
 import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProviderHostsTable/SelectNetworkModal';
@@ -21,18 +20,15 @@ import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 export const hostConfigResource = new VirtResource(VirtResourceKind.Host, VIRT_META.namespace);
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
-export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
-  const { data: providers } = useProvidersQuery();
-  const currentProvider = providers?.vsphere.find((provider) => provider.name === providerName);
-
+export const useHostsQuery = (provider?: IVMwareProvider): QueryResult<IHost[]> => {
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: 'hosts',
       queryFn: useAuthorizedFetch(
-        getInventoryApiUrl(`${currentProvider?.selfLink || ''}/hosts?detail=true`)
+        getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=true`)
       ),
       config: {
-        enabled: !!currentProvider,
+        enabled: !!provider,
         refetchInterval: usePollingContext().refetchInterval,
       },
     },
@@ -41,11 +37,11 @@ export const useHostsQuery = (providerName?: string): QueryResult<IHost[]> => {
   return sortResultsByName<IHost>(result);
 };
 
-export const useHostConfigsQuery = (providerName?: string): QueryResult<IKubeList<IHostConfig>> => {
+export const useHostConfigsQuery = (): QueryResult<IKubeList<IHostConfig>> => {
   const client = useAuthorizedK8sClient();
   return useMockableQuery<IKubeList<IHostConfig>>(
     {
-      queryKey: ['host-configs', providerName],
+      queryKey: 'host-configs',
       queryFn: async () => (await client.list<IKubeList<IHostConfig>>(hostConfigResource)).data,
       config: {
         refetchInterval: usePollingContext().refetchInterval,
@@ -55,8 +51,20 @@ export const useHostConfigsQuery = (providerName?: string): QueryResult<IKubeLis
   );
 };
 
-const configMatchesHost = (config: IHostConfig, host: IHost, provider: IVMwareProvider) =>
-  isSameResource(config.spec.provider, provider) && host.id === config.spec.id;
+export const configMatchesHost = (
+  config: IHostConfig,
+  host: IHost,
+  provider: IVMwareProvider
+): boolean => isSameResource(config.spec.provider, provider) && host.id === config.spec.id;
+
+export const getExistingHostConfigs = (
+  selectedHosts: IHost[],
+  allHostConfigs: IHostConfig[],
+  provider: IVMwareProvider
+) =>
+  selectedHosts.map((host) =>
+    allHostConfigs.find((config) => configMatchesHost(config, host, provider))
+  );
 
 const generateSecret = (
   values: SelectNetworkFormValues,
@@ -119,9 +127,7 @@ export const useConfigureHostsMutation = (
   const { pollFasterAfterMutation } = usePollingContext();
 
   const configureHosts = async (values: SelectNetworkFormValues) => {
-    const existingHostConfigs = selectedHosts.map((host) =>
-      allHostConfigs.find((config) => configMatchesHost(config, host, provider))
-    );
+    const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
     let secretRef: INameNamespaceRef | null = null;
     if (!values.isReusingCredentials) {
       // If none of these hosts are configured with a secret, creates a new one.

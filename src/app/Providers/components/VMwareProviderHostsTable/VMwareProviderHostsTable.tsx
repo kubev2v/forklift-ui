@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Alert, Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -11,8 +11,10 @@ import {
 } from '@patternfly/react-table';
 import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { IHost } from '@app/queries/types';
+import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
+import { useHostConfigsQuery, useProvidersQuery } from '@app/queries';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IVMwareProviderHostsTableProps {
   providerName: string;
@@ -23,7 +25,11 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   providerName,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
-  console.log(hosts);
+  const providersQuery = useProvidersQuery();
+  const hostConfigsQuery = useHostConfigsQuery();
+
+  const provider = providersQuery.data?.vsphere.find((provider) => provider.name === providerName);
+
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Network for migration data transfer', transforms: [sortable, cellWidth(30)] },
@@ -53,47 +59,53 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
-  return (
+  return providersQuery.isLoading || hostConfigsQuery.isLoading ? (
+    <LoadingEmptyState />
+  ) : providersQuery.isError ? (
+    <Alert variant="danger" isInline title="Error loading providers" />
+  ) : hostConfigsQuery.isError ? (
+    <Alert variant="danger" isInline title="Error loading host configurations" />
+  ) : (
     <>
-      <>
-        <Level>
-          <LevelItem>
-            <Button
-              variant="secondary"
-              onClick={() => setIsSelectNetworkModalOpen(true)}
-              isDisabled={selectedItems.length === 0}
-            >
-              Select migration network
-            </Button>
-          </LevelItem>
-          <LevelItem>
-            <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
-          </LevelItem>
-        </Level>
-        <Table
-          className="provider-inner-hosts-table"
-          aria-label={`Hosts table for provider ${providerName}`}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-          onSelect={(_event, isSelected, rowIndex, rowData) => {
-            if (rowIndex === -1) {
-              selectAll(isSelected);
-            }
-            toggleItemSelected(rowData.meta.host, isSelected);
-          }}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-        {isSelectNetworkModalOpen && (
-          <SelectNetworkModal
-            selectedHosts={selectedItems}
-            onClose={() => setIsSelectNetworkModalOpen(false)}
-          />
-        )}
-      </>
+      <Level>
+        <LevelItem>
+          <Button
+            variant="secondary"
+            onClick={() => setIsSelectNetworkModalOpen(true)}
+            isDisabled={selectedItems.length === 0}
+          >
+            Select migration network
+          </Button>
+        </LevelItem>
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+        </LevelItem>
+      </Level>
+      <Table
+        className="provider-inner-hosts-table"
+        aria-label={`Hosts table for provider ${providerName}`}
+        cells={columns}
+        rows={rows}
+        sortBy={sortBy}
+        onSort={onSort}
+        onSelect={(_event, isSelected, rowIndex, rowData) => {
+          if (rowIndex === -1) {
+            selectAll(isSelected);
+          }
+          toggleItemSelected(rowData.meta.host, isSelected);
+        }}
+      >
+        <TableHeader />
+        <TableBody />
+      </Table>
+      {isSelectNetworkModalOpen && (
+        <SelectNetworkModal
+          selectedHosts={selectedItems}
+          hostConfigs={hostConfigsQuery.data?.items || []}
+          provider={provider as IVMwareProvider}
+          onClose={() => setIsSelectNetworkModalOpen(false)}
+        />
+      )}
     </>
   );
 };
