@@ -20,7 +20,7 @@ import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
 export const hostConfigResource = new VirtResource(VirtResourceKind.Host, VIRT_META.namespace);
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
-export const useHostsQuery = (provider?: IVMwareProvider): QueryResult<IHost[]> => {
+export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHost[]> => {
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: 'hosts',

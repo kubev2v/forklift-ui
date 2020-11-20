@@ -13,22 +13,19 @@ import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
-import { useHostConfigsQuery, useProvidersQuery } from '@app/queries';
+import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 
 interface IVMwareProviderHostsTableProps {
-  providerName: string;
+  provider: IVMwareProvider;
   hosts: IHost[];
 }
 
 const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
-  providerName,
+  provider,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
-  const providersQuery = useProvidersQuery();
-  const provider = providersQuery.data?.vsphere.find((provider) => provider.name === providerName);
-
   const hostConfigsQuery = useHostConfigsQuery();
   const hostConfigs = hostConfigsQuery.data?.items || [];
 
@@ -40,7 +37,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   ];
 
   const getCells = (host: IHost) => {
-    const networkAdapter = findSelectedNetworkAdapter(host, hostConfigs, provider || null);
+    const networkAdapter = findSelectedNetworkAdapter(host, hostConfigs, provider);
     return [
       host.name,
       networkAdapter ? formatHostNetworkAdapter(networkAdapter) : '(default)',
@@ -68,10 +65,8 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
-  return providersQuery.isLoading || hostConfigsQuery.isLoading ? (
+  return hostConfigsQuery.isLoading ? (
     <LoadingEmptyState />
-  ) : providersQuery.isError ? (
-    <Alert variant="danger" isInline title="Error loading providers" />
   ) : hostConfigsQuery.isError ? (
     <Alert variant="danger" isInline title="Error loading host configurations" />
   ) : (
@@ -92,7 +87,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       </Level>
       <Table
         className="provider-inner-hosts-table"
-        aria-label={`Hosts table for provider ${providerName}`}
+        aria-label={`Hosts table for provider ${provider.name}`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}

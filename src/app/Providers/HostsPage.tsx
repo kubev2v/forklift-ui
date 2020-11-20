@@ -16,8 +16,9 @@ import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link, useRouteMatch } from 'react-router-dom';
 import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { useHostsQuery } from '@app/queries';
+import { useHostsQuery, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { IVMwareProvider } from '@app/queries/types';
 
 export interface IHostsMatchParams {
   url: string;
@@ -31,7 +32,12 @@ export const HostsPage: React.FunctionComponent = () => {
     sensitive: true,
   });
 
-  const hostsQuery = useHostsQuery(match?.params.providerName);
+  const providersQuery = useProvidersQuery();
+  const provider =
+    providersQuery.data?.vsphere.find((provider) => provider.name === match?.params.providerName) ||
+    null;
+
+  const hostsQuery = useHostsQuery(provider);
 
   return (
     <>
@@ -55,10 +61,12 @@ export const HostsPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <Card>
-          {hostsQuery.isIdle || hostsQuery.isLoading ? (
+          {hostsQuery.isLoading || providersQuery.isLoading ? (
             <LoadingEmptyState />
           ) : hostsQuery.isError || !match?.params?.providerName ? (
             <Alert variant="danger" isInline title="Error loading hosts" />
+          ) : providersQuery.isError ? (
+            <Alert variant="danger" isInline title="Error loading providers" />
           ) : (
             <CardBody>
               {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
@@ -71,7 +79,7 @@ export const HostsPage: React.FunctionComponent = () => {
                 </EmptyState>
               ) : (
                 <VMwareProviderHostsTable
-                  providerName={match?.params.providerName || ''}
+                  provider={provider as IVMwareProvider}
                   hosts={hostsQuery?.data}
                 />
               )}
