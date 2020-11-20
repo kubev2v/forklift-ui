@@ -37,6 +37,7 @@ export enum VirtResourceKind {
   StorageMap = 'storagemaps',
   Plan = 'plans',
   Migration = 'migrations',
+  Host = 'hosts',
 }
 
 export const secretResource = new CoreNamespacedResource(
