@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { TextContent, Text, Grid, GridItem, Form } from '@patternfly/react-core';
+import {
+  TextContent,
+  Text,
+  Grid,
+  GridItem,
+  Form,
+  Popover,
+  Button,
+  List,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
@@ -57,7 +66,22 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={3}>Target namespace</GridItem>
         <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
         <GridItem md={3}>Selected VMs</GridItem>
-        <GridItem md={9}>{forms.selectVMs.values.selectedVMs.length}</GridItem>
+        <GridItem md={9}>
+          <Popover
+            headerContent={<div>Selected VMs</div>}
+            bodyContent={
+              <List>
+                {forms.selectVMs.values.selectedVMs.map((vm, index) => (
+                  <li key={index}>{vm.name}</li>
+                ))}
+              </List>
+            }
+          >
+            <Button variant="link" isInline>
+              {forms.selectVMs.values.selectedVMs.length}
+            </Button>
+          </Popover>
+        </GridItem>
         <GridItem md={3}>Network mapping</GridItem>
         <GridItem md={9}>
           <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
