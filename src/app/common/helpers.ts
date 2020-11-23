@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs-ext/plugin/advancedFormat';
 import timeZone from 'dayjs-ext/plugin/timeZone';
 import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
 import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
 
+dayjs.extend(advancedFormat);
 dayjs.extend(timeZone);
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
