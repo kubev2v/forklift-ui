@@ -56,6 +56,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         ) : null}
         <GridItem md={3}>Target namespace</GridItem>
         <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
+        <GridItem md={3}>Selected VMs</GridItem>
+        <GridItem md={9}>{forms.selectVMs.values.selectedVMs.length}</GridItem>
         <GridItem md={3}>Network mapping</GridItem>
         <GridItem md={9}>
           <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
@@ -64,8 +66,6 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9}>
           <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
         </GridItem>
-        <GridItem md={3}>Selected VMs</GridItem>
-        <GridItem md={9}>{forms.selectVMs.values.selectedVMs.length}</GridItem>
       </Grid>
       <MutationStatus
         results={[
