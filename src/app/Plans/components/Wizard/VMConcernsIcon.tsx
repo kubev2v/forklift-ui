@@ -2,8 +2,6 @@ import * as React from 'react';
 import { IVMwareVM } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { InfoCircleIcon } from '@patternfly/react-icons';
-import { Flex, FlexItem, Spinner } from '@patternfly/react-core';
-import './VMConcernsIcon.css';
 
 import { getMostSevereVMConcern } from './helpers';
 interface IVMConcernsIconProps {
@@ -14,14 +12,7 @@ const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
   if (vm.revisionAnalyzed < vm.revision) {
-    return (
-      <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-        <FlexItem>
-          <Spinner aria-valuetext="Analysing" size="sm" className="spinner" />
-        </FlexItem>
-        <FlexItem>Analysing</FlexItem>
-      </Flex>
-    );
+    return <StatusIcon status={StatusType.Loading} label="Analyzing" />;
   }
 
   const worstConcern = getMostSevereVMConcern(vm);
