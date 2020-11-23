@@ -63,6 +63,10 @@ const Review: React.FunctionComponent<IReviewProps> = ({
             <GridItem md={9}>{forms.general.values.planDescription}</GridItem>
           </>
         ) : null}
+        <GridItem md={3}>Source provider</GridItem>
+        <GridItem md={9}>{forms.general.values.sourceProvider?.name}</GridItem>
+        <GridItem md={3}>Target provider</GridItem>
+        <GridItem md={9}>{forms.general.values.targetProvider?.name}</GridItem>
         <GridItem md={3}>Target namespace</GridItem>
         <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
         <GridItem md={3}>Selected VMs</GridItem>
