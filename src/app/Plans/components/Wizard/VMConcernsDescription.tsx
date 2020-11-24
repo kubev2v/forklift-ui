@@ -24,19 +24,27 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
   ) : worstConcern.severity === 'Advisory' || worstConcern.severity === 'Info' ? (
     <>Conditions have been identified, but they do not affect the migration risk.</>
   ) : null;
-  return (
-    <TextContent>
-      <Text component="p">{conditionsText}</Text>
-      {vm.concerns && vm.concerns.length > 0 ? (
-        <List>
-          {vm.concerns.map((concern, index) => (
-            <ListItem key={`${index}-${concern.name}`}>{concern.name}</ListItem>
-          ))}
-        </List>
-      ) : null}
-      <Text component="p">See the product documentation for more information.</Text>
-    </TextContent>
-  );
+  if (vm.revisionAnalyzed < vm.revision) {
+    return (
+      <TextContent>
+        <Text component="p">Completing migration Analysis. This might take a few minutes.</Text>
+      </TextContent>
+    );
+  } else {
+    return (
+      <TextContent>
+        <Text component="p">{conditionsText}</Text>
+        {vm.concerns && vm.concerns.length > 0 ? (
+          <List>
+            {vm.concerns.map((concern, index) => (
+              <ListItem key={`${index}-${concern.name}`}>{concern.name}</ListItem>
+            ))}
+          </List>
+        ) : null}
+        <Text component="p">See the product documentation for more information.</Text>
+      </TextContent>
+    );
+  }
 };
 
 export default VMConcernsDescription;
