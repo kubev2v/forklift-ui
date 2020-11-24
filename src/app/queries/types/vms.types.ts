@@ -7,11 +7,12 @@ export interface IVMwareVMDisk {
 
 export interface IVMwareVMConcern {
   name: string;
-  severity: 'Warning' | 'Critical' | 'Advisory' | 'Info'; // TODO not sure if these are final
+  severity: 'Warning' | 'Critical' | 'Advisory' | 'Info';
 }
 
 export interface IVMwareVM {
   id: string;
+  revision: number;
   parent: IVMwareObjRef;
   name: string;
   selfLink: string;
@@ -30,4 +31,5 @@ export interface IVMwareVM {
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
   concerns: IVMwareVMConcern[];
+  revisionAnalyzed: number;
 }

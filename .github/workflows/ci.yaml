@@ -1,12 +1,13 @@
-name: Deploy master preview
+name: Check yarn ci
 on:
+  pull_request:
   push:
     branches:
       - master
 
 jobs:
-  test-and-release:
-    name: Deploy preview to Surge
+  tests:
+    name: Yarn CI
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -19,9 +20,3 @@ jobs:
         run: yarn install
       - name: Run tests
         run: yarn ci
-      - name: Build in mock mode
-        run: yarn build:mock
-      - name: Install Surge
-        run: npm install -g surge
-      - name: Deploy to Surge
-        run: surge ./dist/ konveyor-virt-ui-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
