@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, AlertActionCloseButton, Button, Text } from '@patternfly/react-core';
+import { Alert, AlertActionCloseButton, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
 import { CLOUD_MA_LINK } from '@app/common/constants';
