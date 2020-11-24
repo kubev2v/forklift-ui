@@ -1,10 +1,6 @@
 name: PR Preview
 on: pull_request
 
-# This will break when we add any logic to server.js besides static serving
-# Or when we require auth
-# Would be really nice to keep it around via some kind of `build:preview` mode
-
 jobs:
   deploy-pr-preview:
     name: Deploy to Surge
@@ -19,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
       - name: Install dependencies
         run: yarn install
       - name: Build in mock mode
