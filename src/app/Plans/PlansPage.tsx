@@ -65,7 +65,7 @@ const PlansPage: React.FunctionComponent = () => {
   return (
     <>
       <PageSection variant="light">
-        <Title headingLevel="h1">Migration Plans</Title>
+        <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
         <MutationStatus

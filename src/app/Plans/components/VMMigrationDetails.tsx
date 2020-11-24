@@ -200,7 +200,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           </BreadcrumbItem>
           <BreadcrumbItem>{match?.params.planName}</BreadcrumbItem>
         </Breadcrumb>
-        <Title headingLevel="h1">Migration Details by VM</Title>
+        <Title headingLevel="h1">Migration details by VM</Title>
       </PageSection>
       <PageSection>
         {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
