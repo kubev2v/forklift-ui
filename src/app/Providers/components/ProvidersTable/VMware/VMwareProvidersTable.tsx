@@ -19,7 +19,9 @@ import ProviderStatus from '../ProviderStatus';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
-import { ProviderType, VIRT_META } from '@app/common/constants';
+import { ProviderType } from '@app/common/constants';
+import { Link } from 'react-router-dom';
+import { OutlinedHddIcon } from '@patternfly/react-icons';
 
 interface IVMwareProvidersTableProps {
   providers: IVMwareProvider[];
@@ -55,13 +57,6 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     selectAll,
     isItemSelected,
   } = useSelectionState<IVMwareProvider>({ items: sortedItems });
-  const {
-    toggleItemSelected: toggleProviderExpanded,
-    isItemSelected: isItemExpanded,
-  } = useSelectionState<IVMwareProvider>({
-    items: sortedItems,
-    isEqual: (a, b) => a.name === b.name,
-  });
 
   const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
     .map((provider) => `${provider.namespace}/${provider.name}`)
@@ -97,10 +92,8 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   currentPageItems.forEach((provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
     const isSelected = isItemSelected(provider);
-    const isExpanded = isItemExpanded(provider);
     rows.push({
       meta: { provider },
-      isOpen: isExpanded,
       cells: [
         {
           title: (
@@ -118,8 +111,6 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         provider.object.spec.url,
         clusterCount,
         {
-          /*
-          // TODO (post-beta): reintroduce the link to /providers/* when we resolve https://github.com/konveyor/virt-ui/issues/138
           title: (
             <>
               <Link to={`/providers/${provider.name}`}>
@@ -127,8 +118,6 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
               </Link>
             </>
           ),
-          */
-          title: hostCount,
         },
         vmCount,
         networkCount,
@@ -168,9 +157,6 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
-          toggleProviderExpanded(rowData.meta.provider);
-        }}
       >
         <TableHeader />
         <TableBody />

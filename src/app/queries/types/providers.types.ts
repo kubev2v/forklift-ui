@@ -59,21 +59,6 @@ export interface IOpenShiftProvider extends ICommonProvider {
 
 export type Provider = IVMwareProvider | IOpenShiftProvider;
 
-// TODO this structure is speculative. Check with Jeff.
-export interface IHostNetwork {
-  name: string;
-  address: string;
-  isDefault?: boolean;
-}
-
-// TODO this structure is speculative. Check with Jeff.
-export interface IHost {
-  name: string;
-  network: IHostNetwork;
-  bandwidth: string;
-  mtu: number;
-}
-
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];
