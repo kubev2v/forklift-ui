@@ -7,6 +7,7 @@ export let MOCK_VMWARE_VMS: IVMwareVM[] = [];
 MOCK_VMWARE_VMS = [
   {
     id: 'vm-1630',
+    revision: 1,
     parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test-migration',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
@@ -34,9 +35,11 @@ MOCK_VMWARE_VMS = [
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
+    revisionAnalyzed: 1,
   },
   {
     id: 'vm-2844',
+    revision: 1,
     parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
@@ -60,9 +63,11 @@ MOCK_VMWARE_VMS = [
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
+    revisionAnalyzed: 1,
   },
   {
     id: 'vm-1008',
+    revision: 1,
     parent: { kind: 'Folder', id: 'group-v22' },
     name: 'fdupont-test-migration-centos',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
@@ -89,9 +94,11 @@ MOCK_VMWARE_VMS = [
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
+    revisionAnalyzed: 1,
   },
   {
     id: 'vm-2685',
+    revision: 2,
     parent: { kind: 'Folder', id: 'group-v22' },
     name: 'pemcg-discovery01',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2685',
@@ -115,9 +122,11 @@ MOCK_VMWARE_VMS = [
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
+    revisionAnalyzed: 1,
   },
   {
     id: 'vm-431',
+    revision: 1,
     parent: { kind: 'Folder', id: 'group-v22' },
     name: 'pemcg-iscsi-target',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-431',
@@ -148,6 +157,7 @@ MOCK_VMWARE_VMS = [
       },
     ],
     concerns: [{ name: 'Example', severity: 'Warning' }],
+    revisionAnalyzed: 1,
   },
 ];
 // }
