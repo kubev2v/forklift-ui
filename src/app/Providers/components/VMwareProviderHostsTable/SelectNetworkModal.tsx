@@ -78,10 +78,8 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   const form = useSelectNetworkFormState(selectedHosts, hostConfigs, provider);
 
   const commonNetworkAdapters: IHostNetworkAdapter[] = selectedHosts[0].networkAdapters.filter(
-    ({ name, ipAddress }) =>
-      selectedHosts.every((host) =>
-        host.networkAdapters.some((na) => na.name === name && na.ipAddress === ipAddress)
-      )
+    ({ ipAddress }) =>
+      selectedHosts.every((host) => host.networkAdapters.some((na) => na.ipAddress === ipAddress))
   );
 
   const networkOptions = commonNetworkAdapters.map((networkAdapter) => ({
