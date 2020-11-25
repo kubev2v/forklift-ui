@@ -1,4 +1,4 @@
-name: Check yarn ci
+name: PR Tests
 on:
   pull_request:
   push:
