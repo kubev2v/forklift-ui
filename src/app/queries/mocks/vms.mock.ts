@@ -62,7 +62,7 @@ MOCK_VMWARE_VMS = [
         datastore: { kind: 'Datastore', id: '2' },
       },
     ],
-    concerns: [{ name: 'Example', severity: 'Warning' }],
+    concerns: [{ name: 'Example', severity: 'Advisory' }],
     revisionAnalyzed: 1,
   },
   {
@@ -93,7 +93,7 @@ MOCK_VMWARE_VMS = [
         datastore: { kind: 'Datastore', id: '1' },
       },
     ],
-    concerns: [{ name: 'Example', severity: 'Warning' }],
+    concerns: [{ name: 'Example', severity: 'Critical' }],
     revisionAnalyzed: 1,
   },
   {
@@ -156,7 +156,7 @@ MOCK_VMWARE_VMS = [
         datastore: { kind: 'Datastore', id: '3' },
       },
     ],
-    concerns: [{ name: 'Example', severity: 'Warning' }],
+    concerns: [],
     revisionAnalyzed: 1,
   },
 ];
