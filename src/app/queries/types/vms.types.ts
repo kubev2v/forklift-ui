@@ -7,7 +7,7 @@ export interface IVMwareVMDisk {
 
 export interface IVMwareVMConcern {
   name: string;
-  severity: 'Warning' | 'Critical' | 'Advisory' | 'Info';
+  severity: 'Warning' | 'Critical' | 'Advisory';
 }
 
 export interface IVMwareVM {

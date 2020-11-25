@@ -21,7 +21,7 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
     <>
       Conditions have been identified that make this VM a <strong>moderate risk</strong> to migrate.
     </>
-  ) : worstConcern.severity === 'Advisory' || worstConcern.severity === 'Info' ? (
+  ) : worstConcern.severity === 'Advisory' ? (
     <>Conditions have been identified, but they do not affect the migration risk.</>
   ) : null;
   if (vm.revisionAnalyzed < vm.revision) {
