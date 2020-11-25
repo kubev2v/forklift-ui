@@ -7,7 +7,7 @@ on:
 
 jobs:
   tests:
-    name: Yarn CI
+    name: Yarn ci
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
