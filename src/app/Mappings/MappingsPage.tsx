@@ -44,9 +44,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
   return (
     <>
       <PageSection variant="light">
-        <Title headingLevel="h1" size="lg">
-          {mappingType} mappings
-        </Title>
+        <Title headingLevel="h1">{mappingType} mappings</Title>
       </PageSection>
       <PageSection>
         {sufficientProvidersQuery.isLoading || mappingsQuery.isLoading ? (
