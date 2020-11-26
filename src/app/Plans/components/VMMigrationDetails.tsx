@@ -124,6 +124,24 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         return item.completed || '';
       },
     },
+    {
+      key: 'status',
+      title: 'Status',
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'Ok', value: 'Ok' },
+        { key: 'Completed', value: 'Completed' },
+        { key: 'Not Started', value: 'Not Started' },
+        { key: 'On Error', value: 'On Error' },
+        { key: 'In Progress', value: 'In Progress' },
+      ],
+      getItemValue: (item) => {
+        if (!item.started) return 'Not Started';
+        if (item.completed) return 'Completed';
+        if (item.pipeline.find((step) => step.error)) return 'On Error';
+        return 'In Progress';
+      },
+    },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
