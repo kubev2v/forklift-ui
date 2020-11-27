@@ -24,6 +24,14 @@ export const useCreateMigrationMutation = (
         metadata: {
           name: `${plan.metadata.name}-${Date.now()}`,
           namespace: VIRT_META.namespace,
+          ownerReferences: [
+            {
+              apiVersion: plan.apiVersion,
+              kind: plan.kind,
+              name: plan.metadata.name,
+              uid: plan.metadata.uid,
+            },
+          ],
         },
         spec: {
           plan: nameAndNamespace(plan.metadata),
