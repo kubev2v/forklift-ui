@@ -1,3 +1,4 @@
+import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { IVMwareVM } from '@app/queries/types';
 import { TextContent, Text, List, ListItem } from '@patternfly/react-core';
 import * as React from 'react';
@@ -41,7 +42,13 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
             ))}
           </List>
         ) : null}
-        <Text component="p">See the product documentation for more information.</Text>
+        <Text component="p">
+          See the{' '}
+          <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
+            {PRODUCT_DOCO_LINK.label}
+          </a>{' '}
+          for more information.
+        </Text>
       </TextContent>
     );
   }

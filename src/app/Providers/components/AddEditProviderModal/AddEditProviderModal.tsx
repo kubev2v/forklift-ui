@@ -20,7 +20,12 @@ import {
 } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { ProviderType, PROVIDER_TYPE_NAMES, urlSchema } from '@app/common/constants';
+import {
+  PRODUCT_DOCO_LINK,
+  ProviderType,
+  PROVIDER_TYPE_NAMES,
+  urlSchema,
+} from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import {
   getProviderNameSchema,
@@ -259,7 +264,17 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     fieldId="vmware-fingerprint"
                     formGroupProps={{
                       labelIcon: (
-                        <Popover bodyContent="See product documentation for instructions on how to retrieve the fingerprint.">
+                        <Popover
+                          bodyContent={
+                            <div>
+                              See{' '}
+                              <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
+                                {PRODUCT_DOCO_LINK.label}
+                              </a>{' '}
+                              for instructions on how to retrieve the fingerprint.
+                            </div>
+                          }
+                        >
                           <button
                             aria-label="More info for SHA1 Fingerprint field"
                             onClick={(e) => e.preventDefault()}
