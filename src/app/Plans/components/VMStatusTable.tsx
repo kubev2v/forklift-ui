@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex, FlexItem, Text } from '@patternfly/react-core';
+import { Button, Flex, FlexItem, Popover, Text } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -53,7 +53,17 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
       {
         title: <TickingElapsedTime start={step.started} end={step.completed} />,
       },
-      step.error ? `${step.phase}: ${step.error?.reasons}` : step.phase,
+      {
+        title: step.error ? (
+          <Popover headerContent={step.phase} bodyContent={step.error?.reasons}>
+            <Button variant="link" isInline>
+              {step.phase}
+            </Button>
+          </Popover>
+        ) : (
+          step.phase
+        ),
+      },
     ],
   }));
 
