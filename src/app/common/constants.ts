@@ -11,6 +11,11 @@ export const CLOUD_MA_LINK = {
   label: 'cloud.redhat.com',
 };
 
+export const PRODUCT_DOCO_LINK = {
+  href: 'https://access.redhat.com/documentation/en-us/migration_toolkit_for_virtualization/',
+  label: 'product documentation',
+};
+
 export enum ProviderType {
   vsphere = 'vsphere',
   openshift = 'openshift',
