@@ -81,11 +81,16 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     {
       key: 'migrationAnalysis',
       title: 'Migration analysis',
-      type: FilterType.search,
-      placeholderText: 'Filter by migration analysis status ...',
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'Ok', value: 'Ok' },
+        { key: 'Advisory', value: 'Advisory' },
+        { key: 'Warning', value: 'Warning' },
+        { key: 'Critical', value: 'Critical' },
+      ],
       getItemValue: (item) => {
         const worstConcern = getMostSevereVMConcern(item);
-        return worstConcern ? worstConcern.severity : '';
+        return worstConcern ? worstConcern.severity : 'Ok';
       },
     },
     {
