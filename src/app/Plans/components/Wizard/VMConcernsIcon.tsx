@@ -25,9 +25,6 @@ const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   if (worstConcern.severity === 'Warning') {
     return <StatusIcon status={StatusType.Warning} label="Warning" />;
   }
-  if (worstConcern.severity === 'Info') {
-    return <StatusIcon status={StatusType.Info} label="Info" />;
-  }
   if (worstConcern.severity === 'Advisory') {
     return (
       <>

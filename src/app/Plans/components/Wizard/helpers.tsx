@@ -271,12 +271,10 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
   }
   const critical = vm.concerns.find((concern) => concern.severity === 'Critical');
   const warning = vm.concerns.find((concern) => concern.severity === 'Warning');
-  const info = vm.concerns.find(
-    (concern) => concern.severity === 'Info' || concern.severity === 'Advisory'
-  );
+  const advisory = vm.concerns.find((concern) => concern.severity === 'Advisory');
   if (critical) return critical;
   if (warning) return warning;
-  if (info) return info;
+  if (advisory) return advisory;
   // Default to warning if an unexpected severity is found
   return { severity: 'Warning', name: 'Unknown' };
 };
