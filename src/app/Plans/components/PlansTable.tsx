@@ -146,6 +146,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   enum ActionButtonType {
     Start = 'Start',
     Cancel = 'Cancel',
+    Restart = 'Restart',
   }
 
   currentPageItems.forEach((plan: IPlan) => {
@@ -167,6 +168,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
     } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
+      buttonType = ActionButtonType.Restart;
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else if (!plan.status) {
@@ -218,7 +220,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           // TODO: Cancellation is disabled until we have API support.
           //   When it is ready, this condition should just be `title: buttonType ? (`
           title:
-            buttonType && buttonType === ActionButtonType.Start ? (
+            (buttonType && buttonType === ActionButtonType.Start) ||
+            buttonType === ActionButtonType.Restart ? (
               <>
                 <Flex
                   flex={{ default: 'flex_2' }}
@@ -233,7 +236,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                       <Button
                         variant="secondary"
                         onClick={() => {
-                          if (buttonType === ActionButtonType.Start) {
+                          if (
+                            buttonType === ActionButtonType.Start ||
+                            buttonType === ActionButtonType.Restart
+                          ) {
                             createMigration(plan);
                           }
                           if (buttonType === ActionButtonType.Cancel) {
