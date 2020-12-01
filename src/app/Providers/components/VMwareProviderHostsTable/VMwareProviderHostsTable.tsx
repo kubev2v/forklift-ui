@@ -63,7 +63,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       hosts.every((host) => host.networkAdapters.some((na) => na.ipAddress === ipAddress))
     );
 
-  const isCommonNetworkAdapters = () => {
+  const hasCommonNetworkAdapters = () => {
     if (selectedItems.length > 0) {
       return commonNetworkAdapters(selectedItems).length > 0 ? true : false;
     }
@@ -87,7 +87,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       <Level>
         <LevelItem>
           <ConditionalTooltip
-            isTooltipEnabled={!isCommonNetworkAdapters()}
+            isTooltipEnabled={!hasCommonNetworkAdapters()}
             content={
               selectedItems.length === 0
                 ? 'Select at least one host'
@@ -98,7 +98,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
               <Button
                 variant="secondary"
                 onClick={() => setIsSelectNetworkModalOpen(true)}
-                isDisabled={!isCommonNetworkAdapters()}
+                isDisabled={!hasCommonNetworkAdapters()}
               >
                 Select migration network
               </Button>
