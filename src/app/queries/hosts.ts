@@ -61,7 +61,7 @@ export const getExistingHostConfigs = (
   selectedHosts: IHost[],
   allHostConfigs: IHostConfig[],
   provider: IVMwareProvider
-) =>
+): (IHostConfig | undefined)[] =>
   selectedHosts.map((host) =>
     allHostConfigs.find((config) => configMatchesHost(config, host, provider))
   );
@@ -107,7 +107,7 @@ const generateHostConfig = (
     id: host.id,
     ipAddress: values.selectedNetworkAdapter?.ipAddress || '',
     provider: nameAndNamespace(provider),
-    secret: secretRef || {},
+    secret: secretRef || null,
   },
 });
 
