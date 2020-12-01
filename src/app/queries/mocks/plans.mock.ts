@@ -60,10 +60,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
-    error: {
-      phase: '',
-      reasons: [''],
-    },
   };
 
   const vmStatus2: IVMStatus = {
@@ -102,10 +98,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
-    error: {
-      phase: '',
-      reasons: [''],
-    },
   };
 
   const vmStatus3: IVMStatus = {
@@ -140,10 +132,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     completed: '2020-10-10T15:58:43Z',
-    error: {
-      phase: '',
-      reasons: [''],
-    },
   };
 
   const vmStatus4: IVMStatus = {
@@ -173,8 +161,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
         error: {
-          phase: 'Error',
-          reasons: ['Something wrong happened.'],
+          phase: 'ImportCreated',
+          reasons: [
+            'Failed to initialize the source provider (Failed to connect to source provider): Post https://172.31.2.12/sdk: context deadline exceeded',
+          ],
         },
       },
       {
@@ -188,8 +178,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     started: '2020-10-10T14:04:10Z',
     completed: '',
     error: {
-      phase: 'Error',
-      reasons: [''],
+      phase: 'ImageConversion',
+      reasons: [
+        'Failed to initialize the source provider (Failed to connect to source provider): Post https://172.31.2.12/sdk: context deadline exceeded',
+      ],
     },
   };
 
