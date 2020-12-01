@@ -234,6 +234,20 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 inputProps={{
                   isDisabled: !!providerBeingEdited,
                 }}
+                formGroupProps={{
+                  labelIcon: (
+                    <Popover bodyContent="The name to provide on the providers list screen.">
+                      <button
+                        aria-label="More info for name field"
+                        onClick={(e) => e.preventDefault()}
+                        aria-describedby="vmware-name-info"
+                        className="pf-c-form__group-label-help"
+                      >
+                        <HelpIcon noVerticalAlign />
+                      </button>
+                    </Popover>
+                  ),
+                }}
               />
               <ValidatedTextInput
                 field={vmwareForm.fields.hostname}
@@ -295,11 +309,25 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
             <>
               <ValidatedTextInput
                 field={openshiftForm.fields.clusterName}
-                label="Cluster name"
+                label="Name"
                 isRequired
                 fieldId="openshift-cluster-name"
                 inputProps={{
                   isDisabled: !!providerBeingEdited,
+                }}
+                formGroupProps={{
+                  labelIcon: (
+                    <Popover bodyContent="The name to provide on the providers list screen.">
+                      <button
+                        aria-label="More info for name field"
+                        onClick={(e) => e.preventDefault()}
+                        aria-describedby="openshift-cluster-name-info"
+                        className="pf-c-form__group-label-help"
+                      >
+                        <HelpIcon noVerticalAlign />
+                      </button>
+                    </Popover>
+                  ),
                 }}
               />
               <ValidatedTextInput
@@ -307,6 +335,28 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 label="URL"
                 isRequired
                 fieldId="openshift-url"
+                formGroupProps={{
+                  labelIcon: (
+                    <Popover
+                      bodyContent={
+                        <>
+                          The OpenShift cluster API endpoint.
+                          <br />
+                          For example: <i>https://api.clusterName.domain:6443</i>
+                        </>
+                      }
+                    >
+                      <button
+                        aria-label="More info for URL field"
+                        onClick={(e) => e.preventDefault()}
+                        aria-describedby="openshift-cluster-url-info"
+                        className="pf-c-form__group-label-help"
+                      >
+                        <HelpIcon noVerticalAlign />
+                      </button>
+                    </Popover>
+                  ),
+                }}
               />
               {providerBeingEdited ? replaceCredentialsCheckbox : null}
               {!providerBeingEdited || openshiftForm.values.isReplacingCredentials ? (
@@ -316,6 +366,33 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   label="Service account token"
                   isRequired
                   fieldId="openshift-sa-token"
+                  formGroupProps={{
+                    labelIcon: (
+                      <Popover
+                        bodyContent={
+                          <>
+                            To obtain SA token, run the following command:
+                            <br />
+                            <i>
+                              $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
+                            </i>
+                            <br />
+                            <br />
+                            <b>** Be sure to use the namespace in which you created the SA.</b>
+                          </>
+                        }
+                      >
+                        <button
+                          aria-label="More info for service account field"
+                          onClick={(e) => e.preventDefault()}
+                          aria-describedby="service-account-info"
+                          className="pf-c-form__group-label-help"
+                        >
+                          <HelpIcon noVerticalAlign />
+                        </button>
+                      </Popover>
+                    ),
+                  }}
                 />
               ) : null}
             </>
