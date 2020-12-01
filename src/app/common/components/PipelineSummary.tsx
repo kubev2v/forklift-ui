@@ -35,10 +35,9 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     return 'Complete';
   }
   if (status.started && !status.completed) {
-    let title: string;
-    title = status.error?.phase ? `Error - ` : '';
+    let title = status.error ? 'Error' : 'Running';
     if (currentStep?.description) {
-      title = `${title}${[currentStep.description.replace(/\.$/, '')]}`;
+      title = `${title} - ${currentStep.description}`;
     }
     return title;
   }
