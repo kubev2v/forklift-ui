@@ -1,6 +1,13 @@
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
 import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
   return !!conditions.find((condition) => condition.type === type);
@@ -48,7 +55,7 @@ export const findCurrentStep = (
 };
 
 export const formatTimestamp = (timestamp?: string): string =>
-  timestamp ? dayjs(timestamp).format('DD MMM YYYY, HH:mm:ss') : '';
+  timestamp ? dayjs(timestamp).format('DD MMM YYYY, HH:mm:ss z') : '';
 
 const padNum = (num: number) => (num < 10 ? `0${num}` : `${num}`);
 

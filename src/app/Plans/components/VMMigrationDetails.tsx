@@ -23,6 +23,7 @@ import {
   wrappable,
   expandable,
   cellWidth,
+  truncate,
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -165,8 +166,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       transforms: [sortable, wrappable],
       cellFormatters: planStarted ? [expandable] : [],
     },
-    { title: 'Start time', transforms: [sortable] },
-    { title: 'End time', transforms: [sortable] },
+    { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
     { title: 'Data copied', transforms: [sortable] },
     {
       title: 'Status',
