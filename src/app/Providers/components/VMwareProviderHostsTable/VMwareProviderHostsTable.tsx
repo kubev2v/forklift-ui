@@ -16,6 +16,7 @@ import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -85,13 +86,24 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     <>
       <Level>
         <LevelItem>
-          <Button
-            variant="secondary"
-            onClick={() => setIsSelectNetworkModalOpen(true)}
-            isDisabled={!isCommonNetworkAdapters()}
+          <ConditionalTooltip
+            isTooltipEnabled={!isCommonNetworkAdapters()}
+            content={
+              selectedItems.length === 0
+                ? 'Select at least one host'
+                : 'Selected hosts have no network adapters in common'
+            }
           >
-            Select migration network
-          </Button>
+            <div>
+              <Button
+                variant="secondary"
+                onClick={() => setIsSelectNetworkModalOpen(true)}
+                isDisabled={!isCommonNetworkAdapters()}
+              >
+                Select migration network
+              </Button>
+            </div>
+          </ConditionalTooltip>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
