@@ -57,6 +57,18 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     }
   );
 
+  const commonNetworkAdapters = (hosts: IHost[]) =>
+    hosts[0].networkAdapters.filter(({ ipAddress }) =>
+      hosts.every((host) => host.networkAdapters.some((na) => na.ipAddress === ipAddress))
+    );
+
+  const isCommonNetworkAdapters = () => {
+    if (selectedItems.length > 0) {
+      return commonNetworkAdapters(selectedItems).length > 0 ? true : false;
+    }
+    return false;
+  };
+
   const rows: IRow[] = sortedItems.map((host: IHost) => ({
     meta: { host },
     selected: isItemSelected(host),
@@ -76,7 +88,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
           <Button
             variant="secondary"
             onClick={() => setIsSelectNetworkModalOpen(true)}
-            isDisabled={selectedItems.length === 0}
+            isDisabled={!isCommonNetworkAdapters()}
           >
             Select migration network
           </Button>
@@ -105,6 +117,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       {isSelectNetworkModalOpen && (
         <SelectNetworkModal
           selectedHosts={selectedItems}
+          commonNetworkAdapters={commonNetworkAdapters(selectedItems)}
           hostConfigs={hostConfigs}
           provider={provider as IVMwareProvider}
           onClose={() => setIsSelectNetworkModalOpen(false)}

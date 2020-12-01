@@ -21,6 +21,7 @@ interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
   hostConfigs: IHostConfig[];
   provider: IVMwareProvider;
+  commonNetworkAdapters: IHostNetworkAdapter[];
   onClose: () => void;
 }
 
@@ -66,6 +67,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   hostConfigs,
   provider,
+  commonNetworkAdapters,
   onClose,
 }: ISelectNetworkModalProps) => {
   const [configureHosts, configureHostsResult] = useConfigureHostsMutation(
@@ -76,11 +78,6 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   );
 
   const form = useSelectNetworkFormState(selectedHosts, hostConfigs, provider);
-
-  const commonNetworkAdapters: IHostNetworkAdapter[] = selectedHosts[0].networkAdapters.filter(
-    ({ ipAddress }) =>
-      selectedHosts.every((host) => host.networkAdapters.some((na) => na.ipAddress === ipAddress))
-  );
 
   const networkOptions = commonNetworkAdapters.map((networkAdapter) => ({
     toString: () => formatHostNetworkAdapter(networkAdapter),
