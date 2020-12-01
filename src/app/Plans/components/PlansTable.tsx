@@ -93,9 +93,22 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     {
       key: 'status',
       title: 'Status',
-      type: FilterType.search,
-      placeholderText: 'Filter state...',
-      getItemValue: getPlanStatusTitle,
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'Failed', value: 'Failed' },
+        { key: 'Ready', value: 'Ready' },
+        { key: 'Running', value: 'Running' },
+        { key: 'Succeeded', value: 'Succeeded' },
+      ],
+      getItemValue: (item) => {
+        if (item.status?.conditions) {
+          if (hasCondition(item.status.conditions, PlanStatusAPIType.Failed)) return 'Failed';
+          if (hasCondition(item.status.conditions, PlanStatusAPIType.Ready)) return 'Ready';
+          if (hasCondition(item.status.conditions, PlanStatusAPIType.Executing)) return 'Running';
+          if (hasCondition(item.status.conditions, PlanStatusAPIType.Succeeded)) return 'Succeeded';
+        }
+        return '';
+      },
     },
   ];
 
