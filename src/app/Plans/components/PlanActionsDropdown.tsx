@@ -7,6 +7,7 @@ import { PlanStatusAPIType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { useDeletePlanMutation } from '@app/queries';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -30,28 +31,46 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          <DropdownItem
-            isDisabled={!!plan.status?.migration?.started}
-            onClick={() => {
-              setKebabIsOpen(false);
-              history.push(`/plans/${plan.metadata.name}/edit`);
-            }}
-            key="Edit"
+          <ConditionalTooltip
+            key="edit"
+            isTooltipEnabled={!!plan.status?.migration?.started}
+            content={'This plan cannot be edited because it has been started'}
           >
-            Edit
-          </DropdownItem>,
-          <DropdownItem
-            isDisabled={
+            <DropdownItem
+              isDisabled={!!plan.status?.migration?.started}
+              onClick={() => {
+                setKebabIsOpen(false);
+                history.push(`/plans/${plan.metadata.name}/edit`);
+              }}
+            >
+              Edit
+            </DropdownItem>
+          </ConditionalTooltip>,
+          <ConditionalTooltip
+            key="Delete"
+            isTooltipEnabled={
               hasCondition(conditions, PlanStatusAPIType.Executing) || deletePlanResult.isLoading
             }
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleDeleteModal();
-            }}
-            key="Delete"
+            content={
+              hasCondition(conditions, PlanStatusAPIType.Executing)
+                ? 'This plan cannot be deleted because it is running'
+                : deletePlanResult.isLoading
+                ? 'This plan cannot be deleted because it is deleting'
+                : ''
+            }
           >
-            Delete
-          </DropdownItem>,
+            <DropdownItem
+              isDisabled={
+                hasCondition(conditions, PlanStatusAPIType.Executing) || deletePlanResult.isLoading
+              }
+              onClick={() => {
+                setKebabIsOpen(false);
+                toggleDeleteModal();
+              }}
+            >
+              Delete
+            </DropdownItem>
+          </ConditionalTooltip>,
         ]}
         position={DropdownPosition.right}
       />
