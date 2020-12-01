@@ -129,7 +129,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       title: 'Status',
       type: FilterType.select,
       selectOptions: [
-        { key: 'Ok', value: 'Ok' },
         { key: 'Completed', value: 'Completed' },
         { key: 'Not Started', value: 'Not Started' },
         { key: 'On Error', value: 'On Error' },
