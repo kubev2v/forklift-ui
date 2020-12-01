@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import advancedFormat from 'dayjs-ext/plugin/advancedFormat';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
