@@ -56,7 +56,7 @@ export interface IHostConfig extends ICR {
     id: string;
     ipAddress: string;
     provider: INameNamespaceRef;
-    secret?: Partial<INameNamespaceRef>;
+    secret?: INameNamespaceRef | null;
     thumbprint?: string;
   };
   status?: {
