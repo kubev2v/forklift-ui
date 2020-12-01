@@ -4,7 +4,7 @@ export interface IMetaTypeMeta {
   kind: string;
 }
 
-interface objectReference {
+interface IObjectReference {
   apiVersion: string;
   kind: string;
   name: string;
@@ -23,7 +23,7 @@ export interface IMetaObjectMeta {
   annotations?: {
     'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
   };
-  ownerReferences?: objectReference[];
+  ownerReferences?: IObjectReference[];
 }
 
 export interface ICR extends IMetaTypeMeta {
