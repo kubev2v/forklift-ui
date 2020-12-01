@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs-ext/plugin/advancedFormat';
-import timeZone from 'dayjs-ext/plugin/timeZone';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
 import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
-dayjs.extend(timeZone);
 
 export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
   return !!conditions.find((condition) => condition.type === type);
