@@ -53,9 +53,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             }
             content={
               hasCondition(conditions, PlanStatusAPIType.Executing)
-                ? "This plan cannot be deleted because it's running"
+                ? 'This plan cannot be deleted because it is running'
                 : deletePlanResult.isLoading
-                ? "This plan cannot be deleted because it's deleting"
+                ? 'This plan cannot be deleted because it is deleting'
                 : ''
             }
           >
