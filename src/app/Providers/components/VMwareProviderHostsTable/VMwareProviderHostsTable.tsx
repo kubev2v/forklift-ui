@@ -16,6 +16,7 @@ import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -57,6 +58,15 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     }
   );
 
+  const commonNetworkAdapters =
+    selectedItems.length > 0
+      ? selectedItems[0].networkAdapters.filter(({ ipAddress }) =>
+          selectedItems.every((host) =>
+            host.networkAdapters.some((na) => na.ipAddress === ipAddress)
+          )
+        )
+      : [];
+
   const rows: IRow[] = sortedItems.map((host: IHost) => ({
     meta: { host },
     selected: isItemSelected(host),
@@ -73,13 +83,24 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     <>
       <Level>
         <LevelItem>
-          <Button
-            variant="secondary"
-            onClick={() => setIsSelectNetworkModalOpen(true)}
-            isDisabled={selectedItems.length === 0}
+          <ConditionalTooltip
+            isTooltipEnabled={commonNetworkAdapters.length === 0}
+            content={
+              selectedItems.length === 0
+                ? 'Select at least one host'
+                : 'Selected hosts have no network adapters in common'
+            }
           >
-            Select migration network
-          </Button>
+            <div>
+              <Button
+                variant="secondary"
+                onClick={() => setIsSelectNetworkModalOpen(true)}
+                isDisabled={commonNetworkAdapters.length === 0}
+              >
+                Select migration network
+              </Button>
+            </div>
+          </ConditionalTooltip>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
@@ -105,6 +126,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       {isSelectNetworkModalOpen && (
         <SelectNetworkModal
           selectedHosts={selectedItems}
+          commonNetworkAdapters={commonNetworkAdapters}
           hostConfigs={hostConfigs}
           provider={provider as IVMwareProvider}
           onClose={() => setIsSelectNetworkModalOpen(false)}
