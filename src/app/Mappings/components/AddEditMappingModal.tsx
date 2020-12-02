@@ -36,7 +36,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
-import MutationStatus from '@app/common/components/MutationStatus';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 import { QueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
@@ -144,7 +144,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus
+          <QueryResultStatus
             results={[mutationResult]}
             errorTitles={[`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`]}
           />

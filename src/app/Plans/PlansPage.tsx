@@ -21,7 +21,7 @@ import {
 import PlansTable from './components/PlansTable';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
-import MutationStatus from '@app/common/components/MutationStatus';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 import { IPlan } from '@app/queries/types';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
@@ -68,7 +68,7 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
-        <MutationStatus
+        <QueryResultStatus
           results={[createMigrationResult]}
           errorTitles={[`Error starting migration for plan: ${planBeingStarted?.metadata.name}`]}
           isInline={false}

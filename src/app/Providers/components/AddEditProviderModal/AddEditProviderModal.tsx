@@ -36,7 +36,7 @@ import {
   usePatchProviderMutation,
   useProvidersQuery,
 } from '@app/queries';
-import MutationStatus from '@app/common/components/MutationStatus';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 import './AddEditProviderModal.css';
 import { IProvidersByType, Provider } from '@app/queries/types';
@@ -165,7 +165,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus
+          <QueryResultStatus
             results={[mutateProviderResult]}
             errorTitles={[`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`]}
           />
