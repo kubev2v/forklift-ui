@@ -12,10 +12,8 @@ import {
   Title,
   PageHeaderTools,
 } from '@patternfly/react-core';
-import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
-import { APP_TITLE, CLOUD_MA_LINK } from '@app/common/constants';
+import { APP_TITLE } from '@app/common/constants';
 import logoRedHat from './logoRedHat.svg';
 import logoKonveyor from './logoKonveyor.svg';
 import { APP_BRAND, BrandType } from '@app/global-flags';
@@ -93,10 +91,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           (route, idx) =>
             route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
         )}
+        {/* TODO restore this after https://github.com/konveyor/virt-ui/issues/281 is settled
         <NavItem onClick={() => window.open(CLOUD_MA_LINK.href, '_blank')}>
           {CLOUD_MA_LINK.label}{' '}
           <ExternalLinkAltIcon className={spacing.mlSm} height="0.8em" width="0.8em" />
         </NavItem>
+        */}
       </NavList>
     </Nav>
   );
