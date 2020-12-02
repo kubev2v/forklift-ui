@@ -20,11 +20,11 @@ try {
 // Helpers
 
 function setupOAuthClient() {
-  const virtMeta = helpers.getDevVirtMeta();
-  const oauthRedirectUri = `http://localhost:${virtMeta.devServerPort}/login/callback`;
+  const meta = helpers.getDevMeta();
+  const oauthRedirectUri = `http://localhost:${meta.devServerPort}/login/callback`;
 
   const oauthClientName = 'mig-ui';
-  const remoteDevSecret = virtMeta.oauth.clientSecret;
+  const remoteDevSecret = meta.oauth.clientSecret;
 
   try {
     console.log(`Checking to see if ${oauthClientName} oauthclient exists in cluster...`);

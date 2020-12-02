@@ -135,11 +135,11 @@ module.exports = (env) => {
       new HtmlWebpackPlugin(
         env === 'development' || process.env.DATA_SOURCE === 'mock'
           ? {
-              // In dev and mock-prod modes, populate window._virt_meta at build time
+              // In dev and mock-prod modes, populate window._meta at build time
               filename: 'index.html',
               template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
-                _virt_meta: helpers.sanitizeAndEncodeVirtMeta(helpers.getDevVirtMeta()),
+                _meta: helpers.sanitizeAndEncodeMeta(helpers.getDevMeta()),
               },
             }
           : {

@@ -17,7 +17,7 @@ LABEL name="konveyor/forklift-ui" \
       maintainer="mturley@redhat.com,gdubreui@redhat.com,ibolton@redhat.com" \
       summary="Konveyor for Virtualization - User Interface" \
       url="https://quay.io/repository/konveyor/forklift-ui" \
-      usage="podman run -p 8080 -v /etc/forklift-ui/virtMeta.json:/etc/forklift-ui/virtMeta.json konveyor/forklift-ui:latest" \
+      usage="podman run -p 8080 -v /etc/forklift-ui/meta.json:/etc/forklift-ui/meta.json konveyor/forklift-ui:latest" \
       com.redhat.component="konveyor-forklift-ui-container" \
       io.k8s.display-name="forklift-ui" \
       io.k8s.description="Konveyor for Virtualization - User Interface" \
@@ -33,6 +33,6 @@ COPY --from=builder /forklift-ui/dist/index.html.ejs /opt/app-root/src/views/ind
 COPY --from=builder /forklift-ui/node_modules /opt/app-root/src/node_modules
 COPY --from=builder /forklift-ui/package.json /opt/app-root/src
 
-ENV VIRTMETA_FILE="/etc/forklift-ui/virtMeta.json"
+ENV META_FILE="/etc/forklift-ui/meta.json"
 
 ENTRYPOINT ["npm", "run", "-d", "start"]

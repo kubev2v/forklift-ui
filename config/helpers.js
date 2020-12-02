@@ -2,21 +2,21 @@
 const path = require('path');
 const fs = require('fs');
 
-const sanitizeVirtMeta = (virtMeta) => {
-  const oauthCopy = { ...virtMeta.oauth };
+const sanitizeMeta = (meta) => {
+  const oauthCopy = { ...meta.oauth };
   // delete oauthCopy.clientSecret;
-  return { ...virtMeta, oauth: oauthCopy };
+  return { ...meta, oauth: oauthCopy };
 };
 
-const localConfigFileName = 'virtMeta.dev.json';
+const localConfigFileName = 'meta.dev.json';
 
-const getDevVirtMeta = () => {
+const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
   const configPath = path.join(__dirname, localConfigFileName);
   if (!fs.existsSync(configPath)) {
-    console.error('ERROR: config/virtMeta.dev.json is missing');
+    console.error('ERROR: config/meta.dev.json is missing');
     console.error(
-      'Copy config/virtMeta.dev.json.example to config/virtMeta.dev.json' +
+      'Copy config/meta.dev.json.example to config/meta.dev.json' +
         ' and optionally configure your dev settings. A valid clusterUrl is ' +
         ' required for start:remote.'
     );
@@ -25,7 +25,7 @@ const getDevVirtMeta = () => {
   return JSON.parse(fs.readFileSync(configPath));
 };
 
-const sanitizeAndEncodeVirtMeta = (virtMeta) =>
-  Buffer.from(JSON.stringify(sanitizeVirtMeta(virtMeta))).toString('base64');
+const sanitizeAndEncodeMeta = (meta) =>
+  Buffer.from(JSON.stringify(sanitizeMeta(meta))).toString('base64');
 
-module.exports = { getDevVirtMeta, sanitizeAndEncodeVirtMeta };
+module.exports = { getDevMeta, sanitizeAndEncodeMeta };

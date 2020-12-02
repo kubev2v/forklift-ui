@@ -4,22 +4,22 @@ const fetch = require('node-fetch');
 
 let cachedOAuthMeta = null;
 
-const getOAuthMeta = async (virtMeta) => {
+const getOAuthMeta = async (meta) => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${virtMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${meta.clusterApi}/.well-known/oauth-authorization-server`;
   const res = await fetch(oAuthMetaUrl).then((res) => res.json());
   cachedOAuthMeta = res;
   return cachedOAuthMeta;
 };
 
-const getClusterAuth = async (virtMeta) => {
-  const oAuthMeta = await getOAuthMeta(virtMeta);
+const getClusterAuth = async (meta) => {
+  const oAuthMeta = await getOAuthMeta(meta);
   return new AuthorizationCode({
     client: {
-      id: virtMeta.oauth.clientId,
-      secret: virtMeta.oauth.clientSecret,
+      id: meta.oauth.clientId,
+      secret: meta.oauth.clientSecret,
     },
     auth: {
       tokenHost: oAuthMeta.token_endpoint,

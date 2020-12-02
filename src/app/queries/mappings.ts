@@ -20,8 +20,8 @@ import {
 } from './helpers';
 import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
 import { useDatastoresQuery } from './datastores';
-import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
-import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
+import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
+import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
@@ -29,8 +29,10 @@ import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
-    mappingType === MappingType.Network ? VirtResourceKind.NetworkMap : VirtResourceKind.StorageMap;
-  const resource = new VirtResource(kind, VIRT_META.namespace);
+    mappingType === MappingType.Network
+      ? ForkliftResourceKind.NetworkMap
+      : ForkliftResourceKind.StorageMap;
+  const resource = new ForkliftResource(kind, META.namespace);
   return { kind, resource };
 };
 

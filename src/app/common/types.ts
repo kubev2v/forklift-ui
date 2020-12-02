@@ -1,4 +1,4 @@
-export interface IVirtMetaVars {
+export interface IMetaVars {
   clusterApi: string;
   devServerPort: string;
   oauth: {

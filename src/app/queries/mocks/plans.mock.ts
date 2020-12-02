@@ -193,7 +193,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
-      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-1',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-1',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -254,7 +255,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
-      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -294,7 +296,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825023',
-      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-3',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-3',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -339,7 +342,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
-      selfLink: '/apis/virt.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-4',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-4',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },

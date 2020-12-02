@@ -1,4 +1,4 @@
-import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { IHost, IHostConfig } from '../types/hosts.types';
 import { MOCK_PROVIDERS } from './providers.mock';
@@ -187,7 +187,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       kind: 'Host',
       metadata: {
         name: `host-${host1.id}-config`,
-        namespace: VIRT_META.namespace,
+        namespace: META.namespace,
       },
       spec: {
         id: host1.id,

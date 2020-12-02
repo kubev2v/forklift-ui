@@ -23,7 +23,7 @@ import {
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
-  VirtResourceKind,
+  ForkliftResourceKind,
   providerResource,
   secretResource,
   convertFormValuesToProvider,
@@ -68,11 +68,15 @@ export const useCreateProviderMutation = (
     );
     await checkIfResourceExists(
       client,
-      VirtResourceKind.Provider,
+      ForkliftResourceKind.Provider,
       providerResource,
       providerWithoutSecret.metadata.name
     );
-    const secret: INewSecret = convertFormValuesToSecret(values, VirtResourceKind.Provider, null);
+    const secret: INewSecret = convertFormValuesToSecret(
+      values,
+      ForkliftResourceKind.Provider,
+      null
+    );
 
     const providerAddResults: Array<IKubeResponse<INewSecret | ICommonProviderObject>> = [];
     const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
@@ -188,7 +192,7 @@ export const usePatchProviderMutation = (
     if (values.isReplacingCredentials) {
       const secret = convertFormValuesToSecret(
         values,
-        VirtResourceKind.Provider,
+        ForkliftResourceKind.Provider,
         providerBeingEdited
       );
       await client.patch(secretResource, secret.metadata.name || '', secret);

@@ -14,10 +14,10 @@ import { IHost, IHostConfig, INameNamespaceRef, INewSecret, IVMwareProvider } fr
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
 import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProviderHostsTable/SelectNetworkModal';
-import { secretResource, VirtResource, VirtResourceKind } from '@app/client/helpers';
-import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { secretResource, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 
-export const hostConfigResource = new VirtResource(VirtResourceKind.Host, VIRT_META.namespace);
+export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
 // TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHost[]> => {
@@ -80,10 +80,10 @@ const generateSecret = (
   metadata: {
     ...(secretBeingReusedRef || {
       generateName: `${provider.name}-`,
-      namespace: VIRT_META.namespace,
+      namespace: META.namespace,
     }),
     labels: {
-      createdForResourceType: VirtResourceKind.Provider,
+      createdForResourceType: ForkliftResourceKind.Provider,
       createdForResource: provider.name,
     },
   },
@@ -101,7 +101,7 @@ const generateHostConfig = (
   kind: 'Host',
   metadata: existingConfig?.metadata || {
     name: `host-${host.id}-config`,
-    namespace: VIRT_META.namespace,
+    namespace: META.namespace,
   },
   spec: {
     id: host.id,

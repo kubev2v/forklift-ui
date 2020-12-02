@@ -1,4 +1,4 @@
-import { VIRT_META } from '@app/common/constants';
+import { META } from '@app/common/constants';
 import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
 import { QueryFunction, MutateFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
@@ -26,7 +26,7 @@ export const authorizedFetch = async <T>(
   try {
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${VIRT_META.oauth.clientSecret}`,
+        Authorization: `Bearer ${META.oauth.clientSecret}`,
         ...extraHeaders,
       },
     });

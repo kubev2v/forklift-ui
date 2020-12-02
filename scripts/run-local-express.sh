@@ -1,6 +1,6 @@
 #!/bin/bash
 _dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export VIRTMETA_FILE="$_dir/../config/virtMeta.dev.json"
+export META_FILE="$_dir/../config/meta.dev.json"
 export STATIC_DIR="$_dir/../dist"
 mkdir -p "$STATIC_DIR"
 cd $_dir/..

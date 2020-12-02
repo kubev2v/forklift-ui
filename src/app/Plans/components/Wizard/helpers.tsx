@@ -21,7 +21,7 @@ import {
   getMappingFromBuilderItems,
 } from '@app/Mappings/components/MappingBuilder/helpers';
 import { PlanWizardFormState } from './PlanWizard';
-import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
@@ -315,7 +315,7 @@ export const generatePlan = (
   kind: 'Plan',
   metadata: {
     name: forms.general.values.planName,
-    namespace: VIRT_META.namespace,
+    namespace: META.namespace,
   },
   spec: {
     description: forms.general.values.planDescription,

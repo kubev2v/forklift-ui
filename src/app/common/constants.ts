@@ -1,10 +1,10 @@
 import * as yup from 'yup';
 
-import { IVirtMetaVars } from './types';
+import { IMetaVars } from './types';
 
 export const APP_TITLE = 'Migration Toolkit for Virtualization';
 
-export const CLUSTER_API_VERSION = 'virt.konveyor.io/v1alpha1';
+export const CLUSTER_API_VERSION = 'forklift.konveyor.io/v1alpha1';
 
 export const CLOUD_MA_LINK = {
   href: 'https://cloud.redhat.com/migrations/migration-analytics',
@@ -58,9 +58,9 @@ export const PROVIDER_TYPE_NAMES = {
 export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
 export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
-export const VIRT_META: IVirtMetaVars =
+export const META: IMetaVars =
   process.env.DATA_SOURCE !== 'mock'
-    ? window['_virt_meta']
+    ? window['_meta']
     : {
         clusterApi: '/mock/api',
         devServerPort: 'mock-port',
