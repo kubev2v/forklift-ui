@@ -58,17 +58,14 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     }
   );
 
-  const commonNetworkAdapters = (hosts: IHost[]) =>
-    hosts[0].networkAdapters.filter(({ ipAddress }) =>
-      hosts.every((host) => host.networkAdapters.some((na) => na.ipAddress === ipAddress))
-    );
-
-  const hasCommonNetworkAdapters = () => {
-    if (selectedItems.length > 0) {
-      return commonNetworkAdapters(selectedItems).length > 0 ? true : false;
-    }
-    return false;
-  };
+  const commonNetworkAdapters =
+    selectedItems.length > 0
+      ? selectedItems[0].networkAdapters.filter(({ ipAddress }) =>
+          selectedItems.every((host) =>
+            host.networkAdapters.some((na) => na.ipAddress === ipAddress)
+          )
+        )
+      : [];
 
   const rows: IRow[] = sortedItems.map((host: IHost) => ({
     meta: { host },
@@ -87,7 +84,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       <Level>
         <LevelItem>
           <ConditionalTooltip
-            isTooltipEnabled={!hasCommonNetworkAdapters()}
+            isTooltipEnabled={commonNetworkAdapters.length === 0}
             content={
               selectedItems.length === 0
                 ? 'Select at least one host'
@@ -98,7 +95,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
               <Button
                 variant="secondary"
                 onClick={() => setIsSelectNetworkModalOpen(true)}
-                isDisabled={!hasCommonNetworkAdapters()}
+                isDisabled={commonNetworkAdapters.length === 0}
               >
                 Select migration network
               </Button>
@@ -129,7 +126,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       {isSelectNetworkModalOpen && (
         <SelectNetworkModal
           selectedHosts={selectedItems}
-          commonNetworkAdapters={commonNetworkAdapters(selectedItems)}
+          commonNetworkAdapters={commonNetworkAdapters}
           hostConfigs={hostConfigs}
           provider={provider as IVMwareProvider}
           onClose={() => setIsSelectNetworkModalOpen(false)}
