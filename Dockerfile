@@ -33,6 +33,6 @@ COPY --from=builder /forklift-ui/dist/index.html.ejs /opt/app-root/src/views/ind
 COPY --from=builder /forklift-ui/node_modules /opt/app-root/src/node_modules
 COPY --from=builder /forklift-ui/package.json /opt/app-root/src
 
-ENV VIRTMETA_FILE="/etc/forklift-ui/virtMeta.json"
+ENV META_FILE="/etc/forklift-ui/virtMeta.json"
 
 ENTRYPOINT ["npm", "run", "-d", "start"]

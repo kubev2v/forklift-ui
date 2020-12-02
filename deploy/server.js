@@ -14,7 +14,7 @@ let virtMetaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
   virtMetaStr = '{ "oauth": {} }';
 } else {
-  const virtMetaFile = process.env['VIRTMETA_FILE'] || '/srv/virtMeta.json';
+  const virtMetaFile = process.env['META_FILE'] || '/srv/virtMeta.json';
   virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
 }
 
