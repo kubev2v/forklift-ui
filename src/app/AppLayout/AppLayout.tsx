@@ -91,7 +91,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           (route, idx) =>
             route.label && (!route.routes ? renderNavItem(route, idx) : renderNavGroup(route, idx))
         )}
-        {/* TODO restore this after https://github.com/konveyor/virt-ui/issues/281 is settled
+        {/* TODO restore this after https://github.com/konveyor/forklift-ui/issues/281 is settled
         <NavItem onClick={() => window.open(CLOUD_MA_LINK.href, '_blank')}>
           {CLOUD_MA_LINK.label}{' '}
           <ExternalLinkAltIcon className={spacing.mlSm} height="0.8em" width="0.8em" />
