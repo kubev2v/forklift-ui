@@ -236,7 +236,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 }}
                 formGroupProps={{
                   labelIcon: (
-                    <Popover bodyContent="The name to provide on the providers list screen.">
+                    <Popover bodyContent="User specified name that will be displayed in the UI.">
                       <button
                         aria-label="More info for name field"
                         onClick={(e) => e.preventDefault()}
@@ -317,7 +317,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 }}
                 formGroupProps={{
                   labelIcon: (
-                    <Popover bodyContent="The name to provide on the providers list screen.">
+                    <Popover bodyContent="User specified name that will be displayed in the UI.">
                       <button
                         aria-label="More info for name field"
                         onClick={(e) => e.preventDefault()}
@@ -340,7 +340,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     <Popover
                       bodyContent={
                         <>
-                          The OpenShift cluster API endpoint.
+                          OpenShift cluster API endpoint.
                           <br />
                           For example: <i>https://api.clusterName.domain:6443</i>
                         </>
