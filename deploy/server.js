@@ -146,8 +146,8 @@ app.get('*', (_, res) => {
 
 if (process.env['NODE_ENV'] !== 'development' && process.env['DATA_SOURCE'] !== 'mock') {
   const options = {
-    key: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.key'),
-    cert: fs.readFileSync('/var/run/secrets/migration-ui-tls/tls.crt'),
+    key: fs.readFileSync('/var/run/secrets/forklift-ui-serving-cert/tls.key'),
+    cert: fs.readFileSync('/var/run/secrets/forklift-ui-serving-cert/tls.crt'),
   };
   https.createServer(options, app).listen(8443);
 } else {
