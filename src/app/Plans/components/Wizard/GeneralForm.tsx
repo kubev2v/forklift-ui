@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Form, FormGroup, Spinner, TextArea, Title } from '@patternfly/react-core';
+import { Form, FormGroup, Spinner, TextArea, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
@@ -9,6 +9,7 @@ import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -29,7 +30,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     return <LoadingEmptyState />;
   }
   if (providersQuery.isError) {
-    return <Alert variant="danger" isInline title="Error loading providers" />;
+    return <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />;
   }
 
   const sourceProvidersOptions = Object.values(vmwareProviders).map((provider) => ({
@@ -118,7 +119,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         {namespacesQuery.isLoading ? (
           <Spinner size="lg" className={spacing.mXs} />
         ) : namespacesQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading namespaces" />
+          <QueryResultStatus result={namespacesQuery} errorTitle="Error loading namespaces" />
         ) : (
           <SimpleSelect
             variant="typeahead"

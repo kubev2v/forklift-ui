@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 import {
-  Alert,
   Breadcrumb,
   BreadcrumbItem,
   Level,
@@ -50,6 +49,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -134,11 +134,13 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const { prefillQueryStatus, prefillQueryError, isDonePrefilling } = useEditingPlanPrefillEffect(
-    forms,
-    planBeingEdited,
-    !!editRouteMatch
-  );
+  const {
+    prefillQueryStatus,
+    prefillQueryError,
+    isDonePrefilling,
+    prefillQueries,
+    prefillErrorTitles,
+  } = useEditingPlanPrefillEffect(forms, planBeingEdited, !!editRouteMatch);
 
   enum StepId {
     General = 1,
@@ -313,24 +315,20 @@ const PlanWizard: React.FunctionComponent = () => {
     },
   ];
 
-  if (
-    plansQuery.isLoading ||
-    networkMappingsQuery.isLoading ||
-    storageMappingsQuery.isLoading ||
-    prefillQueryStatus === QueryStatus.Loading ||
-    !isDonePrefilling
-  ) {
+  const allQueries = [plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries];
+  const allErrorTitles = [
+    'Error loading plans',
+    'Error loading network mappings',
+    'Error loading storage mappings',
+    ...prefillErrorTitles,
+  ];
+  const allQueriesStatus = getAggregateQueryStatus(allQueries);
+
+  if (allQueriesStatus === QueryStatus.Loading || !isDonePrefilling) {
     return <LoadingEmptyState />;
   }
-  if (plansQuery.isError) {
-    return <Alert variant="danger" title="Error loading plans" />;
-  }
-  if (networkMappingsQuery.isError || storageMappingsQuery.isError) {
-    return <Alert variant="danger" title="Error loading mappings" />;
-  }
-  if (prefillQueryStatus === QueryStatus.Error) {
-    console.log('TODO: report prefilling error:', prefillQueryError);
-    return <Alert variant="danger" title="Error pre-filling existing plan" />;
+  if (allQueriesStatus === QueryStatus.Error) {
+    return <QueryResultStatuses results={allQueries} errorTitles={allErrorTitles} />;
   }
 
   if (editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started)) {

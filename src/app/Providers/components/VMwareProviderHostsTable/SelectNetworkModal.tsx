@@ -94,10 +94,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <QueryResultStatus
-            results={[configureHostsResult]}
-            errorTitles={['Error configuring hosts']}
-          />
+          <QueryResultStatus result={configureHostsResult} errorTitle="Error configuring hosts" />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="confirm"

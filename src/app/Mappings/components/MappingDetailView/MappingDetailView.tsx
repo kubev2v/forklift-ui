@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Grid, GridItem } from '@patternfly/react-core';
+import { Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
@@ -10,6 +10,8 @@ import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TruncatedText from '@app/common/components/TruncatedText';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -36,13 +38,24 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   if (providersQuery.isLoading || mappingResourceQueries.isLoading) {
     return <LoadingEmptyState className={className} />;
   }
-  if (providersQuery.isError || mappingResourceQueries.isError) {
+  if (providersQuery.isError) {
     return (
-      <Alert
+      <QueryResultStatus
+        result={providersQuery}
+        errorTitle="Error loading providers"
         className={className}
-        isInline
-        variant="danger"
-        title="Error loading mapping resources"
+      />
+    );
+  }
+  if (mappingResourceQueries.isError) {
+    return (
+      <QueryResultStatuses
+        results={mappingResourceQueries.queries}
+        errorTitles={[
+          'Error loading source provider resources',
+          'Error loading target provider resources',
+        ]}
+        className={className}
       />
     );
   }

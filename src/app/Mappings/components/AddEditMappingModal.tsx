@@ -7,7 +7,6 @@ import {
   FormGroup,
   Grid,
   GridItem,
-  Alert,
   Stack,
   Flex,
 } from '@patternfly/react-core';
@@ -36,10 +35,11 @@ import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
 import { QueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -145,8 +145,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       footer={
         <Stack hasGutter>
           <QueryResultStatus
-            results={[mutationResult]}
-            errorTitles={[`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`]}
+            result={mutationResult}
+            errorTitle={`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -184,7 +184,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         {providersQuery.isLoading || !isDonePrefilling ? (
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
+          <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />
         ) : (
           <>
             <Grid className={spacing.mbMd}>
@@ -258,7 +258,13 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (
-                <Alert variant="danger" isInline title="Error loading mapping resources" />
+                <QueryResultStatuses
+                  results={mappingResourceQueries.queries}
+                  errorTitles={[
+                    'Error loading source provider resources',
+                    'Error loading target provider resources',
+                  ]}
+                />
               ) : (
                 <MappingBuilder
                   mappingType={mappingType}

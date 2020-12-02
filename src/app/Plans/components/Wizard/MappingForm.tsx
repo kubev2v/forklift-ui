@@ -9,7 +9,6 @@ import {
   FormGroup,
   Flex,
   FlexItem,
-  Alert,
   Select,
   SelectOption,
   SelectGroup,
@@ -39,6 +38,7 @@ import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
 import { QueryStatus } from 'react-query';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -142,11 +142,17 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
     return <LoadingEmptyState />;
   }
-  if (mappingResourceQueries.isError) {
-    return <Alert variant="danger" title="Error loading mapping resources" />;
-  }
-  if (mappingsQuery.isError) {
-    return <Alert variant="danger" title="Error loading mappings" />;
+  if (mappingResourceQueries.isError || mappingsQuery.isError) {
+    return (
+      <QueryResultStatuses
+        results={[...mappingResourceQueries.queries, mappingsQuery]}
+        errorTitles={[
+          'Error loading source provider resources',
+          'Error loading target provider resources',
+          'Error loading mappings',
+        ]}
+      />
+    );
   }
 
   return (

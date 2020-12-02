@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -33,6 +33,7 @@ import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -47,7 +48,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 }: ISelectVMsFormProps) => {
   const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
   const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
-  const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
@@ -251,14 +251,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     */
   });
 
-  if (treeQueriesStatus === QueryStatus.Loading || vmsQuery.isLoading) {
+  const allQueries = [hostTreeQuery, vmTreeQuery, vmsQuery];
+  const allErrorTitles = [
+    'Error loading VMware host tree data',
+    'Error loading VMware VM tree data',
+    'Error loading VMs',
+  ];
+  const allQueriesStatus = getAggregateQueryStatus(allQueries);
+
+  if (allQueriesStatus === QueryStatus.Loading) {
     return <LoadingEmptyState />;
   }
-  if (treeQueriesStatus === QueryStatus.Error) {
-    return <Alert variant="danger" isInline title="Error loading VMware tree data" />;
-  }
-  if (vmsQuery.isError) {
-    return <Alert variant="danger" title="Error loading VMs" />;
+  if (allQueriesStatus === QueryStatus.Error) {
+    return <QueryResultStatuses results={allQueries} errorTitles={allErrorTitles} />;
   }
 
   if (availableVMs.length === 0) {

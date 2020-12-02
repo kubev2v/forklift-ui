@@ -7,7 +7,6 @@ import {
   FormGroup,
   Flex,
   Stack,
-  Alert,
   Checkbox,
   Popover,
 } from '@patternfly/react-core';
@@ -36,7 +35,6 @@ import {
   usePatchProviderMutation,
   useProvidersQuery,
 } from '@app/queries';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 import './AddEditProviderModal.css';
 import { IProvidersByType, Provider } from '@app/queries/types';
@@ -44,6 +42,7 @@ import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
@@ -166,8 +165,8 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       footer={
         <Stack hasGutter>
           <QueryResultStatus
-            results={[mutateProviderResult]}
-            errorTitles={[`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`]}
+            result={mutateProviderResult}
+            errorTitle={`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -195,7 +194,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       {providersQuery.isLoading ? (
         <LoadingEmptyState />
       ) : providersQuery.isError ? (
-        <Alert variant="danger" isInline title="Error loading providers" />
+        <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />
       ) : (
         <Form>
           <FormGroup

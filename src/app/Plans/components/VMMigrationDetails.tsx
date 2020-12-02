@@ -10,7 +10,6 @@ import {
   Title,
   Level,
   LevelItem,
-  Alert,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -46,6 +45,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 export interface IPlanMatchParams {
   url: string;
@@ -222,13 +222,17 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
+          // TODO this could be a mode of the QueryResultStatuses component, we don't need all these loading conditions
           <LoadingEmptyState />
-        ) : plansQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading plan details" />
-        ) : providersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
-        ) : vmsQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading VMs" />
+        ) : plansQuery.isError || providersQuery.isError || vmsQuery.isError ? (
+          <QueryResultStatuses
+            results={[plansQuery, providersQuery, vmsQuery]}
+            errorTitles={[
+              'Error loading plan details',
+              'Error loading providers',
+              'Error loading VMs',
+            ]}
+          />
         ) : (
           <Card>
             <CardBody>

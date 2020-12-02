@@ -19,6 +19,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { IVMwareProvider } from '@app/queries/types';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 export interface IHostsMatchParams {
   url: string;
@@ -63,10 +64,13 @@ export const HostsPage: React.FunctionComponent = () => {
         <Card>
           {hostsQuery.isLoading || providersQuery.isLoading ? (
             <LoadingEmptyState />
-          ) : hostsQuery.isError || !match?.params?.providerName ? (
-            <Alert variant="danger" isInline title="Error loading hosts" />
-          ) : providersQuery.isError ? (
-            <Alert variant="danger" isInline title="Error loading providers" />
+          ) : hostsQuery.isError || providersQuery.isError ? (
+            <QueryResultStatuses
+              results={[hostsQuery, providersQuery]}
+              errorTitles={['Error loading hosts', 'Error loading providers']}
+            />
+          ) : !match?.params?.providerName ? (
+            <Alert variant="danger" isInline title="No matching host found" />
           ) : (
             <CardBody>
               {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (

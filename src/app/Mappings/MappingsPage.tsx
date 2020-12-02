@@ -7,7 +7,6 @@ import {
   CardBody,
   EmptyStateIcon,
   EmptyStateBody,
-  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
@@ -17,6 +16,7 @@ import AddEditMappingModal from './components/AddEditMappingModal';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
 import CreateMappingButton from './components/CreateMappingButton';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 interface IMappingsPageProps {
   mappingType: MappingType;
@@ -50,9 +50,12 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         {sufficientProvidersQuery.isLoading || mappingsQuery.isLoading ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
+          <QueryResultStatus
+            result={sufficientProvidersQuery.result}
+            errorTitle="Error loading providers"
+          />
         ) : mappingsQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading mappings" />
+          <QueryResultStatus result={mappingsQuery} errorTitle="Error loading mappings" />
         ) : (
           <Card>
             <CardBody>

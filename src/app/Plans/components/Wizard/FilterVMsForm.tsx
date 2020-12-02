@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  TreeView,
-  Alert,
-  Tabs,
-  Tab,
-  TabTitleText,
-  TextContent,
-  Text,
-} from '@patternfly/react-core';
+import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
@@ -23,6 +15,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
+import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -95,10 +88,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       </Tabs>
       {vmsQuery.isLoading || treeQuery.isLoading ? (
         <LoadingEmptyState />
-      ) : vmsQuery.isError ? (
-        <Alert variant="danger" isInline title="Error loading VMs" />
-      ) : treeQuery.isError ? (
-        <Alert variant="danger" isInline title="Error loading VMware tree data" />
+      ) : vmsQuery.isError || treeQuery.isError ? (
+        <QueryResultStatuses
+          results={[vmsQuery, treeQuery]}
+          errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
+        />
       ) : (
         <TreeView
           data={filterAndConvertVMwareTree(

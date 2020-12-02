@@ -249,6 +249,7 @@ export const useDeleteProviderMutation = (
 };
 
 export const useHasSufficientProvidersQuery = (): {
+  result: QueryResult<IProvidersByType>;
   isLoading: boolean;
   isError: boolean;
   hasSufficientProviders: boolean | undefined;
@@ -260,6 +261,7 @@ export const useHasSufficientProvidersQuery = (): {
     ? vmwareProviders.length >= 1 && openshiftProviders.length >= 1
     : undefined;
   return {
+    result: result,
     isLoading: result.isLoading,
     isError: result.isError,
     hasSufficientProviders,

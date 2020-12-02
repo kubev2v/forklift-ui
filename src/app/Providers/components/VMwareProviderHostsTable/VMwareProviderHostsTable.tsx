@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -17,6 +17,7 @@ import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import QueryResultStatus from '@app/common/components/QueryResultStatus';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -78,7 +79,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   return hostConfigsQuery.isLoading ? (
     <LoadingEmptyState />
   ) : hostConfigsQuery.isError ? (
-    <Alert variant="danger" isInline title="Error loading host configurations" />
+    <QueryResultStatus result={hostConfigsQuery} errorTitle="Error loading host configurations" />
   ) : (
     <>
       <Level>
