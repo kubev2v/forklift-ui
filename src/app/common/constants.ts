@@ -93,3 +93,42 @@ export const urlSchema = yup.string().test('is-valid-url', 'Must be a valid URL'
   }
   return true;
 });
+
+// https://www.regexpal.com/?fam=104038
+const ipAddressRegex = /((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))/;
+// https://stackoverflow.com/a/7933253
+const subdomainRegex = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
+
+export const vmwareHostnameSchema = yup
+  .string()
+  .label('Hostname or IP address')
+  .max(253)
+  .required()
+  .test(
+    'valid-ip-or-hostname',
+    ({ label }) => `${label} must be a valid IPv4 or IPv6 address or a valid DNS subdomain`,
+    (value: string | null | undefined) => {
+      if (!value) return false;
+      const isValidIp = !!value.match(ipAddressRegex);
+      const isValidSubdomain = !!value.match(subdomainRegex);
+      return isValidIp || isValidSubdomain;
+    }
+  );
+
+export const vmwareFingerprintSchema = yup
+  .string()
+  .label('Certificate SHA1 Fingerprint')
+  .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
+    message:
+      'Fingerprint must consist of 16 or 20 pairs of hexadecimal characters separated by colons, e.g. XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
+    excludeEmptyString: true,
+  });
+
+export const vmwareUsernameSchema = yup
+  .string()
+  .max(320)
+  .label('Username')
+  .matches(/^\S*$/, {
+    message: ({ label }) => `${label} must not contain spaces`,
+    excludeEmptyString: true,
+  });
