@@ -75,7 +75,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by VM ...',
     },
-    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       key: 'migrationAnalysis',
       title: 'Migration analysis',
@@ -143,7 +143,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     return [
       '', // Expand control column
       '', // Checkbox column
-      // 'TBD', // Analytics column // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled (and it shouldn't be TBD...)
+      // 'TBD', // Analytics column // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled (and it shouldn't be TBD...)
       vm.name,
       datacenter?.name || '',
       cluster?.name || '',
@@ -165,7 +165,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
-  /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+  /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
     IVMwareVM
   >({
@@ -188,10 +188,10 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         />
       ),
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
-      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // cellFormatters: [expandable],
     },
-    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       title: 'Migration analysis',
       transforms: [sortable, wrappable],
@@ -208,12 +208,12 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   currentPageItems.forEach((vm: IVMwareVM) => {
     const isSelected = isItemSelected(vm);
-    // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
-      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // isOpen: isExpanded,
       cells: [
         {
@@ -228,7 +228,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
             />
           ),
         },
-        /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+        /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         {
           title: <VMConcernsIcon vm={vm} />,
         },
@@ -240,7 +240,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         folderPathStr || '',
       ],
     });
-    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
@@ -298,7 +298,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           rows={rows}
           sortBy={sortBy}
           onSort={onSort}
-          /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+          /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
           onCollapse={(event, rowKey, isOpen, rowData) => {
             toggleVMsExpanded(rowData.meta.vm);
           }}

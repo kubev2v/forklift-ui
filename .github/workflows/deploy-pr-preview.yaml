@@ -27,7 +27,7 @@ jobs:
           github-token: ${{ steps.token.outputs.GH_TOKEN }}
           script: |
             const { issue: { number: issue_number } } = context;
-            return `konveyor-virt-ui-pr-${issue_number}-preview.surge.sh`;
+            return `konveyor-forklift-ui-pr-${issue_number}-preview.surge.sh`;
           result-encoding: string
       - name: Install Surge
         run: npm install -g surge
@@ -36,5 +36,5 @@ jobs:
       - name: Post URL as PR comment
         uses: mshick/add-pr-comment@v1
         with:
-          message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨\n\nCompare with current master: http://konveyor-virt-ui-preview.surge.sh"
+          message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨\n\nCompare with current master: http://konveyor-forklift-ui-preview.surge.sh"
           repo-token: ${{ steps.token.outputs.GH_TOKEN }}

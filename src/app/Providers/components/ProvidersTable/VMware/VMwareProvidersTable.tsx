@@ -32,7 +32,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const getSortValues = (provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
     return [
-      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // '',
       provider.name,
       provider.object.spec.url || '',
@@ -50,7 +50,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+  /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   const {
     selectedItems,
     toggleItemSelected,
@@ -65,7 +65,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   */
 
   const columns: ICell[] = [
-    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       // Using a custom column instead of Table's onSelect prop due to issues
       title: (
@@ -95,12 +95,12 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
-    // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isSelected = isItemSelected(provider);
     rows.push({
       meta: { provider },
       cells: [
-        /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+        /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         {
           title: (
             <input
@@ -145,7 +145,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     <>
       <Level>
         <LevelItem>
-          {/* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+          {/* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
           <Button
             variant="secondary"
             component="a"

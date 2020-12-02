@@ -80,7 +80,7 @@ const ProvidersPage: React.FunctionComponent = () => {
             </Button>
           </LevelItem>
         </Level>
-        {/* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+        {/* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         <CloudAnalyticsInfoAlert />
         */}
         {areTabsVisible && (
