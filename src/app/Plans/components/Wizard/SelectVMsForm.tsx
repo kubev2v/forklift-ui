@@ -11,7 +11,6 @@ import {
   ICell,
   IRow,
   wrappable,
-  expandable,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
@@ -27,14 +26,12 @@ import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import { PlanWizardFormState } from './PlanWizard';
-import { getAvailableVMs, getMostSevereVMConcern, getVMTreePathInfoByVM } from './helpers';
+import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import VMConcernsIcon from './VMConcernsIcon';
-import VMConcernsDescription from './VMConcernsDescription';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 
 interface ISelectVMsFormProps {
@@ -78,6 +75,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by VM ...',
     },
+    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
     {
       key: 'migrationAnalysis',
       title: 'Migration analysis',
@@ -93,6 +91,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         return worstConcern ? worstConcern.severity : 'Ok';
       },
     },
+    */
     {
       key: 'dataCenter',
       title: 'Datacenter',
@@ -144,7 +143,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     return [
       '', // Expand control column
       '', // Checkbox column
-      'TBD', // Analytics column
+      // 'TBD', // Analytics column // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled (and it shouldn't be TBD...)
       vm.name,
       datacenter?.name || '',
       cluster?.name || '',
@@ -166,12 +165,14 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
+  /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
   const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
     IVMwareVM
   >({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
   });
+  */
 
   const columns: ICell[] = [
     {
@@ -187,12 +188,15 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         />
       ),
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
-      cellFormatters: [expandable],
+      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // cellFormatters: [expandable],
     },
+    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
     {
       title: 'Migration analysis',
       transforms: [sortable, wrappable],
     },
+    */
     { title: 'VM name', transforms: [sortable, wrappable] },
     { title: 'Datacenter', transforms: [sortable] },
     { title: 'Cluster', transforms: [sortable] },
@@ -204,11 +208,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   currentPageItems.forEach((vm: IVMwareVM) => {
     const isSelected = isItemSelected(vm);
-    const isExpanded = isVMExpanded(vm);
+    // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    // const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
-      isOpen: isExpanded,
+      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // isOpen: isExpanded,
       cells: [
         {
           title: (
@@ -222,9 +228,11 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
             />
           ),
         },
+        /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
         {
           title: <VMConcernsIcon vm={vm} />,
         },
+        */
         vm.name,
         datacenter?.name || '',
         cluster?.name || '',
@@ -232,6 +240,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         folderPathStr || '',
       ],
     });
+    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
@@ -239,6 +248,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         cells: [{ title: <VMConcernsDescription vm={vm} /> }],
       });
     }
+    */
   });
 
   if (treeQueriesStatus === QueryStatus.Loading || vmsQuery.isLoading) {
@@ -288,9 +298,11 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           rows={rows}
           sortBy={sortBy}
           onSort={onSort}
+          /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
           onCollapse={(event, rowKey, isOpen, rowData) => {
             toggleVMsExpanded(rowData.meta.vm);
           }}
+          */
         >
           <TableHeader />
           <TableBody />

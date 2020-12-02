@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, Button, Level, LevelItem } from '@patternfly/react-core';
+import { Pagination, Level, LevelItem } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -10,7 +10,6 @@ import {
   IRow,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
@@ -33,7 +32,8 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const getSortValues = (provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
     return [
-      '',
+      // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+      // '',
       provider.name,
       provider.object.spec.url || '',
       clusterCount,
@@ -50,6 +50,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
+  /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
   const {
     selectedItems,
     toggleItemSelected,
@@ -61,8 +62,10 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
     .map((provider) => `${provider.namespace}/${provider.name}`)
     .join()}`;
+  */
 
   const columns: ICell[] = [
+    /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
     {
       // Using a custom column instead of Table's onSelect prop due to issues
       title: (
@@ -77,6 +80,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
       ),
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
     },
+    */
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
     { title: 'Clusters', transforms: [sortable] },
@@ -91,10 +95,12 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: IVMwareProvider) => {
     const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
-    const isSelected = isItemSelected(provider);
+    // TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
+    // const isSelected = isItemSelected(provider);
     rows.push({
       meta: { provider },
       cells: [
+        /* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
         {
           title: (
             <input
@@ -107,6 +113,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
             />
           ),
         },
+        */
         provider.name,
         provider.object.spec.url,
         clusterCount,
@@ -138,6 +145,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     <>
       <Level>
         <LevelItem>
+          {/* TODO restore this when https://github.com/konveyor/virt-ui/issues/281 is settled
           <Button
             variant="secondary"
             component="a"
@@ -146,6 +154,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
           >
             Download data
           </Button>
+          */}
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
