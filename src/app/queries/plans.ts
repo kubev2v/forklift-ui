@@ -1,7 +1,7 @@
 import * as yup from 'yup';
-import { checkIfResourceExists, VirtResource, VirtResourceKind } from '@app/client/helpers';
+import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-import { dnsLabelNameSchema, VIRT_META } from '@app/common/constants';
+import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import {
@@ -14,7 +14,7 @@ import { MOCK_PLANS } from './mocks/plans.mock';
 import { IPlan } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 
-const planResource = new VirtResource(VirtResourceKind.Plan, VIRT_META.namespace);
+const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 
 export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
@@ -39,7 +39,12 @@ export const useCreatePlanMutation = (
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
-      await checkIfResourceExists(client, VirtResourceKind.Plan, planResource, plan.metadata.name);
+      await checkIfResourceExists(
+        client,
+        ForkliftResourceKind.Plan,
+        planResource,
+        plan.metadata.name
+      );
       return await client.create(planResource, plan);
     },
     {

@@ -10,15 +10,15 @@ const { getClusterAuth } = require('./oAuthHelpers');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-let virtMetaStr;
+let metaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
-  virtMetaStr = '{ "oauth": {} }';
+  metaStr = '{ "oauth": {} }';
 } else {
-  const virtMetaFile = process.env['META_FILE'] || '/srv/meta.json';
-  virtMetaStr = fs.readFileSync(virtMetaFile, 'utf8');
+  const metaFile = process.env['META_FILE'] || '/srv/meta.json';
+  metaStr = fs.readFileSync(metaFile, 'utf8');
 }
 
-const virtMeta = JSON.parse(virtMetaStr);
+const meta = JSON.parse(metaStr);
 
 const app = express();
 const port = process.env['EXPRESS_PORT'] || 8080;
@@ -30,10 +30,10 @@ app.use(express.static(staticDir));
 if (process.env['DATA_SOURCE'] !== 'mock') {
   app.get('/login', async (req, res, next) => {
     try {
-      const clusterAuth = await getClusterAuth(virtMeta);
+      const clusterAuth = await getClusterAuth(meta);
       const authorizationUri = clusterAuth.authorizeURL({
-        redirect_uri: virtMeta.oauth.redirectUri,
-        scope: virtMeta.oauth.userScope,
+        redirect_uri: meta.oauth.redirectUri,
+        scope: meta.oauth.userScope,
       });
 
       res.redirect(authorizationUri);
@@ -50,10 +50,10 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     const { code } = req.query;
     const options = {
       code,
-      redirect_uri: virtMeta.oauth.redirectUri,
+      redirect_uri: meta.oauth.redirectUri,
     };
     try {
-      const clusterAuth = await getClusterAuth(virtMeta);
+      const clusterAuth = await getClusterAuth(meta);
       const accessToken = await clusterAuth.getToken(options);
       const currentUnixTime = dayjs().unix();
       const user = {
@@ -73,7 +73,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
   let clusterApiProxyOptions = {
-    target: virtMeta.clusterApi,
+    target: meta.clusterApi,
     changeOrigin: true,
     pathRewrite: {
       '^/cluster-api/': '/',
@@ -82,7 +82,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   };
 
   let inventoryApiProxyOptions = {
-    target: virtMeta.inventoryApi,
+    target: meta.inventoryApi,
     changeOrigin: true,
     pathRewrite: {
       '^/inventory-api/': '/',
@@ -91,7 +91,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   };
 
   let inventoryPayloadApiProxyOptions = {
-    target: virtMeta.inventoryPayloadApi,
+    target: meta.inventoryPayloadApi,
     changeOrigin: true,
     pathRewrite: {
       '^/inventory-payload-api/': '/',
@@ -127,11 +127,11 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
 app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
-    // In dev and mock-prod modes, window._virt_meta was populated at build time
+    // In dev and mock-prod modes, window._meta was populated at build time
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   } else {
     res.render('index.html.ejs', {
-      _virt_meta: helpers.sanitizeAndEncodeVirtMeta(virtMeta),
+      _meta: helpers.sanitizeAndEncodeMeta(meta),
     });
   }
 });

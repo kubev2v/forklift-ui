@@ -5,7 +5,7 @@ import KubeClient, {
   CoreNamespacedResourceKind,
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
-import { VIRT_META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
+import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
 import { ICommonProviderObject, INewSecret, Provider } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
@@ -16,13 +16,13 @@ import {
 import { AuthorizedClusterClient } from './types';
 import { nameAndNamespace } from '@app/queries/helpers';
 
-export class VirtResource extends NamespacedResource {
+export class ForkliftResource extends NamespacedResource {
   private _gvk: KubeClient.IGroupVersionKindPlural;
-  constructor(kind: VirtResourceKind, namespace: string) {
+  constructor(kind: ForkliftResourceKind, namespace: string) {
     super(namespace);
 
     this._gvk = {
-      group: 'virt.konveyor.io',
+      group: 'forklift.konveyor.io',
       version: 'v1alpha1',
       kindPlural: kind,
     };
@@ -31,7 +31,7 @@ export class VirtResource extends NamespacedResource {
     return this._gvk;
   }
 }
-export enum VirtResourceKind {
+export enum ForkliftResourceKind {
   Provider = 'providers',
   NetworkMap = 'networkmaps',
   StorageMap = 'storagemaps',
@@ -42,15 +42,15 @@ export enum VirtResourceKind {
 
 export const secretResource = new CoreNamespacedResource(
   CoreNamespacedResourceKind.Secret,
-  VIRT_META.namespace
+  META.namespace
   //are we moving the secrets to the config namespace?
 );
 
-export const providerResource = new VirtResource(VirtResourceKind.Provider, VIRT_META.namespace);
+export const providerResource = new ForkliftResource(ForkliftResourceKind.Provider, META.namespace);
 
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
-  createdForResourceType: VirtResourceKind,
+  createdForResourceType: ForkliftResourceKind,
   providerBeingEdited: Provider | null
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
@@ -67,7 +67,7 @@ export function convertFormValuesToSecret(
         ...(!providerBeingEdited
           ? {
               generateName: `${openshiftValues.clusterName}-`,
-              namespace: VIRT_META.namespace,
+              namespace: META.namespace,
             }
           : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
@@ -93,7 +93,7 @@ export function convertFormValuesToSecret(
       kind: 'Secret',
       metadata: {
         ...(!providerBeingEdited
-          ? { generateName: `${vmwareValues.name}-`, namespace: VIRT_META.namespace }
+          ? { generateName: `${vmwareValues.name}-`, namespace: META.namespace }
           : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
           createdForResourceType,
@@ -151,8 +151,8 @@ export const getTokenSecretLabelSelector = (
 
 export const checkIfResourceExists = async (
   client: AuthorizedClusterClient,
-  resourceKind: VirtResourceKind | CoreNamespacedResourceKind,
-  resource: VirtResource,
+  resourceKind: ForkliftResourceKind | CoreNamespacedResourceKind,
+  resource: ForkliftResource,
   resourceName: string
 ): Promise<void> => {
   const results = await Q.allSettled([

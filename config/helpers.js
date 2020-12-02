@@ -2,15 +2,15 @@
 const path = require('path');
 const fs = require('fs');
 
-const sanitizeVirtMeta = (virtMeta) => {
-  const oauthCopy = { ...virtMeta.oauth };
+const sanitizeMeta = (meta) => {
+  const oauthCopy = { ...meta.oauth };
   // delete oauthCopy.clientSecret;
-  return { ...virtMeta, oauth: oauthCopy };
+  return { ...meta, oauth: oauthCopy };
 };
 
 const localConfigFileName = 'meta.dev.json';
 
-const getDevVirtMeta = () => {
+const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
   const configPath = path.join(__dirname, localConfigFileName);
   if (!fs.existsSync(configPath)) {
@@ -25,7 +25,7 @@ const getDevVirtMeta = () => {
   return JSON.parse(fs.readFileSync(configPath));
 };
 
-const sanitizeAndEncodeVirtMeta = (virtMeta) =>
-  Buffer.from(JSON.stringify(sanitizeVirtMeta(virtMeta))).toString('base64');
+const sanitizeAndEncodeMeta = (meta) =>
+  Buffer.from(JSON.stringify(sanitizeMeta(meta))).toString('base64');
 
-module.exports = { getDevVirtMeta, sanitizeAndEncodeVirtMeta };
+module.exports = { getDevMeta, sanitizeAndEncodeMeta };

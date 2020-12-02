@@ -1,14 +1,14 @@
 import { MutationResultPair, useQueryCache } from 'react-query';
-import { VirtResource, VirtResourceKind, checkIfResourceExists } from '@app/client/helpers';
+import { ForkliftResource, ForkliftResourceKind, checkIfResourceExists } from '@app/client/helpers';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
-import { CLUSTER_API_VERSION, VIRT_META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace, useMockableMutation } from './helpers';
 import { IMigration } from './types/migrations.types';
 import { IPlan } from './types/plans.types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { usePollingContext } from '@app/common/context';
 
-const migrationResource = new VirtResource(VirtResourceKind.Migration, VIRT_META.namespace);
+const migrationResource = new ForkliftResource(ForkliftResourceKind.Migration, META.namespace);
 
 export const useCreateMigrationMutation = (
   onSuccess?: () => void
@@ -23,7 +23,7 @@ export const useCreateMigrationMutation = (
         kind: 'Migration',
         metadata: {
           name: `${plan.metadata.name}-${Date.now()}`,
-          namespace: VIRT_META.namespace,
+          namespace: META.namespace,
           ownerReferences: [
             {
               apiVersion: plan.apiVersion,
@@ -39,7 +39,7 @@ export const useCreateMigrationMutation = (
       };
       await checkIfResourceExists(
         client,
-        VirtResourceKind.Migration,
+        ForkliftResourceKind.Migration,
         migrationResource,
         migration.metadata.name
       );
