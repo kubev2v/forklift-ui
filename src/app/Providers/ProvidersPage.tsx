@@ -21,7 +21,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useProvidersQuery, usePlansQuery } from '@app/queries';
 
-import CloudAnalyticsInfoAlert from './components/CloudAnalyticsInfoAlert';
 import ProvidersTable from './components/ProvidersTable';
 import AddEditProviderModal from './components/AddEditProviderModal';
 
@@ -81,7 +80,9 @@ const ProvidersPage: React.FunctionComponent = () => {
             </Button>
           </LevelItem>
         </Level>
+        {/* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         <CloudAnalyticsInfoAlert />
+        */}
         {areTabsVisible && (
           <Tabs
             activeKey={activeProviderType || ''}

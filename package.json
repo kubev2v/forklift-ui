@@ -1,9 +1,9 @@
 {
-  "name": "virt-ui",
+  "name": "forklift-ui",
   "version": "0.0.1",
   "description": "OpenShift VM Migration UI",
   "main": "deploy/server.js",
-  "repository": "https://github.com/konveyor/virt-ui.git",
+  "repository": "https://github.com/konveyor/forklift-ui.git",
   "license": "Apache",
   "private": true,
   "scripts": {

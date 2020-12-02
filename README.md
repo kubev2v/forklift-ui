@@ -1,10 +1,8 @@
-# virt-ui
+# forklift-ui
 
 Migration Toolkit for Virtualization UI
 
-[![Build Status](https://travis-ci.com/konveyor/virt-ui.svg?branch=master)](https://travis-ci.com/konveyor/virt-ui)
-
-A read-only preview with mock data is available at http://konveyor-virt-ui-preview.surge.sh/.
+A read-only preview with mock data is available at http://konveyor-forklift-ui-preview.surge.sh/.
 
 ## Prerequisites
 
@@ -16,14 +14,14 @@ A read-only preview with mock data is available at http://konveyor-virt-ui-previ
 Clone and install dependencies:
 
 ```bash
-git clone https://github.com/konveyor/virt-ui
-cd virt-ui
+git clone https://github.com/konveyor/forklift-ui
+cd forklift-ui
 yarn install
 ```
 
-Create a virtMeta.config.json file in the config directory using [`config/virtMeta.dev.example.json`](https://github.com/konveyor/virt-ui/blob/master/config/virtMeta.example.json) as a template. Set the `inventoryApi` property to the root URL of your virt-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your virt-controller inventory Payload API.
+Create a virtMeta.config.json file in the config directory using [`config/virtMeta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/master/config/virtMeta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your virt-controller inventory Payload API.
 
-**Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/virt-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `yarn [start:dev|build]:[mock|remote]` commands will override it.
+**Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `yarn [start:dev|build]:[mock|remote]` commands will override it.
 
 Run the UI with webpack-dev-server at http://localhost:9000:
 
