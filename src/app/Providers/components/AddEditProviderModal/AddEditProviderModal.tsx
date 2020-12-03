@@ -25,6 +25,9 @@ import {
   ProviderType,
   PROVIDER_TYPE_NAMES,
   urlSchema,
+  vmwareFingerprintSchema,
+  vmwareHostnameSchema,
+  vmwareUsernameSchema,
 } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import {
@@ -62,16 +65,7 @@ const useAddProviderFormState = (
   );
   const isReplacingCredentialsField = useFormField(false, yup.boolean().required());
   const areCredentialsRequired = !providerBeingEdited || isReplacingCredentialsField.value;
-  const usernameSchema = yup.string().max(320).label('Username');
   const passwordSchema = yup.string().max(256).label('Password');
-  const fingerprintSchema = yup
-    .string()
-    .label('Certificate SHA1 Fingerprint')
-    .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
-      message:
-        'Fingerprint must consist of 16 or 20 pairs of hexadecimal characters separated by colons, e.g. XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
-      excludeEmptyString: true,
-    });
   const saTokenSchema = yup.string().label('Service account token');
 
   return {
@@ -86,16 +80,16 @@ const useAddProviderFormState = (
       ),
       hostname: useFormField(
         vmwareUrlToHostname(providerBeingEdited?.object.spec.url || ''),
-        yup.string().max(255).label('Hostname').required()
+        vmwareHostnameSchema
       ),
       fingerprint: useFormField(
         '',
-        areCredentialsRequired ? fingerprintSchema.required() : fingerprintSchema
+        areCredentialsRequired ? vmwareFingerprintSchema.required() : vmwareFingerprintSchema
       ),
       fingerprintFilename: useFormField('', yup.string()),
       username: useFormField(
         '',
-        areCredentialsRequired ? usernameSchema.required() : usernameSchema
+        areCredentialsRequired ? vmwareUsernameSchema.required() : vmwareUsernameSchema
       ),
       password: useFormField(
         '',
