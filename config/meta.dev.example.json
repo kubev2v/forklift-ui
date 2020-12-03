@@ -1,10 +1,9 @@
 {
-  "inventoryApi": "https://inventory-openshift-migration.apps.cluster-foo.example.com",
-  "inventoryPayloadApi": "https://inventory-payload-openshift-migration.apps.cluster-foo.example.com",
-  "clusterApi": "https://api.cluster-foo.example.com:6443",
+  "inventoryApi": "https://forklift-inventory-openshift-migration.apps.cluster1.example.com",
+  "clusterApi": "https://api.cluster1.example.com:6443",
   "devServerPort": 9000,
   "oauth": {
-    "clientId": "mig-ui",
+    "clientId": "forklift-ui",
     "redirectUri": "http://localhost:9000/login/callback",
     "userScope": "user:full",
     "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
