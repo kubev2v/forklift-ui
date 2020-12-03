@@ -3,7 +3,7 @@ import { QueryResult, MutationResult } from 'react-query';
 import QueryResultStatuses, { IQueryResultStatusesProps } from './QueryResultStatuses';
 
 export interface IQueryResultStatusProps
-  extends Pick<IQueryResultStatusesProps, 'isInline' | 'disableSpinner' | 'className'> {
+  extends Omit<IQueryResultStatusesProps, 'results' | 'errorTitles'> {
   result: QueryResult<unknown> | MutationResult<unknown>;
   errorTitle: string;
 }

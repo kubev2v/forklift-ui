@@ -1,36 +1,54 @@
 import * as React from 'react';
-import { Spinner, Alert, AlertActionCloseButton } from '@patternfly/react-core';
+import { Spinner, Alert, AlertActionCloseButton, SpinnerProps } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MutationResult, QueryResult, QueryStatus } from 'react-query';
 import { KubeClientError } from '@app/client/types';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
+import LoadingEmptyState from './LoadingEmptyState';
+
+export enum QuerySpinnerMode {
+  Normal = 'Normal',
+  EmptyState = 'EmptyState',
+  None = 'None',
+}
 
 export interface IQueryResultStatusesProps {
   results: (QueryResult<unknown> | MutationResult<unknown>)[];
   errorTitles: string[];
   isInline?: boolean;
-  disableSpinner?: boolean;
+  spinnerMode?: QuerySpinnerMode;
+  spinnerProps?: Partial<SpinnerProps>;
   className?: string;
+  children?: React.ReactNode;
 }
 
-const QueryResultStatuses = ({
+const QueryResultStatuses: React.FunctionComponent<IQueryResultStatusesProps> = ({
   results,
   errorTitles,
   isInline = true,
-  disableSpinner = false,
+  spinnerMode = QuerySpinnerMode.Normal,
+  spinnerProps = {},
   className = '',
-}: React.PropsWithChildren<IQueryResultStatusesProps>): JSX.Element | null => {
+  children = null,
+}: IQueryResultStatusesProps) => {
   const status = getAggregateQueryStatus(results);
   const erroredResults = results.filter((result) => result.isError);
   const filteredErrorTitles = errorTitles.filter((_title, index) => results[index].isError);
 
+  let spinner: React.ReactNode = null;
+  if (spinnerMode === QuerySpinnerMode.Normal) {
+    spinner = <Spinner size="lg" className={className} {...spinnerProps} />;
+  } else if (spinnerMode === QuerySpinnerMode.EmptyState) {
+    spinner = <LoadingEmptyState spinnerProps={spinnerProps} />;
+  }
+
   return (
-    <div>
-      {status === QueryStatus.Loading && !disableSpinner ? (
-        <Spinner size="lg" className={className} />
-      ) : null}
-      {status === QueryStatus.Error
-        ? erroredResults.map((result, index) => (
+    <>
+      {status === QueryStatus.Loading ? (
+        spinner
+      ) : status === QueryStatus.Error ? (
+        <div>
+          {erroredResults.map((result, index) => (
             <Alert
               key={`error-${index}`}
               variant="danger"
@@ -64,9 +82,12 @@ const QueryResultStatuses = ({
                 </>
               ) : null}
             </Alert>
-          ))
-        : null}
-    </div>
+          ))}
+        </div>
+      ) : (
+        children
+      )}
+    </>
   );
 };
 

@@ -26,6 +26,7 @@ import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
 import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QuerySpinnerMode } from '@app/common/components/QueryResultStatuses';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -71,7 +72,7 @@ const PlansPage: React.FunctionComponent = () => {
           result={createMigrationResult}
           errorTitle={`Error starting migration for plan: ${planBeingStarted?.metadata.name}`}
           isInline={false}
-          disableSpinner
+          spinnerMode={QuerySpinnerMode.None}
           className={spacing.mbMd}
         />
         {sufficientProvidersQuery.isLoading || plansQuery.isLoading ? (
