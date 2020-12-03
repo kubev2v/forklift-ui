@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex, FlexItem, Text } from '@patternfly/react-core';
+import { Flex, FlexItem, Text, Tooltip } from '@patternfly/react-core';
 import {
   ResourcesEmptyIcon,
   ResourcesAlmostFullIcon,
@@ -35,11 +35,8 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     return 'Complete';
   }
   if (status.started && !status.completed) {
-    let title = status.error ? 'Error' : 'Running';
-    if (currentStep?.description) {
-      title = `${title} - ${currentStep.description}`;
-    }
-    return title;
+    if (status.error) return `error - ${currentStep?.description}`;
+    if (currentStep?.description) return currentStep.description;
   }
   return 'Not started';
 };
