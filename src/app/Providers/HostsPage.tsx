@@ -19,7 +19,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { IVMwareProvider } from '@app/queries/types';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 export interface IHostsMatchParams {
   url: string;
@@ -65,7 +65,7 @@ export const HostsPage: React.FunctionComponent = () => {
           {hostsQuery.isLoading || providersQuery.isLoading ? (
             <LoadingEmptyState />
           ) : hostsQuery.isError || providersQuery.isError ? (
-            <QueryResultStatuses
+            <MultiQueryResultStatus
               results={[hostsQuery, providersQuery]}
               errorTitles={['Error loading hosts', 'Error loading providers']}
             />

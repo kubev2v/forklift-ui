@@ -9,7 +9,7 @@ import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];

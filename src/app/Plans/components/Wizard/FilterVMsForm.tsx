@@ -15,7 +15,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -89,7 +89,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       {vmsQuery.isLoading || treeQuery.isLoading ? (
         <LoadingEmptyState />
       ) : vmsQuery.isError || treeQuery.isError ? (
-        <QueryResultStatuses
+        <MultiQueryResultStatus
           results={[vmsQuery, treeQuery]}
           errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
         />

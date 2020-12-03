@@ -10,8 +10,10 @@ import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TruncatedText from '@app/common/components/TruncatedText';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import {
+  QueryResultStatus,
+  MultiQueryResultStatus,
+} from '@app/common/components/QueryResultStatus';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -49,7 +51,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   }
   if (mappingResourceQueries.isError) {
     return (
-      <QueryResultStatuses
+      <MultiQueryResultStatus
         results={mappingResourceQueries.queries}
         errorTitles={[
           'Error loading source provider resources',

@@ -42,7 +42,7 @@ import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;

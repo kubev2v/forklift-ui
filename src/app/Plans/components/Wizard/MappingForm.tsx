@@ -38,7 +38,7 @@ import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
 import { QueryStatus } from 'react-query';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -144,7 +144,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   }
   if (mappingResourceQueries.isError || mappingsQuery.isError) {
     return (
-      <QueryResultStatuses
+      <MultiQueryResultStatus
         results={[...mappingResourceQueries.queries, mappingsQuery]}
         errorTitles={[
           'Error loading source provider resources',

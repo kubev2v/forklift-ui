@@ -13,10 +13,9 @@ import { Mapping, MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
 import CreateMappingButton from './components/CreateMappingButton';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 interface IMappingsPageProps {
   mappingType: MappingType;
@@ -47,16 +46,11 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         <Title headingLevel="h1">{mappingType} mappings</Title>
       </PageSection>
       <PageSection>
-        {sufficientProvidersQuery.isLoading || mappingsQuery.isLoading ? (
-          <LoadingEmptyState />
-        ) : sufficientProvidersQuery.isError ? (
-          <QueryResultStatus
-            result={sufficientProvidersQuery.result}
-            errorTitle="Error loading providers"
-          />
-        ) : mappingsQuery.isError ? (
-          <QueryResultStatus result={mappingsQuery} errorTitle="Error loading mappings" />
-        ) : (
+        <MultiQueryResultStatus
+          results={[sufficientProvidersQuery.result, mappingsQuery]}
+          errorTitles={['Error loading providers', 'Error loading mappings']}
+          spinnerMode={QuerySpinnerMode.EmptyState}
+        >
           <Card>
             <CardBody>
               {!mappingsQuery.data ? null : mappingsQuery.data.items.length === 0 ? (
@@ -82,7 +76,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
               )}
             </CardBody>
           </Card>
-        )}
+        </MultiQueryResultStatus>
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal

@@ -49,7 +49,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -328,7 +328,7 @@ const PlanWizard: React.FunctionComponent = () => {
     return <LoadingEmptyState />;
   }
   if (allQueriesStatus === QueryStatus.Error) {
-    return <QueryResultStatuses results={allQueries} errorTitles={allErrorTitles} />;
+    return <MultiQueryResultStatus results={allQueries} errorTitles={allErrorTitles} />;
   }
 
   if (editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started)) {

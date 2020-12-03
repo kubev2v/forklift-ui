@@ -45,7 +45,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 export interface IPlanMatchParams {
   url: string;
@@ -222,10 +222,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
-          // TODO this could be a mode of the QueryResultStatuses component, we don't need all these loading conditions
+          // TODO this could be a mode of the MultiQueryResultStatus component, we don't need all these loading conditions
           <LoadingEmptyState />
         ) : plansQuery.isError || providersQuery.isError || vmsQuery.isError ? (
-          <QueryResultStatuses
+          <MultiQueryResultStatus
             results={[plansQuery, providersQuery, vmsQuery]}
             errorTitles={[
               'Error loading plan details',

@@ -33,7 +33,7 @@ import { QueryStatus } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -263,7 +263,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     return <LoadingEmptyState />;
   }
   if (allQueriesStatus === QueryStatus.Error) {
-    return <QueryResultStatuses results={allQueries} errorTitles={allErrorTitles} />;
+    return <MultiQueryResultStatus results={allQueries} errorTitles={allErrorTitles} />;
   }
 
   if (availableVMs.length === 0) {

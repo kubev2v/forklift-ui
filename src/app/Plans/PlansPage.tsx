@@ -25,8 +25,7 @@ import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
-import { QuerySpinnerMode } from '@app/common/components/QueryResultStatuses';
+import { QueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();

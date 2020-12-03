@@ -17,7 +17,7 @@ import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;

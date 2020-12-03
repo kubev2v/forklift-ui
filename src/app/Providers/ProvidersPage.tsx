@@ -26,7 +26,7 @@ import AddEditProviderModal from './components/AddEditProviderModal';
 import { checkAreProvidersEmpty } from './helpers';
 import { IPlan, IProvidersByType, Provider } from '@app/queries/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

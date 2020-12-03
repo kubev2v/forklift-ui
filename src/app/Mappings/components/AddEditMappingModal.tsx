@@ -38,8 +38,10 @@ import './AddEditMappingModal.css';
 import { QueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
-import QueryResultStatuses from '@app/common/components/QueryResultStatuses';
+import {
+  QueryResultStatus,
+  MultiQueryResultStatus,
+} from '@app/common/components/QueryResultStatus';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -258,7 +260,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               mappingResourceQueries.isLoading ? (
                 <LoadingEmptyState />
               ) : mappingResourceQueries.isError ? (
-                <QueryResultStatuses
+                <MultiQueryResultStatus
                   results={mappingResourceQueries.queries}
                   errorTitles={[
                     'Error loading source provider resources',

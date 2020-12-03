@@ -15,7 +15,7 @@ import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/q
 import './SelectNetworkModal.css';
 import { formatHostNetworkAdapter } from './helpers';
 import { getExistingHostConfigs, useConfigureHostsMutation } from '@app/queries';
-import QueryResultStatus from '@app/common/components/QueryResultStatus';
+import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];

@@ -4,7 +4,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MutationResult, QueryResult, QueryStatus } from 'react-query';
 import { KubeClientError } from '@app/client/types';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
-import LoadingEmptyState from './LoadingEmptyState';
+import LoadingEmptyState from '../LoadingEmptyState';
 
 export enum QuerySpinnerMode {
   Normal = 'Normal',
@@ -12,7 +12,7 @@ export enum QuerySpinnerMode {
   None = 'None',
 }
 
-export interface IQueryResultStatusesProps {
+export interface IMultiQueryResultStatusProps {
   results: (QueryResult<unknown> | MutationResult<unknown>)[];
   errorTitles: string[];
   isInline?: boolean;
@@ -22,7 +22,7 @@ export interface IQueryResultStatusesProps {
   children?: React.ReactNode;
 }
 
-const QueryResultStatuses: React.FunctionComponent<IQueryResultStatusesProps> = ({
+export const MultiQueryResultStatus: React.FunctionComponent<IMultiQueryResultStatusProps> = ({
   results,
   errorTitles,
   isInline = true,
@@ -30,7 +30,7 @@ const QueryResultStatuses: React.FunctionComponent<IQueryResultStatusesProps> = 
   spinnerProps = {},
   className = '',
   children = null,
-}: IQueryResultStatusesProps) => {
+}: IMultiQueryResultStatusProps) => {
   const status = getAggregateQueryStatus(results);
   const erroredResults = results.filter((result) => result.isError);
   const filteredErrorTitles = errorTitles.filter((_title, index) => results[index].isError);
@@ -90,5 +90,3 @@ const QueryResultStatuses: React.FunctionComponent<IQueryResultStatusesProps> = 
     </>
   );
 };
-
-export default QueryResultStatuses;

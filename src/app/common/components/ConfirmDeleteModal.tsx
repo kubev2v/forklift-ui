@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
 import { MutationResult } from 'react-query';
-import QueryResultStatus from './QueryResultStatus';
+import { QueryResultStatus } from './QueryResultStatus';
 
 interface IConfirmDeleteModalProps {
   isOpen: boolean;
