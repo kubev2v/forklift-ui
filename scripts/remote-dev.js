@@ -23,7 +23,7 @@ function setupOAuthClient() {
   const meta = helpers.getDevMeta();
   const oauthRedirectUri = `http://localhost:${meta.devServerPort}/login/callback`;
 
-  const oauthClientName = 'mig-ui';
+  const oauthClientName = 'forklift-ui';
   const remoteDevSecret = meta.oauth.clientSecret;
 
   try {
