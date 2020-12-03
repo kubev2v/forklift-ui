@@ -323,6 +323,8 @@ const PlanWizard: React.FunctionComponent = () => {
         ...prefillErrorTitles,
       ]}
       spinnerMode={QuerySpinnerMode.EmptyState}
+      alertProps={{ isInline: false }}
+      className={spacing.mMd}
     >
       {!isDonePrefilling ? (
         <LoadingEmptyState />

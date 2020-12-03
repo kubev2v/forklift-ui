@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { MutationResult, QueryResult, QueryStatus } from 'react-query';
-import { Spinner, Alert, AlertActionCloseButton, SpinnerProps } from '@patternfly/react-core';
+import {
+  Spinner,
+  Alert,
+  AlertActionCloseButton,
+  SpinnerProps,
+  AlertProps,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { KubeClientError } from '@app/client/types';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
@@ -18,6 +24,7 @@ export interface IResolvedQueriesProps {
   isInline?: boolean;
   spinnerMode?: QuerySpinnerMode;
   spinnerProps?: Partial<SpinnerProps>;
+  alertProps?: Partial<AlertProps>;
   className?: string;
   children?: React.ReactNode;
 }
@@ -29,6 +36,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
   isInline = true,
   spinnerMode = QuerySpinnerMode.Normal,
   spinnerProps = {},
+  alertProps = {},
   className = '',
   children = null,
 }: IResolvedQueriesProps) => {
@@ -64,6 +72,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
                   />
                 ) : null
               }
+              {...alertProps}
             >
               {result.error ? (
                 <>
