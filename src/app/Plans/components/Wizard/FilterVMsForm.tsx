@@ -14,7 +14,7 @@ import {
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -85,7 +85,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           title={<TabTitleText>By folders</TabTitleText>}
         />
       </Tabs>
-      <MultiQueryResultStatus
+      <ResolvedQueries
         results={[vmsQuery, treeQuery]}
         errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
         spinnerMode={QuerySpinnerMode.EmptyState}
@@ -120,7 +120,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             'aria-label': 'Search inventory',
           }}
         />
-      </MultiQueryResultStatus>
+      </ResolvedQueries>
     </div>
   );
 };

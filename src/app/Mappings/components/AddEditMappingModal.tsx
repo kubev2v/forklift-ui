@@ -39,10 +39,10 @@ import { QueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
 import {
-  QueryResultStatus,
-  MultiQueryResultStatus,
+  ResolvedQuery,
+  ResolvedQueries,
   QuerySpinnerMode,
-} from '@app/common/components/QueryResultStatus';
+} from '@app/common/components/ResolvedQuery';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -147,7 +147,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <QueryResultStatus
+          <ResolvedQuery
             result={mutationResult}
             errorTitle={`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`}
           />
@@ -187,7 +187,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         {providersQuery.isLoading || !isDonePrefilling ? (
           <LoadingEmptyState />
         ) : providersQuery.isError ? (
-          <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />
+          <ResolvedQuery result={providersQuery} errorTitle="Error loading providers" />
         ) : (
           <>
             <Grid className={spacing.mbMd}>
@@ -258,7 +258,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={1} />
             </Grid>
             {form.values.sourceProvider && form.values.targetProvider ? (
-              <MultiQueryResultStatus
+              <ResolvedQueries
                 results={mappingResourceQueries.queries}
                 errorTitles={[
                   'Error loading source provider resources',
@@ -273,7 +273,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   builderItems={form.values.builderItems}
                   setBuilderItems={form.fields.builderItems.setValue}
                 />
-              </MultiQueryResultStatus>
+              </ResolvedQueries>
             ) : null}
           </>
         )}

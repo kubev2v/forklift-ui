@@ -19,7 +19,6 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
-// TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHost[]> => {
   const result = useMockableQuery<IHost[]>(
     {

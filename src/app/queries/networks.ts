@@ -13,7 +13,6 @@ import {
 } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
 
-// TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   provider: Provider | null,
   providerType: ProviderType,

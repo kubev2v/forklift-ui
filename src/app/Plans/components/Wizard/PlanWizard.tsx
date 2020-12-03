@@ -49,7 +49,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -314,7 +314,7 @@ const PlanWizard: React.FunctionComponent = () => {
   ];
 
   return (
-    <MultiQueryResultStatus
+    <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
       errorTitles={[
         'Error loading plans',
@@ -366,7 +366,7 @@ const PlanWizard: React.FunctionComponent = () => {
           </PageSection>
         </>
       )}
-    </MultiQueryResultStatus>
+    </ResolvedQueries>
   );
 };
 

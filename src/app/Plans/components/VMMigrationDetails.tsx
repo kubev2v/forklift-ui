@@ -44,7 +44,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 export interface IPlanMatchParams {
   url: string;
@@ -220,7 +220,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration details by VM</Title>
       </PageSection>
       <PageSection>
-        <MultiQueryResultStatus
+        <ResolvedQueries
           results={[plansQuery, providersQuery, vmsQuery]}
           errorTitles={[
             'Error loading plan details',
@@ -270,7 +270,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               />
             </CardBody>
           </Card>
-        </MultiQueryResultStatus>
+        </ResolvedQueries>
       </PageSection>
     </>
   );

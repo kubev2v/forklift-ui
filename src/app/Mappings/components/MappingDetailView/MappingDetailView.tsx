@@ -9,7 +9,7 @@ import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import TruncatedText from '@app/common/components/TruncatedText';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -35,7 +35,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
 
   return (
-    <MultiQueryResultStatus
+    <ResolvedQueries
       results={[providersQuery, ...mappingResourceQueries.queries]}
       errorTitles={[
         'Error loading providers',
@@ -90,7 +90,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
           );
         })}
       </div>
-    </MultiQueryResultStatus>
+    </ResolvedQueries>
   );
 };
 

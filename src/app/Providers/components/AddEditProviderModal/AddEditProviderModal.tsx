@@ -42,7 +42,7 @@ import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
-import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
@@ -164,7 +164,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <QueryResultStatus
+          <ResolvedQuery
             result={mutateProviderResult}
             errorTitle={`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`}
           />
@@ -194,7 +194,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       {providersQuery.isLoading ? (
         <LoadingEmptyState />
       ) : providersQuery.isError ? (
-        <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />
+        <ResolvedQuery result={providersQuery} errorTitle="Error loading providers" />
       ) : (
         <Form>
           <FormGroup

@@ -15,7 +15,7 @@ import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
 import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
 import CreateMappingButton from './components/CreateMappingButton';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 interface IMappingsPageProps {
   mappingType: MappingType;
@@ -46,7 +46,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         <Title headingLevel="h1">{mappingType} mappings</Title>
       </PageSection>
       <PageSection>
-        <MultiQueryResultStatus
+        <ResolvedQueries
           results={[sufficientProvidersQuery.result, mappingsQuery]}
           errorTitles={['Error loading providers', 'Error loading mappings']}
           spinnerMode={QuerySpinnerMode.EmptyState}
@@ -76,7 +76,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
               )}
             </CardBody>
           </Card>
-        </MultiQueryResultStatus>
+        </ResolvedQueries>
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditMappingModal

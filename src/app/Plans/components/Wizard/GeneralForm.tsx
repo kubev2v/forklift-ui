@@ -9,7 +9,7 @@ import { useProvidersQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
-import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -30,7 +30,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     return <LoadingEmptyState />;
   }
   if (providersQuery.isError) {
-    return <QueryResultStatus result={providersQuery} errorTitle="Error loading providers" />;
+    return <ResolvedQuery result={providersQuery} errorTitle="Error loading providers" />;
   }
 
   const sourceProvidersOptions = Object.values(vmwareProviders).map((provider) => ({
@@ -119,7 +119,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         {namespacesQuery.isLoading ? (
           <Spinner size="lg" className={spacing.mXs} />
         ) : namespacesQuery.isError ? (
-          <QueryResultStatus result={namespacesQuery} errorTitle="Error loading namespaces" />
+          <ResolvedQuery result={namespacesQuery} errorTitle="Error loading namespaces" />
         ) : (
           <SimpleSelect
             variant="typeahead"

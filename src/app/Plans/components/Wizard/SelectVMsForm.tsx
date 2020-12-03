@@ -30,7 +30,7 @@ import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -249,7 +249,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   });
 
   return (
-    <MultiQueryResultStatus
+    <ResolvedQueries
       results={[hostTreeQuery, vmTreeQuery, vmsQuery]}
       errorTitles={[
         'Error loading VMware host tree data',
@@ -324,7 +324,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           </Level>
         </>
       )}
-    </MultiQueryResultStatus>
+    </ResolvedQueries>
   );
 };
 

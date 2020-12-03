@@ -15,7 +15,7 @@ import MappingDetailView from '@app/Mappings/components/MappingDetailView';
 import { IPlan, Mapping, MappingType } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
-import { MultiQueryResultStatus } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings } from './helpers';
 
 interface IReviewProps {
@@ -95,7 +95,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
           <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
         </GridItem>
       </Grid>
-      <MultiQueryResultStatus
+      <ResolvedQueries
         results={[
           !planBeingEdited ? createPlanResult : patchPlanResult,
           createNetworkMappingResult,

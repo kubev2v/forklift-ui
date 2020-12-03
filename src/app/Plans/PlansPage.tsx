@@ -25,7 +25,7 @@ import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
-import { QueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQuery, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -67,7 +67,7 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
-        <QueryResultStatus
+        <ResolvedQuery
           result={createMigrationResult}
           errorTitle={`Error starting migration for plan: ${planBeingStarted?.metadata.name}`}
           isInline={false}
@@ -77,12 +77,12 @@ const PlansPage: React.FunctionComponent = () => {
         {sufficientProvidersQuery.isLoading || plansQuery.isLoading ? (
           <LoadingEmptyState />
         ) : sufficientProvidersQuery.isError ? (
-          <QueryResultStatus
+          <ResolvedQuery
             result={sufficientProvidersQuery.result}
             errorTitle="Error loading providers"
           />
         ) : plansQuery.isError ? (
-          <QueryResultStatus result={plansQuery} errorTitle="Error loading plans" />
+          <ResolvedQuery result={plansQuery} errorTitle="Error loading plans" />
         ) : (
           <Card>
             <CardBody>

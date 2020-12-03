@@ -15,7 +15,7 @@ import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/q
 import './SelectNetworkModal.css';
 import { formatHostNetworkAdapter } from './helpers';
 import { getExistingHostConfigs, useConfigureHostsMutation } from '@app/queries';
-import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -94,7 +94,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <QueryResultStatus result={configureHostsResult} errorTitle="Error configuring hosts" />
+          <ResolvedQuery result={configureHostsResult} errorTitle="Error configuring hosts" />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="confirm"

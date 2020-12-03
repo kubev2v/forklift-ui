@@ -18,7 +18,7 @@ import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
 import { IVMwareProvider } from '@app/queries/types';
-import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
+import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
 
 export interface IHostsMatchParams {
   url: string;
@@ -61,7 +61,7 @@ export const HostsPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <Card>
-          <MultiQueryResultStatus
+          <ResolvedQueries
             results={[hostsQuery, providersQuery]}
             errorTitles={['Error loading hosts', 'Error loading providers']}
             spinnerMode={QuerySpinnerMode.EmptyState}
@@ -86,7 +86,7 @@ export const HostsPage: React.FunctionComponent = () => {
                 )}
               </CardBody>
             )}
-          </MultiQueryResultStatus>
+          </ResolvedQueries>
         </Card>
       </PageSection>
     </>

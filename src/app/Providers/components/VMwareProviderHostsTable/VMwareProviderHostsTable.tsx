@@ -17,7 +17,7 @@ import { useHostConfigsQuery } from '@app/queries';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
-import { QueryResultStatus } from '@app/common/components/QueryResultStatus';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -79,7 +79,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   return hostConfigsQuery.isLoading ? (
     <LoadingEmptyState />
   ) : hostConfigsQuery.isError ? (
-    <QueryResultStatus result={hostConfigsQuery} errorTitle="Error loading host configurations" />
+    <ResolvedQuery result={hostConfigsQuery} errorTitle="Error loading host configurations" />
   ) : (
     <>
       <Level>
