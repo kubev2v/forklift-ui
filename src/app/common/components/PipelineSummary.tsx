@@ -83,7 +83,9 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   return (
     <Flex direction={{ default: 'column' }}>
       <FlexItem>
-        <Text component="small">{title}</Text>
+        <Tooltip content={title}>
+          <Text component="small">{title}</Text>
+        </Tooltip>
         <Flex
           spaceItems={{ default: 'spaceItemsNone' }}
           alignContent={{ default: 'alignContentCenter' }}

@@ -23,6 +23,7 @@ import {
   expandable,
   cellWidth,
   truncate,
+  nowrap,
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -170,7 +171,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     { title: 'Data copied', transforms: [sortable] },
     {
       title: 'Status',
-      transforms: [sortable, cellWidth(20)],
+      transforms: [sortable, cellWidth(20), nowrap],
+      cellTransforms: [truncate],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
