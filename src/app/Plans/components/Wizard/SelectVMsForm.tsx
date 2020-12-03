@@ -28,12 +28,9 @@ import { useSortState, usePaginationState, useFilterState } from '@app/common/ho
 import { PlanWizardFormState } from './PlanWizard';
 import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
-import { getAggregateQueryStatus } from '@app/queries/helpers';
-import { QueryStatus } from 'react-query';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -251,89 +248,83 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     */
   });
 
-  const allQueries = [hostTreeQuery, vmTreeQuery, vmsQuery];
-  const allErrorTitles = [
-    'Error loading VMware host tree data',
-    'Error loading VMware VM tree data',
-    'Error loading VMs',
-  ];
-  const allQueriesStatus = getAggregateQueryStatus(allQueries);
-
-  if (allQueriesStatus === QueryStatus.Loading) {
-    return <LoadingEmptyState />;
-  }
-  if (allQueriesStatus === QueryStatus.Error) {
-    return <MultiQueryResultStatus results={allQueries} errorTitles={allErrorTitles} />;
-  }
-
-  if (availableVMs.length === 0) {
-    return (
-      <TableEmptyState
-        titleText="No VMs found"
-        bodyText="No results match your filter. Go back and make a different selection."
-      />
-    );
-  }
-
   return (
-    <>
-      <TextContent className={spacing.mbMd}>
-        <Text component="p">
-          Select VMs for migration. The Migration assessment column highlights conditions related to
-          migrating a particular VM, as determined by Red Hat&apos;s migration analytics service.
-        </Text>
-      </TextContent>
-      <Level>
-        <LevelItem>
-          <FilterToolbar<IVMwareVM>
-            filterCategories={filterCategories}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-          />
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
-        </LevelItem>
-      </Level>
-      {filteredItems.length > 0 ? (
-        <Table
-          aria-label="VMware VMs table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-          /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
+    <MultiQueryResultStatus
+      results={[hostTreeQuery, vmTreeQuery, vmsQuery]}
+      errorTitles={[
+        'Error loading VMware host tree data',
+        'Error loading VMware VM tree data',
+        'Error loading VMs',
+      ]}
+      spinnerMode={QuerySpinnerMode.EmptyState}
+    >
+      {availableVMs.length === 0 ? (
+        <TableEmptyState
+          titleText="No VMs found"
+          bodyText="No results match your filter. Go back and make a different selection."
+        />
+      ) : (
+        <>
+          <TextContent className={spacing.mbMd}>
+            <Text component="p">
+              Select VMs for migration. The Migration assessment column highlights conditions
+              related to migrating a particular VM, as determined by Red Hat&apos;s migration
+              analytics service.
+            </Text>
+          </TextContent>
+          <Level>
+            <LevelItem>
+              <FilterToolbar<IVMwareVM>
+                filterCategories={filterCategories}
+                filterValues={filterValues}
+                setFilterValues={setFilterValues}
+              />
+            </LevelItem>
+            <LevelItem>
+              <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
+            </LevelItem>
+          </Level>
+          {filteredItems.length > 0 ? (
+            <Table
+              aria-label="VMware VMs table"
+              variant={TableVariant.compact}
+              cells={columns}
+              rows={rows}
+              sortBy={sortBy}
+              onSort={onSort}
+              /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
           onCollapse={(event, rowKey, isOpen, rowData) => {
             toggleVMsExpanded(rowData.meta.vm);
           }}
           */
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-      ) : (
-        <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
-      )}
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
+          ) : (
+            <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
+          )}
 
-      <Level>
-        <LevelItem>
-          <TextContent>
-            <Text
-              component="small"
-              className={spacing.mlLg}
-            >{`${form.values.selectedVMs.length} selected`}</Text>
-          </TextContent>
-        </LevelItem>
-        <LevelItem>
-          <Pagination
-            {...paginationProps}
-            widgetId="vms-table-pagination-bottom"
-            variant="bottom"
-          />
-        </LevelItem>
-      </Level>
-    </>
+          <Level>
+            <LevelItem>
+              <TextContent>
+                <Text
+                  component="small"
+                  className={spacing.mlLg}
+                >{`${form.values.selectedVMs.length} selected`}</Text>
+              </TextContent>
+            </LevelItem>
+            <LevelItem>
+              <Pagination
+                {...paginationProps}
+                widgetId="vms-table-pagination-bottom"
+                variant="bottom"
+              />
+            </LevelItem>
+          </Level>
+        </>
+      )}
+    </MultiQueryResultStatus>
   );
 };
 

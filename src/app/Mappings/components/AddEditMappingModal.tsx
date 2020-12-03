@@ -41,6 +41,7 @@ import { IKubeList } from '@app/client/types';
 import {
   QueryResultStatus,
   MultiQueryResultStatus,
+  QuerySpinnerMode,
 } from '@app/common/components/QueryResultStatus';
 
 interface IAddEditMappingModalProps {
@@ -257,17 +258,14 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               <GridItem sm={1} />
             </Grid>
             {form.values.sourceProvider && form.values.targetProvider ? (
-              mappingResourceQueries.isLoading ? (
-                <LoadingEmptyState />
-              ) : mappingResourceQueries.isError ? (
-                <MultiQueryResultStatus
-                  results={mappingResourceQueries.queries}
-                  errorTitles={[
-                    'Error loading source provider resources',
-                    'Error loading target provider resources',
-                  ]}
-                />
-              ) : (
+              <MultiQueryResultStatus
+                results={mappingResourceQueries.queries}
+                errorTitles={[
+                  'Error loading source provider resources',
+                  'Error loading target provider resources',
+                ]}
+                spinnerMode={QuerySpinnerMode.EmptyState}
+              >
                 <MappingBuilder
                   mappingType={mappingType}
                   availableSources={mappingResourceQueries.availableSources}
@@ -275,7 +273,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   builderItems={form.values.builderItems}
                   setBuilderItems={form.fields.builderItems.setValue}
                 />
-              )
+              </MultiQueryResultStatus>
             ) : null}
           </>
         )}

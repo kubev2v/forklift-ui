@@ -37,7 +37,6 @@ import { FilterCategory, FilterToolbar, FilterType } from '@app/common/component
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { formatTimestamp } from '@app/common/helpers';
 import {
   useProvidersQuery,
@@ -45,7 +44,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 export interface IPlanMatchParams {
   url: string;
@@ -221,19 +220,15 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration details by VM</Title>
       </PageSection>
       <PageSection>
-        {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
-          // TODO this could be a mode of the MultiQueryResultStatus component, we don't need all these loading conditions
-          <LoadingEmptyState />
-        ) : plansQuery.isError || providersQuery.isError || vmsQuery.isError ? (
-          <MultiQueryResultStatus
-            results={[plansQuery, providersQuery, vmsQuery]}
-            errorTitles={[
-              'Error loading plan details',
-              'Error loading providers',
-              'Error loading VMs',
-            ]}
-          />
-        ) : (
+        <MultiQueryResultStatus
+          results={[plansQuery, providersQuery, vmsQuery]}
+          errorTitles={[
+            'Error loading plan details',
+            'Error loading providers',
+            'Error loading VMs',
+          ]}
+          spinnerMode={QuerySpinnerMode.EmptyState}
+        >
           <Card>
             <CardBody>
               <Level>
@@ -275,7 +270,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               />
             </CardBody>
           </Card>
-        )}
+        </MultiQueryResultStatus>
       </PageSection>
     </>
   );

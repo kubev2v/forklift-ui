@@ -49,7 +49,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -134,13 +134,11 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const {
-    prefillQueryStatus,
-    prefillQueryError,
-    isDonePrefilling,
-    prefillQueries,
-    prefillErrorTitles,
-  } = useEditingPlanPrefillEffect(forms, planBeingEdited, !!editRouteMatch);
+  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
+    forms,
+    planBeingEdited,
+    !!editRouteMatch
+  );
 
   enum StepId {
     General = 1,
@@ -315,58 +313,60 @@ const PlanWizard: React.FunctionComponent = () => {
     },
   ];
 
-  const allQueries = [plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries];
-  const allErrorTitles = [
-    'Error loading plans',
-    'Error loading network mappings',
-    'Error loading storage mappings',
-    ...prefillErrorTitles,
-  ];
-  const allQueriesStatus = getAggregateQueryStatus(allQueries);
-
-  if (allQueriesStatus === QueryStatus.Loading || !isDonePrefilling) {
-    return <LoadingEmptyState />;
-  }
-  if (allQueriesStatus === QueryStatus.Error) {
-    return <MultiQueryResultStatus results={allQueries} errorTitles={allErrorTitles} />;
-  }
-
-  if (editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started)) {
-    return <Redirect to="/plans" />;
-  }
-
   return (
-    <>
-      <Prompt
-        when={forms.isSomeFormDirty && mutationStatus === QueryStatus.Idle}
-        message="You have unsaved changes, are you sure you want to leave this page?"
-      />
-      <PageSection title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`} variant="light">
-        <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
-          <BreadcrumbItem>
-            <Link to={`/plans`}>Migration plans</Link>
-          </BreadcrumbItem>
-          {planBeingEdited ? (
-            <BreadcrumbItem>{planBeingEdited.metadata.name}</BreadcrumbItem>
-          ) : null}
-          <BreadcrumbItem>{!planBeingEdited ? 'Create' : 'Edit'}</BreadcrumbItem>
-        </Breadcrumb>
-        <Level>
-          <LevelItem>
-            <Title headingLevel="h1">{!planBeingEdited ? 'Create' : 'Edit'} migration plan</Title>
-          </LevelItem>
-        </Level>
-      </PageSection>
-      <PageSection variant="light" className={spacing.p_0}>
-        <Wizard
-          className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
-          steps={steps}
-          onSubmit={(event) => event.preventDefault()}
-          onSave={onSave}
-          onClose={onClose}
-        />
-      </PageSection>
-    </>
+    <MultiQueryResultStatus
+      results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
+      errorTitles={[
+        'Error loading plans',
+        'Error loading network mappings',
+        'Error loading storage mappings',
+        ...prefillErrorTitles,
+      ]}
+      spinnerMode={QuerySpinnerMode.EmptyState}
+    >
+      {!isDonePrefilling ? (
+        <LoadingEmptyState />
+      ) : editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started) ? (
+        <Redirect to="/plans" />
+      ) : (
+        <>
+          <Prompt
+            when={forms.isSomeFormDirty && mutationStatus === QueryStatus.Idle}
+            message="You have unsaved changes, are you sure you want to leave this page?"
+          />
+          <PageSection
+            title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`}
+            variant="light"
+          >
+            <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
+              <BreadcrumbItem>
+                <Link to={`/plans`}>Migration plans</Link>
+              </BreadcrumbItem>
+              {planBeingEdited ? (
+                <BreadcrumbItem>{planBeingEdited.metadata.name}</BreadcrumbItem>
+              ) : null}
+              <BreadcrumbItem>{!planBeingEdited ? 'Create' : 'Edit'}</BreadcrumbItem>
+            </Breadcrumb>
+            <Level>
+              <LevelItem>
+                <Title headingLevel="h1">
+                  {!planBeingEdited ? 'Create' : 'Edit'} migration plan
+                </Title>
+              </LevelItem>
+            </Level>
+          </PageSection>
+          <PageSection variant="light" className={spacing.p_0}>
+            <Wizard
+              className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
+              steps={steps}
+              onSubmit={(event) => event.preventDefault()}
+              onSave={onSave}
+              onClose={onClose}
+            />
+          </PageSection>
+        </>
+      )}
+    </MultiQueryResultStatus>
   );
 };
 

@@ -17,9 +17,8 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { IVMwareProvider } from '@app/queries/types';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 export interface IHostsMatchParams {
   url: string;
@@ -62,33 +61,32 @@ export const HostsPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <Card>
-          {hostsQuery.isLoading || providersQuery.isLoading ? (
-            <LoadingEmptyState />
-          ) : hostsQuery.isError || providersQuery.isError ? (
-            <MultiQueryResultStatus
-              results={[hostsQuery, providersQuery]}
-              errorTitles={['Error loading hosts', 'Error loading providers']}
-            />
-          ) : !match?.params?.providerName ? (
-            <Alert variant="danger" isInline title="No matching host found" />
-          ) : (
-            <CardBody>
-              {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
-                <EmptyState className={spacing.my_2xl}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="lg">
-                    No hosts
-                  </Title>
-                  <EmptyStateBody>No hosts available for this provider.</EmptyStateBody>
-                </EmptyState>
-              ) : (
-                <VMwareProviderHostsTable
-                  provider={provider as IVMwareProvider}
-                  hosts={hostsQuery?.data}
-                />
-              )}
-            </CardBody>
-          )}
+          <MultiQueryResultStatus
+            results={[hostsQuery, providersQuery]}
+            errorTitles={['Error loading hosts', 'Error loading providers']}
+            spinnerMode={QuerySpinnerMode.EmptyState}
+          >
+            {!match?.params?.providerName ? (
+              <Alert variant="danger" isInline title="No matching host found" />
+            ) : (
+              <CardBody>
+                {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
+                  <EmptyState className={spacing.my_2xl}>
+                    <EmptyStateIcon icon={PlusCircleIcon} />
+                    <Title headingLevel="h2" size="lg">
+                      No hosts
+                    </Title>
+                    <EmptyStateBody>No hosts available for this provider.</EmptyStateBody>
+                  </EmptyState>
+                ) : (
+                  <VMwareProviderHostsTable
+                    provider={provider as IVMwareProvider}
+                    hosts={hostsQuery?.data}
+                  />
+                )}
+              </CardBody>
+            )}
+          </MultiQueryResultStatus>
         </Card>
       </PageSection>
     </>

@@ -15,7 +15,7 @@ import MappingDetailView from '@app/Mappings/components/MappingDetailView';
 import { IPlan, Mapping, MappingType } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus } from '@app/common/components/QueryResultStatus';
 import { generateMappings } from './helpers';
 
 interface IReviewProps {

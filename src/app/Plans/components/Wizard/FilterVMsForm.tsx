@@ -11,11 +11,10 @@ import {
   flattenVMwareTreeNodes,
   getSelectedVMsFromPlan,
 } from './helpers';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
-import MultiQueryResultStatus from '@app/common/components/QueryResultStatus/MultiQueryResultStatus';
+import { MultiQueryResultStatus, QuerySpinnerMode } from '@app/common/components/QueryResultStatus';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -86,14 +85,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           title={<TabTitleText>By folders</TabTitleText>}
         />
       </Tabs>
-      {vmsQuery.isLoading || treeQuery.isLoading ? (
-        <LoadingEmptyState />
-      ) : vmsQuery.isError || treeQuery.isError ? (
-        <MultiQueryResultStatus
-          results={[vmsQuery, treeQuery]}
-          errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
-        />
-      ) : (
+      <MultiQueryResultStatus
+        results={[vmsQuery, treeQuery]}
+        errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
+        spinnerMode={QuerySpinnerMode.EmptyState}
+      >
         <TreeView
           data={filterAndConvertVMwareTree(
             treeQuery.data || null,
@@ -124,7 +120,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             'aria-label': 'Search inventory',
           }}
         />
-      )}
+      </MultiQueryResultStatus>
     </div>
   );
 };
