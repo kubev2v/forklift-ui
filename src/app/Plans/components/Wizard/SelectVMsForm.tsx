@@ -154,9 +154,12 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { isItemSelected, toggleItemSelected, areAllSelected, selectAll } = useSelectionState<
-    IVMwareVM
-  >({
+  const {
+    isItemSelected,
+    toggleItemSelected,
+    areAllSelected,
+    selectAll,
+  } = useSelectionState<IVMwareVM>({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
