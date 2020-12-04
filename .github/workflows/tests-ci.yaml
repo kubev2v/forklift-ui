@@ -16,8 +16,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Generate yarn.lock
-        run: yarn import
       - name: Install dependencies
         run: yarn install
       - name: Run tests
