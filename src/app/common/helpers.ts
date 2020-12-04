@@ -77,6 +77,7 @@ export const getStepType = (status: IVMStatus, index: number): StepType => {
   const step = status.pipeline[index];
   if (status.completed || step?.completed || index < currentStepIndex) return StepType.Full;
   else if (status.started && index === currentStepIndex) {
+    if (status.error) return StepType.Full;
     return StepType.Half;
   } else return StepType.Empty;
 };
