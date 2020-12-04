@@ -35,7 +35,7 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     return 'Complete';
   }
   if (status.started && !status.completed) {
-    if (status.error) return `error - ${currentStep?.description}`;
+    if (status.error) return `Error - ${currentStep?.description}`;
     if (currentStep?.description) return currentStep.description;
   }
   return 'Not started';
