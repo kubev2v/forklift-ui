@@ -16,6 +16,7 @@ import { IVMStatus } from '@app/queries/types';
 import { StepType } from '@app/common/constants';
 import './PipelineSummary.css';
 import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
+import TruncatedText from './TruncatedText';
 
 interface IDashProps {
   isReached: boolean;
@@ -83,9 +84,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   return (
     <Flex direction={{ default: 'column' }}>
       <FlexItem>
-        <Tooltip content={title}>
-          <Text component="small">{title}</Text>
-        </Tooltip>
+        <TruncatedText>{title}</TruncatedText>
         <Flex
           spaceItems={{ default: 'spaceItemsNone' }}
           alignContent={{ default: 'alignContentCenter' }}

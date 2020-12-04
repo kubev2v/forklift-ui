@@ -172,7 +172,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Status',
       transforms: [sortable, cellWidth(20), nowrap],
-      cellTransforms: [truncate],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
