@@ -7,9 +7,8 @@
   "license": "Apache",
   "private": true,
   "scripts": {
-    "prebuild": "npm run clean",
     "dr:surge": "node dr-surge.js",
-    "build": "NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
+    "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock npm run build && npm run dr:surge",
     "setup:dev:remote": "node ./scripts/remote-dev.js",
