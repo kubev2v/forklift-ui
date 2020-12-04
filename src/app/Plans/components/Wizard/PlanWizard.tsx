@@ -8,6 +8,7 @@ import {
   PageSection,
   Title,
   Wizard,
+  WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { QueryResult, QueryStatus } from 'react-query';
@@ -313,6 +314,14 @@ const PlanWizard: React.FunctionComponent = () => {
     },
   ];
 
+  const resetResultsOnNav: WizardStepFunctionType = (_newStep, prevStep) => {
+    if (prevStep.prevId === StepId.Review) {
+      createPlanResult.reset();
+      createNetworkMappingResult.reset();
+      createStorageMappingResult.reset();
+    }
+  };
+
   return (
     <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
@@ -363,6 +372,8 @@ const PlanWizard: React.FunctionComponent = () => {
               onSubmit={(event) => event.preventDefault()}
               onSave={onSave}
               onClose={onClose}
+              onBack={resetResultsOnNav}
+              onGoToStep={resetResultsOnNav}
             />
           </PageSection>
         </>

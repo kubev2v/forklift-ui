@@ -35,15 +35,6 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   createStorageMappingResult,
   planBeingEdited,
 }: IReviewProps) => {
-  // Reset mutation state on unmount (going back in the wizard clears errors)
-  React.useEffect(() => {
-    return () => {
-      createPlanResult.reset();
-      createNetworkMappingResult.reset();
-      createStorageMappingResult.reset();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const { networkMapping, storageMapping } = generateMappings(forms);
   return (
     <Form>
