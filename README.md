@@ -7,7 +7,6 @@ A read-only preview with mock data is available at http://konveyor-forklift-ui-p
 ## Prerequisites
 
 - [NodeJS](https://nodejs.org/en/) >= 10.x
-- [Yarn "Classic"](https://classic.yarnpkg.com/lang/en/) (1.x)
 
 ## Quick-start
 
@@ -16,19 +15,19 @@ Clone and install dependencies:
 ```bash
 git clone https://github.com/konveyor/forklift-ui
 cd forklift-ui
-yarn install
+npm install
 ```
 
 Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/master/config/meta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
-**Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `yarn [start:dev|build]:[mock|remote]` commands will override it.
+**Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `npm run [start:dev|build]:[mock|remote]` commands will override it.
 
 Run the UI with webpack-dev-server at http://localhost:9000:
 
 ```sh
-yarn start:dev:remote  # uses real data from the REMOTE_API_URL in your .env file
-yarn start:dev:mock    # uses static mock data, can run offline
-yarn start:dev         # uses the DATA_SOURCE defined in your .env file
+npm run start:dev:remote  # uses real data from the REMOTE_API_URL in your .env file
+npm run start:dev:mock    # uses static mock data, can run offline
+npm run start:dev         # uses the DATA_SOURCE defined in your .env file
 ```
 
 ## Development Scripts
@@ -37,37 +36,37 @@ To run the type-checker, linter and unit tests:
 
 ```sh
 # Run all 3:
-yarn ci
+npm run ci
 # Or run them individually:
-yarn type-check
-yarn lint [--fix]
-yarn test [--watch]
+npm run type-check
+npm run lint [--fix]
+npm run test [--watch]
 ```
 
 [Prettier](https://prettier.io/) code formatting is enforced by ESLint. To run Prettier and format your code (do this before committing if you don't run Prettier in your editor):
 
 ```sh
-yarn format
+npm run format
 ```
 
 To run a production build using webpack (outputs to `./dist`):
 
 ```sh
-yarn build:remote  # uses real data from the REMOTE_API_URL in your .env file
-yarn build:mock    # uses static mock data, can run offline or be deployed as a preview
-yarn build         # uses the DATA_SOURCE defined in your .env file
+npm run build:remote  # uses real data from the REMOTE_API_URL in your .env file
+npm run build:mock    # uses static mock data, can run offline or be deployed as a preview
+npm run build         # uses the DATA_SOURCE defined in your .env file
 ```
 
 To launch a tool for inspecting the bundle size:
 
 ```sh
-yarn bundle-profile:analyze
+npm run bundle-profile:analyze
 ```
 
-## Running in production mode (run a `yarn build` first)
+## Running in production mode (run a `npm run build` first)
 
 ```sh
-yarn start
+npm run start
 ```
 
 ## Configurations
