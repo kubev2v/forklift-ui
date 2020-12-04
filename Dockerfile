@@ -4,7 +4,7 @@ COPY . /forklift-ui
 WORKDIR /forklift-ui
 USER root
 RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
-    dnf -y install yarn && yarn && yarn build
+    dnf -y install yarn && yarn import && yarn && yarn build
 
 
 # Runner image
