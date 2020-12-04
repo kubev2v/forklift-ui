@@ -9,7 +9,6 @@ import {
   FormGroup,
   Flex,
   FlexItem,
-  Alert,
   Select,
   SelectOption,
   SelectGroup,
@@ -29,7 +28,6 @@ import {
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { PlanWizardFormState } from './PlanWizard';
 import {
   getBuilderItemsFromMapping,
@@ -39,6 +37,7 @@ import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
 import { QueryStatus } from 'react-query';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -139,124 +138,123 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
       ).length < form.values.builderItems.length
     : false;
 
-  if (mappingResourceQueries.isLoading || mappingsQuery.isLoading) {
-    return <LoadingEmptyState />;
-  }
-  if (mappingResourceQueries.isError) {
-    return <Alert variant="danger" title="Error loading mapping resources" />;
-  }
-  if (mappingsQuery.isError) {
-    return <Alert variant="danger" title="Error loading mappings" />;
-  }
-
   return (
-    <Form>
-      {!form.values.isPrefilled ? (
-        <TextContent>
-          <Text component="p">
-            Start with an existing {mappingType.toLowerCase()} mapping between your source and
-            target providers, or create a new one.
-          </Text>
-        </TextContent>
-      ) : null}
-      <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
+    <ResolvedQueries
+      results={[...mappingResourceQueries.queries, mappingsQuery]}
+      errorTitles={[
+        'Error loading source provider resources',
+        'Error loading target provider resources',
+        'Error loading mappings',
+      ]}
+    >
+      <Form>
         {!form.values.isPrefilled ? (
-          <FlexItem>
-            <FormGroup isRequired fieldId="mappingSelect">
-              <Select
-                id="mappingSelect"
-                aria-label="Select mapping"
-                placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
-                isGrouped
-                isOpen={isMappingSelectOpen}
-                onToggle={setIsMappingSelectOpen}
-                onSelect={(_event, selection: SelectOptionObject) => {
-                  const sel = selection as OptionWithValue<Mapping | 'new'>;
-                  if (sel.value === 'new') {
-                    form.fields.isCreateMappingSelected.setValue(true);
-                    form.fields.selectedExistingMapping.setValue(null);
-                    populateMappingBuilder();
-                  } else {
-                    form.fields.isCreateMappingSelected.setValue(false);
-                    form.fields.selectedExistingMapping.setValue(sel.value);
-                    populateMappingBuilder(sel.value);
-                  }
-                  setIsMappingSelectOpen(false);
-                }}
-                selections={
-                  form.values.isCreateMappingSelected
-                    ? [newMappingOption]
-                    : form.values.selectedExistingMapping
-                    ? [
-                        mappingOptions.find((option) =>
-                          isSameResource(
-                            option.value.metadata,
-                            form.values.selectedExistingMapping?.metadata
-                          )
-                        ),
-                      ]
-                    : []
-                }
-              >
-                <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
-                <SelectGroup
-                  label={
-                    mappingOptions.length > 0
-                      ? 'Existing mappings'
-                      : 'No existing mappings match your selected providers'
+          <TextContent>
+            <Text component="p">
+              Start with an existing {mappingType.toLowerCase()} mapping between your source and
+              target providers, or create a new one.
+            </Text>
+          </TextContent>
+        ) : null}
+        <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
+          {!form.values.isPrefilled ? (
+            <FlexItem>
+              <FormGroup isRequired fieldId="mappingSelect">
+                <Select
+                  id="mappingSelect"
+                  aria-label="Select mapping"
+                  placeholderText={`Select a ${mappingType.toLowerCase()} mapping`}
+                  isGrouped
+                  isOpen={isMappingSelectOpen}
+                  onToggle={setIsMappingSelectOpen}
+                  onSelect={(_event, selection: SelectOptionObject) => {
+                    const sel = selection as OptionWithValue<Mapping | 'new'>;
+                    if (sel.value === 'new') {
+                      form.fields.isCreateMappingSelected.setValue(true);
+                      form.fields.selectedExistingMapping.setValue(null);
+                      populateMappingBuilder();
+                    } else {
+                      form.fields.isCreateMappingSelected.setValue(false);
+                      form.fields.selectedExistingMapping.setValue(sel.value);
+                      populateMappingBuilder(sel.value);
+                    }
+                    setIsMappingSelectOpen(false);
+                  }}
+                  selections={
+                    form.values.isCreateMappingSelected
+                      ? [newMappingOption]
+                      : form.values.selectedExistingMapping
+                      ? [
+                          mappingOptions.find((option) =>
+                            isSameResource(
+                              option.value.metadata,
+                              form.values.selectedExistingMapping?.metadata
+                            )
+                          ),
+                        ]
+                      : []
                   }
                 >
-                  {mappingOptions.map((option) => (
-                    <SelectOption key={option.toString()} value={option} />
-                  ))}
-                </SelectGroup>
-              </Select>
-            </FormGroup>
-          </FlexItem>
-        ) : null}
+                  <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
+                  <SelectGroup
+                    label={
+                      mappingOptions.length > 0
+                        ? 'Existing mappings'
+                        : 'No existing mappings match your selected providers'
+                    }
+                  >
+                    {mappingOptions.map((option) => (
+                      <SelectOption key={option.toString()} value={option} />
+                    ))}
+                  </SelectGroup>
+                </Select>
+              </FormGroup>
+            </FlexItem>
+          ) : null}
 
-        {(form.values.isCreateMappingSelected ||
-          form.values.selectedExistingMapping ||
-          form.values.isPrefilled) && (
-          <>
-            <MappingBuilder
-              mappingType={mappingType}
-              availableSources={mappingResourceQueries.availableSources}
-              availableTargets={mappingResourceQueries.availableTargets}
-              builderItems={form.values.builderItems}
-              setBuilderItems={form.fields.builderItems.setValue}
-              isWizardMode
-              hasItemsAddedMessage={hasAddedItems}
-            />
-            {form.values.isCreateMappingSelected || form.values.isPrefilled || hasAddedItems ? (
-              <>
-                <Checkbox
-                  label="Save mapping to use again"
-                  aria-label="save mapping checkbox"
-                  id="save-mapping-check"
-                  isChecked={form.values.isSaveNewMapping}
-                  onChange={() =>
-                    form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)
-                  }
-                  className={spacing.mtMd}
-                />
-                {form.values.isSaveNewMapping && (
-                  <Grid className={spacing.mbMd}>
-                    <GridItem sm={12} md={5} className={spacing.mbMd}>
-                      <ValidatedTextInput
-                        field={form.fields.newMappingName}
-                        label="Name"
-                        fieldId="new-mapping-name"
-                      />
-                    </GridItem>
-                  </Grid>
-                )}
-              </>
-            ) : null}
-          </>
-        )}
-      </Flex>
-    </Form>
+          {(form.values.isCreateMappingSelected ||
+            form.values.selectedExistingMapping ||
+            form.values.isPrefilled) && (
+            <>
+              <MappingBuilder
+                mappingType={mappingType}
+                availableSources={mappingResourceQueries.availableSources}
+                availableTargets={mappingResourceQueries.availableTargets}
+                builderItems={form.values.builderItems}
+                setBuilderItems={form.fields.builderItems.setValue}
+                isWizardMode
+                hasItemsAddedMessage={hasAddedItems}
+              />
+              {form.values.isCreateMappingSelected || form.values.isPrefilled || hasAddedItems ? (
+                <>
+                  <Checkbox
+                    label="Save mapping to use again"
+                    aria-label="save mapping checkbox"
+                    id="save-mapping-check"
+                    isChecked={form.values.isSaveNewMapping}
+                    onChange={() =>
+                      form.fields.isSaveNewMapping.setValue(!form.values.isSaveNewMapping)
+                    }
+                    className={spacing.mtMd}
+                  />
+                  {form.values.isSaveNewMapping && (
+                    <Grid className={spacing.mbMd}>
+                      <GridItem sm={12} md={5} className={spacing.mbMd}>
+                        <ValidatedTextInput
+                          field={form.fields.newMappingName}
+                          label="Name"
+                          fieldId="new-mapping-name"
+                        />
+                      </GridItem>
+                    </Grid>
+                  )}
+                </>
+              ) : null}
+            </>
+          )}
+        </Flex>
+      </Form>
+    </ResolvedQueries>
   );
 };
 

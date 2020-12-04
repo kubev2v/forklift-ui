@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -14,9 +14,9 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -75,12 +75,8 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
-  return hostConfigsQuery.isLoading ? (
-    <LoadingEmptyState />
-  ) : hostConfigsQuery.isError ? (
-    <Alert variant="danger" isInline title="Error loading host configurations" />
-  ) : (
-    <>
+  return (
+    <ResolvedQuery result={hostConfigsQuery} errorTitle="Error loading host configurations">
       <Level>
         <LevelItem>
           <ConditionalTooltip
@@ -132,7 +128,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
           onClose={() => setIsSelectNetworkModalOpen(false)}
         />
       )}
-    </>
+    </ResolvedQuery>
   );
 };
 

@@ -7,7 +7,6 @@ import {
   FormGroup,
   Grid,
   GridItem,
-  Alert,
   Stack,
   Flex,
 } from '@patternfly/react-core';
@@ -36,10 +35,14 @@ import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
-import MutationStatus from '@app/common/components/MutationStatus';
 import { QueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
+import {
+  ResolvedQuery,
+  ResolvedQueries,
+  QuerySpinnerMode,
+} from '@app/common/components/ResolvedQuery';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -144,9 +147,10 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus
-            results={[mutationResult]}
-            errorTitles={[`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`]}
+          <ResolvedQuery
+            result={mutationResult}
+            errorTitle={`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`}
+            spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -181,96 +185,98 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       }
     >
       <Form className="extraSelectMargin">
-        {providersQuery.isLoading || !isDonePrefilling ? (
-          <LoadingEmptyState />
-        ) : providersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
-        ) : (
-          <>
-            <Grid className={spacing.mbMd}>
-              <GridItem sm={12} md={5} className={spacing.mbMd}>
-                <ValidatedTextInput
-                  field={form.fields.name}
-                  label="Name"
-                  isRequired
-                  fieldId="mapping-name"
-                  inputProps={{
-                    isDisabled: !!mappingBeingEdited,
-                  }}
-                />
-              </GridItem>
-              <GridItem />
-              <GridItem sm={12} md={5}>
-                <FormGroup
-                  label="Source provider"
-                  isRequired
-                  fieldId="source-provider"
-                  validated={form.fields.sourceProvider.isValid ? 'default' : 'error'}
-                  {...getFormGroupProps(form.fields.sourceProvider)}
-                >
-                  <SimpleSelect
-                    id="source-provider"
-                    aria-label="Source provider"
-                    options={sourceProviderOptions}
-                    value={[
-                      sourceProviderOptions.find(
-                        (option) => option.value.name === form.values.sourceProvider?.name
-                      ),
-                    ]}
-                    onChange={(selection) =>
-                      form.fields.sourceProvider.setValue(
-                        (selection as OptionWithValue<IVMwareProvider>).value
-                      )
-                    }
-                    placeholderText="Select a source provider..."
+        <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
+          {!isDonePrefilling ? (
+            <LoadingEmptyState />
+          ) : (
+            <>
+              <Grid className={spacing.mbMd}>
+                <GridItem sm={12} md={5} className={spacing.mbMd}>
+                  <ValidatedTextInput
+                    field={form.fields.name}
+                    label="Name"
+                    isRequired
+                    fieldId="mapping-name"
+                    inputProps={{
+                      isDisabled: !!mappingBeingEdited,
+                    }}
                   />
-                </FormGroup>
-              </GridItem>
-              <GridItem sm={1} />
-              <GridItem sm={12} md={5}>
-                <FormGroup
-                  label="Target provider"
-                  isRequired
-                  fieldId="target-provider"
-                  {...getFormGroupProps(form.fields.sourceProvider)}
+                </GridItem>
+                <GridItem />
+                <GridItem sm={12} md={5}>
+                  <FormGroup
+                    label="Source provider"
+                    isRequired
+                    fieldId="source-provider"
+                    validated={form.fields.sourceProvider.isValid ? 'default' : 'error'}
+                    {...getFormGroupProps(form.fields.sourceProvider)}
+                  >
+                    <SimpleSelect
+                      id="source-provider"
+                      aria-label="Source provider"
+                      options={sourceProviderOptions}
+                      value={[
+                        sourceProviderOptions.find(
+                          (option) => option.value.name === form.values.sourceProvider?.name
+                        ),
+                      ]}
+                      onChange={(selection) =>
+                        form.fields.sourceProvider.setValue(
+                          (selection as OptionWithValue<IVMwareProvider>).value
+                        )
+                      }
+                      placeholderText="Select a source provider..."
+                    />
+                  </FormGroup>
+                </GridItem>
+                <GridItem sm={1} />
+                <GridItem sm={12} md={5}>
+                  <FormGroup
+                    label="Target provider"
+                    isRequired
+                    fieldId="target-provider"
+                    {...getFormGroupProps(form.fields.sourceProvider)}
+                  >
+                    <SimpleSelect
+                      id="target-provider"
+                      aria-label="Target provider"
+                      options={targetProviderOptions}
+                      value={[
+                        targetProviderOptions.find(
+                          (option) => option.value.name === form.values.targetProvider?.name
+                        ),
+                      ]}
+                      onChange={(selection) =>
+                        form.fields.targetProvider.setValue(
+                          (selection as OptionWithValue<IOpenShiftProvider>).value
+                        )
+                      }
+                      placeholderText="Select a target provider..."
+                    />
+                  </FormGroup>
+                </GridItem>
+                <GridItem sm={1} />
+              </Grid>
+              {form.values.sourceProvider && form.values.targetProvider ? (
+                <ResolvedQueries
+                  results={mappingResourceQueries.queries}
+                  errorTitles={[
+                    'Error loading source provider resources',
+                    'Error loading target provider resources',
+                  ]}
                 >
-                  <SimpleSelect
-                    id="target-provider"
-                    aria-label="Target provider"
-                    options={targetProviderOptions}
-                    value={[
-                      targetProviderOptions.find(
-                        (option) => option.value.name === form.values.targetProvider?.name
-                      ),
-                    ]}
-                    onChange={(selection) =>
-                      form.fields.targetProvider.setValue(
-                        (selection as OptionWithValue<IOpenShiftProvider>).value
-                      )
-                    }
-                    placeholderText="Select a target provider..."
+                  <MappingBuilder
+                    mappingType={mappingType}
+                    availableSources={mappingResourceQueries.availableSources}
+                    availableTargets={mappingResourceQueries.availableTargets}
+                    builderItems={form.values.builderItems}
+                    setBuilderItems={form.fields.builderItems.setValue}
                   />
-                </FormGroup>
-              </GridItem>
-              <GridItem sm={1} />
-            </Grid>
-            {form.values.sourceProvider && form.values.targetProvider ? (
-              mappingResourceQueries.isLoading ? (
-                <LoadingEmptyState />
-              ) : mappingResourceQueries.isError ? (
-                <Alert variant="danger" isInline title="Error loading mapping resources" />
-              ) : (
-                <MappingBuilder
-                  mappingType={mappingType}
-                  availableSources={mappingResourceQueries.availableSources}
-                  availableTargets={mappingResourceQueries.availableTargets}
-                  builderItems={form.values.builderItems}
-                  setBuilderItems={form.fields.builderItems.setValue}
-                />
-              )
-            ) : null}
-          </>
-        )}
+                </ResolvedQueries>
+              ) : null}
+            </>
+          )}
+        </ResolvedQuery>
       </Form>
     </Modal>
   );

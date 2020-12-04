@@ -5,7 +5,6 @@ import { IOpenShiftProvider, IStorageClass, IStorageClassesByProvider, MappingTy
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
 import { authorizedFetch, useFetchContext } from './fetchHelpers';
 
-// TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useStorageClassesQuery = (
   providers: IOpenShiftProvider[] | null,
   mappingType: MappingType

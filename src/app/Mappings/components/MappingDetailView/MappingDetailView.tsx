@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Grid, GridItem } from '@patternfly/react-core';
+import { Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
@@ -8,8 +8,8 @@ import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TruncatedText from '@app/common/components/TruncatedText';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -32,68 +32,64 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     targetProvider,
     mappingType
   );
-
-  if (providersQuery.isLoading || mappingResourceQueries.isLoading) {
-    return <LoadingEmptyState className={className} />;
-  }
-  if (providersQuery.isError || mappingResourceQueries.isError) {
-    return (
-      <Alert
-        className={className}
-        isInline
-        variant="danger"
-        title="Error loading mapping resources"
-      />
-    );
-  }
-
   const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
+
   return (
-    <div className={className}>
-      <Grid>
-        <GridItem span={5} className={spacing.pbSm}>
-          <label className="pf-c-form__label">
-            <span className="pf-c-form__label-text">{getMappingSourceTitle(mappingType)}</span>
-          </label>
-        </GridItem>
-        <GridItem span={2}></GridItem>
-        <GridItem span={5} className={spacing.pbSm}>
-          <label className="pf-c-form__label">
-            <span className="pf-c-form__label-text">{getMappingTargetTitle(mappingType)}</span>
-          </label>
-        </GridItem>
-      </Grid>
-      {mappingItemGroups.map((items, index) => {
-        const targetName = getMappingItemTargetName(items[0], mappingType);
-        const isLastGroup = index === mappingItemGroups.length - 1;
-        return (
-          <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
-            <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-              <ul>
-                {items.map((item) => {
-                  const source = getMappingSourceById(
-                    mappingResourceQueries.availableSources,
-                    item.source.id
-                  );
-                  const sourceName = source ? source.name : '';
-                  return (
-                    <li key={sourceName}>
-                      <TruncatedText>{sourceName}</TruncatedText>
-                    </li>
-                  );
-                })}
-              </ul>
-            </GridItem>
-            <GridItem span={2} className="mapping-view-arrow-cell">
-              <LineArrow />
-            </GridItem>
-            <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-              <TruncatedText>{targetName}</TruncatedText>
-            </GridItem>
-          </Grid>
-        );
-      })}
-    </div>
+    <ResolvedQueries
+      results={[providersQuery, ...mappingResourceQueries.queries]}
+      errorTitles={[
+        'Error loading providers',
+        'Error loading source provider resources',
+        'Error loading target provider resources',
+      ]}
+      className={className}
+    >
+      <div className={className}>
+        <Grid>
+          <GridItem span={5} className={spacing.pbSm}>
+            <label className="pf-c-form__label">
+              <span className="pf-c-form__label-text">{getMappingSourceTitle(mappingType)}</span>
+            </label>
+          </GridItem>
+          <GridItem span={2}></GridItem>
+          <GridItem span={5} className={spacing.pbSm}>
+            <label className="pf-c-form__label">
+              <span className="pf-c-form__label-text">{getMappingTargetTitle(mappingType)}</span>
+            </label>
+          </GridItem>
+        </Grid>
+        {mappingItemGroups.map((items, index) => {
+          const targetName = getMappingItemTargetName(items[0], mappingType);
+          const isLastGroup = index === mappingItemGroups.length - 1;
+          return (
+            <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
+              <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
+                <ul>
+                  {items.map((item) => {
+                    const source = getMappingSourceById(
+                      mappingResourceQueries.availableSources,
+                      item.source.id
+                    );
+                    const sourceName = source ? source.name : '';
+                    return (
+                      <li key={sourceName}>
+                        <TruncatedText>{sourceName}</TruncatedText>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </GridItem>
+              <GridItem span={2} className="mapping-view-arrow-cell">
+                <LineArrow />
+              </GridItem>
+              <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
+                <TruncatedText>{targetName}</TruncatedText>
+              </GridItem>
+            </Grid>
+          );
+        })}
+      </div>
+    </ResolvedQueries>
   );
 };
 

@@ -7,7 +7,6 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   Title,
-  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -19,14 +18,17 @@ import {
 } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import CreatePlanButton from './components/CreatePlanButton';
-import MutationStatus from '@app/common/components/MutationStatus';
 import { IPlan } from '@app/queries/types';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutationResult } from 'react-query';
 import { isSameResource } from '@app/queries/helpers';
+import {
+  ResolvedQuery,
+  QuerySpinnerMode,
+  ResolvedQueries,
+} from '@app/common/components/ResolvedQuery';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -68,20 +70,18 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
-        <MutationStatus
-          results={[createMigrationResult]}
-          errorTitles={[`Error starting migration for plan: ${planBeingStarted?.metadata.name}`]}
-          isInline={false}
-          disableSpinner
+        <ResolvedQuery
+          result={createMigrationResult}
+          errorTitle={`Error starting migration for plan: ${planBeingStarted?.metadata.name}`}
+          errorsInline={false}
+          spinnerMode={QuerySpinnerMode.None}
           className={spacing.mbMd}
         />
-        {sufficientProvidersQuery.isLoading || plansQuery.isLoading ? (
-          <LoadingEmptyState />
-        ) : sufficientProvidersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
-        ) : plansQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading plans" />
-        ) : (
+        <ResolvedQueries
+          results={[sufficientProvidersQuery.result, plansQuery]}
+          errorTitles={['Error loading providers', 'Error loading plans']}
+          errorsInline={false}
+        >
           <Card>
             <CardBody>
               {!plansQuery.data ? null : plansQuery.data.items.length === 0 ? (
@@ -105,7 +105,7 @@ const PlansPage: React.FunctionComponent = () => {
               )}
             </CardBody>
           </Card>
-        )}
+        </ResolvedQueries>
       </PageSection>
     </>
   );

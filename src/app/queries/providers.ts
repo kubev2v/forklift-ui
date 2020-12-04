@@ -34,7 +34,6 @@ import { AddProviderFormValues } from '@app/Providers/components/AddEditProvider
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
-// TODO handle error messages? (query.status will correctly show 'error', but error messages aren't collected)
 export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
@@ -249,6 +248,7 @@ export const useDeleteProviderMutation = (
 };
 
 export const useHasSufficientProvidersQuery = (): {
+  result: QueryResult<IProvidersByType>;
   isLoading: boolean;
   isError: boolean;
   hasSufficientProviders: boolean | undefined;
@@ -260,6 +260,7 @@ export const useHasSufficientProvidersQuery = (): {
     ? vmwareProviders.length >= 1 && openshiftProviders.length >= 1
     : undefined;
   return {
+    result: result,
     isLoading: result.isLoading,
     isError: result.isError,
     hasSufficientProviders,

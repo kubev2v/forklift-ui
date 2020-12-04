@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Alert, Level, LevelItem } from '@patternfly/react-core';
+import { Pagination, TextContent, Text, Level, LevelItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -28,11 +28,9 @@ import { useSortState, usePaginationState, useFilterState } from '@app/common/ho
 import { PlanWizardFormState } from './PlanWizard';
 import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
-import { getAggregateQueryStatus } from '@app/queries/helpers';
-import { QueryStatus } from 'react-query';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -47,7 +45,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 }: ISelectVMsFormProps) => {
   const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
   const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
-  const treeQueriesStatus = getAggregateQueryStatus([hostTreeQuery, vmTreeQuery]);
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
@@ -251,84 +248,82 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     */
   });
 
-  if (treeQueriesStatus === QueryStatus.Loading || vmsQuery.isLoading) {
-    return <LoadingEmptyState />;
-  }
-  if (treeQueriesStatus === QueryStatus.Error) {
-    return <Alert variant="danger" isInline title="Error loading VMware tree data" />;
-  }
-  if (vmsQuery.isError) {
-    return <Alert variant="danger" title="Error loading VMs" />;
-  }
-
-  if (availableVMs.length === 0) {
-    return (
-      <TableEmptyState
-        titleText="No VMs found"
-        bodyText="No results match your filter. Go back and make a different selection."
-      />
-    );
-  }
-
   return (
-    <>
-      <TextContent className={spacing.mbMd}>
-        <Text component="p">
-          Select VMs for migration. The Migration assessment column highlights conditions related to
-          migrating a particular VM, as determined by Red Hat&apos;s migration analytics service.
-        </Text>
-      </TextContent>
-      <Level>
-        <LevelItem>
-          <FilterToolbar<IVMwareVM>
-            filterCategories={filterCategories}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-          />
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
-        </LevelItem>
-      </Level>
-      {filteredItems.length > 0 ? (
-        <Table
-          aria-label="VMware VMs table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-          /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
+    <ResolvedQueries
+      results={[hostTreeQuery, vmTreeQuery, vmsQuery]}
+      errorTitles={[
+        'Error loading VMware host tree data',
+        'Error loading VMware VM tree data',
+        'Error loading VMs',
+      ]}
+    >
+      {availableVMs.length === 0 ? (
+        <TableEmptyState
+          titleText="No VMs found"
+          bodyText="No results match your filter. Go back and make a different selection."
+        />
+      ) : (
+        <>
+          <TextContent className={spacing.mbMd}>
+            <Text component="p">
+              Select VMs for migration. The Migration assessment column highlights conditions
+              related to migrating a particular VM, as determined by Red Hat&apos;s migration
+              analytics service.
+            </Text>
+          </TextContent>
+          <Level>
+            <LevelItem>
+              <FilterToolbar<IVMwareVM>
+                filterCategories={filterCategories}
+                filterValues={filterValues}
+                setFilterValues={setFilterValues}
+              />
+            </LevelItem>
+            <LevelItem>
+              <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
+            </LevelItem>
+          </Level>
+          {filteredItems.length > 0 ? (
+            <Table
+              aria-label="VMware VMs table"
+              variant={TableVariant.compact}
+              cells={columns}
+              rows={rows}
+              sortBy={sortBy}
+              onSort={onSort}
+              /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
           onCollapse={(event, rowKey, isOpen, rowData) => {
             toggleVMsExpanded(rowData.meta.vm);
           }}
           */
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-      ) : (
-        <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
-      )}
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
+          ) : (
+            <TableEmptyState titleText="No VMs found" bodyText="No results match your filter." />
+          )}
 
-      <Level>
-        <LevelItem>
-          <TextContent>
-            <Text
-              component="small"
-              className={spacing.mlLg}
-            >{`${form.values.selectedVMs.length} selected`}</Text>
-          </TextContent>
-        </LevelItem>
-        <LevelItem>
-          <Pagination
-            {...paginationProps}
-            widgetId="vms-table-pagination-bottom"
-            variant="bottom"
-          />
-        </LevelItem>
-      </Level>
-    </>
+          <Level>
+            <LevelItem>
+              <TextContent>
+                <Text
+                  component="small"
+                  className={spacing.mlLg}
+                >{`${form.values.selectedVMs.length} selected`}</Text>
+              </TextContent>
+            </LevelItem>
+            <LevelItem>
+              <Pagination
+                {...paginationProps}
+                widgetId="vms-table-pagination-bottom"
+                variant="bottom"
+              />
+            </LevelItem>
+          </Level>
+        </>
+      )}
+    </ResolvedQueries>
   );
 };
 

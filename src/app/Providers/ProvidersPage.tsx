@@ -13,7 +13,6 @@ import {
   TabTitleText,
   Level,
   LevelItem,
-  Alert,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -26,7 +25,7 @@ import AddEditProviderModal from './components/AddEditProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
 import { IPlan, IProvidersByType, Provider } from '@app/queries/types';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -100,13 +99,11 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        {providersQuery.isLoading || plansQuery.isLoading ? (
-          <LoadingEmptyState />
-        ) : providersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
-        ) : plansQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading plans" />
-        ) : (
+        <ResolvedQueries
+          results={[providersQuery, plansQuery]}
+          errorTitles={['Error loading providers', 'Error loading plans']}
+          errorsInline={false}
+        >
           <Card>
             <CardBody>
               {!providersQuery.data || areProvidersEmpty ? (
@@ -132,7 +129,7 @@ const ProvidersPage: React.FunctionComponent = () => {
               )}
             </CardBody>
           </Card>
-        )}
+        </ResolvedQueries>
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditProviderModal

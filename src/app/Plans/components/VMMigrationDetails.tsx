@@ -10,7 +10,6 @@ import {
   Title,
   Level,
   LevelItem,
-  Alert,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -38,7 +37,6 @@ import { FilterCategory, FilterToolbar, FilterType } from '@app/common/component
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { formatTimestamp } from '@app/common/helpers';
 import {
   useProvidersQuery,
@@ -46,6 +44,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export interface IPlanMatchParams {
   url: string;
@@ -221,15 +220,15 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration details by VM</Title>
       </PageSection>
       <PageSection>
-        {plansQuery.isLoading || providersQuery.isLoading || vmsQuery.isLoading ? (
-          <LoadingEmptyState />
-        ) : plansQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading plan details" />
-        ) : providersQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading providers" />
-        ) : vmsQuery.isError ? (
-          <Alert variant="danger" isInline title="Error loading VMs" />
-        ) : (
+        <ResolvedQueries
+          results={[plansQuery, providersQuery, vmsQuery]}
+          errorTitles={[
+            'Error loading plan details',
+            'Error loading providers',
+            'Error loading VMs',
+          ]}
+          errorsInline={false}
+        >
           <Card>
             <CardBody>
               <Level>
@@ -271,7 +270,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               />
             </CardBody>
           </Card>
-        )}
+        </ResolvedQueries>
       </PageSection>
     </>
   );

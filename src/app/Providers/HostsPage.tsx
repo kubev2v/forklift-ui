@@ -17,8 +17,8 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { IVMwareProvider } from '@app/queries/types';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export interface IHostsMatchParams {
   url: string;
@@ -60,32 +60,34 @@ export const HostsPage: React.FunctionComponent = () => {
         </Level>
       </PageSection>
       <PageSection>
-        <Card>
-          {hostsQuery.isLoading || providersQuery.isLoading ? (
-            <LoadingEmptyState />
-          ) : hostsQuery.isError || !match?.params?.providerName ? (
-            <Alert variant="danger" isInline title="Error loading hosts" />
-          ) : providersQuery.isError ? (
-            <Alert variant="danger" isInline title="Error loading providers" />
+        <ResolvedQueries
+          results={[hostsQuery, providersQuery]}
+          errorTitles={['Error loading hosts', 'Error loading providers']}
+          errorsInline={false}
+        >
+          {!match?.params?.providerName ? (
+            <Alert variant="danger" title="No matching host found" />
           ) : (
-            <CardBody>
-              {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
-                <EmptyState className={spacing.my_2xl}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="lg">
-                    No hosts
-                  </Title>
-                  <EmptyStateBody>No hosts available for this provider.</EmptyStateBody>
-                </EmptyState>
-              ) : (
-                <VMwareProviderHostsTable
-                  provider={provider as IVMwareProvider}
-                  hosts={hostsQuery?.data}
-                />
-              )}
-            </CardBody>
+            <Card>
+              <CardBody>
+                {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
+                  <EmptyState className={spacing.my_2xl}>
+                    <EmptyStateIcon icon={PlusCircleIcon} />
+                    <Title headingLevel="h2" size="lg">
+                      No hosts
+                    </Title>
+                    <EmptyStateBody>No hosts available for this provider.</EmptyStateBody>
+                  </EmptyState>
+                ) : (
+                  <VMwareProviderHostsTable
+                    provider={provider as IVMwareProvider}
+                    hosts={hostsQuery?.data}
+                  />
+                )}
+              </CardBody>
+            </Card>
           )}
-        </Card>
+        </ResolvedQueries>
       </PageSection>
     </>
   );

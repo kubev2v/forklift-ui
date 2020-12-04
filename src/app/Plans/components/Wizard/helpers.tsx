@@ -346,6 +346,8 @@ interface IEditingPrefillResults {
   prefillQueryStatus: QueryStatus;
   prefillQueryError: unknown;
   isDonePrefilling: boolean;
+  prefillQueries: QueryResult<unknown>[];
+  prefillErrorTitles: string[];
 }
 
 export const useEditingPlanPrefillEffect = (
@@ -383,6 +385,17 @@ export const useEditingPlanPrefillEffect = (
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
   ];
+  const errorTitles = [
+    'Error loading providers',
+    'Error loading VMs',
+    'Error loading VMware host tree data',
+    'Error loading VMware VM tree data',
+    'Error loading source networks',
+    'Error loading target networks',
+    'Error loading source datastores',
+    'Error loading target storage classes',
+  ];
+
   const queryStatus = getAggregateQueryStatus(queries);
   const queryError = getFirstQueryError(queries);
 
@@ -469,5 +482,7 @@ export const useEditingPlanPrefillEffect = (
     prefillQueryStatus: queryStatus,
     prefillQueryError: queryError,
     isDonePrefilling,
+    prefillQueries: queries,
+    prefillErrorTitles: errorTitles,
   };
 };

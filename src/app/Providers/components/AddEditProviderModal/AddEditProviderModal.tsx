@@ -7,7 +7,6 @@ import {
   FormGroup,
   Flex,
   Stack,
-  Alert,
   Checkbox,
   Popover,
 } from '@patternfly/react-core';
@@ -36,14 +35,13 @@ import {
   usePatchProviderMutation,
   useProvidersQuery,
 } from '@app/queries';
-import MutationStatus from '@app/common/components/MutationStatus';
 
 import './AddEditProviderModal.css';
 import { IProvidersByType, Provider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
+import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
@@ -165,9 +163,10 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       onClose={onClose}
       footer={
         <Stack hasGutter>
-          <MutationStatus
-            results={[mutateProviderResult]}
-            errorTitles={[`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`]}
+          <ResolvedQuery
+            result={mutateProviderResult}
+            errorTitle={`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`}
+            spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -192,11 +191,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
         </Stack>
       }
     >
-      {providersQuery.isLoading ? (
-        <LoadingEmptyState />
-      ) : providersQuery.isError ? (
-        <Alert variant="danger" isInline title="Error loading providers" />
-      ) : (
+      <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
         <Form>
           <FormGroup
             label="Type"
@@ -392,16 +387,16 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
             </>
           ) : null}
           {/* TODO re-enable this when we have the API capability
-        providerType ? (
-          <div>
-            <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
-              Check connection
-            </Button>
-          </div>
-        ) : null
-        */}
+          providerType ? (
+            <div>
+              <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
+                Check connection
+              </Button>
+            </div>
+          ) : null
+          */}
         </Form>
-      )}
+      </ResolvedQuery>
     </Modal>
   );
 };
