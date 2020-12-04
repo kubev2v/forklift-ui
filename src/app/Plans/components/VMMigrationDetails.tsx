@@ -153,9 +153,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } = useSelectionState<
-    IVMStatus
-  >({
+  const {
+    toggleItemSelected: toggleVMExpanded,
+    isItemSelected: isVMExpanded,
+  } = useSelectionState<IVMStatus>({
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
   });
