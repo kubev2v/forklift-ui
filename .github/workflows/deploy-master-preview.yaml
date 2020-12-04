@@ -16,11 +16,11 @@ jobs:
         with:
           node-version: 14
       - name: Install dependencies
-        run: yarn install
+        run: npm install
       - name: Run tests
-        run: yarn ci
+        run: npm run ci
       - name: Build in mock mode
-        run: yarn build:mock
+        run: npm run build:mock
       - name: Install Surge
         run: npm install -g surge
       - name: Deploy to Surge
