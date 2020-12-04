@@ -1,12 +1,7 @@
 # Builder image
 FROM registry.access.redhat.com/ubi8/nodejs-14 as builder
-#USER root
-#RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
-#    dnf -y install yarn
-#USER 1001
 COPY . .
 RUN npm install && npm run build
-
 
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-14
