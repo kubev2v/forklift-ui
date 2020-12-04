@@ -150,6 +150,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           <ResolvedQuery
             result={mutationResult}
             errorTitle={`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`}
+            spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -184,11 +185,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       }
     >
       <Form className="extraSelectMargin">
-        <ResolvedQuery
-          result={providersQuery}
-          errorTitle="Error loading providers"
-          spinnerMode={QuerySpinnerMode.EmptyState}
-        >
+        <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
           {!isDonePrefilling ? (
             <LoadingEmptyState />
           ) : (
@@ -267,7 +264,6 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     'Error loading source provider resources',
                     'Error loading target provider resources',
                   ]}
-                  spinnerMode={QuerySpinnerMode.EmptyState}
                 >
                   <MappingBuilder
                     mappingType={mappingType}

@@ -9,7 +9,7 @@ import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 import './MappingDetailView.css';
 import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
 import TruncatedText from '@app/common/components/TruncatedText';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -42,7 +42,6 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
         'Error loading source provider resources',
         'Error loading target provider resources',
       ]}
-      spinnerMode={QuerySpinnerMode.EmptyState}
       className={className}
     >
       <div className={className}>

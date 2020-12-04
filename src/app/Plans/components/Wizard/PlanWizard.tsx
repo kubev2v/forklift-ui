@@ -49,7 +49,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -322,8 +322,7 @@ const PlanWizard: React.FunctionComponent = () => {
         'Error loading storage mappings',
         ...prefillErrorTitles,
       ]}
-      spinnerMode={QuerySpinnerMode.EmptyState}
-      isInline={false}
+      errorsInline={false}
       className={spacing.mMd}
     >
       {!isDonePrefilling ? (

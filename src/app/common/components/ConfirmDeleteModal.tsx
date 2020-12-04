@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
 import { MutationResult } from 'react-query';
-import { ResolvedQuery } from './ResolvedQuery';
+import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 
 interface IConfirmDeleteModalProps {
   isOpen: boolean;
@@ -37,7 +37,11 @@ const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
       onClose={toggleOpen}
       footer={
         <Stack hasGutter>
-          <ResolvedQuery result={deleteResult} errorTitle={errorText} />
+          <ResolvedQuery
+            result={deleteResult}
+            errorTitle={errorText}
+            spinnerMode={QuerySpinnerMode.Inline}
+          />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               key="delete"

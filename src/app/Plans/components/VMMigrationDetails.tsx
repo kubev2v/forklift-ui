@@ -44,7 +44,7 @@ import {
   useVMwareVMsQuery,
   findVMById,
 } from '@app/queries';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export interface IPlanMatchParams {
   url: string;
@@ -227,8 +227,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             'Error loading providers',
             'Error loading VMs',
           ]}
-          isInline={false}
-          spinnerMode={QuerySpinnerMode.EmptyState}
+          errorsInline={false}
         >
           <Card>
             <CardBody>

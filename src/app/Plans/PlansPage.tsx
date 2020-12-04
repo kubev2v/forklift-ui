@@ -73,15 +73,14 @@ const PlansPage: React.FunctionComponent = () => {
         <ResolvedQuery
           result={createMigrationResult}
           errorTitle={`Error starting migration for plan: ${planBeingStarted?.metadata.name}`}
-          isInline={false}
+          errorsInline={false}
           spinnerMode={QuerySpinnerMode.None}
           className={spacing.mbMd}
         />
         <ResolvedQueries
           results={[sufficientProvidersQuery.result, plansQuery]}
           errorTitles={['Error loading providers', 'Error loading plans']}
-          isInline={false}
-          spinnerMode={QuerySpinnerMode.EmptyState}
+          errorsInline={false}
         >
           <Card>
             <CardBody>

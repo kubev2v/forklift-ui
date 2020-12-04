@@ -16,7 +16,7 @@ import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
-import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -76,11 +76,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
   return (
-    <ResolvedQuery
-      result={hostConfigsQuery}
-      errorTitle="Error loading host configurations"
-      spinnerMode={QuerySpinnerMode.EmptyState}
-    >
+    <ResolvedQuery result={hostConfigsQuery} errorTitle="Error loading host configurations">
       <Level>
         <LevelItem>
           <ConditionalTooltip

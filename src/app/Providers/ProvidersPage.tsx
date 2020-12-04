@@ -25,7 +25,7 @@ import AddEditProviderModal from './components/AddEditProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
 import { IPlan, IProvidersByType, Provider } from '@app/queries/types';
-import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,8 +102,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         <ResolvedQueries
           results={[providersQuery, plansQuery]}
           errorTitles={['Error loading providers', 'Error loading plans']}
-          isInline={false}
-          spinnerMode={QuerySpinnerMode.EmptyState}
+          errorsInline={false}
         >
           <Card>
             <CardBody>

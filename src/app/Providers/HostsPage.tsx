@@ -18,7 +18,7 @@ import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useProvidersQuery } from '@app/queries';
 import { IVMwareProvider } from '@app/queries/types';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export interface IHostsMatchParams {
   url: string;
@@ -63,8 +63,7 @@ export const HostsPage: React.FunctionComponent = () => {
         <ResolvedQueries
           results={[hostsQuery, providersQuery]}
           errorTitles={['Error loading hosts', 'Error loading providers']}
-          isInline={false}
-          spinnerMode={QuerySpinnerMode.EmptyState}
+          errorsInline={false}
         >
           {!match?.params?.providerName ? (
             <Alert variant="danger" title="No matching host found" />

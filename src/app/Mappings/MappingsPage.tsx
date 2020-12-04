@@ -15,7 +15,7 @@ import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
 import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
 import CreateMappingButton from './components/CreateMappingButton';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingsPageProps {
   mappingType: MappingType;
@@ -49,8 +49,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         <ResolvedQueries
           results={[sufficientProvidersQuery.result, mappingsQuery]}
           errorTitles={['Error loading providers', 'Error loading mappings']}
-          isInline={false}
-          spinnerMode={QuerySpinnerMode.EmptyState}
+          errorsInline={false}
         >
           <Card>
             <CardBody>

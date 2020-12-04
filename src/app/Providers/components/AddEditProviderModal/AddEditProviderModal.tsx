@@ -166,6 +166,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
           <ResolvedQuery
             result={mutateProviderResult}
             errorTitle={`Error ${!providerBeingEdited ? 'adding' : 'editing'} provider`}
+            spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
@@ -190,11 +191,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
         </Stack>
       }
     >
-      <ResolvedQuery
-        result={providersQuery}
-        errorTitle="Error loading providers"
-        spinnerMode={QuerySpinnerMode.EmptyState}
-      >
+      <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
         <Form>
           <FormGroup
             label="Type"

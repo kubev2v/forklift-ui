@@ -14,7 +14,7 @@ import {
 import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -88,7 +88,6 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
         errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
-        spinnerMode={QuerySpinnerMode.EmptyState}
       >
         <TreeView
           data={filterAndConvertVMwareTree(

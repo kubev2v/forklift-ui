@@ -13,7 +13,7 @@ import { getAggregateQueryStatus } from '@app/queries/helpers';
 import LoadingEmptyState from '../LoadingEmptyState';
 
 export enum QuerySpinnerMode {
-  Normal = 'Normal',
+  Inline = 'Inline',
   EmptyState = 'EmptyState',
   None = 'None',
 }
@@ -21,7 +21,7 @@ export enum QuerySpinnerMode {
 export interface IResolvedQueriesProps {
   results: (QueryResult<unknown> | MutationResult<unknown>)[];
   errorTitles: string[];
-  isInline?: boolean;
+  errorsInline?: boolean;
   spinnerMode?: QuerySpinnerMode;
   spinnerProps?: Partial<SpinnerProps>;
   alertProps?: Partial<AlertProps>;
@@ -33,8 +33,8 @@ export interface IResolvedQueriesProps {
 export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = ({
   results,
   errorTitles,
-  isInline = true,
-  spinnerMode = QuerySpinnerMode.Normal,
+  errorsInline = true,
+  spinnerMode = QuerySpinnerMode.EmptyState,
   spinnerProps = {},
   alertProps = {},
   className = '',
@@ -45,7 +45,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
   const filteredErrorTitles = errorTitles.filter((_title, index) => results[index].isError);
 
   let spinner: React.ReactNode = null;
-  if (spinnerMode === QuerySpinnerMode.Normal) {
+  if (spinnerMode === QuerySpinnerMode.Inline) {
     spinner = <Spinner size="lg" className={className} {...spinnerProps} />;
   } else if (spinnerMode === QuerySpinnerMode.EmptyState) {
     spinner = <LoadingEmptyState spinnerProps={spinnerProps} />;
@@ -61,7 +61,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
             <Alert
               key={`error-${index}`}
               variant="danger"
-              isInline={isInline}
+              isInline={errorsInline}
               title={filteredErrorTitles[index]}
               className={`${index !== erroredResults.length - 1 ? spacing.mbMd : ''} ${className}`}
               actionClose={

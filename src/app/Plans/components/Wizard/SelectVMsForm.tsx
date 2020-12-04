@@ -30,7 +30,7 @@ import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -256,7 +256,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         'Error loading VMware VM tree data',
         'Error loading VMs',
       ]}
-      spinnerMode={QuerySpinnerMode.EmptyState}
     >
       {availableVMs.length === 0 ? (
         <TableEmptyState

@@ -36,11 +36,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   })) as OptionWithValue<IOpenShiftProvider>[];
 
   return (
-    <ResolvedQuery
-      result={providersQuery}
-      errorTitle="Error loading providers"
-      spinnerMode={QuerySpinnerMode.EmptyState}
-    >
+    <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
       <Form className={spacing.pbXl}>
         <Title headingLevel="h2" size="md">
           Give your plan a name and a description
@@ -117,6 +113,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             result={namespacesQuery}
             errorTitle="Error loading namespaces"
             spinnerProps={{ className: spacing.mXs }}
+            spinnerMode={QuerySpinnerMode.Inline}
           >
             <SimpleSelect
               variant="typeahead"

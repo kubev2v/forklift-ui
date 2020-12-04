@@ -37,7 +37,7 @@ import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
 import { QueryStatus } from 'react-query';
-import { ResolvedQueries, QuerySpinnerMode } from '@app/common/components/ResolvedQuery';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -146,7 +146,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         'Error loading target provider resources',
         'Error loading mappings',
       ]}
-      spinnerMode={QuerySpinnerMode.EmptyState}
     >
       <Form>
         {!form.values.isPrefilled ? (
