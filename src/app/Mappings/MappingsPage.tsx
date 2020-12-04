@@ -49,6 +49,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         <ResolvedQueries
           results={[sufficientProvidersQuery.result, mappingsQuery]}
           errorTitles={['Error loading providers', 'Error loading mappings']}
+          isInline={false}
           spinnerMode={QuerySpinnerMode.EmptyState}
         >
           <Card>

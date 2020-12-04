@@ -25,8 +25,7 @@ import AddEditProviderModal from './components/AddEditProviderModal';
 
 import { checkAreProvidersEmpty } from './helpers';
 import { IPlan, IProvidersByType, Provider } from '@app/queries/types';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -100,13 +99,12 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        {providersQuery.isLoading || plansQuery.isLoading ? (
-          <LoadingEmptyState />
-        ) : providersQuery.isError ? (
-          <ResolvedQuery result={providersQuery} errorTitle="Error loading providers" />
-        ) : plansQuery.isError ? (
-          <ResolvedQuery result={plansQuery} errorTitle="Error loading plans" />
-        ) : (
+        <ResolvedQueries
+          results={[providersQuery, plansQuery]}
+          errorTitles={['Error loading providers', 'Error loading plans']}
+          isInline={false}
+          spinnerMode={QuerySpinnerMode.EmptyState}
+        >
           <Card>
             <CardBody>
               {!providersQuery.data || areProvidersEmpty ? (
@@ -132,7 +130,7 @@ const ProvidersPage: React.FunctionComponent = () => {
               )}
             </CardBody>
           </Card>
-        )}
+        </ResolvedQueries>
       </PageSection>
       {isAddEditModalOpen ? (
         <AddEditProviderModal

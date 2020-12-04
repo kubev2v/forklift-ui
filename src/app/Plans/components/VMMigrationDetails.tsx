@@ -227,6 +227,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             'Error loading providers',
             'Error loading VMs',
           ]}
+          isInline={false}
           spinnerMode={QuerySpinnerMode.EmptyState}
         >
           <Card>

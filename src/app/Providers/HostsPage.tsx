@@ -60,15 +60,16 @@ export const HostsPage: React.FunctionComponent = () => {
         </Level>
       </PageSection>
       <PageSection>
-        <Card>
-          <ResolvedQueries
-            results={[hostsQuery, providersQuery]}
-            errorTitles={['Error loading hosts', 'Error loading providers']}
-            spinnerMode={QuerySpinnerMode.EmptyState}
-          >
-            {!match?.params?.providerName ? (
-              <Alert variant="danger" isInline title="No matching host found" />
-            ) : (
+        <ResolvedQueries
+          results={[hostsQuery, providersQuery]}
+          errorTitles={['Error loading hosts', 'Error loading providers']}
+          isInline={false}
+          spinnerMode={QuerySpinnerMode.EmptyState}
+        >
+          {!match?.params?.providerName ? (
+            <Alert variant="danger" title="No matching host found" />
+          ) : (
+            <Card>
               <CardBody>
                 {!hostsQuery.data ? null : hostsQuery?.data?.length === 0 ? (
                   <EmptyState className={spacing.my_2xl}>
@@ -85,9 +86,9 @@ export const HostsPage: React.FunctionComponent = () => {
                   />
                 )}
               </CardBody>
-            )}
-          </ResolvedQueries>
-        </Card>
+            </Card>
+          )}
+        </ResolvedQueries>
       </PageSection>
     </>
   );
