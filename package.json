@@ -23,6 +23,7 @@
     "eslint": "eslint --ext .tsx,.js ./src/",
     "lint": "yarn eslint",
     "format": "prettier --check --write ./src/**/*.{tsx,ts}",
+    "tsc": "$(npm bin)/tsc",
     "type-check": "yarn tsc --noEmit",
     "ci": "yarn type-check && yarn lint && yarn test",
     "build:bundle-profile": "webpack --config ./config/webpack.prod.js --profile --json > stats.json",
