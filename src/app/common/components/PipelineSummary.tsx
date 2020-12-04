@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex, FlexItem, Text } from '@patternfly/react-core';
+import { Flex, FlexItem, Text, Tooltip } from '@patternfly/react-core';
 import {
   ResourcesEmptyIcon,
   ResourcesAlmostFullIcon,
@@ -16,6 +16,7 @@ import { IVMStatus } from '@app/queries/types';
 import { StepType } from '@app/common/constants';
 import './PipelineSummary.css';
 import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
+import TruncatedText from './TruncatedText';
 
 interface IDashProps {
   isReached: boolean;
@@ -35,11 +36,8 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
     return 'Complete';
   }
   if (status.started && !status.completed) {
-    let title = status.error ? 'Error' : 'Running';
-    if (currentStep?.description) {
-      title = `${title} - ${currentStep.description}`;
-    }
-    return title;
+    if (status.error) return `Error - ${currentStep?.description}`;
+    if (currentStep?.description) return currentStep.description;
   }
   return 'Not started';
 };
@@ -86,7 +84,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   return (
     <Flex direction={{ default: 'column' }}>
       <FlexItem>
-        <Text component="small">{title}</Text>
+        <TruncatedText>{title}</TruncatedText>
         <Flex
           spaceItems={{ default: 'spaceItemsNone' }}
           alignContent={{ default: 'alignContentCenter' }}

@@ -15,7 +15,6 @@ const TruncatedText: React.FunctionComponent<ITruncatedTextProps> = ({
   tooltipProps = {},
 }: ITruncatedTextProps) => {
   const [isTooltipVisible, setIsTooltipVisible] = React.useState(false);
-  console.log({ isTooltipVisible });
 
   const onMouseEnter = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
