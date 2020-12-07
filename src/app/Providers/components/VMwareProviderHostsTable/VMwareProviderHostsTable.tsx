@@ -14,9 +14,11 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
-import { findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
+import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import { mostSeriousCondition } from '@app/common/helpers';
+import StatusCondition from '@app/common/components/StatusCondition';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -35,19 +37,32 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     { title: 'Network for migration data transfer', transforms: [sortable, cellWidth(30)] },
     { title: 'Bandwidth', transforms: [sortable] },
     { title: 'MTU', transforms: [sortable] },
+    { title: 'Status', transforms: [sortable] },
   ];
 
   const getCells = (host: IHost) => {
-    const networkAdapter = findSelectedNetworkAdapter(host, hostConfigs, provider);
+    const hostConfig = findHostConfig(host, hostConfigs, provider);
+    const networkAdapter = findSelectedNetworkAdapter(host, hostConfig);
     return [
       host.name,
       networkAdapter ? formatHostNetworkAdapter(networkAdapter) : '(default)',
       networkAdapter ? `${networkAdapter.linkSpeed} Mbps` : '',
       networkAdapter?.mtu || '',
+      {
+        title: <StatusCondition status={hostConfig?.status} isUnknownReady />,
+      },
     ];
   };
 
-  const getSortValues = (host: IHost) => ['', ...getCells(host)];
+  const getSortValues = (host: IHost) => {
+    const hostConfig = findHostConfig(host, hostConfigs, provider);
+    const cells = getCells(host);
+    return [
+      '',
+      ...(cells.slice(0, -1) as string[]),
+      hostConfig?.status ? mostSeriousCondition(hostConfig?.status?.conditions) : '',
+    ];
+  };
 
   const { sortBy, onSort, sortedItems } = useSortState(hosts, getSortValues);
   const { paginationProps } = usePaginationState(sortedItems, 10);

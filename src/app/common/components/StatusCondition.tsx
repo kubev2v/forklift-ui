@@ -6,10 +6,12 @@ import { IStatusCondition } from '@app/queries/types';
 
 interface IStatusConditionProps {
   status?: { conditions?: IStatusCondition[] };
+  isUnknownReady?: boolean;
 }
 
 const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status = {},
+  isUnknownReady = false,
 }: IStatusConditionProps) => {
   const conditions = status?.conditions || [];
 
@@ -29,7 +31,12 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
 
   if (status) {
     const conditions = status?.conditions || [];
-    return <StatusIcon status={getStatusType()} label={mostSeriousCondition(conditions)} />;
+    const label = mostSeriousCondition(conditions);
+    if (label === 'Unknown' && isUnknownReady) {
+      return <StatusIcon status={StatusType.Ok} label="Ready" />;
+    }
+
+    return <StatusIcon status={getStatusType()} label={label} />;
   }
   return null;
 };

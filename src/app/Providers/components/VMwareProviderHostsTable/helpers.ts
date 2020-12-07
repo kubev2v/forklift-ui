@@ -1,17 +1,20 @@
 import { configMatchesHost } from '@app/queries';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 
-export const findSelectedNetworkAdapter = (
+export const findHostConfig = (
   host: IHost,
   hostConfigs: IHostConfig[],
   provider: IVMwareProvider | null
+): IHostConfig | null =>
+  (provider && hostConfigs.find((config) => configMatchesHost(config, host, provider))) || null;
+
+export const findSelectedNetworkAdapter = (
+  host: IHost,
+  hostConfig: IHostConfig | null
 ): IHostNetworkAdapter | null => {
-  const matchingConfig =
-    provider && hostConfigs.find((config) => configMatchesHost(config, host, provider));
-  if (!matchingConfig) return null;
+  if (!hostConfig) return null;
   return (
-    host.networkAdapters.find((adapter) => adapter.ipAddress === matchingConfig?.spec.ipAddress) ||
-    null
+    host.networkAdapters.find((adapter) => adapter.ipAddress === hostConfig?.spec.ipAddress) || null
   );
 };
 
