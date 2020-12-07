@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Flex, FlexItem, Text, Tooltip } from '@patternfly/react-core';
+import { Flex, FlexItem } from '@patternfly/react-core';
 import {
   ResourcesEmptyIcon,
   ResourcesAlmostFullIcon,
