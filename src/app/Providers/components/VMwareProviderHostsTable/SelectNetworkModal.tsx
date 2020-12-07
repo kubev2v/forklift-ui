@@ -110,7 +110,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
                 }
               }}
             >
-              Add
+              Save
             </Button>
             <Button
               key="cancel"
