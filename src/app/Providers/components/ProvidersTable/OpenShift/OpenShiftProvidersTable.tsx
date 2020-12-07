@@ -18,7 +18,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useStorageClassesQuery } from '@app/queries';
 import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
-import ProviderStatus from '../ProviderStatus';
+import StatusCondition from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
 import { mostSeriousCondition } from '@app/common/helpers';
 
@@ -97,7 +97,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           },
         },
         {
-          title: <ProviderStatus provider={provider} />,
+          title: <StatusCondition status={provider.object.status} />,
         },
         {
           title: (
