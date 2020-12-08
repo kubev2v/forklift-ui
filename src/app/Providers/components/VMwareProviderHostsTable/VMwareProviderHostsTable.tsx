@@ -52,7 +52,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
         title: (
           <StatusCondition
             status={hostConfig?.status}
-            unknownFallback={hostConfig ? 'Pending' : 'Not configured'}
+            unknownFallback={hostConfig ? 'Pending' : ''}
           />
         ),
       },
