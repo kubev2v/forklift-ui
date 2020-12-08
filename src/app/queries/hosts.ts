@@ -85,7 +85,7 @@ const generateSecret = (
   kind: 'Secret',
   metadata: {
     ...(secretBeingReusedRef || {
-      generateName: `${provider.name}-${host.id}`,
+      generateName: `${provider.name}-${host.id}-`,
       namespace: META.namespace,
     }),
     labels: {
@@ -146,62 +146,33 @@ export const useConfigureHostsMutation = (
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
 
-  const configureHosts = async (values: SelectNetworkFormValues) => {
-    // existingHostConfigs, secretResults and secretRefs arrays are indexed in the same order as selectedHosts
+  const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
-
-    // Create or update secrets for each host
-    const secretResults = await Promise.all(
-      existingHostConfigs.map((hostConfig, index) => {
-        const existingSecret = hostConfig?.spec.secret || null;
-        const newSecret = generateSecret(values, existingSecret, selectedHosts[index], provider);
-        if (existingSecret) {
-          return client.patch<INewSecret>(secretResource, existingSecret.name, newSecret);
-        }
-        return client.create<INewSecret>(secretResource, newSecret);
-      })
-    );
-    const secretRefs = secretResults.map((result) => nameAndNamespace(result.data.metadata));
-
-    // Create or update host CRs
-    const hostConfigResults = await Promise.all(
-      selectedHosts.map((host, index) => {
+    return Promise.all(
+      selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
-        const newConfig = generateHostConfig(
-          values,
-          existingConfig,
-          host,
-          provider,
-          secretRefs[index]
-        );
-        if (existingConfig) {
-          return client.patch<IHostConfig>(
-            hostConfigResource,
-            existingConfig.metadata.name,
-            newConfig
-          );
-        }
-        return client.create<IHostConfig>(hostConfigResource, newConfig);
+        const existingSecret = existingConfig?.spec.secret || null;
+
+        // Create or update a secret CR
+        const newSecret = generateSecret(values, existingSecret, host, provider);
+        const secretResult = await (existingSecret
+          ? client.patch<INewSecret>(secretResource, existingSecret.name, newSecret)
+          : client.create<INewSecret>(secretResource, newSecret));
+        const newSecretRef = nameAndNamespace(secretResult.data.metadata);
+
+        // Create or update a host CR
+        const newConfig = generateHostConfig(values, existingConfig, host, provider, newSecretRef);
+        const hostResult = await (existingConfig
+          ? client.patch<IHostConfig>(hostConfigResource, existingConfig.metadata.name, newConfig)
+          : client.create<IHostConfig>(hostConfigResource, newConfig));
+
+        // Patch the secret CR with an ownerReference to the host CR
+        const updatedSecret = generateSecret(values, newSecretRef, host, provider, hostResult.data);
+        await client.patch<INewSecret>(secretResource, newSecretRef.name, updatedSecret);
+
+        return hostResult;
       })
     );
-
-    // Update secrets with hosts as ownerReferences
-    await Promise.all(
-      hostConfigResults.map((result, index) => {
-        const hostConfig = result.data;
-        const secretRef = hostConfig?.spec.secret || null;
-        const updatedSecret = generateSecret(
-          values,
-          secretRef,
-          selectedHosts[index],
-          provider,
-          hostConfig
-        );
-        return client.patch<INewSecret>(secretResource, secretRef?.name || '', updatedSecret);
-      })
-    );
-
-    return hostConfigResults;
   };
 
   return useMockableMutation<
