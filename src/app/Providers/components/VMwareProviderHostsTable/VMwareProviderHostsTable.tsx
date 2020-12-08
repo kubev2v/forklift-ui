@@ -60,10 +60,8 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
 
   const commonNetworkAdapters =
     selectedItems.length > 0
-      ? selectedItems[0].networkAdapters.filter(({ ipAddress }) =>
-          selectedItems.every((host) =>
-            host.networkAdapters.some((na) => na.ipAddress === ipAddress)
-          )
+      ? selectedItems[0].networkAdapters.filter(({ name }) =>
+          selectedItems.every((host) => host.networkAdapters.some((na) => na.name === name))
         )
       : [];
 
@@ -84,7 +82,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
             content={
               selectedItems.length === 0
                 ? 'Select at least one host'
-                : 'Selected hosts have no network adapters in common'
+                : 'Selected hosts have no networks in common'
             }
           >
             <div>

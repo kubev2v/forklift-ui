@@ -17,7 +17,7 @@ export const findSelectedNetworkAdapter = (
 
 export const formatHostNetworkAdapter = (network: IHostNetworkAdapter): string => {
   if (network) {
-    return `${network.name} - ${network.ipAddress}`;
+    return network.name;
   }
   return 'Network not found';
 };

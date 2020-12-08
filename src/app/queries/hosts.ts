@@ -95,20 +95,25 @@ const generateHostConfig = (
   host: IHost,
   provider: IVMwareProvider,
   secretRef: INameNamespaceRef | null
-): IHostConfig => ({
-  apiVersion: CLUSTER_API_VERSION,
-  kind: 'Host',
-  metadata: existingConfig?.metadata || {
-    name: `host-${host.id}-config`,
-    namespace: META.namespace,
-  },
-  spec: {
-    id: host.id,
-    ipAddress: values.selectedNetworkAdapter?.ipAddress || '',
-    provider: nameAndNamespace(provider),
-    secret: secretRef || null,
-  },
-});
+): IHostConfig => {
+  const matchingNetworkAdapter = host.networkAdapters.find(
+    ({ name }) => values.selectedNetworkAdapter?.name === name
+  );
+  return {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Host',
+    metadata: existingConfig?.metadata || {
+      name: `host-${host.id}-config`,
+      namespace: META.namespace,
+    },
+    spec: {
+      id: host.id,
+      ipAddress: matchingNetworkAdapter?.ipAddress || '',
+      provider: nameAndNamespace(provider),
+      secret: secretRef || null,
+    },
+  };
+};
 
 export const useConfigureHostsMutation = (
   provider: IVMwareProvider,
