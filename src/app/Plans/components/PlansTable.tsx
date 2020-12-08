@@ -31,7 +31,7 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import { PlanStatusDisplayType, PlanStatusAPIType } from '@app/common/constants';
+import { PlanStatusDisplayType, PlanStatusType } from '@app/common/constants';
 import CreatePlanButton from './CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
@@ -102,10 +102,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       ],
       getItemValue: (item) => {
         if (item.status?.conditions) {
-          if (hasCondition(item.status.conditions, PlanStatusAPIType.Failed)) return 'Failed';
-          if (hasCondition(item.status.conditions, PlanStatusAPIType.Ready)) return 'Ready';
-          if (hasCondition(item.status.conditions, PlanStatusAPIType.Executing)) return 'Running';
-          if (hasCondition(item.status.conditions, PlanStatusAPIType.Succeeded)) return 'Succeeded';
+          if (hasCondition(item.status.conditions, PlanStatusType.Failed)) return 'Failed';
+          if (hasCondition(item.status.conditions, PlanStatusType.Ready)) return 'Ready';
+          if (hasCondition(item.status.conditions, PlanStatusType.Executing)) return 'Running';
+          if (hasCondition(item.status.conditions, PlanStatusType.Succeeded)) return 'Succeeded';
         }
         return '';
       },
@@ -171,16 +171,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
-    if (hasCondition(conditions, PlanStatusAPIType.Ready) && !plan.status?.migration?.started) {
+    if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
       isStatusReady = true;
-    } else if (hasCondition(conditions, PlanStatusAPIType.Executing)) {
+    } else if (hasCondition(conditions, PlanStatusType.Executing)) {
       buttonType = ActionButtonType.Cancel;
       title = PlanStatusDisplayType.Executing;
-    } else if (hasCondition(conditions, PlanStatusAPIType.Succeeded)) {
+    } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
-    } else if (hasCondition(conditions, PlanStatusAPIType.Failed)) {
+    } else if (hasCondition(conditions, PlanStatusType.Failed)) {
       buttonType = ActionButtonType.Restart;
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;

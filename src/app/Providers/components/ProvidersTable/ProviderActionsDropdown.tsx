@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { useDeleteProviderMutation } from '@app/queries';
 import { Provider } from '@app/queries/types';
-import { PlanStatusAPIType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
@@ -26,7 +26,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
   );
   const { openEditProviderModal, plans } = React.useContext(EditProviderContext);
   const hasRunningMigration = !!plans
-    .filter((plan) => hasCondition(plan.status?.conditions || [], PlanStatusAPIType.Executing))
+    .filter((plan) => hasCondition(plan.status?.conditions || [], PlanStatusType.Executing))
     .find((runningPlan) => {
       const { source, destination } = runningPlan.spec.provider;
       return isSameResource(provider, source) || isSameResource(provider, destination);

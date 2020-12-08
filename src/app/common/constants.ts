@@ -29,7 +29,7 @@ export enum StatusCategoryType {
   Warn = 'Warn',
 }
 
-export enum PlanStatusAPIType {
+export enum PlanStatusType {
   Ready = 'Ready',
   Executing = 'Executing',
   Succeeded = 'Succeeded',

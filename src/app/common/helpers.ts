@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { StatusCategoryType, PlanStatusAPIType, StepType } from '@app/common/constants';
+import { StatusCategoryType, PlanStatusType, StepType } from '@app/common/constants';
 import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
 
 dayjs.extend(utc);
@@ -29,21 +29,21 @@ export const mostSeriousCondition = (conditions: IStatusCondition[]): string => 
   }
   if (
     hasConditionsByCategory(conditions, StatusCategoryType.Warn) &&
-    !hasCondition(conditions, PlanStatusAPIType.Ready)
+    !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Warn;
   }
   if (
     hasConditionsByCategory(conditions, StatusCategoryType.Advisory) &&
-    !hasCondition(conditions, PlanStatusAPIType.Ready)
+    !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Advisory;
   }
   if (
     hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
-    hasCondition(conditions, PlanStatusAPIType.Ready)
+    hasCondition(conditions, PlanStatusType.Ready)
   ) {
-    return PlanStatusAPIType.Ready;
+    return PlanStatusType.Ready;
   }
   return 'Unknown';
 };
