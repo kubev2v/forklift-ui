@@ -130,8 +130,9 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
         onSelect={(_event, isSelected, rowIndex, rowData) => {
           if (rowIndex === -1) {
             selectAll(isSelected);
+          } else {
+            toggleItemSelected(rowData.meta.host, isSelected);
           }
-          toggleItemSelected(rowData.meta.host, isSelected);
         }}
       >
         <TableHeader />
