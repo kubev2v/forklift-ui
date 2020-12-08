@@ -1,5 +1,11 @@
 import { ProviderType } from '@app/common/constants';
-import { ICR, IMetaTypeMeta, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
+import {
+  ICR,
+  IMetaTypeMeta,
+  INameNamespaceRef,
+  IObjectReference,
+  IStatusCondition,
+} from '@app/queries/types';
 
 export interface ICommonProviderObject extends ICR {
   spec: {
@@ -28,6 +34,7 @@ export interface INewSecret extends IMetaTypeMeta {
       createdForResourceType: string;
       createdForResource: string;
     };
+    ownerReferences?: IObjectReference[];
   };
   type: string;
 }
