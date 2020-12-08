@@ -133,23 +133,22 @@ export const useConfigureHostsMutation = (
   const configureHosts = async (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
     let secretRef: INameNamespaceRef | null = null;
-    if (!values.isReusingCredentials) {
-      // If none of these hosts are configured with a secret, creates a new one.
-      // Else, patches the first available secret and reuses it for all hosts.
-      const existingSecrets = existingHostConfigs
-        .map((hostConfig) => hostConfig?.spec.secret)
-        .filter((secret) => secret?.name && secret?.namespace) as INameNamespaceRef[];
-      const secretBeingReusedRef = existingSecrets.length > 0 ? existingSecrets[0] : null;
-      const newSecret = generateSecret(values, secretBeingReusedRef, provider);
-      let secretResult: IKubeResponse<INewSecret>;
-      if (secretBeingReusedRef) {
-        secretResult = await client.patch(secretResource, secretBeingReusedRef.name, newSecret);
-        secretRef = secretBeingReusedRef;
-      } else {
-        secretResult = await client.create(secretResource, newSecret);
-        secretRef = nameAndNamespace(secretResult.data.metadata);
-      }
+    // If none of these hosts are configured with a secret, creates a new one.
+    // Else, patches the first available secret and reuses it for all hosts.
+    const existingSecrets = existingHostConfigs
+      .map((hostConfig) => hostConfig?.spec.secret)
+      .filter((secret) => secret?.name && secret?.namespace) as INameNamespaceRef[];
+    const secretBeingReusedRef = existingSecrets.length > 0 ? existingSecrets[0] : null;
+    const newSecret = generateSecret(values, secretBeingReusedRef, provider);
+    let secretResult: IKubeResponse<INewSecret>;
+    if (secretBeingReusedRef) {
+      secretResult = await client.patch(secretResource, secretBeingReusedRef.name, newSecret);
+      secretRef = secretBeingReusedRef;
+    } else {
+      secretResult = await client.create(secretResource, newSecret);
+      secretRef = nameAndNamespace(secretResult.data.metadata);
     }
+
     const hostConfigResults = await Promise.all(
       selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
