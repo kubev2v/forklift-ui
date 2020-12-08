@@ -23,24 +23,29 @@ export const hasConditionsByCategory = (
 export const mostSeriousCondition = (conditions: IStatusCondition[]): string => {
   if (hasConditionsByCategory(conditions, StatusCategoryType.Critical)) {
     return StatusCategoryType.Critical;
-  } else if (hasConditionsByCategory(conditions, StatusCategoryType.Error)) {
+  }
+  if (hasConditionsByCategory(conditions, StatusCategoryType.Error)) {
     return StatusCategoryType.Error;
-  } else if (
+  }
+  if (
     hasConditionsByCategory(conditions, StatusCategoryType.Warn) &&
     !hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
     return StatusCategoryType.Warn;
-  } else if (
+  }
+  if (
     hasConditionsByCategory(conditions, StatusCategoryType.Advisory) &&
     !hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
     return StatusCategoryType.Advisory;
-  } else if (
+  }
+  if (
     hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
     hasCondition(conditions, PlanStatusAPIType.Ready)
   ) {
     return PlanStatusAPIType.Ready;
-  } else return 'Unknown';
+  }
+  return 'Unknown';
 };
 
 export const findCurrentStep = (
@@ -76,10 +81,11 @@ export const getStepType = (status: IVMStatus, index: number): StepType => {
   const { currentStepIndex } = findCurrentStep(status.pipeline);
   const step = status.pipeline[index];
   if (status.completed || step?.completed || index < currentStepIndex) return StepType.Full;
-  else if (status.started && index === currentStepIndex) {
+  if (status.started && index === currentStepIndex) {
     if (status.error) return StepType.Full;
     return StepType.Half;
-  } else return StepType.Empty;
+  }
+  return StepType.Empty;
 };
 
 export const isStepOnError = (status: IVMStatus, index: number): boolean => {
