@@ -1,4 +1,4 @@
-import { ICR, INameNamespaceRef, IVMwareObjRef } from './common.types';
+import { ICR, INameNamespaceRef, IStatusCondition, IVMwareObjRef } from './common.types';
 
 export interface IHostNetworkAdapter {
   name: string;
@@ -61,5 +61,6 @@ export interface IHostConfig extends ICR {
   };
   status?: {
     observedGeneration: string;
+    conditions: IStatusCondition[];
   };
 }

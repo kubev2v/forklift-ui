@@ -14,7 +14,7 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
-import ProviderStatus from '../ProviderStatus';
+import StatusCondition from '@app/common/components/StatusCondition';
 import { mostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
@@ -130,7 +130,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         networkCount,
         datastoreCount,
         {
-          title: <ProviderStatus provider={provider} />,
+          title: <StatusCondition status={provider.object.status} />,
         },
         {
           title: (
