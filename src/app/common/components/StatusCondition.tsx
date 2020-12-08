@@ -6,12 +6,12 @@ import { IStatusCondition } from '@app/queries/types';
 
 interface IStatusConditionProps {
   status?: { conditions?: IStatusCondition[] };
-  isUnknownReady?: boolean;
+  unknownFallback?: React.ReactNode;
 }
 
 const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status = {},
-  isUnknownReady = false,
+  unknownFallback,
 }: IStatusConditionProps) => {
   const conditions = status?.conditions || [];
 
@@ -32,8 +32,9 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   if (status) {
     const conditions = status?.conditions || [];
     const label = mostSeriousCondition(conditions);
-    if (label === 'Unknown' && isUnknownReady) {
-      return <StatusIcon status={StatusType.Ok} label="Ready" />;
+
+    if (label === 'Unknown' && unknownFallback) {
+      return <>{unknownFallback}</>;
     }
 
     return <StatusIcon status={getStatusType()} label={label} />;

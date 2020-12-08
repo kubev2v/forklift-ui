@@ -49,7 +49,12 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
       networkAdapter ? `${networkAdapter.linkSpeed} Mbps` : '',
       networkAdapter?.mtu || '',
       {
-        title: <StatusCondition status={hostConfig?.status} isUnknownReady />,
+        title: (
+          <StatusCondition
+            status={hostConfig?.status}
+            unknownFallback={hostConfig ? 'Pending' : 'Not configured'}
+          />
+        ),
       },
     ];
   };
