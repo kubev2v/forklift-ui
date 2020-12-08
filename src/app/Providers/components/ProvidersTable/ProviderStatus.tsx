@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Provider } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { mostSeriousCondition } from '@app/common/helpers';
-import { StatusCategoryType, PlanStatusAPIType } from '@app/common/constants';
+import { StatusCategoryType, PlanStatusType } from '@app/common/constants';
 
 interface IProviderStatusProps {
   provider: Provider;
@@ -13,7 +13,7 @@ const ProviderStatus: React.FunctionComponent<IProviderStatusProps> = ({
 }: IProviderStatusProps) => {
   const setStatusType = () => {
     if (provider.object.status) {
-      if (mostSeriousCondition(provider.object.status?.conditions) === PlanStatusAPIType.Ready) {
+      if (mostSeriousCondition(provider.object.status?.conditions) === PlanStatusType.Ready) {
         return StatusType.Ok;
       } else if (
         mostSeriousCondition(provider.object.status?.conditions) === StatusCategoryType.Critical ||
