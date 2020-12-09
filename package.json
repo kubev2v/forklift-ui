@@ -18,7 +18,7 @@
     "start:dev": "./scripts/start-dev.sh",
     "start:dev:remote": "npm run setup:dev:remote && DATA_SOURCE=remote npm run start:dev",
     "start:dev:mock": "DATA_SOURCE=mock npm run start:dev",
-    "test": "$(npm bin)/jest",
+    "test": "$(npm bin)/jest --coverage",
     "eslint": "$(npm bin)/eslint --ext .tsx,.js ./src/",
     "lint": "npm run eslint",
     "format": "$(npm bin)/prettier --check --write ./src/**/*.{tsx,ts}",
