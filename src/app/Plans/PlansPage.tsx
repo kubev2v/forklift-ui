@@ -39,13 +39,20 @@ const PlansPage: React.FunctionComponent = () => {
     setPlanBeingStarted(plan || null);
     return baseCreateMigration(plan);
   };
-  const createMigrationResult: MutationResult<IKubeResponse<IMigration>, KubeClientError> = {
-    ...baseCreateMigrationResult,
-    reset: () => {
-      setPlanBeingStarted(null);
-      baseCreateMigrationResult.reset();
-    },
-  };
+
+  const createMigrationResult: MutationResult<
+    IKubeResponse<IMigration>,
+    KubeClientError
+  > = React.useMemo(
+    () => ({
+      ...baseCreateMigrationResult,
+      reset: () => {
+        setPlanBeingStarted(null);
+        baseCreateMigrationResult.reset();
+      },
+    }),
+    [baseCreateMigrationResult]
+  );
 
   React.useEffect(() => {
     if (createMigrationResult.isIdle) {
