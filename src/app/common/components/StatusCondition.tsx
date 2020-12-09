@@ -11,7 +11,7 @@ interface IStatusConditionProps {
 
 const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status = {},
-  unknownFallback,
+  unknownFallback = null,
 }: IStatusConditionProps) => {
   const conditions = status?.conditions || [];
 
@@ -33,7 +33,7 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
     const conditions = status?.conditions || [];
     const label = mostSeriousCondition(conditions);
 
-    if (label === 'Unknown' && unknownFallback) {
+    if (label === 'Unknown' && unknownFallback !== null) {
       return <>{unknownFallback}</>;
     }
 

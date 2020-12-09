@@ -65,10 +65,17 @@ export const getExistingHostConfigs = (
     allHostConfigs.find((config) => configMatchesHost(config, host, provider))
   );
 
+const getHostConfigRef = (provider: IVMwareProvider, host: IHost) => ({
+  name: `${provider.name}-${host.id}-config`,
+  namespace: META.namespace,
+});
+
 const generateSecret = (
   values: SelectNetworkFormValues,
   secretBeingReusedRef: INameNamespaceRef | null,
-  provider: IVMwareProvider
+  host: IHost,
+  provider: IVMwareProvider,
+  hostConfig?: IHostConfig
 ): INewSecret => ({
   apiVersion: 'v1',
   data: {
@@ -78,13 +85,25 @@ const generateSecret = (
   kind: 'Secret',
   metadata: {
     ...(secretBeingReusedRef || {
-      generateName: `${provider.name}-`,
+      generateName: `${provider.name}-${host.id}-`,
       namespace: META.namespace,
     }),
     labels: {
-      createdForResourceType: ForkliftResourceKind.Provider,
-      createdForResource: provider.name,
+      createdForResourceType: ForkliftResourceKind.Host,
+      createdForResource: getHostConfigRef(provider, host).name,
     },
+    ...(hostConfig
+      ? {
+          ownerReferences: [
+            {
+              apiVersion: hostConfig.apiVersion,
+              kind: hostConfig.kind,
+              name: hostConfig.metadata.name,
+              uid: hostConfig.metadata.uid,
+            },
+          ],
+        }
+      : {}),
   },
   type: 'Opaque',
 });
@@ -102,10 +121,7 @@ const generateHostConfig = (
   return {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Host',
-    metadata: existingConfig?.metadata || {
-      name: `host-${host.id}-config`,
-      namespace: META.namespace,
-    },
+    metadata: existingConfig?.metadata || getHostConfigRef(provider, host),
     spec: {
       id: host.id,
       ipAddress: matchingNetworkAdapter?.ipAddress || '',
@@ -130,42 +146,33 @@ export const useConfigureHostsMutation = (
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
 
-  const configureHosts = async (values: SelectNetworkFormValues) => {
+  const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
-    let secretRef: INameNamespaceRef | null = null;
-    if (!values.isReusingCredentials) {
-      // If none of these hosts are configured with a secret, creates a new one.
-      // Else, patches the first available secret and reuses it for all hosts.
-      const existingSecrets = existingHostConfigs
-        .map((hostConfig) => hostConfig?.spec.secret)
-        .filter((secret) => secret?.name && secret?.namespace) as INameNamespaceRef[];
-      const secretBeingReusedRef = existingSecrets.length > 0 ? existingSecrets[0] : null;
-      const newSecret = generateSecret(values, secretBeingReusedRef, provider);
-      let secretResult: IKubeResponse<INewSecret>;
-      if (secretBeingReusedRef) {
-        secretResult = await client.patch(secretResource, secretBeingReusedRef.name, newSecret);
-        secretRef = secretBeingReusedRef;
-      } else {
-        secretResult = await client.create(secretResource, newSecret);
-        secretRef = nameAndNamespace(secretResult.data.metadata);
-      }
-    }
-    const hostConfigResults = await Promise.all(
+    return Promise.all(
       selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
-        const newConfig = generateHostConfig(values, existingConfig, host, provider, secretRef);
-        if (existingConfig) {
-          return await client.patch<IHostConfig>(
-            hostConfigResource,
-            existingConfig.metadata.name,
-            newConfig
-          );
-        } else {
-          return await client.create<IHostConfig>(hostConfigResource, newConfig);
-        }
+        const existingSecret = existingConfig?.spec.secret || null;
+
+        // Create or update a secret CR
+        const newSecret = generateSecret(values, existingSecret, host, provider);
+        const secretResult = await (existingSecret
+          ? client.patch<INewSecret>(secretResource, existingSecret.name, newSecret)
+          : client.create<INewSecret>(secretResource, newSecret));
+        const newSecretRef = nameAndNamespace(secretResult.data.metadata);
+
+        // Create or update a host CR
+        const newConfig = generateHostConfig(values, existingConfig, host, provider, newSecretRef);
+        const hostResult = await (existingConfig
+          ? client.patch<IHostConfig>(hostConfigResource, existingConfig.metadata.name, newConfig)
+          : client.create<IHostConfig>(hostConfigResource, newConfig));
+
+        // Patch the secret CR with an ownerReference to the host CR
+        const updatedSecret = generateSecret(values, newSecretRef, host, provider, hostResult.data);
+        await client.patch<INewSecret>(secretResource, newSecretRef.name, updatedSecret);
+
+        return hostResult;
       })
     );
-    return hostConfigResults;
   };
 
   return useMockableMutation<

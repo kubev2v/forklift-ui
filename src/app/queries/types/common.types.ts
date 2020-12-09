@@ -4,7 +4,7 @@ export interface IMetaTypeMeta {
   kind: string;
 }
 
-interface IObjectReference {
+export interface IObjectReference {
   apiVersion: string;
   kind: string;
   name: string;

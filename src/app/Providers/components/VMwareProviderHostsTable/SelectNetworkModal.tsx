@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, Checkbox, Stack, Flex } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { Modal, Button, Form, FormGroup, Stack, Flex } from '@patternfly/react-core';
 import {
   useFormState,
   useFormField,
@@ -12,7 +11,6 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 
-import './SelectNetworkModal.css';
 import { formatHostNetworkAdapter } from './helpers';
 import { getExistingHostConfigs, useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
@@ -41,23 +39,13 @@ const useSelectNetworkFormState = (
       ) || null
     : null;
 
-  const isReusingCredentials = useFormField(true, yup.boolean().required());
-  const usernameSchema = yup.string().max(320).label('Host admin username');
-  const passwordSchema = yup.string().max(256).label('Host admin password');
   return useFormState({
     selectedNetworkAdapter: useFormField<IHostNetworkAdapter | null>(
       preselectedAdapter,
       yup.mixed<IHostNetworkAdapter>().label('Host network').required()
     ),
-    adminUsername: useFormField(
-      '',
-      isReusingCredentials.value ? usernameSchema : usernameSchema.required()
-    ),
-    adminPassword: useFormField(
-      '',
-      isReusingCredentials.value ? passwordSchema : passwordSchema.required()
-    ),
-    isReusingCredentials,
+    adminUsername: useFormField('', yup.string().max(320).label('Host admin username').required()),
+    adminPassword: useFormField('', yup.string().max(256).label('Host admin password').required()),
   });
 };
 
@@ -141,7 +129,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         </Button>,
       ]}
     >
-      <Form className={form.values.isReusingCredentials ? 'extraSelectMargin' : ''}>
+      <Form>
         <FormGroup
           label="Network"
           isRequired
@@ -166,32 +154,20 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
             placeholderText="Select a network..."
           />
         </FormGroup>
-        <Checkbox
-          label="Reuse vSphere credentials"
-          id="reuse-credentials-checkbox"
-          isChecked={form.values.isReusingCredentials}
-          onChange={() =>
-            form.fields.isReusingCredentials.setValue(!form.values.isReusingCredentials)
-          }
-          className={spacing.mtMd}
+
+        <ValidatedTextInput
+          field={form.fields.adminUsername}
+          label="Host admin username"
+          isRequired
+          fieldId="admin-username"
         />
-        {!form.values.isReusingCredentials ? (
-          <>
-            <ValidatedTextInput
-              field={form.fields.adminUsername}
-              label="Host admin username"
-              isRequired
-              fieldId="admin-username"
-            />
-            <ValidatedTextInput
-              type="password"
-              field={form.fields.adminPassword}
-              label="Host admin password"
-              isRequired
-              fieldId="admin-password"
-            />
-          </>
-        ) : null}
+        <ValidatedTextInput
+          type="password"
+          field={form.fields.adminPassword}
+          label="Host admin password"
+          isRequired
+          fieldId="admin-password"
+        />
         {/* TODO re-enable this when we have the API capability
         <div>
           <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
