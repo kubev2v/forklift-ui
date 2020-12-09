@@ -27,7 +27,7 @@ const App: React.FunctionComponent = () => (
         </NetworkContextProvider>
       </LocalStorageContextProvider>
     </PollingContextProvider>
-    <ReactQueryDevtools />
+    {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
   </ReactQueryCacheProvider>
 );
 
