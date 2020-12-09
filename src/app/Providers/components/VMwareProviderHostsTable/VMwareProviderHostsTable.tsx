@@ -63,7 +63,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     const hostConfig = findHostConfig(host, hostConfigs, provider);
     const cells = getCells(host);
     return [
-      '',
+      '', // Checkbox column
       ...(cells.slice(0, -1) as string[]),
       hostConfig?.status ? mostSeriousCondition(hostConfig?.status?.conditions) : '',
     ];
