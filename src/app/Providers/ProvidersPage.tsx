@@ -39,11 +39,9 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const areProvidersEmpty = checkAreProvidersEmpty(providersQuery.data);
   const areTabsVisible = !providersQuery.isLoading && !plansQuery.isLoading && !areProvidersEmpty;
-  const availableProviderTypes: ProviderType[] = !providersQuery.data
-    ? []
-    : Object.keys(providersQuery.data)
-        .filter((key) => (providersQuery.data as IProvidersByType)[ProviderType[key]].length > 0)
-        .map((key) => ProviderType[key]);
+  const availableProviderTypes: ProviderType[] = Object.keys(providersQuery.data || [])
+    .filter((key) => (providersQuery.data as IProvidersByType)[ProviderType[key]].length > 0)
+    .map((key) => ProviderType[key]);
   const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
     availableProviderTypes[0]
   );
