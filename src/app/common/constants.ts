@@ -59,7 +59,7 @@ export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
 export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
 export const META: IMetaVars =
-  process.env.DATA_SOURCE !== 'mock'
+  process.env.DATA_SOURCE !== 'mock' && process.env.NODE_ENV !== 'test'
     ? window['_meta']
     : {
         clusterApi: '/mock/api',
