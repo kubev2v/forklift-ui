@@ -20,7 +20,7 @@ import { IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
-import { mostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition } from '@app/common/helpers';
 
 import './OpenShiftProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
@@ -55,7 +55,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       vmCount,
       networkCount,
       storageClasses.length,
-      provider.object.status ? mostSeriousCondition(provider.object.status?.conditions) : '',
+      provider.object.status ? getMostSeriousCondition(provider.object.status?.conditions) : '',
       '',
     ];
   };

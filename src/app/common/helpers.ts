@@ -20,7 +20,7 @@ export const hasConditionsByCategory = (
   return !!conditions.find((condition) => condition.category === category);
 };
 
-export const mostSeriousCondition = (conditions: IStatusCondition[]): string => {
+export const getMostSeriousCondition = (conditions: IStatusCondition[]): string => {
   if (hasConditionsByCategory(conditions, StatusCategoryType.Critical)) {
     return StatusCategoryType.Critical;
   }
@@ -38,6 +38,12 @@ export const mostSeriousCondition = (conditions: IStatusCondition[]): string => 
     !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Advisory;
+  }
+  if (
+    hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
+    !hasCondition(conditions, PlanStatusType.Ready)
+  ) {
+    return StatusCategoryType.Required;
   }
   if (
     hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
