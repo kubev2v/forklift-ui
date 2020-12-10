@@ -20,14 +20,19 @@ npm install
 
 Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/master/config/meta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
-**Optional**: If you plan to run webpack directly, Create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set the `DATA_SOURCE`. Otherwise `npm run [start:dev|build]:[mock|remote]` commands will override it.
+**Optional**: If you plan to run webpack directly or run in production mode, you can create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set persistent environment variables:
+
+- `DATA_SOURCE` - either `mock` or `remote`
+  (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
+- `META_FILE` path (for running in prod mode with `npm run start`)
+- `BRAND_TYPE` - either `Konveyor` (default) or `RedHat`
 
 Run the UI with webpack-dev-server at http://localhost:9000:
 
 ```sh
-npm run start:dev:remote  # uses real data from the REMOTE_API_URL in your .env file
+npm run start:dev:remote  # uses data from the API URLs in your config/meta.dev.json file
 npm run start:dev:mock    # uses static mock data, can run offline
-npm run start:dev         # uses the DATA_SOURCE defined in your .env file
+npm run start:dev         # uses the DATA_SOURCE environment variable (remote or mock)
 ```
 
 ## Development Scripts
@@ -39,8 +44,8 @@ To run the type-checker, linter and unit tests:
 npm run ci
 # Or run them individually:
 npm run type-check
-npm run lint [--fix]
-npm run test [--watch]
+npm run lint # or lint:fix to automatically fix certain issues
+npm run test # or test:watch to auto-rerun tests on file changes
 ```
 
 Note: the `npm run test` script will create a coverage report at `coverage/lcov-report/index.html`. This is useful to inspect locally before opening a PR. Open PRs will also report their coverage to Codecov and a report will be posted in the PR.
@@ -54,9 +59,9 @@ npm run format
 To run a production build using webpack (outputs to `./dist`):
 
 ```sh
-npm run build:remote  # uses real data from the REMOTE_API_URL in your .env file
+npm run build:remote  # uses data from the API URLs in meta.json (path set by META_FILE)
 npm run build:mock    # uses static mock data, can run offline or be deployed as a preview
-npm run build         # uses the DATA_SOURCE defined in your .env file
+npm run build         # uses the DATA_SOURCE environment variable (remote or mock)
 ```
 
 To launch a tool for inspecting the bundle size:
@@ -65,7 +70,7 @@ To launch a tool for inspecting the bundle size:
 npm run bundle-profile:analyze
 ```
 
-## Running in production mode (run a `npm run build` first)
+## Running in production mode (run a build first)
 
 ```sh
 npm run start
