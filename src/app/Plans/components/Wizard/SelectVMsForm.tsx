@@ -7,12 +7,10 @@ import {
   TableBody,
   TableVariant,
   sortable,
-  classNames as classNamesTransform,
   ICell,
   IRow,
   wrappable,
 } from '@patternfly/react-table';
-import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import {
   IVMwareHostTree,
@@ -138,7 +136,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const getSortValues = (vm: IVMwareVM) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
-      '', // Expand control column
+      // '', // Expand control column // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       '', // Checkbox column
       // 'TBD', // Analytics column // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled (and it shouldn't be TBD...)
       vm.name,
@@ -154,12 +152,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const {
-    isItemSelected,
-    toggleItemSelected,
-    areAllSelected,
-    selectAll,
-  } = useSelectionState<IVMwareVM>({
+  const { isItemSelected, toggleItemSelected, selectAll } = useSelectionState<IVMwareVM>({
     items: sortedItems,
     isEqual: (a, b) => a.name === b.name,
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
@@ -175,22 +168,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   */
 
   const columns: ICell[] = [
-    {
-      // Using a custom column instead of Table's onSelect prop due to issues
-      title: (
-        <input
-          type="checkbox"
-          aria-label="Select all VMs"
-          onChange={(event: React.FormEvent<HTMLInputElement>) => {
-            selectAll(event.currentTarget.checked);
-          }}
-          checked={areAllSelected}
-        />
-      ),
-      columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
-      // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-      // cellFormatters: [expandable],
-    },
     /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       title: 'Migration analysis',
@@ -207,27 +184,15 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const rows: IRow[] = [];
 
   currentPageItems.forEach((vm: IVMwareVM) => {
-    const isSelected = isItemSelected(vm);
     // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
+      selected: isItemSelected(vm),
       // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // isOpen: isExpanded,
       cells: [
-        {
-          title: (
-            <input
-              type="checkbox"
-              aria-label={`Select vm ${vm.name}`}
-              onChange={(event: React.FormEvent<HTMLInputElement>) => {
-                toggleItemSelected(vm, event.currentTarget.checked);
-              }}
-              checked={isSelected}
-            />
-          ),
-        },
         /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         {
           title: <VMConcernsIcon vm={vm} />,
@@ -294,6 +259,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
               rows={rows}
               sortBy={sortBy}
               onSort={onSort}
+              onSelect={(_event, isSelected, rowIndex, rowData) => {
+                if (rowIndex === -1) {
+                  selectAll(isSelected);
+                } else {
+                  toggleItemSelected(rowData.meta.vm, isSelected);
+                }
+              }}
               /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
           onCollapse={(event, rowKey, isOpen, rowData) => {
             toggleVMsExpanded(rowData.meta.vm);

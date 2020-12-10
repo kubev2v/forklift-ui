@@ -68,6 +68,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       // Using a custom column instead of Table's onSelect prop due to issues
+      // TODO replace it with the onSelect prop of table like in https://github.com/konveyor/forklift-ui/pull/317
       title: (
         <input
           type="checkbox"
