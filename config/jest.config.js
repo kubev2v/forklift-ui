@@ -22,6 +22,10 @@ module.exports = {
     '@app/(.*)': '<rootDir>/src/app/$1',
   },
 
+  // An array of file extensions your modules use. If you require modules without specifying a file extension,
+  // these are the extensions Jest will look for, in left-to-right order.
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+
   // A preset that is used as a base for Jest's configuration
   preset: 'ts-jest/presets/js-with-ts',
 
