@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { mostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition } from '@app/common/helpers';
 import { StatusCategoryType, PlanStatusType } from '@app/common/constants';
 import { IStatusCondition } from '@app/queries/types';
+import { Button, Popover } from '@patternfly/react-core';
 
 interface IStatusConditionProps {
   status?: { conditions?: IStatusCondition[] };
@@ -13,16 +14,15 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status = {},
   unknownFallback = null,
 }: IStatusConditionProps) => {
-  const conditions = status?.conditions || [];
-
-  const getStatusType = () => {
+  const getStatusType = (severity: string) => {
     if (status) {
-      if (mostSeriousCondition(conditions) === PlanStatusType.Ready) {
+      if (severity === PlanStatusType.Ready || severity === StatusCategoryType.Required) {
         return StatusType.Ok;
-      } else if (
-        mostSeriousCondition(conditions) === StatusCategoryType.Critical ||
-        mostSeriousCondition(conditions) === StatusCategoryType.Error
-      ) {
+      }
+      if (severity === StatusCategoryType.Advisory) {
+        return StatusType.Info;
+      }
+      if (severity === StatusCategoryType.Critical || severity === StatusCategoryType.Error) {
         return StatusType.Error;
       }
     }
@@ -31,13 +31,40 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
 
   if (status) {
     const conditions = status?.conditions || [];
-    const label = mostSeriousCondition(conditions);
+    const mostSeriousCondition = getMostSeriousCondition(conditions);
 
-    if (label === 'Unknown' && unknownFallback !== null) {
+    if (mostSeriousCondition === 'Unknown' && unknownFallback !== null) {
       return <>{unknownFallback}</>;
     }
 
-    return <StatusIcon status={getStatusType()} label={label} />;
+    const icon = (
+      <StatusIcon status={getStatusType(mostSeriousCondition)} label={mostSeriousCondition} />
+    );
+
+    if (conditions.length === 0) return icon;
+
+    return (
+      <Popover
+        bodyContent={
+          <>
+            {conditions.map((condition) => {
+              const severity = getMostSeriousCondition([condition]);
+              return (
+                <StatusIcon
+                  key={condition.message}
+                  status={getStatusType(severity)}
+                  label={condition.message}
+                />
+              );
+            })}
+          </>
+        }
+      >
+        <Button variant="link" isInline>
+          {icon}
+        </Button>
+      </Popover>
+    );
   }
   return null;
 };

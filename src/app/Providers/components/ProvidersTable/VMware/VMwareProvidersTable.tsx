@@ -15,7 +15,7 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IVMwareProvider } from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
-import { mostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
@@ -41,7 +41,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
       vmCount,
       networkCount,
       datastoreCount,
-      provider.object.status ? mostSeriousCondition(provider.object.status?.conditions) : '',
+      provider.object.status ? getMostSeriousCondition(provider.object.status?.conditions) : '',
       '',
     ];
   };

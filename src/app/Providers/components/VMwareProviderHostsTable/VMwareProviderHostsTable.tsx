@@ -17,7 +17,7 @@ import { useHostConfigsQuery } from '@app/queries';
 import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { mostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition } from '@app/common/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 
 interface IVMwareProviderHostsTableProps {
@@ -65,7 +65,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     return [
       '', // Checkbox column
       ...(cells.slice(0, -1) as string[]),
-      hostConfig?.status ? mostSeriousCondition(hostConfig?.status?.conditions) : '',
+      hostConfig?.status ? getMostSeriousCondition(hostConfig?.status?.conditions) : '',
     ];
   };
 
