@@ -18,7 +18,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import { useProvidersQuery, usePlansQuery } from '@app/queries';
+import { useClusterProvidersQuery, usePlansQuery } from '@app/queries';
 
 import ProvidersTable from './components/ProvidersTable';
 import AddEditProviderModal from './components/AddEditProviderModal';
@@ -34,7 +34,7 @@ export const EditProviderContext = React.createContext({
 });
 
 const ProvidersPage: React.FunctionComponent = () => {
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
 
   const areProvidersEmpty = checkAreProvidersEmpty(providersQuery.data);

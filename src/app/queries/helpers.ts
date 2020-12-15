@@ -81,6 +81,7 @@ export const useMockableMutation = <
   );
 };
 
+export const getApiUrl = (relativePath: string): string => `/cluster-api${relativePath}`;
 export const getInventoryApiUrl = (relativePath: string): string => `/inventory-api${relativePath}`;
 
 export const getAggregateQueryStatus = (

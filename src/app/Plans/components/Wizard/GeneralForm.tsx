@@ -5,7 +5,7 @@ import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IOpenShiftProvider, IPlan, IVMwareProvider } from '@app/queries/types';
-import { useProvidersQuery } from '@app/queries';
+import { useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
@@ -19,7 +19,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
   planBeingEdited,
 }: IGeneralFormProps) => {
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const vmwareProviders = providersQuery.data?.vsphere || [];
   const openshiftProviders = providersQuery.data?.openshift || [];
 

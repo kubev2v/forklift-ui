@@ -37,7 +37,7 @@ import { FilterToolbar, FilterType, FilterCategory } from '@app/common/component
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { findProvidersByRefs, useProvidersQuery } from '@app/queries';
+import { findProvidersByRefs, useInventoryProvidersQuery } from '@app/queries';
 
 import './PlansTable.css';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
@@ -59,7 +59,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   createMigrationResult,
   planBeingStarted,
 }: IPlansTableProps) => {
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
     {
       key: 'name',

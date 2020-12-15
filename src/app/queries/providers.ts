@@ -5,6 +5,7 @@ import Q from 'q';
 import { usePollingContext } from '@app/common/context';
 import {
   useMockableQuery,
+  getApiUrl,
   getInventoryApiUrl,
   sortIndexedResultsByName,
   useMockableMutation,
@@ -34,7 +35,20 @@ import { AddProviderFormValues } from '@app/Providers/components/AddEditProvider
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
-export const useProvidersQuery = (): QueryResult<IProvidersByType> => {
+export const useClusterProvidersQuery = (): QueryResult<IProvidersByType> => {
+  const result = useMockableQuery<IProvidersByType>(
+    {
+      queryKey: 'providers',
+      queryFn: useAuthorizedFetch(getApiUrl('/providers?detail=true')),
+      config: { refetchInterval: usePollingContext().refetchInterval },
+    },
+    MOCK_PROVIDERS
+  );
+
+  return sortIndexedResultsByName<Provider, IProvidersByType>(result);
+};
+
+export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'providers',
@@ -253,7 +267,7 @@ export const useHasSufficientProvidersQuery = (): {
   isError: boolean;
   hasSufficientProviders: boolean | undefined;
 } => {
-  const result = useProvidersQuery();
+  const result = useInventoryProvidersQuery();
   const vmwareProviders = result.data?.vsphere || [];
   const openshiftProviders = result.data?.openshift || [];
   const hasSufficientProviders = result.data

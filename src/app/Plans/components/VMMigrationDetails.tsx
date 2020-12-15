@@ -40,7 +40,7 @@ import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries';
 import { formatTimestamp } from '@app/common/helpers';
 import {
-  useProvidersQuery,
+  useInventoryProvidersQuery,
   findProvidersByRefs,
   useVMwareVMsQuery,
   findVMById,
@@ -81,7 +81,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         phase: '',
       })) || [];
 
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useVMwareVMsQuery(sourceProvider);

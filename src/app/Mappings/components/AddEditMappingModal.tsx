@@ -23,7 +23,7 @@ import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from '
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
 import {
-  useProvidersQuery,
+  useInventoryProvidersQuery,
   useMappingResourceQueries,
   useCreateMappingMutation,
   getMappingNameSchema,
@@ -85,7 +85,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   usePausedPollingEffect();
 
   const mappingsQuery = useMappingsQuery(mappingType);
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
 
   const form = useMappingFormState(mappingsQuery, mappingBeingEdited);
 
