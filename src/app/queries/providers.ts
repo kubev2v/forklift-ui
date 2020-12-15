@@ -10,6 +10,7 @@ import {
   useMockableMutation,
   isSameResource,
   nameAndNamespace,
+  mockKubeList,
 } from './helpers';
 import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import {
@@ -32,7 +33,21 @@ import {
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
-import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
+import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
+
+export const useClusterProvidersQuery = (): QueryResult<IKubeList<Provider>> => {
+  const client = useAuthorizedK8sClient();
+  return useMockableQuery<IKubeList<Provider>>(
+    {
+      queryKey: 'providers',
+      queryFn: async () => (await client.list<IKubeList<Provider>>(providerResource)).data,
+      config: {
+        refetchInterval: usePollingContext().refetchInterval,
+      },
+    },
+    mockKubeList({ ...MOCK_PROVIDERS.vsphere, ...MOCK_PROVIDERS.openshift }, 'Providers')
+  );
+};
 
 export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
