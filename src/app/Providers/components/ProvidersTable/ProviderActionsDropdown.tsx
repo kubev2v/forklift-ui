@@ -52,6 +52,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
             }
           >
             <DropdownItem
+              aria-label="Edit"
               onClick={() => {
                 setKebabIsOpen(false);
                 openEditProviderModal(provider);
@@ -73,6 +74,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
             }
           >
             <DropdownItem
+              aria-label="Remove"
               onClick={() => {
                 setKebabIsOpen(false);
                 toggleDeleteModal();
