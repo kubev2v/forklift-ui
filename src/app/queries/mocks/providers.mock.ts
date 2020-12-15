@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       apiVersion: '12345',
       kind: 'foo-kind',
       metadata: {
-        name: 'VCenter1',
+        name: 'vcenter-1',
         namespace: 'openshift-migration',
         selfLink: '/foo/bar',
         uid: 'foo-uid',
@@ -72,7 +72,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ...vmwareProvider1.object,
       metadata: {
         ...vmwareProvider1.object.metadata,
-        name: 'VCenter2',
+        name: 'vcenter-2',
       },
       status: {
         conditions: [
@@ -99,7 +99,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ...vmwareProvider1.object,
       metadata: {
         ...vmwareProvider1.object.metadata,
-        name: 'VCenter3',
+        name: 'vcenter-3',
       },
     },
   };
@@ -176,5 +176,5 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   MOCK_CLUSTER_PROVIDERS = [
     ...MOCK_INVENTORY_PROVIDERS[ProviderType.vsphere],
     ...MOCK_INVENTORY_PROVIDERS[ProviderType.openshift],
-  ].map((inventoryProvider) => inventoryProvider.object);
+  ].map((inventoryProvider) => ({ ...inventoryProvider.object }));
 }
