@@ -102,3 +102,8 @@ export const isStepOnError = (status: IVMStatus, index: number): boolean => {
   if (step.error) return true;
   return false;
 };
+
+export const numStr = (num: number | undefined): string => {
+  if (num === undefined) return '';
+  return String(num);
+};

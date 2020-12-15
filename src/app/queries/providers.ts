@@ -12,7 +12,7 @@ import {
   nameAndNamespace,
   mockKubeList,
 } from './helpers';
-import { MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
+import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
 import {
   IProvidersByType,
   InventoryProvider,
@@ -170,7 +170,8 @@ export const useCreateProviderMutation = (
     AddProviderFormValues
   >(postProvider, {
     onSuccess: () => {
-      queryCache.invalidateQueries('providers');
+      queryCache.invalidateQueries('cluster-providers');
+      queryCache.invalidateQueries('inventory-providers');
       pollFasterAfterMutation();
       onSuccess();
     },
@@ -179,7 +180,7 @@ export const useCreateProviderMutation = (
 
 export const usePatchProviderMutation = (
   providerType: ProviderType | null,
-  providerBeingEdited: InventoryProvider | null,
+  providerBeingEdited: IProviderObject | null,
   onSuccess?: () => void
 ): MutationResultPair<
   IKubeResponse<IProviderObject> | undefined,
@@ -200,7 +201,7 @@ export const usePatchProviderMutation = (
       ...providerWithoutSecret,
       spec: {
         ...providerWithoutSecret.spec,
-        secret: providerBeingEdited?.object.spec.secret,
+        secret: providerBeingEdited?.spec.secret,
       },
     };
     if (values.isReplacingCredentials) {
@@ -224,7 +225,8 @@ export const usePatchProviderMutation = (
     AddProviderFormValues
   >(patchProvider, {
     onSuccess: () => {
-      queryCache.invalidateQueries('providers');
+      queryCache.invalidateQueries('cluster-providers');
+      queryCache.invalidateQueries('inventory-providers');
       pollFasterAfterMutation();
       onSuccess && onSuccess();
     },
@@ -234,26 +236,36 @@ export const usePatchProviderMutation = (
 export const useDeleteProviderMutation = (
   providerType: ProviderType,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, InventoryProvider, unknown> => {
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IProviderObject, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, InventoryProvider>(
-    async (provider: InventoryProvider) => {
-      const providerResponse = await client.delete(providerResource, provider.name);
-      await client.delete(secretResource, provider.object.spec.secret?.name || '');
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IProviderObject>(
+    async (provider: IProviderObject) => {
+      const providerResponse = await client.delete(providerResource, provider.metadata.name);
+      await client.delete(secretResource, provider.spec.secret?.name || '');
       return providerResponse;
     },
     {
       onSuccess: (_data, provider) => {
         // Optimistically remove this provider from the cache immediately
+        queryCache.setQueryData('cluster-providers', (oldData?: IKubeList<IProviderObject>) =>
+          oldData
+            ? {
+                ...oldData,
+                items: oldData.items.filter(
+                  (item) => item.metadata.name !== provider.metadata.name
+                ),
+              }
+            : mockKubeList([], 'Providers')
+        );
         queryCache.setQueryData(
-          'providers',
+          'inventory-providers',
           (oldData?: IProvidersByType) =>
             ({
               ...oldData,
               [providerType]: ((oldData
                 ? oldData[providerType]
-                : []) as InventoryProvider[]).filter((p) => p.name !== provider.name),
+                : []) as InventoryProvider[]).filter((p) => p.name !== provider.metadata.name),
             } as IProvidersByType)
         );
         onSuccess && onSuccess();
@@ -303,14 +315,12 @@ export const findProvidersByRefs = (
 };
 
 export const getProviderNameSchema = (
-  providersQuery: QueryResult<IProvidersByType>,
-  providerType: ProviderType,
-  providerBeingEdited: InventoryProvider | null
+  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>,
+  providerBeingEdited: IProviderObject | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A provider with this name already exists', (value) => {
-    if (providerBeingEdited?.name === value) return true;
-    const providers: InventoryProvider[] =
-      (providersQuery.data && providersQuery.data[providerType]) || [];
-    if (providers.find((provider) => provider.name === value)) return false;
+    if (providerBeingEdited?.metadata.name === value) return true;
+    const providers = clusterProvidersQuery.data?.items || [];
+    if (providers.find((provider) => provider.metadata.name === value)) return false;
     return true;
   });

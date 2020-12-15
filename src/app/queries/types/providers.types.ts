@@ -71,6 +71,10 @@ export interface IProvidersByType {
   [ProviderType.openshift]: IOpenShiftProvider[];
 }
 
+export interface ICorrelatedProvider<T extends InventoryProvider> extends IProviderObject {
+  inventory: T | null;
+}
+
 export interface ISrcDestRefs {
   source: INameNamespaceRef;
   destination: INameNamespaceRef;

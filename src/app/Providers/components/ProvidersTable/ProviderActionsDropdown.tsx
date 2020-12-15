@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { useDeleteProviderMutation } from '@app/queries';
-import { InventoryProvider } from '@app/queries/types';
+import { ICorrelatedProvider, InventoryProvider } from '@app/queries/types';
 import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
@@ -10,7 +10,7 @@ import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderActionsDropdownProps {
-  provider: InventoryProvider;
+  provider: ICorrelatedProvider<InventoryProvider>;
   providerType: ProviderType;
 }
 
@@ -29,9 +29,11 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
     .filter((plan) => hasCondition(plan.status?.conditions || [], PlanStatusType.Executing))
     .find((runningPlan) => {
       const { source, destination } = runningPlan.spec.provider;
-      return isSameResource(provider, source) || isSameResource(provider, destination);
+      return (
+        isSameResource(provider.metadata, source) || isSameResource(provider.metadata, destination)
+      );
     });
-  const isEditDeleteDisabled = !provider.object.spec.url || hasRunningMigration;
+  const isEditDeleteDisabled = !provider.spec.url || hasRunningMigration;
   return (
     <>
       <Dropdown
@@ -44,7 +46,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
             key="edit"
             isTooltipEnabled={isEditDeleteDisabled}
             content={
-              !provider.object.spec.url
+              !provider.spec.url
                 ? 'The host provider cannot be edited'
                 : hasRunningMigration
                 ? 'This provider cannot be edited because it has running migrations'
@@ -66,7 +68,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
             key="remove"
             isTooltipEnabled={isEditDeleteDisabled}
             content={
-              !provider.object.spec.url
+              !provider.spec.url
                 ? 'The host provider cannot be removed'
                 : hasRunningMigration
                 ? 'This provider cannot be removed because it has running migrations'
@@ -96,7 +98,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         body={
           <>
             Are you sure you want to remove the {PROVIDER_TYPE_NAMES[providerType]} provider &quot;
-            <strong>{provider.name}</strong>&quot;?
+            <strong>{provider.metadata.name}</strong>&quot;?
           </>
         }
         deleteButtonText="Remove"

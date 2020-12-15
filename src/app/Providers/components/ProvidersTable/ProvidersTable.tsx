@@ -2,22 +2,51 @@ import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
 import VMwareProvidersTable from './VMware/VMwareProvidersTable';
 import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
-import { IProvidersByType } from '@app/queries/types';
+import {
+  ICorrelatedProvider,
+  InventoryProvider,
+  IProviderObject,
+  IProvidersByType,
+} from '@app/queries/types';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IProvidersTableProps {
-  providersByType: IProvidersByType;
+  inventoryProvidersByType: IProvidersByType;
+  clusterProviders: IProviderObject[];
   activeProviderType: ProviderType;
 }
 
 const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
-  providersByType,
+  inventoryProvidersByType,
+  clusterProviders,
   activeProviderType,
 }) => {
+  const correlateProviders = <T extends InventoryProvider>(
+    inventoryProviders: T[]
+  ): ICorrelatedProvider<T>[] =>
+    clusterProviders
+      .filter((provider) => provider.spec.type === activeProviderType)
+      .map((provider) => ({
+        ...provider,
+        inventory:
+          inventoryProviders.find((inventoryProvider) =>
+            isSameResource(inventoryProvider, provider.metadata)
+          ) || null,
+      }));
+
   if (activeProviderType === ProviderType.vsphere) {
-    return <VMwareProvidersTable providers={providersByType.vsphere} />;
+    return (
+      <VMwareProvidersTable
+        providers={correlateProviders(inventoryProvidersByType.vsphere || [])}
+      />
+    );
   }
   if (activeProviderType === ProviderType.openshift) {
-    return <OpenShiftProvidersTable providers={providersByType.openshift} />;
+    return (
+      <OpenShiftProvidersTable
+        providers={correlateProviders(inventoryProvidersByType.openshift || [])}
+      />
+    );
   }
   return null;
 };

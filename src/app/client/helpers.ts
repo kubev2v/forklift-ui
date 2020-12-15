@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { IProviderObject, INewSecret, InventoryProvider } from '@app/queries/types';
+import { IProviderObject, INewSecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -51,7 +51,7 @@ export const providerResource = new ForkliftResource(ForkliftResourceKind.Provid
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: ForkliftResourceKind,
-  providerBeingEdited: InventoryProvider | null
+  providerBeingEdited: IProviderObject | null
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
@@ -69,7 +69,7 @@ export function convertFormValuesToSecret(
               generateName: `${openshiftValues.clusterName}-`,
               namespace: META.namespace,
             }
-          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
+          : nameAndNamespace(providerBeingEdited.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: openshiftValues.clusterName,
@@ -94,7 +94,7 @@ export function convertFormValuesToSecret(
       metadata: {
         ...(!providerBeingEdited
           ? { generateName: `${vmwareValues.name}-`, namespace: META.namespace }
-          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
+          : nameAndNamespace(providerBeingEdited.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: vmwareValues.name,
