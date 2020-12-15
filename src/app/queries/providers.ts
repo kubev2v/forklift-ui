@@ -5,7 +5,6 @@ import Q from 'q';
 import { usePollingContext } from '@app/common/context';
 import {
   useMockableQuery,
-  getApiUrl,
   getInventoryApiUrl,
   sortIndexedResultsByName,
   useMockableMutation,
@@ -34,19 +33,6 @@ import {
 import { AddProviderFormValues } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-
-export const useClusterProvidersQuery = (): QueryResult<IProvidersByType> => {
-  const result = useMockableQuery<IProvidersByType>(
-    {
-      queryKey: 'providers',
-      queryFn: useAuthorizedFetch(getApiUrl('/providers?detail=true')),
-      config: { refetchInterval: usePollingContext().refetchInterval },
-    },
-    MOCK_PROVIDERS
-  );
-
-  return sortIndexedResultsByName<Provider, IProvidersByType>(result);
-};
 
 export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
