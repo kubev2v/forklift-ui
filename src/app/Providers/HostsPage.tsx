@@ -16,7 +16,7 @@ import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link, useRouteMatch } from 'react-router-dom';
 import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { useHostsQuery, useProvidersQuery } from '@app/queries';
+import { useHostsQuery, useInventoryProvidersQuery } from '@app/queries';
 import { IVMwareProvider } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
@@ -32,7 +32,7 @@ export const HostsPage: React.FunctionComponent = () => {
     sensitive: true,
   });
 
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const provider =
     providersQuery.data?.vsphere.find((provider) => provider.name === match?.params.providerName) ||
     null;

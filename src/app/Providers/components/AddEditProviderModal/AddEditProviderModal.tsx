@@ -33,7 +33,7 @@ import {
   getProviderNameSchema,
   useCreateProviderMutation,
   usePatchProviderMutation,
-  useProvidersQuery,
+  useInventoryProvidersQuery,
 } from '@app/queries';
 
 import './AddEditProviderModal.css';
@@ -123,7 +123,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
 }: IAddEditProviderModalProps) => {
   usePausedPollingEffect();
 
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
 
   const forms = useAddProviderFormState(providersQuery, providerBeingEdited);
   const vmwareForm = forms[ProviderType.vsphere];

@@ -7,7 +7,11 @@ import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } fr
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
-import { findProvidersByRefs, useMappingResourceQueries, useProvidersQuery } from '@app/queries';
+import {
+  findProvidersByRefs,
+  useMappingResourceQueries,
+  useInventoryProvidersQuery,
+} from '@app/queries';
 import TruncatedText from '@app/common/components/TruncatedText';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
@@ -22,7 +26,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mapping,
   className = '',
 }: IMappingDetailViewProps) => {
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
     mapping?.spec.provider || null,
     providersQuery

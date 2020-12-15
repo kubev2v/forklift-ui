@@ -30,7 +30,7 @@ import {
 import {
   findProvidersByRefs,
   useMappingResourceQueries,
-  useProvidersQuery,
+  useInventoryProvidersQuery,
   useVMwareTreeQuery,
   useVMwareVMsQuery,
 } from '@app/queries';
@@ -357,7 +357,7 @@ export const useEditingPlanPrefillEffect = (
 ): IEditingPrefillResults => {
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
 
-  const providersQuery = useProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
     planBeingEdited?.spec.provider || null,
     providersQuery
