@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { ICommonProviderObject, INewSecret, Provider } from '@app/queries/types';
+import { IProviderObject, INewSecret, InventoryProvider } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -51,7 +51,7 @@ export const providerResource = new ForkliftResource(ForkliftResourceKind.Provid
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: ForkliftResourceKind,
-  providerBeingEdited: Provider | null
+  providerBeingEdited: InventoryProvider | null
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
@@ -114,7 +114,7 @@ export const vmwareHostnameToUrl = (hostname: string): string => `https://${host
 export const convertFormValuesToProvider = (
   values: AddProviderFormValues,
   providerType: ProviderType | null
-): ICommonProviderObject => {
+): IProviderObject => {
   let name: string;
   let url: string;
   if (providerType === 'vsphere') {

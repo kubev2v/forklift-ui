@@ -6,12 +6,12 @@ import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 
 import VMwareProvidersTables from '../VMwareProvidersTable';
-import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
+import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 describe('<VMwareProvidersTables />', () => {
   const history = createMemoryHistory();
   const props = {
-    providers: MOCK_PROVIDERS.vsphere,
+    providers: MOCK_INVENTORY_PROVIDERS.vsphere,
   };
 
   it('renders vsphere table', () => {

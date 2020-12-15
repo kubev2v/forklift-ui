@@ -37,7 +37,7 @@ import {
 } from '@app/queries';
 
 import './AddEditProviderModal.css';
-import { IProvidersByType, Provider } from '@app/queries/types';
+import { IProvidersByType, InventoryProvider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -45,7 +45,7 @@ import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/Resolved
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
-  providerBeingEdited: Provider | null;
+  providerBeingEdited: InventoryProvider | null;
 }
 
 const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
@@ -55,7 +55,7 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 
 const useAddProviderFormState = (
   providersQuery: QueryResult<IProvidersByType>,
-  providerBeingEdited: Provider | null
+  providerBeingEdited: InventoryProvider | null
 ) => {
   const providerTypeField = useFormField<ProviderType | null>(
     providerBeingEdited?.type || null,

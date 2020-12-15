@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { useDeleteProviderMutation } from '@app/queries';
-import { Provider } from '@app/queries/types';
+import { InventoryProvider } from '@app/queries/types';
 import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
@@ -10,7 +10,7 @@ import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderActionsDropdownProps {
-  provider: Provider;
+  provider: InventoryProvider;
   providerType: ProviderType;
 }
 
