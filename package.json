@@ -19,7 +19,7 @@
     "start:dev:remote": "npm run setup:dev:remote && DATA_SOURCE=remote npm run start:dev",
     "start:dev:mock": "DATA_SOURCE=mock npm run start:dev",
     "test": "npm run test:unit -- --coverage",
-    "test:unit": "$(npm bin)/jest --rootDir=. --config=config/jest.config.js",
+    "test:unit": "DATA_SOURCE=mock && $(npm bin)/jest --rootDir=. --config=config/jest.config.js",
     "test:watch": "npm run test:unit -- --watch",
     "lint": "$(npm bin)/eslint --ext .tsx,.js ./src/",
     "lint:fix": "npm run lint -- --fix",
