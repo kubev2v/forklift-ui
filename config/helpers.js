@@ -28,4 +28,7 @@ const getDevMeta = () => {
 const sanitizeAndEncodeMeta = (meta) =>
   Buffer.from(JSON.stringify(sanitizeMeta(meta))).toString('base64');
 
-module.exports = { getDevMeta, sanitizeAndEncodeMeta };
+const getAppTitle = () =>
+  process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
+
+module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle };
