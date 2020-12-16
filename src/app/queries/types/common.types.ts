@@ -34,7 +34,8 @@ export interface IStatusCondition {
   category: string;
   type: string;
   status: boolean;
-  reason: string;
+  reason?: string;
+  durable?: boolean;
   message: string;
   lastTransitionTime: string; // ISO timestamp
 }
