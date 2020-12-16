@@ -15,10 +15,10 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { ICorrelatedProvider, IVMwareProvider } from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
-import { getMostSeriousCondition, numStr } from '@app/common/helpers';
+import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
-import { ProviderType } from '@app/common/constants';
+import { PlanStatusType, ProviderType } from '@app/common/constants';
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
@@ -101,6 +101,13 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
       provider.inventory || {};
     // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isSelected = isItemSelected(provider);
+
+    const hostsCell = (
+      <>
+        <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+      </>
+    );
+
     rows.push({
       meta: { provider },
       cells: [
@@ -123,12 +130,10 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         numStr(clusterCount),
         hostCount !== undefined
           ? {
-              title: (
-                <>
-                  <Link to={`/providers/${provider.metadata.name}`}>
-                    <OutlinedHddIcon key="hosts-icon" /> {hostCount}
-                  </Link>
-                </>
+              title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
+                <Link to={`/providers/${provider.metadata.name}`}>{hostsCell}</Link>
+              ) : (
+                hostsCell
               ),
             }
           : '',
