@@ -52,9 +52,9 @@ describe('<VMwareProvidersTable />', () => {
     );
 
     const links = screen.getAllByRole('link');
+    expect(links).toHaveLength(2); // NOTE: no link for non-ready vcenter-2 provider
     expect(links[0]).toHaveAttribute('href', '/providers/vcenter-1');
-    expect(links[1]).toHaveAttribute('href', '/providers/vcenter-2');
-    expect(links[2]).toHaveAttribute('href', '/providers/vcenter-3');
+    expect(links[1]).toHaveAttribute('href', '/providers/vcenter-3');
   });
 
   it('renders status condition', async () => {
