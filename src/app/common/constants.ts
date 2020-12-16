@@ -2,7 +2,8 @@ import * as yup from 'yup';
 
 import { IMetaVars } from './types';
 
-export const APP_TITLE = 'Migration Toolkit for Virtualization';
+export const APP_TITLE =
+  process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
 export const CLUSTER_API_VERSION = 'forklift.konveyor.io/v1alpha1';
 

@@ -1,6 +1,6 @@
 # forklift-ui
 
-Migration Toolkit for Virtualization UI
+Forklift UI - VMware to OpenShift Virtualization migration tool
 
 A read-only preview with mock data is available at http://konveyor-forklift-ui-preview.surge.sh/.
 
