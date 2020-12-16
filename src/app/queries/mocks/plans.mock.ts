@@ -381,5 +381,70 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PLANS = [plan1, plan2, plan3, plan4];
+  const vmStatus1WithError = {
+    ...vmStatus1,
+    pipeline: [
+      vmStatus1.pipeline[0],
+      {
+        ...vmStatus1.pipeline[1],
+        error: {
+          phase: 'DiskTransferFailed',
+          reasons: ['Error transferring disks'],
+        },
+      },
+      { ...vmStatus1.pipeline[2], started: undefined },
+      vmStatus1.pipeline[3],
+    ],
+    error: {
+      phase: 'DiskTransfer',
+      reasons: ['Error transferring disks'],
+    },
+  };
+
+  const vmStatus2WithError = {
+    ...vmStatus1,
+    pipeline: [
+      vmStatus1.pipeline[0],
+      vmStatus1.pipeline[1],
+      {
+        ...vmStatus1.pipeline[2],
+        completed: '2020-10-10T15:58:10Z',
+        error: {
+          phase: 'ImageConversionFailed',
+          reasons: ['Error converting image'],
+        },
+      },
+      vmStatus1.pipeline[3],
+    ],
+    error: {
+      phase: 'ImageConversion',
+      reasons: ['Error converting image'],
+    },
+  };
+
+  const plan5: IPlan = {
+    ...plan1,
+    metadata: { ...plan1.metadata, name: 'plantest-5' },
+    spec: { ...plan1.spec, description: 'completed with errors' },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-10T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: true,
+          type: 'Failed',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        vms: [vmStatus1WithError, vmStatus2WithError],
+      },
+    },
+  };
+
+  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5];
 }

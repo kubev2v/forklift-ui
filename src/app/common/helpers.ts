@@ -62,7 +62,8 @@ export const findCurrentStep = (
     pipeline
       .slice(0)
       .reverse()
-      .find((step) => !!step.started && !step.completed) || pipeline[pipeline.length - 1];
+      .find((step) => !!step.error || (!!step.started && !step.completed)) ||
+    pipeline[pipeline.length - 1];
   const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
   return { currentStep, currentStepIndex };
 };

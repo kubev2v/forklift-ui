@@ -52,25 +52,28 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
   index,
 }: IGetStepTypeIcon) => {
   const res = getStepType(status, index);
+  let icon: React.ReactNode;
   if (res === StepType.Full) {
-    return (
-      <>
-        <ResourcesFullIcon
-          color={isStepOnError(status, index) ? dangerColor.value : successColor.value}
-        />
-        {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
-      </>
+    icon = (
+      <ResourcesFullIcon
+        color={isStepOnError(status, index) ? dangerColor.value : successColor.value}
+      />
     );
   } else if (res === StepType.Half) {
-    return (
-      <>
-        <ResourcesAlmostFullIcon
-          color={isStepOnError(status, index) ? dangerColor.value : infoColor.value}
-        />
-        {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
-      </>
+    icon = (
+      <ResourcesAlmostFullIcon
+        color={isStepOnError(status, index) ? dangerColor.value : infoColor.value}
+      />
     );
-  } else return <ResourcesEmptyIcon key={index} color={disabledColor.value} />;
+  } else {
+    icon = <ResourcesEmptyIcon key={index} color={disabledColor.value} />;
+  }
+  return (
+    <>
+      {icon}
+      {index < status.pipeline.length - 1 ? <Dash isReached={true} /> : null}
+    </>
+  );
 };
 
 interface IPipelineSummaryProps {
