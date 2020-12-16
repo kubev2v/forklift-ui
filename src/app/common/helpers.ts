@@ -13,40 +13,42 @@ export const hasCondition = (conditions: IStatusCondition[], type: string): bool
   return !!conditions.find((condition) => condition.type === type);
 };
 
-export const hasConditionsByCategory = (
+export const findConditionByCategory = (
   conditions: IStatusCondition[],
   category: string
-): boolean => {
-  return !!conditions.find((condition) => condition.category === category);
+): IStatusCondition | undefined => {
+  return conditions.find((condition) => condition.category === category);
 };
 
 export const getMostSeriousCondition = (conditions: IStatusCondition[]): string => {
-  if (hasConditionsByCategory(conditions, StatusCategoryType.Critical)) {
+  if (findConditionByCategory(conditions, StatusCategoryType.Critical)) {
     return StatusCategoryType.Critical;
   }
-  if (hasConditionsByCategory(conditions, StatusCategoryType.Error)) {
+  if (findConditionByCategory(conditions, StatusCategoryType.Error)) {
     return StatusCategoryType.Error;
   }
   if (
-    hasConditionsByCategory(conditions, StatusCategoryType.Warn) &&
+    findConditionByCategory(conditions, StatusCategoryType.Warn) &&
     !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Warn;
   }
+  const requiredCondition = findConditionByCategory(conditions, StatusCategoryType.Required);
   if (
-    hasConditionsByCategory(conditions, StatusCategoryType.Advisory) &&
-    !hasCondition(conditions, PlanStatusType.Ready)
-  ) {
-    return StatusCategoryType.Advisory;
-  }
-  if (
-    hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
+    requiredCondition &&
+    requiredCondition.status !== 'True' &&
     !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Required;
   }
   if (
-    hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
+    findConditionByCategory(conditions, StatusCategoryType.Advisory) &&
+    !hasCondition(conditions, PlanStatusType.Ready)
+  ) {
+    return StatusCategoryType.Advisory;
+  }
+  if (
+    findConditionByCategory(conditions, StatusCategoryType.Required) &&
     hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return PlanStatusType.Ready;
