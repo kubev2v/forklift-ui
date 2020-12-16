@@ -433,7 +433,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-10T16:04:10Z',
           message: 'Ready for migration',
           reason: 'Valid',
-          status: true,
+          status: 'True',
           type: 'Failed',
         },
       ],
