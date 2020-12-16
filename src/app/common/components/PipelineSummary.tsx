@@ -32,10 +32,10 @@ const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) =>
 
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
   const { currentStep } = findCurrentStep(status.pipeline);
-  if (status.completed) {
+  if (status.completed && !status.error) {
     return 'Complete';
   }
-  if (status.started && !status.completed) {
+  if ((status.started && !status.completed) || status.error) {
     if (status.error) return `Error - ${currentStep?.description}`;
     if (currentStep?.description) return currentStep.description;
   }

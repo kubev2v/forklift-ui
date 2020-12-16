@@ -134,7 +134,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const ratioVMs = (plan: IPlan) => {
     const totalVMs = plan.spec.vms.length;
-    const numVMsDone = plan.status?.migration?.vms?.filter((vm) => !!vm.completed).length || 0;
+    const numVMsDone =
+      plan.status?.migration?.vms?.filter((vm) => !!vm.completed && !vm.error).length || 0;
     const statusValue = totalVMs > 0 ? (numVMsDone * 100) / totalVMs : 0;
     const statusMessage = `${numVMsDone} of ${totalVMs} VMs migrated`;
 

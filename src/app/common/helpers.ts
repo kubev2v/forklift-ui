@@ -57,10 +57,12 @@ export const getMostSeriousCondition = (conditions: IStatusCondition[]): string 
 export const findCurrentStep = (
   pipeline: IStep[]
 ): { currentStep: IStep | undefined; currentStepIndex: number } => {
-  const currentStep = pipeline
-    .slice(0)
-    .reverse()
-    .find((step) => !!step.started && !step.completed);
+  if (pipeline.length === 0) return { currentStep: undefined, currentStepIndex: 0 };
+  const currentStep =
+    pipeline
+      .slice(0)
+      .reverse()
+      .find((step) => !!step.started && !step.completed) || pipeline[pipeline.length - 1];
   const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
   return { currentStep, currentStepIndex };
 };
