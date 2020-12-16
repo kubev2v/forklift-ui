@@ -18,6 +18,7 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import logoMA from './logoMA.svg';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
+import { APP_TITLE } from '@app/common/constants';
 
 const WelcomePage: React.FunctionComponent = () => {
   const [isPageHidden, setIsPageHidden] = useLocalStorageContext(
@@ -37,7 +38,7 @@ const WelcomePage: React.FunctionComponent = () => {
               size="4xl"
               className={`${alignment.textAlignCenter} ${spacing.myXl}`}
             >
-              Welcome to the Migration Toolkit for Virtualization
+              Welcome to {APP_TITLE}
             </Title>
           </FlexItem>
           <FlexItem>

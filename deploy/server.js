@@ -140,6 +140,7 @@ app.get('*', (_, res) => {
   } else {
     res.render('index.html.ejs', {
       _meta: helpers.sanitizeAndEncodeMeta(meta),
+      _app_title: helpers.getAppTitle(),
     });
   }
 });

@@ -140,6 +140,7 @@ module.exports = (env) => {
               template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
                 _meta: helpers.sanitizeAndEncodeMeta(helpers.getDevMeta()),
+                _app_title: helpers.getAppTitle(),
               },
             }
           : {
