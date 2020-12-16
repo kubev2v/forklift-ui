@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         conditions: [
           {
             type: 'Ready',
-            status: true,
+            status: 'True',
             category: 'Required',
             message: 'The provider is ready.',
             lastTransitionTime: '2020-08-21T18:36:41.468Z',
@@ -78,7 +78,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         conditions: [
           {
             type: 'URLNotValid',
-            status: true,
+            status: 'True',
             category: 'Critical',
             message: 'The provider is not responding.',
             lastTransitionTime: '2020-08-21T18:36:41.468Z',
@@ -142,7 +142,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         conditions: [
           {
             type: 'URLNotValid',
-            status: true,
+            status: 'True',
             category: 'Critical',
             message: 'The provider is not responding.',
             lastTransitionTime: '2020-08-21T18:36:41.468Z',
