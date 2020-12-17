@@ -5,28 +5,19 @@ import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 
-import VMwareProvidersTable from '../VMwareProvidersTable';
-import {
-  MOCK_CLUSTER_PROVIDERS,
-  MOCK_INVENTORY_PROVIDERS,
-} from '@app/queries/mocks/providers.mock';
-import { correlateProviders } from '../../helpers';
-import { ProviderType } from '@app/common/constants';
+import VMwareProvidersTables from '../VMwareProvidersTable';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
-describe('<VMwareProvidersTable />', () => {
+describe('<VMwareProvidersTables />', () => {
   const history = createMemoryHistory();
   const props = {
-    providers: correlateProviders(
-      MOCK_CLUSTER_PROVIDERS,
-      MOCK_INVENTORY_PROVIDERS.vsphere,
-      ProviderType.vsphere
-    ),
+    providers: MOCK_PROVIDERS.vsphere,
   };
 
   it('renders vsphere table', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <VMwareProvidersTables {...props} />
       </Router>
     );
 
@@ -47,20 +38,20 @@ describe('<VMwareProvidersTable />', () => {
   it('renders Hosts links', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <VMwareProvidersTables {...props} />
       </Router>
     );
 
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(2); // NOTE: no link for non-ready vcenter-2 provider
     expect(links[0]).toHaveAttribute('href', '/providers/vcenter-1');
-    expect(links[1]).toHaveAttribute('href', '/providers/vcenter-3');
+    expect(links[1]).toHaveAttribute('href', '/providers/vcenter-2');
+    expect(links[2]).toHaveAttribute('href', '/providers/vcenter-3');
   });
 
   it('renders status condition', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <VMwareProvidersTables {...props} />
       </Router>
     );
 
@@ -74,7 +65,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders action menu', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <VMwareProvidersTables {...props} />
       </Router>
     );
 

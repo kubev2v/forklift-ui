@@ -13,42 +13,40 @@ export const hasCondition = (conditions: IStatusCondition[], type: string): bool
   return !!conditions.find((condition) => condition.type === type);
 };
 
-export const findConditionByCategory = (
+export const hasConditionsByCategory = (
   conditions: IStatusCondition[],
   category: string
-): IStatusCondition | undefined => {
-  return conditions.find((condition) => condition.category === category);
+): boolean => {
+  return !!conditions.find((condition) => condition.category === category);
 };
 
 export const getMostSeriousCondition = (conditions: IStatusCondition[]): string => {
-  if (findConditionByCategory(conditions, StatusCategoryType.Critical)) {
+  if (hasConditionsByCategory(conditions, StatusCategoryType.Critical)) {
     return StatusCategoryType.Critical;
   }
-  if (findConditionByCategory(conditions, StatusCategoryType.Error)) {
+  if (hasConditionsByCategory(conditions, StatusCategoryType.Error)) {
     return StatusCategoryType.Error;
   }
   if (
-    findConditionByCategory(conditions, StatusCategoryType.Warn) &&
+    hasConditionsByCategory(conditions, StatusCategoryType.Warn) &&
     !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Warn;
   }
-  const requiredCondition = findConditionByCategory(conditions, StatusCategoryType.Required);
   if (
-    requiredCondition &&
-    requiredCondition.status !== 'True' &&
-    !hasCondition(conditions, PlanStatusType.Ready)
-  ) {
-    return StatusCategoryType.Required;
-  }
-  if (
-    findConditionByCategory(conditions, StatusCategoryType.Advisory) &&
+    hasConditionsByCategory(conditions, StatusCategoryType.Advisory) &&
     !hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return StatusCategoryType.Advisory;
   }
   if (
-    findConditionByCategory(conditions, StatusCategoryType.Required) &&
+    hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
+    !hasCondition(conditions, PlanStatusType.Ready)
+  ) {
+    return StatusCategoryType.Required;
+  }
+  if (
+    hasConditionsByCategory(conditions, StatusCategoryType.Required) &&
     hasCondition(conditions, PlanStatusType.Ready)
   ) {
     return PlanStatusType.Ready;
@@ -103,9 +101,4 @@ export const isStepOnError = (status: IVMStatus, index: number): boolean => {
   const step = status.pipeline[index];
   if (step.error) return true;
   return false;
-};
-
-export const numStr = (num: number | undefined): string => {
-  if (num === undefined) return '';
-  return String(num);
 };

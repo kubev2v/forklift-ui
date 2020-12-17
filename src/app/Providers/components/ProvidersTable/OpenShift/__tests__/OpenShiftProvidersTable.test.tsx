@@ -7,21 +7,12 @@ import { Router } from 'react-router-dom';
 
 import { NetworkContextProvider } from '@app/common/context';
 import OpenShiftProvidersTable from '../OpenShiftProvidersTable';
-import {
-  MOCK_CLUSTER_PROVIDERS,
-  MOCK_INVENTORY_PROVIDERS,
-} from '@app/queries/mocks/providers.mock';
-import { correlateProviders } from '../../helpers';
-import { ProviderType } from '@app/common/constants';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 describe('<OpenShiftProvidersTable />', () => {
   const history = createMemoryHistory();
   const props = {
-    providers: correlateProviders(
-      MOCK_CLUSTER_PROVIDERS,
-      MOCK_INVENTORY_PROVIDERS.openshift,
-      ProviderType.openshift
-    ),
+    providers: MOCK_PROVIDERS.openshift,
   };
 
   it('renders openshift table', () => {

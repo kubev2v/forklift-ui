@@ -1,5 +1,5 @@
 import { IPlan, IPlanVM, IVMStatus } from '../types';
-import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
+import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { CLUSTER_API_VERSION } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
@@ -201,8 +201,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       description: 'my first plan',
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
-        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
@@ -218,7 +218,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-18T16:04:10Z',
           message: 'The destination provider is not valid.',
           reason: 'TypeNotValid',
-          status: 'True',
+          status: true,
           type: 'DestinationProviderNotValid',
         },
         {
@@ -226,7 +226,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-18T16:04:10Z',
           message: 'Source network not valid.',
           reason: 'NotFound',
-          status: 'True',
+          status: true,
           type: 'SourceNetworkNotValid',
         },
         {
@@ -234,7 +234,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-18T16:04:10Z',
           message: 'In progress',
           reason: 'Valid',
-          status: 'True',
+          status: true,
           type: 'Executing',
         },
       ],
@@ -263,8 +263,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       description: 'my 2nd plan',
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
-        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
@@ -280,7 +280,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-18T16:04:10Z',
           message: 'Ready for migration',
           reason: 'Valid',
-          status: 'True',
+          status: true,
           type: 'Ready',
         },
       ],
@@ -304,8 +304,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       description: 'my 3nd plan',
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
-        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
@@ -321,7 +321,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-10T16:04:10Z',
           message: 'Ready for migration',
           reason: 'Valid',
-          status: 'True',
+          status: true,
           type: 'Failed',
         },
       ],
@@ -350,8 +350,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       description: 'my 4th plan',
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
-        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+        source: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       map: {
@@ -367,7 +367,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-10T16:04:10Z',
           message: 'Ready for migration',
           reason: 'Valid',
-          status: 'True',
+          status: true,
           type: 'Succeeded',
         },
       ],
@@ -433,7 +433,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           lastTransitionTime: '2020-09-10T16:04:10Z',
           message: 'Ready for migration',
           reason: 'Valid',
-          status: 'True',
+          status: true,
           type: 'Failed',
         },
       ],

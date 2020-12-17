@@ -33,20 +33,19 @@ import {
   getProviderNameSchema,
   useCreateProviderMutation,
   usePatchProviderMutation,
-  useClusterProvidersQuery,
+  useInventoryProvidersQuery,
 } from '@app/queries';
 
 import './AddEditProviderModal.css';
-import { IProviderObject } from '@app/queries/types';
+import { IProvidersByType, Provider } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import { vmwareUrlToHostname } from '@app/client/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { IKubeList } from '@app/client/types';
 
 interface IAddEditProviderModalProps {
   onClose: () => void;
-  providerBeingEdited: IProviderObject | null;
+  providerBeingEdited: Provider | null;
 }
 
 const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
@@ -55,11 +54,11 @@ const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
 })) as OptionWithValue<ProviderType>[];
 
 const useAddProviderFormState = (
-  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>,
-  providerBeingEdited: IProviderObject | null
+  providersQuery: QueryResult<IProvidersByType>,
+  providerBeingEdited: Provider | null
 ) => {
   const providerTypeField = useFormField<ProviderType | null>(
-    providerBeingEdited?.spec.type || null,
+    providerBeingEdited?.type || null,
     yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
   );
   const isReplacingCredentialsField = useFormField(false, yup.boolean().required());
@@ -72,11 +71,13 @@ const useAddProviderFormState = (
       providerType: providerTypeField,
       isReplacingCredentials: isReplacingCredentialsField,
       name: useFormField(
-        providerBeingEdited?.metadata.name || '',
-        getProviderNameSchema(clusterProvidersQuery, providerBeingEdited).label('Name').required()
+        providerBeingEdited?.name || '',
+        getProviderNameSchema(providersQuery, ProviderType.vsphere, providerBeingEdited)
+          .label('Name')
+          .required()
       ),
       hostname: useFormField(
-        vmwareUrlToHostname(providerBeingEdited?.spec.url || ''),
+        vmwareUrlToHostname(providerBeingEdited?.object.spec.url || ''),
         vmwareHostnameSchema
       ),
       fingerprint: useFormField(
@@ -97,12 +98,15 @@ const useAddProviderFormState = (
       providerType: providerTypeField,
       isReplacingCredentials: isReplacingCredentialsField,
       clusterName: useFormField(
-        providerBeingEdited?.metadata.name || '',
-        getProviderNameSchema(clusterProvidersQuery, providerBeingEdited)
+        providerBeingEdited?.name || '',
+        getProviderNameSchema(providersQuery, ProviderType.openshift, providerBeingEdited)
           .label('Cluster name')
           .required()
       ),
-      url: useFormField(providerBeingEdited?.spec.url || '', urlSchema.label('URL').required()),
+      url: useFormField(
+        providerBeingEdited?.object.spec.url || '',
+        urlSchema.label('URL').required()
+      ),
       saToken: useFormField('', areCredentialsRequired ? saTokenSchema.required() : saTokenSchema),
     }),
   };
@@ -119,9 +123,9 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
 }: IAddEditProviderModalProps) => {
   usePausedPollingEffect();
 
-  const clusterProvidersQuery = useClusterProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
 
-  const forms = useAddProviderFormState(clusterProvidersQuery, providerBeingEdited);
+  const forms = useAddProviderFormState(providersQuery, providerBeingEdited);
   const vmwareForm = forms[ProviderType.vsphere];
   const openshiftForm = forms[ProviderType.openshift];
   const providerTypeField = vmwareForm.fields.providerType;
@@ -187,7 +191,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
         </Stack>
       }
     >
-      <ResolvedQuery result={clusterProvidersQuery} errorTitle="Error loading providers">
+      <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
         <Form>
           <FormGroup
             label="Type"

@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { IProviderObject, INewSecret } from '@app/queries/types';
+import { ICommonProviderObject, INewSecret, Provider } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -51,7 +51,7 @@ export const providerResource = new ForkliftResource(ForkliftResourceKind.Provid
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: ForkliftResourceKind,
-  providerBeingEdited: IProviderObject | null
+  providerBeingEdited: Provider | null
 ): INewSecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
@@ -69,7 +69,7 @@ export function convertFormValuesToSecret(
               generateName: `${openshiftValues.clusterName}-`,
               namespace: META.namespace,
             }
-          : nameAndNamespace(providerBeingEdited.spec.secret)),
+          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: openshiftValues.clusterName,
@@ -94,7 +94,7 @@ export function convertFormValuesToSecret(
       metadata: {
         ...(!providerBeingEdited
           ? { generateName: `${vmwareValues.name}-`, namespace: META.namespace }
-          : nameAndNamespace(providerBeingEdited.spec.secret)),
+          : nameAndNamespace(providerBeingEdited.object.spec.secret)),
         labels: {
           createdForResourceType,
           createdForResource: vmwareValues.name,
@@ -114,7 +114,7 @@ export const vmwareHostnameToUrl = (hostname: string): string => `https://${host
 export const convertFormValuesToProvider = (
   values: AddProviderFormValues,
   providerType: ProviderType | null
-): IProviderObject => {
+): ICommonProviderObject => {
   let name: string;
   let url: string;
   if (providerType === 'vsphere') {

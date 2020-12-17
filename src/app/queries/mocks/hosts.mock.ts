@@ -1,7 +1,7 @@
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { IHost, IHostConfig } from '../types/hosts.types';
-import { MOCK_INVENTORY_PROVIDERS } from './providers.mock';
+import { MOCK_PROVIDERS } from './providers.mock';
 
 export let MOCK_HOSTS: IHost[] = [];
 export let MOCK_HOST_CONFIGS: IHostConfig[] = [];
@@ -192,7 +192,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       spec: {
         id: host1.id,
         ipAddress: host1.networkAdapters[0].ipAddress,
-        provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        provider: nameAndNamespace(MOCK_PROVIDERS.vsphere[0]),
       },
     },
   ];

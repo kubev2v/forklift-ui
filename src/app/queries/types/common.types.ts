@@ -33,7 +33,7 @@ export interface ICR extends IMetaTypeMeta {
 export interface IStatusCondition {
   category: string;
   type: string;
-  status: 'True' | 'False';
+  status: boolean;
   reason?: string;
   durable?: boolean;
   message: string;

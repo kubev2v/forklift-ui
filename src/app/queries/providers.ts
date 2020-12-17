@@ -12,15 +12,15 @@ import {
   nameAndNamespace,
   mockKubeList,
 } from './helpers';
-import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
+import { MOCK_PROVIDERS } from './mocks/providers.mock';
 import {
   IProvidersByType,
-  InventoryProvider,
+  Provider,
   INewSecret,
   IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
-  IProviderObject,
+  ICommonProviderObject,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -35,38 +35,38 @@ import { AddProviderFormValues } from '@app/Providers/components/AddEditProvider
 import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
-export const useClusterProvidersQuery = (): QueryResult<IKubeList<IProviderObject>> => {
+export const useClusterProvidersQuery = (): QueryResult<IKubeList<Provider>> => {
   const client = useAuthorizedK8sClient();
-  return useMockableQuery<IKubeList<IProviderObject>>(
+  return useMockableQuery<IKubeList<Provider>>(
     {
-      queryKey: 'cluster-providers',
-      queryFn: async () => (await client.list<IKubeList<IProviderObject>>(providerResource)).data,
+      queryKey: 'providers',
+      queryFn: async () => (await client.list<IKubeList<Provider>>(providerResource)).data,
       config: {
         refetchInterval: usePollingContext().refetchInterval,
       },
     },
-    mockKubeList(MOCK_CLUSTER_PROVIDERS, 'Providers')
+    mockKubeList({ ...MOCK_PROVIDERS.vsphere, ...MOCK_PROVIDERS.openshift }, 'Providers')
   );
 };
 
 export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
-      queryKey: 'inventory-providers',
+      queryKey: 'providers',
       queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=true')),
       config: { refetchInterval: usePollingContext().refetchInterval },
     },
-    MOCK_INVENTORY_PROVIDERS
+    MOCK_PROVIDERS
   );
 
-  return sortIndexedResultsByName<InventoryProvider, IProvidersByType>(result);
+  return sortIndexedResultsByName<Provider, IProvidersByType>(result);
 };
 
 export const useCreateProviderMutation = (
   providerType: ProviderType | null,
   onSuccess: () => void
 ): MutationResultPair<
-  IKubeResponse<IProviderObject> | undefined,
+  IKubeResponse<ICommonProviderObject> | undefined,
   KubeClientError,
   AddProviderFormValues,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
@@ -76,7 +76,7 @@ export const useCreateProviderMutation = (
   const { pollFasterAfterMutation } = usePollingContext();
 
   const postProvider = async (values: AddProviderFormValues) => {
-    const providerWithoutSecret: IProviderObject = convertFormValuesToProvider(
+    const providerWithoutSecret: ICommonProviderObject = convertFormValuesToProvider(
       values,
       providerType
     );
@@ -92,7 +92,7 @@ export const useCreateProviderMutation = (
       null
     );
 
-    const providerAddResults: Array<IKubeResponse<INewSecret | IProviderObject>> = [];
+    const providerAddResults: Array<IKubeResponse<INewSecret | ICommonProviderObject>> = [];
     const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
 
     if (providerSecretAddResult.status === 201) {
@@ -106,7 +106,7 @@ export const useCreateProviderMutation = (
         },
       };
 
-      const providerAddResult = await client.create<IProviderObject>(
+      const providerAddResult = await client.create<ICommonProviderObject>(
         providerResource,
         providerWithSecret
       );
@@ -137,7 +137,7 @@ export const useCreateProviderMutation = (
         name: string;
       }
       const rollbackObjs = providerAddResults.reduce(
-        (rollbackAccum: IRollbackObj[], res: IKubeResponse<IProviderObject | INewSecret>) => {
+        (rollbackAccum: IRollbackObj[], res: IKubeResponse<ICommonProviderObject | INewSecret>) => {
           return res.status === 201
             ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name || '' }]
             : rollbackAccum;
@@ -165,13 +165,12 @@ export const useCreateProviderMutation = (
   };
 
   return useMockableMutation<
-    IKubeResponse<IProviderObject> | undefined,
+    IKubeResponse<ICommonProviderObject> | undefined,
     KubeClientError,
     AddProviderFormValues
   >(postProvider, {
     onSuccess: () => {
-      queryCache.invalidateQueries('cluster-providers');
-      queryCache.invalidateQueries('inventory-providers');
+      queryCache.invalidateQueries('providers');
       pollFasterAfterMutation();
       onSuccess();
     },
@@ -180,10 +179,10 @@ export const useCreateProviderMutation = (
 
 export const usePatchProviderMutation = (
   providerType: ProviderType | null,
-  providerBeingEdited: IProviderObject | null,
+  providerBeingEdited: Provider | null,
   onSuccess?: () => void
 ): MutationResultPair<
-  IKubeResponse<IProviderObject> | undefined,
+  IKubeResponse<ICommonProviderObject> | undefined,
   KubeClientError,
   AddProviderFormValues,
   unknown
@@ -193,7 +192,7 @@ export const usePatchProviderMutation = (
   const { pollFasterAfterMutation } = usePollingContext();
 
   const patchProvider = async (values: AddProviderFormValues) => {
-    const providerWithoutSecret: IProviderObject = convertFormValuesToProvider(
+    const providerWithoutSecret: ICommonProviderObject = convertFormValuesToProvider(
       values,
       providerType
     );
@@ -201,7 +200,7 @@ export const usePatchProviderMutation = (
       ...providerWithoutSecret,
       spec: {
         ...providerWithoutSecret.spec,
-        secret: providerBeingEdited?.spec.secret,
+        secret: providerBeingEdited?.object.spec.secret,
       },
     };
     if (values.isReplacingCredentials) {
@@ -212,7 +211,7 @@ export const usePatchProviderMutation = (
       );
       await client.patch(secretResource, secret.metadata.name || '', secret);
     }
-    return await client.patch<IProviderObject>(
+    return await client.patch<ICommonProviderObject>(
       providerResource,
       providerWithSecret.metadata.name,
       providerWithSecret
@@ -220,13 +219,12 @@ export const usePatchProviderMutation = (
   };
 
   return useMockableMutation<
-    IKubeResponse<IProviderObject> | undefined,
+    IKubeResponse<ICommonProviderObject> | undefined,
     KubeClientError,
     AddProviderFormValues
   >(patchProvider, {
     onSuccess: () => {
-      queryCache.invalidateQueries('cluster-providers');
-      queryCache.invalidateQueries('inventory-providers');
+      queryCache.invalidateQueries('providers');
       pollFasterAfterMutation();
       onSuccess && onSuccess();
     },
@@ -236,36 +234,26 @@ export const usePatchProviderMutation = (
 export const useDeleteProviderMutation = (
   providerType: ProviderType,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IProviderObject, unknown> => {
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Provider, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IProviderObject>(
-    async (provider: IProviderObject) => {
-      const providerResponse = await client.delete(providerResource, provider.metadata.name);
-      await client.delete(secretResource, provider.spec.secret?.name || '');
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Provider>(
+    async (provider: Provider) => {
+      const providerResponse = await client.delete(providerResource, provider.name);
+      await client.delete(secretResource, provider.object.spec.secret?.name || '');
       return providerResponse;
     },
     {
       onSuccess: (_data, provider) => {
         // Optimistically remove this provider from the cache immediately
-        queryCache.setQueryData('cluster-providers', (oldData?: IKubeList<IProviderObject>) =>
-          oldData
-            ? {
-                ...oldData,
-                items: oldData.items.filter(
-                  (item) => item.metadata.name !== provider.metadata.name
-                ),
-              }
-            : mockKubeList([], 'Providers')
-        );
         queryCache.setQueryData(
-          'inventory-providers',
+          'providers',
           (oldData?: IProvidersByType) =>
             ({
               ...oldData,
-              [providerType]: ((oldData
-                ? oldData[providerType]
-                : []) as InventoryProvider[]).filter((p) => p.name !== provider.metadata.name),
+              [providerType]: ((oldData ? oldData[providerType] : []) as Provider[]).filter(
+                (p) => p.name !== provider.name
+              ),
             } as IProvidersByType)
         );
         onSuccess && onSuccess();
@@ -315,12 +303,13 @@ export const findProvidersByRefs = (
 };
 
 export const getProviderNameSchema = (
-  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>,
-  providerBeingEdited: IProviderObject | null
+  providersQuery: QueryResult<IProvidersByType>,
+  providerType: ProviderType,
+  providerBeingEdited: Provider | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A provider with this name already exists', (value) => {
-    if (providerBeingEdited?.metadata.name === value) return true;
-    const providers = clusterProvidersQuery.data?.items || [];
-    if (providers.find((provider) => provider.metadata.name === value)) return false;
+    if (providerBeingEdited?.name === value) return true;
+    const providers: Provider[] = (providersQuery.data && providersQuery.data[providerType]) || [];
+    if (providers.find((provider) => provider.name === value)) return false;
     return true;
   });
