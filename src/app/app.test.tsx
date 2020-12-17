@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { App } from '.';
 import { APP_TITLE } from './common/constants';
@@ -7,7 +7,6 @@ import { APP_TITLE } from './common/constants';
 describe('App', () => {
   test('renders welcome page without errors', async () => {
     render(<App />);
-    await waitFor(() => screen.getByRole('heading'));
-    expect(screen.getByRole('heading')).toHaveTextContent(APP_TITLE);
+    expect(screen.getByRole('heading', { name: new RegExp(APP_TITLE) })).toBeInTheDocument;
   });
 });
