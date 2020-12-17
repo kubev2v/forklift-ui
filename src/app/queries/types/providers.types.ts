@@ -1,11 +1,5 @@
 import { ProviderType } from '@app/common/constants';
-import {
-  ICR,
-  IMetaTypeMeta,
-  INameNamespaceRef,
-  IObjectReference,
-  IStatusCondition,
-} from '@app/queries/types';
+import { ICR, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
 
 export interface IProviderObject extends ICR {
   spec: {
@@ -17,26 +11,6 @@ export interface IProviderObject extends ICR {
     conditions: IStatusCondition[];
     observedGeneration: number;
   };
-}
-
-export interface INewSecret extends IMetaTypeMeta {
-  data: {
-    user?: string;
-    password?: string;
-    thumbprint?: string;
-    token?: string;
-  };
-  metadata: {
-    name?: string;
-    generateName?: string;
-    namespace: string;
-    labels: {
-      createdForResourceType: string;
-      createdForResource: string;
-    };
-    ownerReferences?: IObjectReference[];
-  };
-  type: string;
 }
 
 export interface ICommonProvider {

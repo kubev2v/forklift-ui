@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { IProviderObject, INewSecret } from '@app/queries/types';
+import { IProviderObject, ISecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -52,7 +52,7 @@ export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: ForkliftResourceKind,
   providerBeingEdited: IProviderObject | null
-): INewSecret {
+): ISecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
     // btoa => to base64, atob => from base64
