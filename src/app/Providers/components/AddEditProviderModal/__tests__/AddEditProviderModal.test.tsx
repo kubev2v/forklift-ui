@@ -7,7 +7,7 @@ import { Router } from 'react-router-dom';
 
 import { NetworkContextProvider } from '@app/common/context';
 import AddEditProviderModal from '../AddEditProviderModal';
-import { MOCK_PROVIDERS } from '@app/queries/mocks/providers.mock';
+import { MOCK_CLUSTER_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 describe('<AddEditProviderModal />', () => {
   const toggleModalAndResetEdit = () => {
@@ -19,7 +19,7 @@ describe('<AddEditProviderModal />', () => {
     onClose: toggleModalAndResetEdit,
   };
 
-  it.skip('allows adding a vsphere provider', async () => {
+  it('allows adding a vsphere provider', async () => {
     render(
       <NetworkContextProvider>
         <Router history={history}>
@@ -99,7 +99,7 @@ describe('<AddEditProviderModal />', () => {
     render(
       <NetworkContextProvider>
         <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={MOCK_PROVIDERS.vsphere[0]} />
+          <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[0]} />
         </Router>
       </NetworkContextProvider>
     );
