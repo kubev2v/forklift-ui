@@ -45,6 +45,7 @@ import { IMigration } from '@app/queries/types/migrations.types';
 import { MutateFunction, MutationResult } from 'react-query';
 import { getPlanStatusTitle } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
+import StatusCondition from '@app/common/components/StatusCondition';
 
 interface IPlansTableProps {
   plans: IPlan[];
@@ -166,7 +167,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
     let isPending = false;
-    let isStatusReady = false;
     let title = '';
     let variant: ProgressVariant | undefined;
 
@@ -174,7 +174,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
-      isStatusReady = true;
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
       buttonType = ActionButtonType.Cancel;
       title = PlanStatusDisplayType.Executing;
@@ -217,8 +216,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         {
           title: isPending ? (
             <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
-          ) : isStatusReady ? (
-            <StatusIcon status={StatusType.Ok} label={PlanStatusDisplayType.Ready} />
+          ) : !plan.status?.migration?.started ? (
+            <StatusCondition status={plan.status} />
           ) : (
             <Progress
               title={title}
