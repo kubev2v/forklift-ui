@@ -6,6 +6,7 @@ import { APP_TITLE } from './common/constants';
 
 describe('App', () => {
   test('renders welcome page without errors', async () => {
+    process.env['DATA_SOURCE'] = '';
     render(<App />);
     expect(screen.getByRole('heading', { name: new RegExp(APP_TITLE) })).toBeInTheDocument;
   });
