@@ -34,6 +34,7 @@ import {
   useCreateProviderMutation,
   usePatchProviderMutation,
   useClusterProvidersQuery,
+  useSecretQuery,
 } from '@app/queries';
 
 import './AddEditProviderModal.css';
@@ -120,6 +121,8 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
   usePausedPollingEffect();
 
   const clusterProvidersQuery = useClusterProvidersQuery();
+  const secretQuery = useSecretQuery(providerBeingEdited?.spec.secret?.name);
+  console.log({ secretQuery });
 
   const forms = useAddProviderFormState(clusterProvidersQuery, providerBeingEdited);
   const vmwareForm = forms[ProviderType.vsphere];
