@@ -12,41 +12,43 @@ import {
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IVMwareProvider } from '@app/queries/types';
+import { ICorrelatedProvider, IVMwareProvider } from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
-import { getMostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 
 import './VMwareProvidersTable.css';
-import { ProviderType } from '@app/common/constants';
+import { PlanStatusType, ProviderType } from '@app/common/constants';
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
 interface IVMwareProvidersTableProps {
-  providers: IVMwareProvider[];
+  providers: ICorrelatedProvider<IVMwareProvider>[];
 }
 
 const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> = ({
   providers,
 }: IVMwareProvidersTableProps) => {
-  const getSortValues = (provider: IVMwareProvider) => {
-    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
+  const getSortValues = (provider: ICorrelatedProvider<IVMwareProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } =
+      provider.inventory || {};
     return [
       // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // '',
-      provider.name,
-      provider.object.spec.url || '',
-      clusterCount,
-      hostCount,
-      vmCount,
-      networkCount,
-      datastoreCount,
-      provider.object.status ? getMostSeriousCondition(provider.object.status?.conditions) : '',
+      provider.metadata.name,
+      provider.spec.url || '',
+      numStr(clusterCount),
+      numStr(hostCount),
+      numStr(vmCount),
+      numStr(networkCount),
+      numStr(datastoreCount),
+      provider.status ? getMostSeriousCondition(provider.status?.conditions) : '',
       '',
     ];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(providers, getSortValues);
+  // TODO currentPageItems has type any, we should add generics to usePaginationState
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
@@ -94,10 +96,18 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   ];
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: IVMwareProvider) => {
-    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } = provider;
+  currentPageItems.forEach((provider: ICorrelatedProvider<IVMwareProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } =
+      provider.inventory || {};
     // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isSelected = isItemSelected(provider);
+
+    const hostsCell = (
+      <>
+        <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+      </>
+    );
+
     rows.push({
       meta: { provider },
       cells: [
@@ -115,23 +125,23 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
           ),
         },
         */
-        provider.name,
-        provider.object.spec.url,
-        clusterCount,
+        provider.metadata.name,
+        provider.spec.url,
+        numStr(clusterCount),
+        hostCount !== undefined
+          ? {
+              title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
+                <Link to={`/providers/${provider.metadata.name}`}>{hostsCell}</Link>
+              ) : (
+                hostsCell
+              ),
+            }
+          : '',
+        numStr(vmCount),
+        numStr(networkCount),
+        numStr(datastoreCount),
         {
-          title: (
-            <>
-              <Link to={`/providers/${provider.name}`}>
-                <OutlinedHddIcon key="hosts-icon" /> {hostCount}
-              </Link>
-            </>
-          ),
-        },
-        vmCount,
-        networkCount,
-        datastoreCount,
-        {
-          title: <StatusCondition status={provider.object.status} />,
+          title: <StatusCondition status={provider.status} />,
         },
         {
           title: (

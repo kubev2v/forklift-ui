@@ -9,12 +9,12 @@ import {
   IVMwareNetwork,
   IVMwareProvider,
   MappingType,
-  Provider,
+  InventoryProvider,
 } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
 
 export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
-  provider: Provider | null,
+  provider: InventoryProvider | null,
   providerType: ProviderType,
   mappingType: MappingType,
   mockNetworks: T[]

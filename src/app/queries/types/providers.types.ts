@@ -7,7 +7,7 @@ import {
   IStatusCondition,
 } from '@app/queries/types';
 
-export interface ICommonProviderObject extends ICR {
+export interface IProviderObject extends ICR {
   spec: {
     type: ProviderType | null;
     url?: string; // No url = host provider
@@ -46,7 +46,7 @@ export interface ICommonProvider {
   name: string;
   selfLink: string;
   type: ProviderType;
-  object: ICommonProviderObject;
+  object: IProviderObject;
 }
 
 export interface IVMwareProvider extends ICommonProvider {
@@ -64,11 +64,15 @@ export interface IOpenShiftProvider extends ICommonProvider {
   namespaceCount: number;
 }
 
-export type Provider = IVMwareProvider | IOpenShiftProvider;
+export type InventoryProvider = IVMwareProvider | IOpenShiftProvider;
 
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
   [ProviderType.openshift]: IOpenShiftProvider[];
+}
+
+export interface ICorrelatedProvider<T extends InventoryProvider> extends IProviderObject {
+  inventory: T | null;
 }
 
 export interface ISrcDestRefs {
