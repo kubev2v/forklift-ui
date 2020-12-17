@@ -7,7 +7,8 @@ import { APP_TITLE } from './common/constants';
 describe('App', () => {
   test('renders welcome page without errors', async () => {
     render(<App />);
-    const headings = screen.getAllByRole('heading');
-    await waitFor(() => expect(headings[1]).toHaveTextContent(APP_TITLE));
+    const pattern = `Welcome to ${APP_TITLE}`;
+    const welcome = new RegExp(pattern);
+    expect(screen.getByRole('heading', { name: welcome })).toBeInTheDocument;
   });
 });
