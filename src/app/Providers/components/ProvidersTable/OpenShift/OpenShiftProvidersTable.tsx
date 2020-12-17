@@ -16,23 +16,29 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useStorageClassesQuery } from '@app/queries';
-import { IOpenShiftProvider } from '@app/queries/types/providers.types';
+import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
-import { getMostSeriousCondition } from '@app/common/helpers';
+import { getMostSeriousCondition, numStr } from '@app/common/helpers';
 
 import './OpenShiftProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IOpenShiftProvidersTableProps {
-  providers: IOpenShiftProvider[];
+  providers: ICorrelatedProvider<IOpenShiftProvider>[];
 }
 
 const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
   providers,
 }: IOpenShiftProvidersTableProps) => {
-  const storageClassesQuery = useStorageClassesQuery(providers, MappingType.Storage);
+  const storageClassesQuery = useStorageClassesQuery(
+    providers.map((provider) => provider.inventory),
+    MappingType.Storage
+  );
+  const getStorageClasses = (provider: ICorrelatedProvider<IOpenShiftProvider>) =>
+    (storageClassesQuery.data && storageClassesQuery.data[provider.metadata.name]) || [];
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
@@ -45,17 +51,17 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
-  const getSortValues = (provider: IOpenShiftProvider) => {
-    const { name, namespaceCount, vmCount, networkCount } = provider;
-    const storageClasses = (storageClassesQuery.data && storageClassesQuery.data[name]) || [];
+  const getSortValues = (provider: ICorrelatedProvider<IOpenShiftProvider>) => {
+    const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
+    const storageClasses = getStorageClasses(provider);
     return [
-      name,
-      provider.object.spec.url || '',
-      namespaceCount,
-      vmCount,
-      networkCount,
-      storageClasses.length,
-      provider.object.status ? getMostSeriousCondition(provider.object.status?.conditions) : '',
+      provider.metadata.name,
+      provider.spec.url || '',
+      numStr(namespaceCount),
+      numStr(vmCount),
+      numStr(networkCount),
+      numStr(storageClasses.length),
+      provider.status ? getMostSeriousCondition(provider.status?.conditions) : '',
       '',
     ];
   };
@@ -67,25 +73,25 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
   const {
     toggleItemSelected: toggleProviderExpanded,
     isItemSelected: isProviderExpanded,
-  } = useSelectionState<IOpenShiftProvider>({
+  } = useSelectionState<ICorrelatedProvider<IOpenShiftProvider>>({
     items: sortedItems,
-    isEqual: (a, b) => a.name === b.name,
+    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
   });
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: IOpenShiftProvider) => {
-    const { name, namespaceCount, vmCount, networkCount } = provider;
+  currentPageItems.forEach((provider: ICorrelatedProvider<IOpenShiftProvider>) => {
+    const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
     const isExpanded = isProviderExpanded(provider);
-    const storageClasses = storageClassesQuery.data ? storageClassesQuery.data[name] : [];
+    const storageClasses = getStorageClasses(provider);
     rows.push({
       meta: { provider },
       isOpen: isExpanded,
       cells: [
-        name,
-        provider.object.spec.url,
-        namespaceCount,
-        vmCount,
-        networkCount,
+        provider.metadata.name,
+        provider.spec.url,
+        numStr(namespaceCount),
+        numStr(vmCount),
+        numStr(networkCount),
         {
           title: (
             <>
@@ -97,7 +103,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           },
         },
         {
-          title: <StatusCondition status={provider.object.status} />,
+          title: <StatusCondition status={provider.status} />,
         },
         {
           title: (
