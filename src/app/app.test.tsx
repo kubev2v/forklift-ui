@@ -7,7 +7,7 @@ import { APP_TITLE } from './common/constants';
 describe('App', () => {
   test('renders welcome page without errors', async () => {
     render(<App />);
-    await waitFor(() => screen.getByRole('heading'));
-    expect(screen.getByRole('heading')).toHaveTextContent(APP_TITLE);
+    const headings = screen.getAllByRole('heading');
+    await waitFor(() => expect(headings[1]).toHaveTextContent(APP_TITLE));
   });
 });
