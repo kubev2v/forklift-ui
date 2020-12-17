@@ -58,7 +58,7 @@ describe('<AddEditProviderModal />', () => {
     });
   });
 
-  it('refuses to add a vsphere provider with wrong values', async () => {
+  it('fails to add a vsphere provider with wrong values', async () => {
     render(
       <NetworkContextProvider>
         <Router history={history}>
