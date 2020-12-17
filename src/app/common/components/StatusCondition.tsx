@@ -16,7 +16,7 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
 }: IStatusConditionProps) => {
   const getStatusType = (severity: string) => {
     if (status) {
-      if (severity === PlanStatusType.Ready || severity === StatusCategoryType.Required) {
+      if (severity === PlanStatusType.Ready) {
         return StatusType.Ok;
       }
       if (severity === StatusCategoryType.Advisory) {
@@ -37,14 +37,18 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
       return <>{unknownFallback}</>;
     }
 
-    const icon = (
-      <StatusIcon status={getStatusType(mostSeriousCondition)} label={mostSeriousCondition} />
-    );
+    let label = mostSeriousCondition;
+    if (mostSeriousCondition === StatusCategoryType.Required) {
+      label = 'Not ready';
+    }
+
+    const icon = <StatusIcon status={getStatusType(mostSeriousCondition)} label={label} />;
 
     if (conditions.length === 0) return icon;
 
     return (
       <Popover
+        hasAutoWidth
         bodyContent={
           <>
             {conditions.map((condition) => {

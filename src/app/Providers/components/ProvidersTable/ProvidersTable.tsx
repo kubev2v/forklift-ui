@@ -2,22 +2,41 @@ import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
 import VMwareProvidersTable from './VMware/VMwareProvidersTable';
 import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
-import { IProvidersByType } from '@app/queries/types';
+import { IProviderObject, IProvidersByType } from '@app/queries/types';
+import { correlateProviders } from './helpers';
 
 interface IProvidersTableProps {
-  providersByType: IProvidersByType;
+  inventoryProvidersByType: IProvidersByType;
+  clusterProviders: IProviderObject[];
   activeProviderType: ProviderType;
 }
 
 const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
-  providersByType,
+  inventoryProvidersByType,
+  clusterProviders,
   activeProviderType,
 }) => {
   if (activeProviderType === ProviderType.vsphere) {
-    return <VMwareProvidersTable providers={providersByType.vsphere} />;
+    return (
+      <VMwareProvidersTable
+        providers={correlateProviders(
+          clusterProviders,
+          inventoryProvidersByType.vsphere || [],
+          ProviderType.vsphere
+        )}
+      />
+    );
   }
   if (activeProviderType === ProviderType.openshift) {
-    return <OpenShiftProvidersTable providers={providersByType.openshift} />;
+    return (
+      <OpenShiftProvidersTable
+        providers={correlateProviders(
+          clusterProviders,
+          inventoryProvidersByType.openshift || [],
+          ProviderType.openshift
+        )}
+      />
+    );
   }
   return null;
 };

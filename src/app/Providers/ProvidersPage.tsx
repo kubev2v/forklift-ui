@@ -18,30 +18,44 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import { useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
+import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
 
 import ProvidersTable from './components/ProvidersTable';
 import AddEditProviderModal from './components/AddEditProviderModal';
 
-import { checkAreProvidersEmpty } from './helpers';
-import { IPlan, IProvidersByType, Provider } from '@app/queries/types';
+import { IPlan, IProviderObject } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { getAggregateQueryStatus } from '@app/queries/helpers';
+import { QueryStatus } from 'react-query';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  openEditProviderModal: (_provider: Provider): void => undefined,
+  openEditProviderModal: (_provider: IProviderObject): void => undefined,
   plans: [] as IPlan[],
 });
 
 const ProvidersPage: React.FunctionComponent = () => {
-  const providersQuery = useInventoryProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
+  const inventoryProvidersQuery = useInventoryProvidersQuery();
   const plansQuery = usePlansQuery();
 
-  const areProvidersEmpty = checkAreProvidersEmpty(providersQuery.data);
-  const areTabsVisible = !providersQuery.isLoading && !plansQuery.isLoading && !areProvidersEmpty;
-  const availableProviderTypes: ProviderType[] = Object.keys(providersQuery.data || [])
-    .filter((key) => (providersQuery.data as IProvidersByType)[ProviderType[key]].length > 0)
-    .map((key) => ProviderType[key]);
+  const allQueries = [clusterProvidersQuery, inventoryProvidersQuery, plansQuery];
+  const allErrorTitles = [
+    'Error loading providers from cluster API',
+    'Error loading providers from inventory API',
+    'Error loading plans',
+  ];
+  const queryStatus = getAggregateQueryStatus(allQueries);
+
+  const clusterProviders = clusterProvidersQuery.data?.items || [];
+  const areProvidersEmpty = clusterProviders.length === 0;
+
+  const areTabsVisible = queryStatus !== QueryStatus.Loading && !areProvidersEmpty;
+
+  const availableProviderTypes = Array.from(
+    new Set(clusterProviders.map((provider) => provider.spec.type))
+  ).filter((type) => !!type) as ProviderType[];
+
   const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
     availableProviderTypes[0]
   );
@@ -52,14 +66,16 @@ const ProvidersPage: React.FunctionComponent = () => {
   }, [activeProviderType, availableProviderTypes]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [providerBeingEdited, setProviderBeingEdited] = React.useState<Provider | null>(null);
+  const [providerBeingEdited, setProviderBeingEdited] = React.useState<IProviderObject | null>(
+    null
+  );
 
   const toggleModalAndResetEdit = () => {
     setProviderBeingEdited(null);
     toggleAddEditModal();
   };
 
-  const openEditProviderModal = (provider: Provider) => {
+  const openEditProviderModal = (provider: IProviderObject) => {
     setProviderBeingEdited(provider);
     toggleAddEditModal();
   };
@@ -97,14 +113,10 @@ const ProvidersPage: React.FunctionComponent = () => {
         )}
       </PageSection>
       <PageSection>
-        <ResolvedQueries
-          results={[providersQuery, plansQuery]}
-          errorTitles={['Error loading providers', 'Error loading plans']}
-          errorsInline={false}
-        >
+        <ResolvedQueries results={allQueries} errorTitles={allErrorTitles} errorsInline={false}>
           <Card>
             <CardBody>
-              {!providersQuery.data || areProvidersEmpty ? (
+              {!clusterProvidersQuery.data || !inventoryProvidersQuery.data || areProvidersEmpty ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -120,7 +132,8 @@ const ProvidersPage: React.FunctionComponent = () => {
                   value={{ openEditProviderModal, plans: plansQuery.data?.items || [] }}
                 >
                   <ProvidersTable
-                    providersByType={providersQuery.data}
+                    inventoryProvidersByType={inventoryProvidersQuery.data}
+                    clusterProviders={clusterProviders}
                     activeProviderType={activeProviderType}
                   />
                 </EditProviderContext.Provider>
