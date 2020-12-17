@@ -16,6 +16,7 @@ import {
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useHistory } from 'react-router-dom';
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
@@ -40,6 +41,7 @@ export interface IProvidersMatchParams {
 }
 
 const ProvidersPage: React.FunctionComponent = () => {
+  const history = useHistory();
   const match = useRouteMatch<IProvidersMatchParams>({
     path: '/providers/:providerType',
     strict: true,
@@ -67,17 +69,9 @@ const ProvidersPage: React.FunctionComponent = () => {
     new Set(clusterProviders.map((provider) => provider.spec.type))
   ).filter((type) => !!type) as ProviderType[];
 
-  const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
-    match?.params.providerType
-      ? ProviderType[match?.params.providerType]
-      : availableProviderTypes[0]
-  );
-
-  React.useEffect(() => {
-    if (!activeProviderType && availableProviderTypes.length > 0) {
-      setActiveProviderType(availableProviderTypes[0]);
-    }
-  }, [activeProviderType, availableProviderTypes]);
+  const activeProviderType = match?.params.providerType
+    ? ProviderType[match?.params.providerType]
+    : null;
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [providerBeingEdited, setProviderBeingEdited] = React.useState<IProviderObject | null>(
@@ -113,7 +107,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         {areTabsVisible && (
           <Tabs
             activeKey={activeProviderType || ''}
-            onSelect={(_event, tabKey) => setActiveProviderType(tabKey as ProviderType)}
+            onSelect={(_event, tabKey) => history.push(`/providers/${tabKey}`)}
             className={spacing.mtSm}
           >
             {availableProviderTypes.map((providerType) => (
