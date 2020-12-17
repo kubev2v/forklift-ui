@@ -27,7 +27,7 @@ export interface IHostsMatchParams {
 
 export const HostsPage: React.FunctionComponent = () => {
   const match = useRouteMatch<IHostsMatchParams>({
-    path: '/providers/:providerName',
+    path: '/providers/vsphere/:providerName',
     strict: true,
     sensitive: true,
   });
@@ -47,6 +47,9 @@ export const HostsPage: React.FunctionComponent = () => {
             <Breadcrumb>
               <BreadcrumbItem>
                 <Link to={`/providers`}>Providers</Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <Link to={`/providers/vsphere`}>VMware</Link>
               </BreadcrumbItem>
               <BreadcrumbItem>{match?.params.providerName}</BreadcrumbItem>
               <BreadcrumbItem isActive>Hosts</BreadcrumbItem>

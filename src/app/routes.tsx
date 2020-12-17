@@ -65,9 +65,17 @@ export const routes: AppRouteConfig[] = [
     isProtected: true,
   },
   {
+    component: ProvidersPage,
+    exact: true,
+    path: '/providers/:providerType',
+    title: `${APP_TITLE} | Providers`,
+    isProtected: true,
+    // No label property, so it won't be rendered in the nav
+  },
+  {
     component: HostsPage,
     exact: false,
-    path: '/providers/:providerName',
+    path: '/providers/vsphere/:providerName',
     title: `${APP_TITLE} | Hosts`,
     isProtected: true,
   },
