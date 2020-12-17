@@ -131,7 +131,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         hostCount !== undefined
           ? {
               title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
-                <Link to={`/providers/${provider.metadata.name}`}>{hostsCell}</Link>
+                <Link to={`/providers/vsphere/${provider.metadata.name}`}>{hostsCell}</Link>
               ) : (
                 hostsCell
               ),

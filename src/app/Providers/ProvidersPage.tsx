@@ -16,6 +16,7 @@ import {
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useHistory } from 'react-router-dom';
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
@@ -27,14 +28,26 @@ import { IPlan, IProviderObject } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
+import { useRouteMatch } from 'react-router';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   openEditProviderModal: (_provider: IProviderObject): void => undefined,
   plans: [] as IPlan[],
 });
+export interface IProvidersMatchParams {
+  url: string;
+  providerType: string;
+}
 
 const ProvidersPage: React.FunctionComponent = () => {
+  const history = useHistory();
+  const match = useRouteMatch<IProvidersMatchParams>({
+    path: '/providers/:providerType',
+    strict: true,
+    sensitive: true,
+  });
+
   const clusterProvidersQuery = useClusterProvidersQuery();
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const plansQuery = usePlansQuery();
@@ -56,14 +69,15 @@ const ProvidersPage: React.FunctionComponent = () => {
     new Set(clusterProviders.map((provider) => provider.spec.type))
   ).filter((type) => !!type) as ProviderType[];
 
-  const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
-    availableProviderTypes[0]
-  );
+  const activeProviderType = match?.params.providerType
+    ? ProviderType[match?.params.providerType]
+    : null;
+
   React.useEffect(() => {
     if (!activeProviderType && availableProviderTypes.length > 0) {
-      setActiveProviderType(availableProviderTypes[0]);
+      history.push(`/providers/${availableProviderTypes[0]}`);
     }
-  }, [activeProviderType, availableProviderTypes]);
+  }, [activeProviderType, availableProviderTypes, history]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [providerBeingEdited, setProviderBeingEdited] = React.useState<IProviderObject | null>(
@@ -99,7 +113,7 @@ const ProvidersPage: React.FunctionComponent = () => {
         {areTabsVisible && (
           <Tabs
             activeKey={activeProviderType || ''}
-            onSelect={(_event, tabKey) => setActiveProviderType(tabKey as ProviderType)}
+            onSelect={(_event, tabKey) => history.push(`/providers/${tabKey}`)}
             className={spacing.mtSm}
           >
             {availableProviderTypes.map((providerType) => (
