@@ -27,14 +27,25 @@ import { IPlan, IProviderObject } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { QueryStatus } from 'react-query';
+import { useRouteMatch } from 'react-router';
 
 export const EditProviderContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   openEditProviderModal: (_provider: IProviderObject): void => undefined,
   plans: [] as IPlan[],
 });
+export interface IProvidersMatchParams {
+  url: string;
+  providerType: string;
+}
 
 const ProvidersPage: React.FunctionComponent = () => {
+  const match = useRouteMatch<IProvidersMatchParams>({
+    path: '/providers/:providerType',
+    strict: true,
+    sensitive: true,
+  });
+
   const clusterProvidersQuery = useClusterProvidersQuery();
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const plansQuery = usePlansQuery();
@@ -57,8 +68,11 @@ const ProvidersPage: React.FunctionComponent = () => {
   ).filter((type) => !!type) as ProviderType[];
 
   const [activeProviderType, setActiveProviderType] = React.useState<ProviderType | null>(
-    availableProviderTypes[0]
+    match?.params.providerType
+      ? ProviderType[match?.params.providerType]
+      : availableProviderTypes[0]
   );
+
   React.useEffect(() => {
     if (!activeProviderType && availableProviderTypes.length > 0) {
       setActiveProviderType(availableProviderTypes[0]);
