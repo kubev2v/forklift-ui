@@ -1,4 +1,4 @@
-import { IMetaTypeMeta, IObjectReference } from '.';
+import { IMetaObjectGenerateName, IMetaTypeMeta } from '.';
 
 export interface ISecret extends IMetaTypeMeta {
   data: {
@@ -7,15 +7,6 @@ export interface ISecret extends IMetaTypeMeta {
     thumbprint?: string;
     token?: string;
   };
-  metadata: {
-    name?: string;
-    generateName?: string;
-    namespace: string;
-    labels: {
-      createdForResourceType: string;
-      createdForResource: string;
-    };
-    ownerReferences?: IObjectReference[];
-  };
+  metadata: IMetaObjectGenerateName;
   type: string;
 }
