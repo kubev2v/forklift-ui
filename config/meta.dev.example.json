@@ -3,7 +3,7 @@
   "clusterApi": "https://api.cluster1.example.com:6443",
   "devServerPort": 9000,
   "oauth": {
-    "clientId": "forklift-ui",
+    "clientId": "forklift-ui-dev",
     "redirectUri": "http://localhost:9000/login/callback",
     "userScope": "user:full",
     "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
