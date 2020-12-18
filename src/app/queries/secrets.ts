@@ -13,7 +13,7 @@ import { ISecret } from './types';
 // TODO get rid of the checkbox in the provider form
 // TODO only prefill secrets on the host network form if exactly 1 host is selected
 
-export const useSecretQuery = (secretName?: string): QueryResult<ISecret> => {
+export const useSecretQuery = (secretName: string | null): QueryResult<ISecret> => {
   const client = useAuthorizedK8sClient();
   return useMockableQuery<ISecret>(
     {

@@ -1,5 +1,7 @@
-import { configMatchesHost } from '@app/queries';
+import * as React from 'react';
+import { configMatchesHost, getExistingHostConfigs, useSecretQuery } from '@app/queries';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
+import { SelectNetworkFormState } from './SelectNetworkModal';
 
 export const findHostConfig = (
   host: IHost,
@@ -23,4 +25,59 @@ export const formatHostNetworkAdapter = (network: IHostNetworkAdapter): string =
     return network.name;
   }
   return 'Network not found';
+};
+
+interface IPrefillHostConfigEffect {
+  isDonePrefilling: boolean;
+}
+
+export const usePrefillHostConfigEffect = (
+  form: SelectNetworkFormState,
+  selectedHosts: IHost[],
+  hostConfigs: IHostConfig[],
+  provider: IVMwareProvider
+): IPrefillHostConfigEffect => {
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(false);
+  const existingHostConfigs = getExistingHostConfigs(selectedHosts, hostConfigs, provider);
+  const existingSecretName =
+    (selectedHosts.length === 1 &&
+      existingHostConfigs[0] &&
+      existingHostConfigs[0].spec.secret?.name) ||
+    null;
+  const secretQuery = useSecretQuery(existingSecretName);
+  React.useEffect(() => {
+    if (!form.isDirty && (!existingSecretName || secretQuery.isSuccess)) {
+      const existingIpAddresses = existingHostConfigs.map((config) => config?.spec.ipAddress);
+      const allOnSameIp = Array.from(new Set(existingIpAddresses)).length === 1;
+      const preselectedAdapter =
+        (allOnSameIp &&
+          selectedHosts[0].networkAdapters.find(
+            (adapter) => adapter.ipAddress === existingIpAddresses[0]
+          )) ||
+        null;
+      const secret = secretQuery.data;
+      if (preselectedAdapter) {
+        form.fields.selectedNetworkAdapter.setValue(preselectedAdapter);
+        form.fields.selectedNetworkAdapter.setIsTouched(true);
+      }
+      if (secret) {
+        form.fields.adminUsername.setValue(atob(secret.data.user || ''));
+        form.fields.adminUsername.setIsTouched(true);
+        form.fields.adminPassword.setValue(atob(secret.data.password || ''));
+        form.fields.adminPassword.setIsTouched(true);
+      }
+      // Wait for effects to run based on field changes first
+      window.setTimeout(() => {
+        setIsDonePrefilling(true);
+      }, 0);
+    }
+  }, [
+    selectedHosts,
+    existingHostConfigs,
+    existingSecretName,
+    form,
+    secretQuery.data,
+    secretQuery.isSuccess,
+  ]);
+  return { isDonePrefilling };
 };

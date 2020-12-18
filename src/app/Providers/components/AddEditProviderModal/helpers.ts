@@ -14,7 +14,7 @@ export const useEditProviderPrefillEffect = (
   providerBeingEdited: IProviderObject | null
 ): IEditProviderPrefillEffect => {
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!providerBeingEdited);
-  const secretQuery = useSecretQuery(providerBeingEdited?.spec.secret?.name);
+  const secretQuery = useSecretQuery(providerBeingEdited?.spec.secret?.name || null);
   React.useEffect(() => {
     if (
       providerBeingEdited &&
