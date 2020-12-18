@@ -200,14 +200,12 @@ export const usePatchProviderMutation = (
         secret: providerBeingEdited?.spec.secret,
       },
     };
-    if (values.isReplacingCredentials) {
-      const secret = convertFormValuesToSecret(
-        values,
-        ForkliftResourceKind.Provider,
-        providerBeingEdited
-      );
-      await client.patch(secretResource, secret.metadata.name || '', secret);
-    }
+    const secret = convertFormValuesToSecret(
+      values,
+      ForkliftResourceKind.Provider,
+      providerBeingEdited
+    );
+    await client.patch(secretResource, secret.metadata.name || '', secret);
     return await client.patch<IProviderObject>(
       providerResource,
       providerWithSecret.metadata.name,

@@ -66,13 +66,13 @@ export function convertFormValuesToSecret(
       metadata: {
         ...(!providerBeingEdited
           ? {
-              generateName: `${openshiftValues.clusterName}-`,
+              generateName: `${openshiftValues.name}-`,
               namespace: META.namespace,
             }
           : nameAndNamespace(providerBeingEdited.spec.secret)),
         labels: {
           createdForResourceType,
-          createdForResource: openshiftValues.clusterName,
+          createdForResource: openshiftValues.name,
         },
       },
       type: 'Opaque',
@@ -123,7 +123,7 @@ export const convertFormValuesToProvider = (
     url = vmwareHostnameToUrl(vmwareValues.hostname);
   } else {
     const openshiftValues = values as OpenshiftProviderFormValues;
-    name = openshiftValues.clusterName;
+    name = openshiftValues.name;
     url = openshiftValues.url;
   }
   return {
