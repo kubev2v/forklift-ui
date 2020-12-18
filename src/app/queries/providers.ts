@@ -16,7 +16,7 @@ import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/provid
 import {
   IProvidersByType,
   InventoryProvider,
-  INewSecret,
+  ISecret,
   IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
@@ -86,14 +86,10 @@ export const useCreateProviderMutation = (
       providerResource,
       providerWithoutSecret.metadata.name
     );
-    const secret: INewSecret = convertFormValuesToSecret(
-      values,
-      ForkliftResourceKind.Provider,
-      null
-    );
+    const secret: ISecret = convertFormValuesToSecret(values, ForkliftResourceKind.Provider, null);
 
-    const providerAddResults: Array<IKubeResponse<INewSecret | IProviderObject>> = [];
-    const providerSecretAddResult = await client.create<INewSecret>(secretResource, secret);
+    const providerAddResults: Array<IKubeResponse<ISecret | IProviderObject>> = [];
+    const providerSecretAddResult = await client.create<ISecret>(secretResource, secret);
 
     if (providerSecretAddResult.status === 201) {
       providerAddResults.push(providerSecretAddResult);
@@ -137,7 +133,7 @@ export const useCreateProviderMutation = (
         name: string;
       }
       const rollbackObjs = providerAddResults.reduce(
-        (rollbackAccum: IRollbackObj[], res: IKubeResponse<IProviderObject | INewSecret>) => {
+        (rollbackAccum: IRollbackObj[], res: IKubeResponse<IProviderObject | ISecret>) => {
           return res.status === 201
             ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name || '' }]
             : rollbackAccum;
@@ -204,14 +200,12 @@ export const usePatchProviderMutation = (
         secret: providerBeingEdited?.spec.secret,
       },
     };
-    if (values.isReplacingCredentials) {
-      const secret = convertFormValuesToSecret(
-        values,
-        ForkliftResourceKind.Provider,
-        providerBeingEdited
-      );
-      await client.patch(secretResource, secret.metadata.name || '', secret);
-    }
+    const secret = convertFormValuesToSecret(
+      values,
+      ForkliftResourceKind.Provider,
+      providerBeingEdited
+    );
+    await client.patch(secretResource, secret.metadata.name || '', secret);
     return await client.patch<IProviderObject>(
       providerResource,
       providerWithSecret.metadata.name,

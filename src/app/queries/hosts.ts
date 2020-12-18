@@ -10,7 +10,7 @@ import {
   mockKubeList,
 } from './helpers';
 import { MOCK_HOSTS, MOCK_HOST_CONFIGS } from './mocks/hosts.mock';
-import { IHost, IHostConfig, INameNamespaceRef, INewSecret, IVMwareProvider } from './types';
+import { IHost, IHostConfig, INameNamespaceRef, ISecret, IVMwareProvider } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
 import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProviderHostsTable/SelectNetworkModal';
@@ -76,7 +76,7 @@ const generateSecret = (
   host: IHost,
   provider: IVMwareProvider,
   hostConfig?: IHostConfig
-): INewSecret => ({
+): ISecret => ({
   apiVersion: 'v1',
   data: {
     user: values.adminUsername && btoa(values.adminUsername),
@@ -156,8 +156,8 @@ export const useConfigureHostsMutation = (
         // Create or update a secret CR
         const newSecret = generateSecret(values, existingSecret, host, provider);
         const secretResult = await (existingSecret
-          ? client.patch<INewSecret>(secretResource, existingSecret.name, newSecret)
-          : client.create<INewSecret>(secretResource, newSecret));
+          ? client.patch<ISecret>(secretResource, existingSecret.name, newSecret)
+          : client.create<ISecret>(secretResource, newSecret));
         const newSecretRef = nameAndNamespace(secretResult.data.metadata);
 
         // Create or update a host CR
@@ -168,7 +168,7 @@ export const useConfigureHostsMutation = (
 
         // Patch the secret CR with an ownerReference to the host CR
         const updatedSecret = generateSecret(values, newSecretRef, host, provider, hostResult.data);
-        await client.patch<INewSecret>(secretResource, newSecretRef.name, updatedSecret);
+        await client.patch<ISecret>(secretResource, newSecretRef.name, updatedSecret);
 
         return hostResult;
       })

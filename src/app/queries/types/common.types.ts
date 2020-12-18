@@ -23,7 +23,16 @@ export interface IMetaObjectMeta {
   annotations?: {
     'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
   };
+  labels?: {
+    createdForResourceType?: string;
+    createdForResource?: string;
+  };
+  managedFields?: unknown[];
   ownerReferences?: IObjectReference[];
+}
+
+export interface IMetaObjectGenerateName extends Partial<IMetaObjectMeta> {
+  generateName?: string;
 }
 
 export interface ICR extends IMetaTypeMeta {

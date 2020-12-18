@@ -104,6 +104,9 @@ describe('<AddEditProviderModal />', () => {
       </NetworkContextProvider>
     );
 
+    await waitFor(() => {
+      expect(screen.getByText('Type')).toBeInTheDocument();
+    });
     const addButton = await screen.findByRole('button', { name: /Save/ });
     expect(addButton).not.toHaveAttribute('disabled');
   });
