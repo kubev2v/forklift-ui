@@ -47,10 +47,7 @@ export const getMostSeriousCondition = (conditions: IStatusCondition[]): string 
   ) {
     return StatusCategoryType.Advisory;
   }
-  if (
-    findConditionByCategory(conditions, StatusCategoryType.Required) &&
-    hasCondition(conditions, PlanStatusType.Ready)
-  ) {
+  if (hasCondition(conditions, PlanStatusType.Ready)) {
     return PlanStatusType.Ready;
   }
   return 'Unknown';
