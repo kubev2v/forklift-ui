@@ -6,7 +6,7 @@ import KubeClient, {
   CoreNamespacedResource,
 } from '@konveyor/lib-ui';
 import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
-import { IProviderObject, INewSecret } from '@app/queries/types';
+import { IProviderObject, ISecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
@@ -52,7 +52,7 @@ export function convertFormValuesToSecret(
   values: AddProviderFormValues,
   createdForResourceType: ForkliftResourceKind,
   providerBeingEdited: IProviderObject | null
-): INewSecret {
+): ISecret {
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
     // btoa => to base64, atob => from base64
@@ -66,13 +66,13 @@ export function convertFormValuesToSecret(
       metadata: {
         ...(!providerBeingEdited
           ? {
-              generateName: `${openshiftValues.clusterName}-`,
+              generateName: `${openshiftValues.name}-`,
               namespace: META.namespace,
             }
           : nameAndNamespace(providerBeingEdited.spec.secret)),
         labels: {
           createdForResourceType,
-          createdForResource: openshiftValues.clusterName,
+          createdForResource: openshiftValues.name,
         },
       },
       type: 'Opaque',
@@ -123,7 +123,7 @@ export const convertFormValuesToProvider = (
     url = vmwareHostnameToUrl(vmwareValues.hostname);
   } else {
     const openshiftValues = values as OpenshiftProviderFormValues;
-    name = openshiftValues.clusterName;
+    name = openshiftValues.name;
     url = openshiftValues.url;
   }
   return {

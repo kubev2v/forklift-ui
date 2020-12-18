@@ -193,6 +193,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         id: host1.id,
         ipAddress: host1.networkAdapters[0].ipAddress,
         provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        secret: {
+          name: 'mock-secret',
+          namespace: 'openshift-migration',
+        },
       },
     },
   ];
