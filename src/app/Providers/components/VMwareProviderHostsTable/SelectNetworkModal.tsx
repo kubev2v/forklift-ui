@@ -11,9 +11,10 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 
-import { formatHostNetworkAdapter } from './helpers';
-import { getExistingHostConfigs, useConfigureHostsMutation } from '@app/queries';
+import { formatHostNetworkAdapter, usePrefillHostConfigEffect } from './helpers';
+import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -23,33 +24,17 @@ interface ISelectNetworkModalProps {
   onClose: () => void;
 }
 
-const useSelectNetworkFormState = (
-  selectedHosts: IHost[],
-  hostConfigs: IHostConfig[],
-  provider: IVMwareProvider
-) => {
-  const existingHostConfigs = getExistingHostConfigs(selectedHosts, hostConfigs, provider);
-  const existingIpAddresses = existingHostConfigs
-    .map((config) => config?.spec.ipAddress)
-    .filter((ip) => !!ip) as string[];
-  const allOnSameIp = Array.from(new Set(existingIpAddresses)).length === 1;
-  const preselectedAdapter = allOnSameIp
-    ? selectedHosts[0].networkAdapters.find(
-        (adapter) => adapter.ipAddress === existingIpAddresses[0]
-      ) || null
-    : null;
-
-  return useFormState({
+const useSelectNetworkFormState = () =>
+  useFormState({
     selectedNetworkAdapter: useFormField<IHostNetworkAdapter | null>(
-      preselectedAdapter,
+      null,
       yup.mixed<IHostNetworkAdapter>().label('Host network').required()
     ),
     adminUsername: useFormField('', yup.string().max(320).label('Host admin username').required()),
     adminPassword: useFormField('', yup.string().max(256).label('Host admin password').required()),
   });
-};
-
-export type SelectNetworkFormValues = ReturnType<typeof useSelectNetworkFormState>['values'];
+export type SelectNetworkFormState = ReturnType<typeof useSelectNetworkFormState>;
+export type SelectNetworkFormValues = SelectNetworkFormState['values'];
 
 const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
@@ -65,7 +50,13 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     onClose
   );
 
-  const form = useSelectNetworkFormState(selectedHosts, hostConfigs, provider);
+  const form = useSelectNetworkFormState();
+  const { isDonePrefilling } = usePrefillHostConfigEffect(
+    form,
+    selectedHosts,
+    hostConfigs,
+    provider
+  );
 
   const networkOptions = commonNetworkAdapters.map((networkAdapter) => ({
     toString: () => formatHostNetworkAdapter(networkAdapter),
@@ -129,53 +120,58 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         </Button>,
       ]}
     >
-      <Form>
-        <FormGroup
-          label="Network"
-          isRequired
-          fieldId="network"
-          validated={form.fields.selectedNetworkAdapter.isValid ? 'default' : 'error'}
-          {...getFormGroupProps(form.fields.selectedNetworkAdapter)}
-        >
-          <SimpleSelect
-            id="network"
-            aria-label="Network"
-            options={networkOptions}
-            value={[
-              networkOptions.find(
-                (option) => option.value.ipAddress === form.values.selectedNetworkAdapter?.ipAddress
-              ),
-            ]}
-            onChange={(selection) =>
-              form.fields.selectedNetworkAdapter.setValue(
-                (selection as OptionWithValue<IHostNetworkAdapter>).value
-              )
-            }
-            placeholderText="Select a network..."
-          />
-        </FormGroup>
+      {!isDonePrefilling ? (
+        <LoadingEmptyState />
+      ) : (
+        <Form>
+          <FormGroup
+            label="Network"
+            isRequired
+            fieldId="network"
+            validated={form.fields.selectedNetworkAdapter.isValid ? 'default' : 'error'}
+            {...getFormGroupProps(form.fields.selectedNetworkAdapter)}
+          >
+            <SimpleSelect
+              id="network"
+              aria-label="Network"
+              options={networkOptions}
+              value={[
+                networkOptions.find(
+                  (option) =>
+                    option.value.ipAddress === form.values.selectedNetworkAdapter?.ipAddress
+                ),
+              ]}
+              onChange={(selection) =>
+                form.fields.selectedNetworkAdapter.setValue(
+                  (selection as OptionWithValue<IHostNetworkAdapter>).value
+                )
+              }
+              placeholderText="Select a network..."
+            />
+          </FormGroup>
 
-        <ValidatedTextInput
-          field={form.fields.adminUsername}
-          label="Host admin username"
-          isRequired
-          fieldId="admin-username"
-        />
-        <ValidatedTextInput
-          type="password"
-          field={form.fields.adminPassword}
-          label="Host admin password"
-          isRequired
-          fieldId="admin-password"
-        />
-        {/* TODO re-enable this when we have the API capability
+          <ValidatedTextInput
+            field={form.fields.adminUsername}
+            label="Host admin username"
+            isRequired
+            fieldId="admin-username"
+          />
+          <ValidatedTextInput
+            type="password"
+            field={form.fields.adminPassword}
+            label="Host admin password"
+            isRequired
+            fieldId="admin-password"
+          />
+          {/* TODO re-enable this when we have the API capability
         <div>
           <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
             Check connections
           </Button>
         </div>
         */}
-      </Form>
+        </Form>
+      )}
     </Modal>
   );
 };
