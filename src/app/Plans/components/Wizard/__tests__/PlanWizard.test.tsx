@@ -7,7 +7,6 @@ import { Router } from 'react-router-dom';
 
 import { NetworkContextProvider } from '@app/common/context';
 import PlanWizard from '../PlanWizard';
-import { debug } from 'webpack';
 
 describe('<AddEditProviderModal />', () => {
   const history = createMemoryHistory();
