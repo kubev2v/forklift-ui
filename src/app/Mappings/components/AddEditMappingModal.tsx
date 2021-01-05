@@ -15,6 +15,7 @@ import {
   useMappingsQuery,
   usePatchMappingMutation,
   findProvidersByRefs,
+  useClusterProvidersQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -72,13 +73,14 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   usePausedPollingEffect();
 
   const mappingsQuery = useMappingsQuery(mappingType);
-  const providersQuery = useInventoryProvidersQuery();
+  const inventoryProvidersQuery = useInventoryProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
 
   const form = useMappingFormState(mappingsQuery, mappingBeingEdited);
 
   const mappingBeingEditedProviders = findProvidersByRefs(
     mappingBeingEdited?.spec.provider || null,
-    providersQuery
+    inventoryProvidersQuery
   );
 
   const mappingResourceQueries = useMappingResourceQueries(
@@ -92,7 +94,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     mappingBeingEdited,
     mappingType,
     mappingBeingEditedProviders,
-    providersQuery,
+    inventoryProvidersQuery,
     mappingResourceQueries
   );
 
@@ -156,7 +158,13 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       }
     >
       <Form className="extraSelectMargin">
-        <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
+        <ResolvedQueries
+          results={[inventoryProvidersQuery, clusterProvidersQuery]}
+          errorTitles={[
+            'Error loading provider inventory data',
+            'Error loading providers from cluster',
+          ]}
+        >
           {!isDonePrefilling ? (
             <LoadingEmptyState />
           ) : (
@@ -210,7 +218,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               ) : null}
             </>
           )}
-        </ResolvedQuery>
+        </ResolvedQueries>
       </Form>
     </Modal>
   );

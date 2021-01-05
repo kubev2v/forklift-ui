@@ -34,7 +34,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           <ConditionalTooltip
             key="edit"
             isTooltipEnabled={!!plan.status?.migration?.started}
-            content={'This plan cannot be edited because it has been started'}
+            content="This plan cannot be edited because it has been started"
           >
             <DropdownItem
               isDisabled={!!plan.status?.migration?.started}

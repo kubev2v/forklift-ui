@@ -5,10 +5,14 @@ import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
 import SimpleSelect from '@app/common/components/SimpleSelect';
 import { IPlan } from '@app/queries/types';
-import { useInventoryProvidersQuery } from '@app/queries';
+import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
-import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import {
+  QuerySpinnerMode,
+  ResolvedQueries,
+  ResolvedQuery,
+} from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
 
@@ -21,11 +25,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
   planBeingEdited,
 }: IGeneralFormProps) => {
-  const providersQuery = useInventoryProvidersQuery();
+  const inventoryProvidersQuery = useInventoryProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
 
   return (
-    <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
+    <ResolvedQueries
+      results={[inventoryProvidersQuery, clusterProvidersQuery]}
+      errorTitles={[
+        'Error loading provider inventory data',
+        'Error loading providers from cluster',
+      ]}
+    >
       <Form className={spacing.pbXl}>
         <Title headingLevel="h2" size="md">
           Give your plan a name and a description
@@ -82,7 +93,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </ResolvedQuery>
         </FormGroup>
       </Form>
-    </ResolvedQuery>
+    </ResolvedQueries>
   );
 };
 
