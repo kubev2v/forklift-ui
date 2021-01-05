@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
     spec: {
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[1]),
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       map: [
@@ -98,7 +98,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       provider: {
         source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
-        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
       },
       map: [
         {

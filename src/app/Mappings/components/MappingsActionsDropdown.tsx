@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { MappingType, Mapping } from '@app/queries/types';
-import { useDeleteMappingMutation } from '@app/queries';
+import { useClusterProvidersQuery, useDeleteMappingMutation } from '@app/queries';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import { areAssociatedProvidersReady } from '@app/queries/helpers';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IMappingsActionsDropdownProps {
   mappingType: MappingType;
@@ -21,6 +23,11 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
     mappingType,
     toggleDeleteModal
   );
+  const clusterProvidersQuery = useClusterProvidersQuery();
+  const isEditDisabled = React.useMemo(
+    () => kebabIsOpen && !areAssociatedProvidersReady(clusterProvidersQuery, mapping.spec.provider),
+    [kebabIsOpen, clusterProvidersQuery, mapping.spec.provider]
+  );
   return (
     <>
       <Dropdown
@@ -29,15 +36,22 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              openEditMappingModal(mapping);
-            }}
+          <ConditionalTooltip
             key="edit"
+            isTooltipEnabled={isEditDisabled}
+            content="This mapping cannot be edited because the inventory data for its associated providers is not ready"
           >
-            Edit
-          </DropdownItem>,
+            <DropdownItem
+              onClick={() => {
+                setKebabIsOpen(false);
+                openEditMappingModal(mapping);
+              }}
+              key="edit"
+              isDisabled={isEditDisabled}
+            >
+              Edit
+            </DropdownItem>
+          </ConditionalTooltip>,
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);

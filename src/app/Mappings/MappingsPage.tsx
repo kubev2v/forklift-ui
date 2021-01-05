@@ -13,7 +13,11 @@ import { Mapping, MappingType } from '@app/queries/types';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
-import { useHasSufficientProvidersQuery, useMappingsQuery } from '@app/queries';
+import {
+  useClusterProvidersQuery,
+  useHasSufficientProvidersQuery,
+  useMappingsQuery,
+} from '@app/queries';
 import CreateMappingButton from './components/CreateMappingButton';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
@@ -25,6 +29,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
   mappingType,
 }: IMappingsPageProps) => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
   const mappingsQuery = useMappingsQuery(mappingType);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -47,8 +52,12 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
       </PageSection>
       <PageSection>
         <ResolvedQueries
-          results={[sufficientProvidersQuery.result, mappingsQuery]}
-          errorTitles={['Error loading providers', 'Error loading mappings']}
+          results={[sufficientProvidersQuery.result, clusterProvidersQuery, mappingsQuery]}
+          errorTitles={[
+            'Error loading provider inventory data',
+            'Error loading providers from cluster',
+            'Error loading mappings',
+          ]}
           errorsInline={false}
         >
           <Card>
