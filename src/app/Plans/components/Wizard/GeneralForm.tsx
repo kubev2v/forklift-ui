@@ -3,12 +3,14 @@ import { Form, FormGroup, TextArea, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IOpenShiftProvider, IPlan, IVMwareProvider } from '@app/queries/types';
+import SimpleSelect from '@app/common/components/SimpleSelect';
+import { IPlan } from '@app/queries/types';
 import { useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
+import ProviderSelect from '@app/common/components/ProviderSelect';
+import { ProviderType } from '@app/common/constants';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -20,20 +22,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   planBeingEdited,
 }: IGeneralFormProps) => {
   const providersQuery = useInventoryProvidersQuery();
-  const vmwareProviders = providersQuery.data?.vsphere || [];
-  const openshiftProviders = providersQuery.data?.openshift || [];
-
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
-
-  const sourceProvidersOptions = Object.values(vmwareProviders).map((provider) => ({
-    toString: () => provider.name,
-    value: provider,
-  })) as OptionWithValue<IVMwareProvider>[];
-
-  const targetProvidersOptions = Object.values(openshiftProviders).map((provider) => ({
-    toString: () => provider.name,
-    value: provider,
-  })) as OptionWithValue<IOpenShiftProvider>[];
 
   return (
     <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
@@ -57,52 +46,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <Title headingLevel="h3" size="md">
           Select source and target providers
         </Title>
-        <FormGroup
+        <ProviderSelect
           label="Source provider"
-          isRequired
-          fieldId="source-provider"
-          {...getFormGroupProps(form.fields.sourceProvider)}
-        >
-          <SimpleSelect
-            id="source-provider"
-            aria-label="Source provider"
-            options={sourceProvidersOptions}
-            value={[
-              sourceProvidersOptions.find(
-                (option) => option.value.name === form.values.sourceProvider?.name
-              ),
-            ]}
-            onChange={(selection) =>
-              form.fields.sourceProvider.setValue(
-                (selection as OptionWithValue<IVMwareProvider>).value
-              )
-            }
-            placeholderText="Select a provider"
-          />
-        </FormGroup>
-        <FormGroup
+          providerType={ProviderType.vsphere}
+          field={form.fields.sourceProvider}
+        />
+        <ProviderSelect
           label="Target provider"
-          isRequired
-          fieldId="target-provider"
-          {...getFormGroupProps(form.fields.targetProvider)}
-        >
-          <SimpleSelect
-            id="target-provider"
-            aria-label="Target provider"
-            options={targetProvidersOptions}
-            value={[
-              targetProvidersOptions.find(
-                (option) => option.value.name === form.values.targetProvider?.name
-              ),
-            ]}
-            onChange={(selection) =>
-              form.fields.targetProvider.setValue(
-                (selection as OptionWithValue<IOpenShiftProvider>).value
-              )
-            }
-            placeholderText="Select a provider"
-          />
-        </FormGroup>
+          providerType={ProviderType.openshift}
+          field={form.fields.targetProvider}
+        />
         <FormGroup
           label="Target namespace"
           isRequired
