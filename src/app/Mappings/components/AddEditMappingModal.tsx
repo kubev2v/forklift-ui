@@ -187,6 +187,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     label="Source provider"
                     providerType={ProviderType.vsphere}
                     field={form.fields.sourceProvider}
+                    notReadyTooltipPosition="right"
                   />
                 </GridItem>
                 <GridItem sm={1} />

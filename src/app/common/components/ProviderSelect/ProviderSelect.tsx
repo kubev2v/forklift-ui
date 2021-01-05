@@ -3,7 +3,6 @@ import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queri
 import { InventoryProvider, IProviderObject } from '@app/queries/types';
 import { getFormGroupProps, IValidatedFormField } from '@konveyor/lib-ui';
 import { FormGroup } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanStatusType, ProviderType } from '../../constants';
 import { hasCondition } from '../../helpers';
 import ConditionalTooltip from '../ConditionalTooltip';
@@ -16,12 +15,14 @@ interface IProviderSelectProps<T extends InventoryProvider> {
   label: string;
   providerType: ProviderType;
   field: IValidatedFormField<T | null>;
+  notReadyTooltipPosition?: 'left' | 'right';
 }
 
 const ProviderSelect = <T extends InventoryProvider>({
   label,
   providerType,
   field,
+  notReadyTooltipPosition = 'left',
 }: React.PropsWithChildren<IProviderSelectProps<T>>): JSX.Element | null => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -48,8 +49,8 @@ const ProviderSelect = <T extends InventoryProvider>({
           <ConditionalTooltip
             isTooltipEnabled={!isReady}
             content="This provider cannot be selected because its inventory data is not ready"
-            position="left"
-            className={spacing.mrSm}
+            position={notReadyTooltipPosition}
+            distance={28}
           >
             <div>{provider.metadata.name}</div>
           </ConditionalTooltip>
