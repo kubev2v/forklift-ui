@@ -50,7 +50,6 @@ const ProviderSelect = <T extends InventoryProvider>({
             isTooltipEnabled={!isReady}
             content="This provider cannot be selected because its inventory data is not ready"
             position={notReadyTooltipPosition}
-            distance={28}
           >
             <div>{provider.metadata.name}</div>
           </ConditionalTooltip>
