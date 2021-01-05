@@ -10,6 +10,7 @@ import { QuerySpinnerMode, ResolvedQueries } from '../ResolvedQuery';
 import SimpleSelect, { OptionWithValue } from '../SimpleSelect';
 
 import './ProviderSelect.css';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderSelectProps<T extends InventoryProvider> {
   label: string;
@@ -33,7 +34,7 @@ const ProviderSelect = <T extends InventoryProvider>({
     [];
 
   const getMatchingInventoryProvider = (clusterProvider: IProviderObject) =>
-    inventoryProviders.find((provider) => provider.name === clusterProvider.metadata.name);
+    inventoryProviders.find((provider) => isSameResource(provider, clusterProvider.metadata));
 
   const options = Object.values(clusterProviders).map((provider) => {
     const inventoryProvider = getMatchingInventoryProvider(provider);

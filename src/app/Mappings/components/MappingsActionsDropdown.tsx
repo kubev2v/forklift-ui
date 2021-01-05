@@ -24,8 +24,8 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
     toggleDeleteModal
   );
   const clusterProvidersQuery = useClusterProvidersQuery();
-  const isEditDisabled = React.useMemo(
-    () => kebabIsOpen && !areAssociatedProvidersReady(clusterProvidersQuery, mapping.spec.provider),
+  const areProvidersReady = React.useMemo(
+    () => kebabIsOpen && areAssociatedProvidersReady(clusterProvidersQuery, mapping.spec.provider),
     [kebabIsOpen, clusterProvidersQuery, mapping.spec.provider]
   );
   return (
@@ -38,7 +38,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         dropdownItems={[
           <ConditionalTooltip
             key="edit"
-            isTooltipEnabled={isEditDisabled}
+            isTooltipEnabled={!areProvidersReady}
             content="This mapping cannot be edited because the inventory data for its associated providers is not ready"
           >
             <DropdownItem
@@ -47,7 +47,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
                 openEditMappingModal(mapping);
               }}
               key="edit"
-              isDisabled={isEditDisabled}
+              isDisabled={!areProvidersReady}
             >
               Edit
             </DropdownItem>
