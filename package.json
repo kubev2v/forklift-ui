@@ -95,7 +95,7 @@
     "@patternfly/react-styles": "^4.7.16",
     "@patternfly/react-table": "^4.19.24",
     "@patternfly/react-tokens": "^4.9.18",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "dayjs": "^1.9.3",
     "dayjs-ext": "^2.2.0",
     "ejs": "^3.1.5",
