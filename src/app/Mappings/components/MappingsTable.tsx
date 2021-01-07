@@ -111,8 +111,6 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       });
     }
   });
-  // I wonder if we can make use of generics right in the props interface?
-  // Might be overkill: https://wanago.io/2020/03/09/functional-react-components-with-generic-props-in-typescript/
 
   return (
     <>
@@ -125,7 +123,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
           />
         </LevelItem>
         <LevelItem>
-          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+          <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
         </LevelItem>
       </Level>
       <Table
@@ -143,7 +141,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       </Table>
       <Pagination
         {...paginationProps}
-        widgetId="providers-table-pagination-bottom"
+        widgetId="mappings-table-pagination-bottom"
         variant="bottom"
       />
     </>
