@@ -57,7 +57,7 @@ describe('<AddEditProviderModal />', () => {
 
     expect(namespace).toHaveAttribute('disabled', '');
     userEvent.click(namespace);
-    userEvent.type(namespace, 'test-namespace');
+    userEvent.type(namespace, 'openshift-migration');
 
     const nextButton = await screen.findByRole('button', { name: /Next/ });
     expect(nextButton).toHaveAttribute('disabled', '');
@@ -81,7 +81,60 @@ describe('<AddEditProviderModal />', () => {
     );
 
     await waitFor(() => {
-      screen.getByLabelText(/Plan name/);
+      expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent(
+        'Migration plans'
+      );
+      expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent(
+        'plantest-2'
+      );
+      expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent('Edit');
+      expect(screen.getByRole('link', { name: /Migration plans/ })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Edit migration plan/ })).toBeInTheDocument();
+
+      expect(screen.getByRole('heading', { name: /General settings/ })).toBeInTheDocument();
+      expect(screen.getByText(/plantest-2/i)).toBeInTheDocument();
+      expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
+      expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
+      expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();
     });
+
+    const nextButton = await screen.findByRole('button', { name: /Next/ });
+    userEvent.click(nextButton);
+
+    expect(screen.getByRole('heading', { name: /Filter VMs/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /Select Host esx13.v2v.bos.redhat.com/ })
+    ).toBeChecked();
+    userEvent.click(nextButton);
+
+    expect(screen.getByRole('heading', { name: /Select VMs/ })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /Select row 0/ })).toBeChecked();
+    userEvent.click(nextButton);
+
+    expect(screen.getByRole('heading', { name: /Network mapping/ })).toBeInTheDocument();
+    expect(screen.getByText(/vmware-network-1/i)).toBeInTheDocument();
+    const networkTarget = screen.getByRole('textbox', { name: /select target.../i });
+    expect(networkTarget).toHaveValue('foo-namespace / ocp-network-1');
+    expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
+    userEvent.click(nextButton);
+
+    expect(screen.getByRole('heading', { name: /Storage mapping/ })).toBeInTheDocument();
+    expect(screen.getByText(/vmware-datastore-1/i)).toBeInTheDocument();
+    const storageTarget = screen.getByRole('textbox', { name: /select target.../i });
+    expect(storageTarget).toHaveValue('standard');
+    expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
+    userEvent.click(nextButton);
+
+    // Review step
+    expect(screen.getByRole('heading', { name: /Review the migration plan/ })).toBeInTheDocument();
+    expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
+    expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
+    expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();
+    expect(screen.getByText(/openshift-migration/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /1/i })).toBeEnabled();
+    expect(networkTarget).toHaveValue('foo-namespace / ocp-network-1');
+    expect(storageTarget).toHaveValue('standard');
+
+    expect(screen.getByRole('button', { name: /Finish/i })).toBeEnabled();
   });
 });
