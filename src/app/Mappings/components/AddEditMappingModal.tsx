@@ -1,24 +1,9 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import {
-  Modal,
-  Button,
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  Stack,
-  Flex,
-} from '@patternfly/react-core';
+import { Modal, Button, Form, Grid, GridItem, Stack, Flex } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import {
-  useFormField,
-  useFormState,
-  getFormGroupProps,
-  ValidatedTextInput,
-} from '@konveyor/lib-ui';
+import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
@@ -30,6 +15,7 @@ import {
   useMappingsQuery,
   usePatchMappingMutation,
   findProvidersByRefs,
+  useClusterProvidersQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -43,6 +29,8 @@ import {
   ResolvedQueries,
   QuerySpinnerMode,
 } from '@app/common/components/ResolvedQuery';
+import ProviderSelect from '@app/common/components/ProviderSelect';
+import { ProviderType } from '@app/common/constants';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -85,13 +73,14 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   usePausedPollingEffect();
 
   const mappingsQuery = useMappingsQuery(mappingType);
-  const providersQuery = useInventoryProvidersQuery();
+  const inventoryProvidersQuery = useInventoryProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
 
   const form = useMappingFormState(mappingsQuery, mappingBeingEdited);
 
   const mappingBeingEditedProviders = findProvidersByRefs(
     mappingBeingEdited?.spec.provider || null,
-    providersQuery
+    inventoryProvidersQuery
   );
 
   const mappingResourceQueries = useMappingResourceQueries(
@@ -105,25 +94,9 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     mappingBeingEdited,
     mappingType,
     mappingBeingEditedProviders,
-    providersQuery,
+    inventoryProvidersQuery,
     mappingResourceQueries
   );
-
-  // TODO these might be reusable for any other provider dropdowns elsewhere in the UI
-  const sourceProviderOptions: OptionWithValue<IVMwareProvider>[] =
-    providersQuery.isLoading || !providersQuery.data
-      ? []
-      : providersQuery.data.vsphere.map((provider) => ({
-          value: provider,
-          toString: () => provider.name,
-        }));
-  const targetProviderOptions: OptionWithValue<IOpenShiftProvider>[] =
-    providersQuery.isLoading || !providersQuery.data
-      ? []
-      : providersQuery.data.openshift.map((provider) => ({
-          value: provider,
-          toString: () => provider.name,
-        }));
 
   // If you change providers, reset the mapping selections.
   React.useEffect(() => {
@@ -185,7 +158,13 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
       }
     >
       <Form className="extraSelectMargin">
-        <ResolvedQuery result={providersQuery} errorTitle="Error loading providers">
+        <ResolvedQueries
+          results={[inventoryProvidersQuery, clusterProvidersQuery]}
+          errorTitles={[
+            'Error loading provider inventory data',
+            'Error loading providers from cluster',
+          ]}
+        >
           {!isDonePrefilling ? (
             <LoadingEmptyState />
           ) : (
@@ -204,56 +183,20 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 </GridItem>
                 <GridItem />
                 <GridItem sm={12} md={5}>
-                  <FormGroup
+                  <ProviderSelect
                     label="Source provider"
-                    isRequired
-                    fieldId="source-provider"
-                    validated={form.fields.sourceProvider.isValid ? 'default' : 'error'}
-                    {...getFormGroupProps(form.fields.sourceProvider)}
-                  >
-                    <SimpleSelect
-                      id="source-provider"
-                      aria-label="Source provider"
-                      options={sourceProviderOptions}
-                      value={[
-                        sourceProviderOptions.find(
-                          (option) => option.value.name === form.values.sourceProvider?.name
-                        ),
-                      ]}
-                      onChange={(selection) =>
-                        form.fields.sourceProvider.setValue(
-                          (selection as OptionWithValue<IVMwareProvider>).value
-                        )
-                      }
-                      placeholderText="Select a source provider..."
-                    />
-                  </FormGroup>
+                    providerType={ProviderType.vsphere}
+                    field={form.fields.sourceProvider}
+                    notReadyTooltipPosition="right"
+                  />
                 </GridItem>
                 <GridItem sm={1} />
                 <GridItem sm={12} md={5}>
-                  <FormGroup
+                  <ProviderSelect
                     label="Target provider"
-                    isRequired
-                    fieldId="target-provider"
-                    {...getFormGroupProps(form.fields.sourceProvider)}
-                  >
-                    <SimpleSelect
-                      id="target-provider"
-                      aria-label="Target provider"
-                      options={targetProviderOptions}
-                      value={[
-                        targetProviderOptions.find(
-                          (option) => option.value.name === form.values.targetProvider?.name
-                        ),
-                      ]}
-                      onChange={(selection) =>
-                        form.fields.targetProvider.setValue(
-                          (selection as OptionWithValue<IOpenShiftProvider>).value
-                        )
-                      }
-                      placeholderText="Select a target provider..."
-                    />
-                  </FormGroup>
+                    providerType={ProviderType.openshift}
+                    field={form.fields.targetProvider}
+                  />
                 </GridItem>
                 <GridItem sm={1} />
               </Grid>
@@ -276,7 +219,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               ) : null}
             </>
           )}
-        </ResolvedQuery>
+        </ResolvedQueries>
       </Form>
     </Modal>
   );

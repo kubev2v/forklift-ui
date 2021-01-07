@@ -1,6 +1,6 @@
 import { KubeClientError, IKubeList } from '@app/client/types';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
-import { usePollingContext } from '@app/common/context';
+import { CLUSTER_API_VERSION, PlanStatusType } from '@app/common/constants';
+import { hasCondition } from '@app/common/helpers';
 import {
   MutationConfig,
   UseQueryObjectConfig,
@@ -14,7 +14,7 @@ import {
 } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
-import { INameNamespaceRef } from './types';
+import { INameNamespaceRef, IProviderObject, ISrcDestRefs } from './types';
 import { VMwareTree } from './types/tree.types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?
@@ -190,3 +190,21 @@ export const isSameResource = (
   refA: INameNamespaceRef | null | undefined,
   refB: INameNamespaceRef | null | undefined
 ): boolean => !!refA && !!refB && refA.name === refB.name && refA.namespace === refB.namespace;
+
+export const areAssociatedProvidersReady = (
+  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>,
+  providerRefs: ISrcDestRefs
+): boolean => {
+  const associatedProviders =
+    clusterProvidersQuery.data?.items.filter(
+      (provider) =>
+        isSameResource(provider.metadata, providerRefs.source) ||
+        isSameResource(provider.metadata, providerRefs.destination)
+    ) || [];
+  const areProvidersReady =
+    associatedProviders.length === 2 &&
+    associatedProviders.every((provider) =>
+      hasCondition(provider.status?.conditions || [], PlanStatusType.Ready)
+    );
+  return areProvidersReady;
+};

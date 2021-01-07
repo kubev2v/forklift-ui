@@ -15,6 +15,7 @@ import {
   useHasSufficientProvidersQuery,
   usePlansQuery,
   useCreateMigrationMutation,
+  useClusterProvidersQuery,
 } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
@@ -32,6 +33,7 @@ import {
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
+  const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
   const [planBeingStarted, setPlanBeingStarted] = React.useState<IPlan | null>(null);
   const [baseCreateMigration, baseCreateMigrationResult] = useCreateMigrationMutation();
@@ -85,8 +87,12 @@ const PlansPage: React.FunctionComponent = () => {
           className={spacing.mbMd}
         />
         <ResolvedQueries
-          results={[sufficientProvidersQuery.result, plansQuery]}
-          errorTitles={['Error loading providers', 'Error loading plans']}
+          results={[sufficientProvidersQuery.result, clusterProvidersQuery, plansQuery]}
+          errorTitles={[
+            'Error loading providers',
+            'Error loading providers from cluster',
+            'Error loading plans',
+          ]}
           errorsInline={false}
         >
           <Card>

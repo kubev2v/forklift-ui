@@ -5,9 +5,10 @@ import { useHistory } from 'react-router-dom';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { useDeletePlanMutation } from '@app/queries';
+import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { areAssociatedProvidersReady } from '@app/queries/helpers';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -20,9 +21,13 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
   const history = useHistory();
-
   const conditions = plan.status?.conditions || [];
-
+  const clusterProvidersQuery = useClusterProvidersQuery();
+  const areProvidersReady = React.useMemo(
+    () => kebabIsOpen && areAssociatedProvidersReady(clusterProvidersQuery, plan.spec.provider),
+    [kebabIsOpen, clusterProvidersQuery, plan.spec.provider]
+  );
+  const isPlanStarted = !!plan.status?.migration?.started;
   return (
     <>
       <Dropdown
@@ -33,11 +38,17 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         dropdownItems={[
           <ConditionalTooltip
             key="edit"
-            isTooltipEnabled={!!plan.status?.migration?.started}
-            content={'This plan cannot be edited because it has been started'}
+            isTooltipEnabled={isPlanStarted || !areProvidersReady}
+            content={
+              isPlanStarted
+                ? 'This plan cannot be edited because it has been started'
+                : !areProvidersReady
+                ? 'This plan cannot be edited because the inventory data for its associated providers is not ready'
+                : ''
+            }
           >
             <DropdownItem
-              isDisabled={!!plan.status?.migration?.started}
+              isDisabled={isPlanStarted || !areProvidersReady}
               onClick={() => {
                 setKebabIsOpen(false);
                 history.push(`/plans/${plan.metadata.name}/edit`);
