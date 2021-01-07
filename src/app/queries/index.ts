@@ -7,3 +7,4 @@ export * from './vms';
 export * from './plans';
 export * from './migrations';
 export * from './secrets';
+export * from './provisioners';

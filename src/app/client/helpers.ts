@@ -38,6 +38,7 @@ export enum ForkliftResourceKind {
   Plan = 'plans',
   Migration = 'migrations',
   Host = 'hosts',
+  Provisioners = 'provisioners',
 }
 
 export const secretResource = new CoreNamespacedResource(
