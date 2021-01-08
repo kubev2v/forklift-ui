@@ -17,18 +17,25 @@ const annotateStorageClasses = (
   storageClasses: IStorageClass[],
   provisioners: IProvisioner[]
 ): IAnnotatedStorageClass[] =>
-  storageClasses.map((storageClass) => ({
-    ...storageClass,
-    uiMeta: {
-      isCompatible:
-        !!storageClass.object.provisioner &&
-        !!provisioners.find((prov) => prov.spec.name === storageClass.object.provisioner),
-      isDefault:
-        storageClass.object.metadata.annotations?.[
-          'storageclass.kubernetes.io/is-default-class'
-        ] === 'true',
-    },
-  }));
+  storageClasses
+    .map((storageClass) => ({
+      ...storageClass,
+      uiMeta: {
+        isCompatible:
+          !!storageClass.object.provisioner &&
+          !!provisioners.find((prov) => prov.spec.name === storageClass.object.provisioner),
+        isDefault:
+          storageClass.object.metadata.annotations?.[
+            'storageclass.kubernetes.io/is-default-class'
+          ] === 'true',
+      },
+    }))
+    .sort((a, b) => {
+      // Always put the default at the top
+      if (a.uiMeta.isDefault && !b.uiMeta.isDefault) return -1;
+      if (b.uiMeta.isDefault && !a.uiMeta.isDefault) return 1;
+      return 0;
+    });
 
 export const useStorageClassesQuery = (
   providers: (IOpenShiftProvider | null)[] | null,

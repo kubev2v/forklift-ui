@@ -1,6 +1,11 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IAnnotatedStorageClass, MappingTarget, MappingType } from '@app/queries/types';
+import {
+  IAnnotatedStorageClass,
+  MappingTarget,
+  MappingType,
+  POD_NETWORK,
+} from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingTargetName } from '../MappingDetailView/helpers';
 import TruncatedText from '@app/common/components/TruncatedText';
@@ -23,19 +28,40 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   availableTargets,
   mappingType,
 }: IMappingTargetSelectProps) => {
-  const setTarget = (target: MappingTarget) => {
-    const newItems = [...builderItems];
-    newItems[itemIndex] = { ...builderItems[itemIndex], target, highlight: false };
-    setBuilderItems(newItems);
-  };
+  const setTarget = React.useCallback(
+    (target: MappingTarget) => {
+      const newItems = [...builderItems];
+      newItems[itemIndex] = { ...builderItems[itemIndex], target, highlight: false };
+      setBuilderItems(newItems);
+    },
+    [builderItems, itemIndex, setBuilderItems]
+  );
+
+  React.useEffect(() => {
+    if (!builderItems[itemIndex].target) {
+      let defaultTarget: MappingTarget | null = null;
+      if (mappingType === MappingType.Network) {
+        defaultTarget = POD_NETWORK;
+      } else if (mappingType === MappingType.Storage) {
+        defaultTarget =
+          availableTargets.find((target) => (target as IAnnotatedStorageClass).uiMeta.isDefault) ||
+          null;
+      }
+      if (defaultTarget) {
+        setTarget(defaultTarget);
+      }
+    }
+  }, [availableTargets, builderItems, itemIndex, mappingType, setTarget]);
 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => {
-    const name = getMappingTargetName(target, mappingType);
+    let name = getMappingTargetName(target, mappingType);
     let isCompatible = true;
     if (mappingType === MappingType.Storage) {
       const targetStorage = target as IAnnotatedStorageClass;
       isCompatible = targetStorage.uiMeta.isCompatible;
-      // TODO Check if is default too?
+      if (targetStorage.uiMeta.isDefault) {
+        name = `${name} (default)`;
+      }
     }
     return {
       value: target,

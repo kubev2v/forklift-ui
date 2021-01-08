@@ -81,7 +81,7 @@ export interface IStorageMapping extends ICommonMapping {
 
 export type Mapping = INetworkMapping | IStorageMapping;
 
-export const POD_NETWORK = {
+export const POD_NETWORK: IOpenShiftNetwork = {
   name: 'Pod network',
   namespace: 'pod',
   type: 'pod',
