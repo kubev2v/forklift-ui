@@ -1,9 +1,10 @@
 import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { MappingTarget, MappingType } from '@app/queries/types';
+import { IAnnotatedStorageClass, MappingTarget, MappingType } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingTargetName } from '../MappingDetailView/helpers';
 import TruncatedText from '@app/common/components/TruncatedText';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IMappingTargetSelectProps {
   id: string;
@@ -30,11 +31,29 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => {
     const name = getMappingTargetName(target, mappingType);
+    let isCompatible = true;
+    if (mappingType === MappingType.Storage) {
+      const targetStorage = target as IAnnotatedStorageClass;
+      isCompatible = targetStorage.uiMeta.isCompatible;
+      // TODO Check if is default too?
+    }
     return {
       value: target,
       toString: () => name,
       props: {
-        children: <TruncatedText>{name}</TruncatedText>,
+        isDisabled: !isCompatible,
+        className: !isCompatible ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={!isCompatible}
+            content="This storage class cannot be selected because it is not compatible with kubevirt."
+            position="left"
+          >
+            <div>
+              <TruncatedText>{name}</TruncatedText>
+            </div>
+          </ConditionalTooltip>
+        ),
       },
     };
   });

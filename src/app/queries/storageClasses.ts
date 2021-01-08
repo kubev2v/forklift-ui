@@ -39,7 +39,6 @@ export const useStorageClassesQuery = (
     ? (providers.filter((provider) => !!provider) as IOpenShiftProvider[])
     : [];
   const provisionersQuery = useProvisionersQuery();
-  console.log({ provisionersQuery });
   const result = useMockableQuery<IByProvider<IAnnotatedStorageClass>>(
     {
       // Key by the provider names combined, so it refetches if the list of providers changes

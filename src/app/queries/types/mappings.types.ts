@@ -1,6 +1,6 @@
 import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
 import { IVMwareDatastore } from './datastores.types';
-import { IStorageClass } from './storageClasses.types';
+import { IAnnotatedStorageClass } from './storageClasses.types';
 import { ICR } from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
@@ -88,4 +88,4 @@ export const POD_NETWORK = {
   selfLink: 'pod',
 };
 export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = IOpenShiftNetwork | typeof POD_NETWORK | IStorageClass;
+export type MappingTarget = IOpenShiftNetwork | typeof POD_NETWORK | IAnnotatedStorageClass;
