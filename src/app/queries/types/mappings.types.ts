@@ -86,6 +86,8 @@ export const POD_NETWORK: IOpenShiftNetwork = {
   namespace: 'pod',
   type: 'pod',
   selfLink: 'pod',
+  uid: 'pod',
+  version: 'pod',
 };
 export type MappingSource = IVMwareDatastore | IVMwareNetwork;
-export type MappingTarget = IOpenShiftNetwork | typeof POD_NETWORK | IAnnotatedStorageClass;
+export type MappingTarget = IOpenShiftNetwork | IAnnotatedStorageClass;

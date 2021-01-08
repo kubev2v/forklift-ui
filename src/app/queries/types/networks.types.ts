@@ -13,6 +13,6 @@ export interface IOpenShiftNetwork {
   namespace: string;
   name: string;
   selfLink: string;
-  type?: string;
+  type?: 'pod';
   // There's more if we load with ?detail=true
 }

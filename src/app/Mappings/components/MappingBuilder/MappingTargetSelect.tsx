@@ -2,6 +2,7 @@ import * as React from 'react';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   IAnnotatedStorageClass,
+  IOpenShiftNetwork,
   MappingTarget,
   MappingType,
   POD_NETWORK,
@@ -56,12 +57,19 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => {
     let name = getMappingTargetName(target, mappingType);
     let isCompatible = true;
+    let isDefault = false;
     if (mappingType === MappingType.Storage) {
       const targetStorage = target as IAnnotatedStorageClass;
       isCompatible = targetStorage.uiMeta.isCompatible;
       if (targetStorage.uiMeta.isDefault) {
-        name = `${name} (default)`;
+        isDefault = true;
       }
+    } else if (mappingType === MappingType.Network) {
+      const targetNetwork = target as IOpenShiftNetwork;
+      isDefault = targetNetwork.type === 'pod';
+    }
+    if (isDefault) {
+      name = `${name} (default)`;
     }
     return {
       value: target,
