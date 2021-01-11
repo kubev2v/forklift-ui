@@ -26,26 +26,17 @@ export const useEditProviderPrefillEffect = (
       if (providerBeingEdited.spec.type === ProviderType.vsphere) {
         const { fields } = forms.vsphere;
         fields.providerType.setValue(providerBeingEdited.spec.type);
-        fields.providerType.setIsTouched(true);
         fields.name.setValue(providerBeingEdited.metadata.name);
-        fields.name.setIsTouched(true);
         fields.hostname.setValue(vmwareUrlToHostname(providerBeingEdited.spec.url || ''));
-        fields.hostname.setIsTouched(true);
         fields.username.setValue(atob(secret?.data.user || ''));
-        fields.username.setIsTouched(true);
         fields.password.setValue(atob(secret?.data.password || ''));
         fields.fingerprint.setValue(atob(secret?.data.thumbprint || ''));
-        fields.fingerprint.setIsTouched(true);
       } else if (providerBeingEdited.spec.type === ProviderType.openshift) {
         const { fields } = forms.openshift;
         fields.providerType.setValue(providerBeingEdited.spec.type);
-        fields.providerType.setIsTouched(true);
         fields.name.setValue(providerBeingEdited.metadata.name);
-        fields.name.setIsTouched(true);
         fields.url.setValue(providerBeingEdited.spec.url || '');
-        fields.url.setIsTouched(true);
         fields.saToken.setValue(atob(secret?.data.token || ''));
-        fields.saToken.setIsTouched(true);
       }
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
