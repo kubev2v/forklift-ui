@@ -9,3 +9,4 @@ export * from './storageClasses.types';
 export * from './tree.types';
 export * from './vms.types';
 export * from './secrets.types';
+export * from './provisioners.types';

@@ -1,4 +1,5 @@
 import {
+  IAnnotatedStorageClass,
   INetworkMappingItem,
   IOpenShiftNetwork,
   IStorageClass,
@@ -36,5 +37,5 @@ export const getMappingTargetName = (target: MappingTarget, mappingType: Mapping
     if ((network as typeof POD_NETWORK).type === 'pod') return POD_NETWORK.name;
     return `${network.namespace} / ${network.name}`;
   }
-  return (target as IStorageClass).name;
+  return (target as IAnnotatedStorageClass).name;
 };
