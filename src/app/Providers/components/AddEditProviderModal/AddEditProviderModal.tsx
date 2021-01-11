@@ -303,7 +303,6 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     ),
                   }}
                 />
-                (
                 <ValidatedTextInput
                   field={openshiftForm.fields.saToken}
                   type="password"
