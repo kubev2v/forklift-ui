@@ -13,15 +13,12 @@ export const useEditProviderPrefillEffect = (
   forms: AddProviderFormState,
   providerBeingEdited: IProviderObject | null
 ): IEditProviderPrefillEffect => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!providerBeingEdited);
   const secretQuery = useSecretQuery(providerBeingEdited?.spec.secret?.name || null);
   React.useEffect(() => {
-    if (
-      providerBeingEdited &&
-      !forms.vsphere.isDirty &&
-      !forms.openshift.isDirty &&
-      secretQuery.isSuccess
-    ) {
+    if (!isStartedPrefilling && providerBeingEdited && secretQuery.isSuccess) {
+      setIsStartedPrefilling(true);
       const secret = secretQuery.data;
       if (providerBeingEdited.spec.type === ProviderType.vsphere) {
         const { fields } = forms.vsphere;
@@ -43,6 +40,13 @@ export const useEditProviderPrefillEffect = (
         setIsDonePrefilling(true);
       }, 0);
     }
-  }, [forms, providerBeingEdited, secretQuery.data, secretQuery.isSuccess]);
+  }, [
+    isStartedPrefilling,
+    forms.openshift,
+    forms.vsphere,
+    providerBeingEdited,
+    secretQuery.data,
+    secretQuery.isSuccess,
+  ]);
   return { isDonePrefilling };
 };

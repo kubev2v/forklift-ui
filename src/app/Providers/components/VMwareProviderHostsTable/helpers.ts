@@ -37,6 +37,7 @@ export const usePrefillHostConfigEffect = (
   hostConfigs: IHostConfig[],
   provider: IVMwareProvider
 ): IPrefillHostConfigEffect => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(false);
   const existingHostConfigs = getExistingHostConfigs(selectedHosts, hostConfigs, provider);
   const existingSecretName =
@@ -46,7 +47,8 @@ export const usePrefillHostConfigEffect = (
     null;
   const secretQuery = useSecretQuery(existingSecretName);
   React.useEffect(() => {
-    if (!form.isDirty && (!existingSecretName || secretQuery.isSuccess)) {
+    if (!isStartedPrefilling && (!existingSecretName || secretQuery.isSuccess)) {
+      setIsStartedPrefilling(true);
       const existingIpAddresses = existingHostConfigs.map((config) => config?.spec.ipAddress);
       const allOnSameIp = Array.from(new Set(existingIpAddresses)).length === 1;
       const preselectedAdapter =
@@ -72,6 +74,7 @@ export const usePrefillHostConfigEffect = (
       }, 0);
     }
   }, [
+    isStartedPrefilling,
     selectedHosts,
     existingHostConfigs,
     existingSecretName,

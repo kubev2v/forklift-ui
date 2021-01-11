@@ -82,7 +82,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
             <Button
               key="confirm"
               variant="primary"
-              isDisabled={!form.isValid || configureHostsResult.isLoading}
+              isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
               onClick={() => {
                 if (form.isValid) {
                   configureHosts(form.values);
@@ -106,7 +106,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         <Button
           key="confirm"
           variant="primary"
-          isDisabled={!form.isValid || configureHostsResult.isLoading}
+          isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
           onClick={() => {
             if (form.isValid) {
               configureHosts(form.values);
@@ -115,7 +115,12 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         >
           Add
         </Button>,
-        <Button key="cancel" variant="link" onClick={onClose}>
+        <Button
+          key="cancel"
+          variant="link"
+          onClick={onClose}
+          isDisabled={configureHostsResult.isLoading}
+        >
           Cancel
         </Button>,
       ]}
