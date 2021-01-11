@@ -70,25 +70,24 @@ export const useEditingMappingPrefillEffect = (
   providersQuery: QueryResult<IProvidersByType>,
   mappingResourceQueries: IMappingResourcesResult
 ): { isDonePrefilling: boolean } => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!mappingBeingEdited);
   React.useEffect(() => {
     if (
+      !isStartedPrefilling &&
       mappingBeingEdited &&
-      !form.isDirty &&
       providersQuery.isSuccess &&
       mappingResourceQueries.status === QueryStatus.Success
     ) {
+      setIsStartedPrefilling(true);
       const { sourceProvider, targetProvider } = mappingBeingEditedProviders;
       const { availableSources, availableTargets } = mappingResourceQueries;
 
-      form.fields.name.setValue(mappingBeingEdited.metadata.name);
-      form.fields.name.setIsTouched(true);
-      form.fields.sourceProvider.setValue(sourceProvider);
-      form.fields.sourceProvider.setIsTouched(true);
-      form.fields.targetProvider.setValue(targetProvider);
-      form.fields.targetProvider.setIsTouched(true);
+      form.fields.name.setInitialValue(mappingBeingEdited.metadata.name);
+      form.fields.sourceProvider.setInitialValue(sourceProvider);
+      form.fields.targetProvider.setInitialValue(targetProvider);
 
-      form.fields.builderItems.setValue(
+      form.fields.builderItems.setInitialValue(
         getBuilderItemsFromMapping(
           mappingBeingEdited,
           mappingType,
@@ -96,7 +95,6 @@ export const useEditingMappingPrefillEffect = (
           availableTargets
         )
       );
-      form.fields.builderItems.setIsTouched(true);
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
@@ -104,8 +102,8 @@ export const useEditingMappingPrefillEffect = (
       }, 0);
     }
   }, [
+    isStartedPrefilling,
     form.fields,
-    form.isDirty,
     mappingBeingEdited,
     mappingBeingEditedProviders,
     mappingResourceQueries,

@@ -141,7 +141,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   mutateMapping(generatedMapping);
                 }
               }}
-              isDisabled={!form.isValid || mutationResult.isLoading}
+              isDisabled={!form.isDirty || !form.isValid || mutationResult.isLoading}
             >
               {!mappingBeingEdited ? 'Create' : 'Save'}
             </Button>

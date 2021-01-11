@@ -355,8 +355,6 @@ export const useEditingPlanPrefillEffect = (
   planBeingEdited: IPlan | null,
   isEditMode: boolean
 ): IEditingPrefillResults => {
-  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
-
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
     planBeingEdited?.spec.provider || null,
@@ -399,34 +397,30 @@ export const useEditingPlanPrefillEffect = (
   const queryStatus = getAggregateQueryStatus(queries);
   const queryError = getFirstQueryError(queries);
 
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
   React.useEffect(() => {
-    if (queryStatus === QueryStatus.Success && !forms.isSomeFormDirty && planBeingEdited) {
+    if (!isStartedPrefilling && queryStatus === QueryStatus.Success && planBeingEdited) {
+      setIsStartedPrefilling(true);
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
       const treeQuery =
         forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
 
-      forms.general.fields.planName.setValue(planBeingEdited.metadata.name);
-      forms.general.fields.planName.setIsTouched(true);
+      forms.general.fields.planName.setInitialValue(planBeingEdited.metadata.name);
       if (planBeingEdited.spec.description) {
-        forms.general.fields.planDescription.setValue(planBeingEdited.spec.description);
-        forms.general.fields.planDescription.setIsTouched(true);
+        forms.general.fields.planDescription.setInitialValue(planBeingEdited.spec.description);
       }
-      forms.general.fields.sourceProvider.setValue(sourceProvider);
-      forms.general.fields.sourceProvider.setIsTouched(true);
-      forms.general.fields.targetProvider.setValue(targetProvider);
-      forms.general.fields.targetProvider.setIsTouched(true);
-      forms.general.fields.targetNamespace.setValue(planBeingEdited.spec.targetNamespace);
-      forms.general.fields.targetNamespace.setIsTouched(true);
+      forms.general.fields.sourceProvider.setInitialValue(sourceProvider);
+      forms.general.fields.targetProvider.setInitialValue(targetProvider);
+      forms.general.fields.targetNamespace.setInitialValue(planBeingEdited.spec.targetNamespace);
 
-      forms.filterVMs.fields.selectedTreeNodes.setValue(selectedTreeNodes);
-      forms.filterVMs.fields.selectedTreeNodes.setIsTouched(true);
-      forms.filterVMs.fields.isPrefilled.setValue(true);
+      forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
+      forms.filterVMs.fields.isPrefilled.setInitialValue(true);
 
-      forms.selectVMs.fields.selectedVMs.setValue(selectedVMs);
-      forms.selectVMs.fields.selectedVMs.setIsTouched(true);
+      forms.selectVMs.fields.selectedVMs.setInitialValue(selectedVMs);
 
-      forms.networkMapping.fields.builderItems.setValue(
+      forms.networkMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
             planBeingEdited.spec.map.networks,
@@ -440,10 +434,9 @@ export const useEditingPlanPrefillEffect = (
           false
         )
       );
-      forms.networkMapping.fields.builderItems.setIsTouched(true);
-      forms.networkMapping.fields.isPrefilled.setValue(true);
+      forms.networkMapping.fields.isPrefilled.setInitialValue(true);
 
-      forms.storageMapping.fields.builderItems.setValue(
+      forms.storageMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
             planBeingEdited.spec.map.datastores,
@@ -457,8 +450,7 @@ export const useEditingPlanPrefillEffect = (
           false
         )
       );
-      forms.storageMapping.fields.builderItems.setIsTouched(true);
-      forms.storageMapping.fields.isPrefilled.setValue(true);
+      forms.storageMapping.fields.isPrefilled.setInitialValue(true);
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
@@ -466,6 +458,7 @@ export const useEditingPlanPrefillEffect = (
       }, 0);
     }
   }, [
+    isStartedPrefilling,
     queryStatus,
     forms,
     planBeingEdited,
