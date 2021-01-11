@@ -102,6 +102,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
   const providerType = providerTypeField.value;
   const formValues = providerType ? forms[providerType].values : vmwareForm.values;
   const isFormValid = providerType ? forms[providerType].isValid : false;
+  const isFormTouched = providerType ? forms[providerType].isTouched : false;
 
   const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
   const [patchProvider, patchProviderResult] = usePatchProviderMutation(
@@ -130,7 +131,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
             <Button
               key="confirm"
               variant="primary"
-              isDisabled={!isFormValid || mutateProviderResult.isLoading}
+              isDisabled={!isFormTouched || !isFormValid || mutateProviderResult.isLoading}
               onClick={() => {
                 mutateProvider(formValues);
               }}
