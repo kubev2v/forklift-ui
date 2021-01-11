@@ -53,3 +53,7 @@ export interface ISrcDestRefs {
   source: INameNamespaceRef;
   destination: INameNamespaceRef;
 }
+
+export interface IByProvider<T> {
+  [providerName: string]: T[];
+}

@@ -3,13 +3,12 @@ import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queri
 import { InventoryProvider, IProviderObject } from '@app/queries/types';
 import { getFormGroupProps, IValidatedFormField } from '@konveyor/lib-ui';
 import { FormGroup } from '@patternfly/react-core';
-import { PlanStatusType, ProviderType } from '../../constants';
-import { hasCondition } from '../../helpers';
-import ConditionalTooltip from '../ConditionalTooltip';
-import { QuerySpinnerMode, ResolvedQueries } from '../ResolvedQuery';
-import SimpleSelect, { OptionWithValue } from '../SimpleSelect';
+import { PlanStatusType, ProviderType } from '../constants';
+import { hasCondition } from '../helpers';
+import ConditionalTooltip from './ConditionalTooltip';
+import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
+import SimpleSelect, { OptionWithValue } from './SimpleSelect';
 
-import './ProviderSelect.css';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderSelectProps<T extends InventoryProvider> {
