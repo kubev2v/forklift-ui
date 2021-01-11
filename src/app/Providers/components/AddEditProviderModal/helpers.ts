@@ -13,45 +13,40 @@ export const useEditProviderPrefillEffect = (
   forms: AddProviderFormState,
   providerBeingEdited: IProviderObject | null
 ): IEditProviderPrefillEffect => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!providerBeingEdited);
   const secretQuery = useSecretQuery(providerBeingEdited?.spec.secret?.name || null);
   React.useEffect(() => {
-    if (
-      providerBeingEdited &&
-      !forms.vsphere.isDirty &&
-      !forms.openshift.isDirty &&
-      secretQuery.isSuccess
-    ) {
+    if (!isStartedPrefilling && providerBeingEdited && secretQuery.isSuccess) {
+      setIsStartedPrefilling(true);
       const secret = secretQuery.data;
       if (providerBeingEdited.spec.type === ProviderType.vsphere) {
         const { fields } = forms.vsphere;
-        fields.providerType.setValue(providerBeingEdited.spec.type);
-        fields.providerType.setIsTouched(true);
-        fields.name.setValue(providerBeingEdited.metadata.name);
-        fields.name.setIsTouched(true);
-        fields.hostname.setValue(vmwareUrlToHostname(providerBeingEdited.spec.url || ''));
-        fields.hostname.setIsTouched(true);
-        fields.username.setValue(atob(secret?.data.user || ''));
-        fields.username.setIsTouched(true);
-        fields.password.setValue(atob(secret?.data.password || ''));
-        fields.fingerprint.setValue(atob(secret?.data.thumbprint || ''));
-        fields.fingerprint.setIsTouched(true);
+        fields.providerType.setInitialValue(providerBeingEdited.spec.type);
+        fields.name.setInitialValue(providerBeingEdited.metadata.name);
+        fields.hostname.setInitialValue(vmwareUrlToHostname(providerBeingEdited.spec.url || ''));
+        fields.username.setInitialValue(atob(secret?.data.user || ''));
+        fields.password.setInitialValue(atob(secret?.data.password || ''));
+        fields.fingerprint.setInitialValue(atob(secret?.data.thumbprint || ''));
       } else if (providerBeingEdited.spec.type === ProviderType.openshift) {
         const { fields } = forms.openshift;
-        fields.providerType.setValue(providerBeingEdited.spec.type);
-        fields.providerType.setIsTouched(true);
-        fields.name.setValue(providerBeingEdited.metadata.name);
-        fields.name.setIsTouched(true);
-        fields.url.setValue(providerBeingEdited.spec.url || '');
-        fields.url.setIsTouched(true);
-        fields.saToken.setValue(atob(secret?.data.token || ''));
-        fields.saToken.setIsTouched(true);
+        fields.providerType.setInitialValue(providerBeingEdited.spec.type);
+        fields.name.setInitialValue(providerBeingEdited.metadata.name);
+        fields.url.setInitialValue(providerBeingEdited.spec.url || '');
+        fields.saToken.setInitialValue(atob(secret?.data.token || ''));
       }
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
         setIsDonePrefilling(true);
       }, 0);
     }
-  }, [forms, providerBeingEdited, secretQuery.data, secretQuery.isSuccess]);
+  }, [
+    isStartedPrefilling,
+    forms.openshift,
+    forms.vsphere,
+    providerBeingEdited,
+    secretQuery.data,
+    secretQuery.isSuccess,
+  ]);
   return { isDonePrefilling };
 };
