@@ -19,6 +19,21 @@ describe('<AddEditProviderModal />', () => {
     onClose: toggleModalAndResetEdit,
   };
 
+  it('allows to cancel addition/edition of a provider', async () => {
+    render(
+      <NetworkContextProvider>
+        <Router history={history}>
+          <AddEditProviderModal {...props} providerBeingEdited={null} />
+        </Router>
+      </NetworkContextProvider>
+    );
+
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
+  });
+
+  // Vsphere Provider
+
   it('allows adding a vsphere provider', async () => {
     render(
       <NetworkContextProvider>
@@ -34,11 +49,13 @@ describe('<AddEditProviderModal />', () => {
     userEvent.click(vsphereButton);
 
     await waitFor(() => {
-      const name = screen.getByLabelText(/Name/);
-      const hostname = screen.getByLabelText(/Hostname/);
-      const username = screen.getByLabelText(/Username/);
-      const password = screen.getByLabelText(/Password/);
-      const certFingerprint = screen.getByLabelText(/Certificate SHA1 Fingerprint/);
+      const name = screen.getByRole('textbox', { name: /Name/ });
+      const hostname = screen.getByRole('textbox', { name: /hostname or ip address/i });
+      const username = screen.getByRole('textbox', { name: /username/i });
+      const password = screen.getByLabelText(/^Password/);
+      const certFingerprint = screen.getByRole('textbox', {
+        name: /certificate sha1 fingerprint/i,
+      });
 
       userEvent.type(name, 'providername');
       userEvent.type(hostname, 'host.example.com');
@@ -50,12 +67,10 @@ describe('<AddEditProviderModal />', () => {
       );
     });
 
-    await waitFor(() => {
-      const addButton = screen.getByRole('button', { name: /Add/ });
-      // TODO By default in mock mode adding a provider is disabled
-      // We need to activate it and mock backend if needed
-      expect(addButton).toBeDisabled();
-    });
+    const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
+    expect(addButton).toBeEnabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
   });
 
   it('fails to add a vsphere provider with wrong values', async () => {
@@ -73,11 +88,13 @@ describe('<AddEditProviderModal />', () => {
     userEvent.click(vsphereButton);
 
     await waitFor(() => {
-      const name = screen.getByLabelText(/Name/);
-      const hostname = screen.getByLabelText(/Hostname/);
-      const username = screen.getByLabelText(/Username/);
-      const password = screen.getByLabelText(/Password/);
-      const certFingerprint = screen.getByLabelText(/Certificate SHA1 Fingerprint/);
+      const name = screen.getByRole('textbox', { name: /Name/ });
+      const hostname = screen.getByRole('textbox', { name: /hostname or ip address/i });
+      const username = screen.getByRole('textbox', { name: /username/i });
+      const password = screen.getByLabelText(/^Password/);
+      const certFingerprint = screen.getByRole('textbox', {
+        name: /certificate sha1 fingerprint/i,
+      });
 
       userEvent.type(name, 'providername');
       userEvent.type(hostname, 'hostname');
@@ -89,13 +106,13 @@ describe('<AddEditProviderModal />', () => {
       );
     });
 
-    await waitFor(() => {
-      const addButton = screen.getByRole('button', { name: /Add/ });
-      expect(addButton).toBeDisabled();
-    });
+    const addButton = await screen.findByRole('button', { name: /Add/ });
+    expect(addButton).toBeDisabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
   });
 
-  it('allows editing an existing vsphere provider', async () => {
+  it('allows editing a vsphere provider', async () => {
     render(
       <NetworkContextProvider>
         <Router history={history}>
@@ -104,10 +121,86 @@ describe('<AddEditProviderModal />', () => {
       </NetworkContextProvider>
     );
 
+    const editButton = await screen.findByRole('dialog', { name: /Edit provider/ });
+    expect(editButton).not.toHaveAttribute('disabled');
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
+  });
+
+  // OpenShift Provider
+
+  it('allows to add an openshift provider', async () => {
+    render(
+      <NetworkContextProvider>
+        <Router history={history}>
+          <AddEditProviderModal {...props} providerBeingEdited={null} />
+        </Router>
+      </NetworkContextProvider>
+    );
+
+    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    userEvent.click(typeButton);
+    const openshiftButton = await screen.findByRole('option', { name: /openshift/i, hidden: true });
+    userEvent.click(openshiftButton);
+
     await waitFor(() => {
-      expect(screen.getByText('Type')).toBeInTheDocument();
+      const name = screen.getByRole('textbox', { name: /name/i });
+      const url = screen.getByRole('textbox', { name: /url/i });
+      const saToken = screen.getByLabelText(/Service account token/);
+
+      userEvent.type(name, 'providername');
+      userEvent.type(url, 'http://host.example.com');
+      userEvent.type(saToken, 'saToken');
     });
-    const addButton = await screen.findByRole('button', { name: /Save/ });
-    expect(addButton).not.toHaveAttribute('disabled');
+
+    const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
+    expect(addButton).toBeEnabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
+  });
+
+  it('fails to add an openshift provider with wrong values', async () => {
+    render(
+      <NetworkContextProvider>
+        <Router history={history}>
+          <AddEditProviderModal {...props} providerBeingEdited={null} />
+        </Router>
+      </NetworkContextProvider>
+    );
+
+    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    userEvent.click(typeButton);
+    const openshiftButton = await screen.findByRole('option', { name: /openshift/i, hidden: true });
+    userEvent.click(openshiftButton);
+
+    await waitFor(() => {
+      const name = screen.getByRole('textbox', { name: /name/i });
+      const url = screen.getByRole('textbox', { name: /url/i });
+      const saToken = screen.getByLabelText(/Service account token/);
+
+      userEvent.type(name, 'providername');
+      userEvent.type(url, 'host');
+      userEvent.type(saToken, 'saToken');
+    });
+
+    const addButton = await screen.getByRole('button', { name: /Add/ });
+    expect(addButton).toBeDisabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
+  });
+
+  it('allows editing an openshift provider', async () => {
+    render(
+      <NetworkContextProvider>
+        <Router history={history}>
+          <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[4]} />
+        </Router>
+      </NetworkContextProvider>
+    );
+
+    const editButton = await screen.findByRole('dialog', { name: /Edit provider/ });
+    expect(editButton).toBeEnabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
   });
 });
