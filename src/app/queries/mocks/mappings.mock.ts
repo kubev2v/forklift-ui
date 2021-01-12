@@ -39,12 +39,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'StorageMap',
     metadata: {
-      name: 'vcenter1-datastore-to-ocpv-storageclass1',
+      name: 'vcenter3-datastore-to-ocpv-storageclass2',
       namespace: META.namespace,
     },
     spec: {
       provider: {
-        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[1]),
+        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[2]),
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       map: [
