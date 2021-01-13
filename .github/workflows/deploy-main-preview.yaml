@@ -1,8 +1,8 @@
-name: Deploy master preview
+name: Deploy main branch preview
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test-and-release:

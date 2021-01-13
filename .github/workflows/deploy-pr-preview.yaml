@@ -36,5 +36,5 @@ jobs:
       - name: Post URL as PR comment
         uses: mshick/add-pr-comment@v1
         with:
-          message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨\n\nCompare with current master: http://konveyor-forklift-ui-preview.surge.sh"
+          message: "🚀 Deployed Preview: http://${{steps.surge-url.outputs.result}} ✨\n\nCompare with current main branch: http://konveyor-forklift-ui-preview.surge.sh"
           repo-token: ${{ steps.token.outputs.GH_TOKEN }}
