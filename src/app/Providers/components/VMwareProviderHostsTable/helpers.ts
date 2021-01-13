@@ -37,6 +37,7 @@ export const usePrefillHostConfigEffect = (
   hostConfigs: IHostConfig[],
   provider: IVMwareProvider
 ): IPrefillHostConfigEffect => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(false);
   const existingHostConfigs = getExistingHostConfigs(selectedHosts, hostConfigs, provider);
   const existingSecretName =
@@ -46,7 +47,8 @@ export const usePrefillHostConfigEffect = (
     null;
   const secretQuery = useSecretQuery(existingSecretName);
   React.useEffect(() => {
-    if (!form.isDirty && (!existingSecretName || secretQuery.isSuccess)) {
+    if (!isStartedPrefilling && (!existingSecretName || secretQuery.isSuccess)) {
+      setIsStartedPrefilling(true);
       const existingIpAddresses = existingHostConfigs.map((config) => config?.spec.ipAddress);
       const allOnSameIp = Array.from(new Set(existingIpAddresses)).length === 1;
       const preselectedAdapter =
@@ -57,14 +59,11 @@ export const usePrefillHostConfigEffect = (
         null;
       const secret = secretQuery.data;
       if (preselectedAdapter) {
-        form.fields.selectedNetworkAdapter.setValue(preselectedAdapter);
-        form.fields.selectedNetworkAdapter.setIsTouched(true);
+        form.fields.selectedNetworkAdapter.setInitialValue(preselectedAdapter);
       }
       if (secret) {
-        form.fields.adminUsername.setValue(atob(secret.data.user || ''));
-        form.fields.adminUsername.setIsTouched(true);
-        form.fields.adminPassword.setValue(atob(secret.data.password || ''));
-        form.fields.adminPassword.setIsTouched(true);
+        form.fields.adminUsername.setInitialValue(atob(secret.data.user || ''));
+        form.fields.adminPassword.setInitialValue(atob(secret.data.password || ''));
       }
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
@@ -72,6 +71,7 @@ export const usePrefillHostConfigEffect = (
       }, 0);
     }
   }, [
+    isStartedPrefilling,
     selectedHosts,
     existingHostConfigs,
     existingSecretName,
