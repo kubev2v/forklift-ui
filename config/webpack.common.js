@@ -6,6 +6,11 @@ const Dotenv = require('dotenv-webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
 
+console.log('\nEnvironment:');
+console.log(`  NODE_ENV=${process.env.NODE_ENV}`);
+console.log(`  DATA_SOURCE=${process.env.DATA_SOURCE}`);
+console.log(`  BRAND_TYPE=${process.env.BRAND_TYPE}\n`);
+
 module.exports = (env) => {
   return {
     entry: {
@@ -132,8 +137,8 @@ module.exports = (env) => {
       path: path.resolve(__dirname, '../dist'),
     },
     plugins: [
-      new HtmlWebpackPlugin(
-        env === 'development' || process.env.DATA_SOURCE === 'mock'
+      new HtmlWebpackPlugin({
+        ...(env === 'development' || process.env.DATA_SOURCE === 'mock'
           ? {
               // In dev and mock-prod modes, populate window._meta at build time
               filename: 'index.html',
@@ -147,8 +152,14 @@ module.exports = (env) => {
               // In real prod mode, populate window._env at run time with express
               filename: 'index.html.ejs',
               template: `!!raw-loader!${path.resolve(__dirname, '../src/index.html.ejs')}`,
-            }
-      ),
+            }),
+        favicon: path.resolve(
+          __dirname,
+          process.env.BRAND_TYPE === 'RedHat'
+            ? '../src/favicon-redhat.ico'
+            : '../src/favicon-konveyor.ico'
+        ),
+      }),
       new Dotenv({
         systemvars: true,
         silent: true,
