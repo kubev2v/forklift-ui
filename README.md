@@ -18,9 +18,9 @@ cd forklift-ui
 npm install
 ```
 
-Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/master/config/meta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
+Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/main/config/meta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
-**Optional**: If you plan to run webpack directly or run in production mode, you can create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/master/.env.example) as a template. Here you can set persistent environment variables:
+**Optional**: If you plan to run webpack directly or run in production mode, you can create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/main/.env.example) as a template. Here you can set persistent environment variables:
 
 - `DATA_SOURCE` - either `mock` or `remote`
   (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
