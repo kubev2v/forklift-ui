@@ -45,9 +45,7 @@ export const HostsPage: React.FunctionComponent = () => {
         <Level>
           <LevelItem>
             <Breadcrumb>
-              <BreadcrumbItem>
-                <Link to={`/providers`}>Providers</Link>
-              </BreadcrumbItem>
+              <BreadcrumbItem>Providers</BreadcrumbItem>
               <BreadcrumbItem>
                 <Link to={`/providers/vsphere`}>VMware</Link>
               </BreadcrumbItem>
