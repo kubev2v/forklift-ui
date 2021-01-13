@@ -19,7 +19,11 @@ import { VMwareTree } from './types/tree.types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?
 
-const mockPromise = <TResult>(data: TResult, timeout = 1000, success = true) => {
+const mockPromise = <TResult>(
+  data: TResult,
+  timeout = process.env.NODE_ENV === 'test' ? 0 : 1000,
+  success = true
+) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (success) {
