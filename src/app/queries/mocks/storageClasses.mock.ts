@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'standard',
       selfLink: '/foo/sc/1',
       uiMeta: {
-        isCompatible: true,
+        hasProvisioner: true,
         isDefault: true,
       },
       object: {
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'large',
       selfLink: '/foo/sc/2',
       uiMeta: {
-        isCompatible: false,
+        hasProvisioner: false,
         isDefault: false,
       },
       object: {
@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'small',
       selfLink: '/foo/sc/3',
       uiMeta: {
-        isCompatible: true,
+        hasProvisioner: true,
         isDefault: false,
       },
       object: {
