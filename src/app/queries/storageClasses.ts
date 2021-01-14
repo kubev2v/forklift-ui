@@ -21,7 +21,7 @@ const annotateStorageClasses = (
     .map((storageClass) => ({
       ...storageClass,
       uiMeta: {
-        isCompatible:
+        hasProvisioner:
           !!storageClass.object.provisioner &&
           !!provisioners.find((prov) => prov.spec.name === storageClass.object.provisioner),
         isDefault:
