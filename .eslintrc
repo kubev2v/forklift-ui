@@ -7,7 +7,7 @@
     "jsx": true,
     "js": true,
     "useJSXTextNode": true,
-    "project": "./tsconfig.json",
+    "project": ["./tsconfig.json", "./qe-tests/tsconfig.json"],
     "tsconfigRootDir": "."
   },
   // we want to use the recommended rules provided from the typescript plugin
