@@ -17,6 +17,6 @@ export interface IStorageClass {
 export interface IAnnotatedStorageClass extends IStorageClass {
   uiMeta: {
     isDefault: boolean;
-    isCompatible: boolean;
+    hasProvisioner: boolean;
   };
 }

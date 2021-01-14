@@ -7,3 +7,8 @@
   padding: var(--pf-c-select__menu-item--PaddingTop) var(--pf-c-select__menu-item--PaddingRight)
     var(--pf-c-select__menu-item--PaddingBottom) var(--pf-c-select__menu-item--PaddingLeft);
 }
+
+.inline-option-text {
+  display: inline-block;
+  vertical-align: middle;
+}
