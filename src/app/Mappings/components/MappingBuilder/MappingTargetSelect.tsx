@@ -1,4 +1,6 @@
 import * as React from 'react';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   IAnnotatedStorageClass,
@@ -56,11 +58,11 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
 
   const targetOptions: OptionWithValue<MappingTarget>[] = availableTargets.map((target) => {
     let name = getMappingTargetName(target, mappingType);
-    let isCompatible = true;
+    let hasNoProvisionerWarning = false;
     let isDefault = false;
     if (mappingType === MappingType.Storage) {
       const targetStorage = target as IAnnotatedStorageClass;
-      isCompatible = targetStorage.uiMeta.isCompatible;
+      hasNoProvisionerWarning = !targetStorage.uiMeta.hasProvisioner;
       if (targetStorage.uiMeta.isDefault) {
         isDefault = true;
       }
@@ -75,16 +77,27 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
       value: target,
       toString: () => name,
       props: {
-        isDisabled: !isCompatible,
-        className: !isCompatible ? 'disabled-with-pointer-events' : '',
         children: (
           <ConditionalTooltip
-            isTooltipEnabled={!isCompatible}
-            content="This storage class cannot be selected because it is not compatible with kubevirt."
+            isTooltipEnabled={hasNoProvisionerWarning}
+            content={
+              <>
+                This storage class does not have a dynamic provisioner. The default settings,
+                Filesystem volume mode and ReadWriteOnce access mode, will be used. Performance may
+                be impacted. See product documentation for more information.
+              </>
+            }
             position="left"
           >
             <div>
-              <TruncatedText>{name}</TruncatedText>
+              {hasNoProvisionerWarning ? (
+                <>
+                  <StatusIcon status={StatusType.Warning} className={spacing.mrSm} />
+                  <TruncatedText className="inline-option-text">{name}</TruncatedText>
+                </>
+              ) : (
+                <TruncatedText>{name}</TruncatedText>
+              )}
             </div>
           </ConditionalTooltip>
         ),
