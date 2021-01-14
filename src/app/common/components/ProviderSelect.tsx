@@ -75,6 +75,7 @@ const ProviderSelect = <T extends InventoryProvider>({
       >
         <SimpleSelect
           id={`provider-select-${providerType}`}
+          toggleId={`provider-select-${providerType}-toggle`}
           aria-label={label}
           options={options}
           value={[options.find((option) => option.value.metadata.name === field.value?.name)]}
