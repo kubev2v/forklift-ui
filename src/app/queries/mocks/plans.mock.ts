@@ -200,7 +200,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 0 },
-        phase: 'Mock Step Phase',
         annotations: { unit: 'MB' },
         started: '2020-10-10T14:21:10Z',
       },
