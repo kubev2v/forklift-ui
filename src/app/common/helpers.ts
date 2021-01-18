@@ -88,11 +88,8 @@ export const formatDuration = (
 export const getStepType = (status: IVMStatus, index: number): StepType => {
   const { currentStepIndex } = findCurrentStep(status.pipeline);
   const step = status.pipeline[index];
-  if (status.completed || step?.completed || index < currentStepIndex) return StepType.Full;
-  if (status.started && index === currentStepIndex) {
-    if (status.error) return StepType.Full;
-    return StepType.Half;
-  }
+  if (step?.completed || index < currentStepIndex) return StepType.Full;
+  if (status.started && index === currentStepIndex) return StepType.Half;
   return StepType.Empty;
 };
 
