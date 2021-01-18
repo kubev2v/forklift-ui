@@ -6,7 +6,6 @@ import {
 } from '@patternfly/react-icons';
 import {
   global_danger_color_100 as dangerColor,
-  global_warning_color_100 as warningColor,
   global_disabled_color_200 as disabledColor,
   global_info_color_100 as infoColor,
   global_success_color_100 as successColor,
@@ -39,7 +38,7 @@ const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IS
         className={spacing.mlSm}
         height="1em"
         width="1em"
-        color={error ? dangerColor.value : vmStatus.error ? warningColor.value : infoColor.value}
+        color={error || vmStatus.error ? dangerColor.value : infoColor.value}
       />
     );
   }
