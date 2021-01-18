@@ -7,7 +7,6 @@ import {
 } from '@patternfly/react-icons';
 import {
   global_danger_color_100 as dangerColor,
-  global_warning_color_100 as warningColor,
   global_disabled_color_200 as disabledColor,
   global_info_color_100 as infoColor,
   global_success_color_100 as successColor,
@@ -64,13 +63,7 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
   } else if (res === StepType.Half) {
     icon = (
       <ResourcesAlmostFullIcon
-        color={
-          isStepOnError(status, index)
-            ? dangerColor.value
-            : status.error
-            ? warningColor.value
-            : infoColor.value
-        }
+        color={isStepOnError(status, index) || status.error ? dangerColor.value : infoColor.value}
       />
     );
   } else {
