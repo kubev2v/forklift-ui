@@ -78,6 +78,12 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   if (hasItemsAddedMessage) {
     instructionText = `${instructionText} Sources missing from your selected mapping have been added.`;
   }
+  if (mappingType === MappingType.Network) {
+    instructionText = `${instructionText} The default OpenShift pod network is pre-selected. Other networks can be selected in the dropdowns.`;
+  }
+  if (mappingType === MappingType.Storage) {
+    instructionText = `${instructionText} The default storage class is pre-selected. Other storage classes can be selected in the dropdowns.`;
+  }
 
   return (
     <>
