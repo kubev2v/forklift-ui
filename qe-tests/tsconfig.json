@@ -3,10 +3,12 @@
     "target": "es5",
     "lib": ["es5", "dom"],
     "types": ["cypress", "@testing-library/cypress"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true,
   },
   "include": [
     "**/*.ts",
+    "**/*.js",
   ],
   "exclude": ["../node_modules"]
 }
