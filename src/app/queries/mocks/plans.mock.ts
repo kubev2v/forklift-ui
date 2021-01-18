@@ -185,6 +185,44 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const vmStatusWithYellow: IVMStatus = {
+    id: vm2.id,
+    pipeline: [
+      {
+        name: 'PreHook',
+        description: 'Pre hook',
+        progress: { total: 1, completed: 1 },
+        phase: 'Mock Step Phase',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'DiskTransfer',
+        description: 'Transfer disks.',
+        progress: { total: 1024 * 64, completed: 1024 * 64 },
+        phase: 'Mock Step Phase',
+        annotations: { unit: 'MB' },
+        started: '2020-10-10T14:21:10Z',
+      },
+      {
+        name: 'ImageConversion',
+        description: 'Convert image to kubevirt.',
+        progress: { total: 1, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+      {
+        name: 'PostHook',
+        description: 'Pre hook',
+        progress: { total: 1, completed: 0 },
+        phase: 'Mock Step Phase',
+      },
+    ],
+    phase: 'Mock VM Phase',
+    started: '2020-10-10T14:04:10Z',
+    completed: '2020-10-11T14:04:10Z',
+    error: { phase: 'ImportCreated', reasons: ['Import CR not found.'] },
+  };
+
   const plan1: IPlan = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
@@ -329,7 +367,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
-        vms: [vmStatus1, vmStatus2, vmStatus3, vmStatus4],
+        vms: [vmStatus1, vmStatusWithYellow, vmStatus3, vmStatus4],
       },
     },
   };
