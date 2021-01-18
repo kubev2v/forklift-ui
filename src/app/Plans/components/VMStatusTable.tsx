@@ -42,7 +42,11 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
             flexWrap={{ default: 'nowrap' }}
           >
             <FlexItem>
-              <Step type={getStepType(status, index)} error={isStepOnError(status, index)} />
+              <Step
+                vmStatus={status}
+                type={getStepType(status, index)}
+                error={isStepOnError(status, index)}
+              />
             </FlexItem>
             <FlexItem>
               <Text>{step.description ? step.description.replace(/\.$/, '') : ''}</Text>
