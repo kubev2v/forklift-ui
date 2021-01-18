@@ -82,9 +82,9 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
             isTooltipEnabled={hasNoProvisionerWarning}
             content={
               <>
-                This storage class does not have a dynamic provisioner. The default settings,
-                Filesystem volume mode and ReadWriteOnce access mode, will be used. Performance may
-                be impacted. See product documentation for more information.
+                This storage does not support dynamic provisioning. The default settings, Filesystem
+                volume mode and ReadWriteOnce access mode, will be used. Performance may be
+                impacted. See product documentation for more information.
               </>
             }
             position="left"
