@@ -3,17 +3,13 @@ import { Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
+import { useResourceQueriesForMapping } from '@app/queries';
+import TruncatedText from '@app/common/components/TruncatedText';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
-import {
-  findProvidersByRefs,
-  useMappingResourceQueries,
-  useInventoryProvidersQuery,
-} from '@app/queries';
-import TruncatedText from '@app/common/components/TruncatedText';
-import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -26,21 +22,12 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mapping,
   className = '',
 }: IMappingDetailViewProps) => {
-  const providersQuery = useInventoryProvidersQuery();
-  const { sourceProvider, targetProvider } = findProvidersByRefs(
-    mapping?.spec.provider || null,
-    providersQuery
-  );
-  const mappingResourceQueries = useMappingResourceQueries(
-    sourceProvider,
-    targetProvider,
-    mappingType
-  );
+  const mappingResourceQueries = useResourceQueriesForMapping(mappingType, mapping);
   const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
 
   return (
     <ResolvedQueries
-      results={[providersQuery, ...mappingResourceQueries.queries]}
+      results={mappingResourceQueries.queries}
       errorTitles={[
         'Error loading providers',
         'Error loading source provider resources',
