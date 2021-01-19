@@ -2,10 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": []
+    "types": ["cypress", "@testing-library/cypress"],
+    "skipLibCheck": true,
+    "allowJs": true,
   },
   "include": [
     "**/*.ts",
+    "**/*.js",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["../node_modules"]
 }
