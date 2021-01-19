@@ -12,13 +12,15 @@ import {
 } from '@patternfly/react-tokens';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StepType } from '@app/common/constants';
+import { IVMStatus } from '@app/queries/types';
 
 interface IStepProps {
+  vmStatus: IVMStatus;
   type: StepType;
   error?: boolean;
 }
 
-const Step: React.FunctionComponent<IStepProps> = ({ type, error }: IStepProps) => {
+const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IStepProps) => {
   let step: React.ReactElement | null = null;
   if (type === StepType.Full) {
     step = (
@@ -36,7 +38,7 @@ const Step: React.FunctionComponent<IStepProps> = ({ type, error }: IStepProps) 
         className={spacing.mlSm}
         height="1em"
         width="1em"
-        color={error ? dangerColor.value : infoColor.value}
+        color={error || vmStatus.error ? dangerColor.value : infoColor.value}
       />
     );
   }
