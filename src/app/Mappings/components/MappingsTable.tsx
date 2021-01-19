@@ -18,6 +18,7 @@ import { Mapping, MappingType } from '@app/queries/types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
 import CreateMappingButton from './CreateMappingButton';
+import MappingStatus from './MappingStatus';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
@@ -81,7 +82,9 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         name,
         provider.source.name,
         provider.destination.name,
-        'TODO',
+        {
+          title: <MappingStatus mappingType={mappingType} mapping={mapping} />,
+        },
         {
           title: (
             <MappingsActionsDropdown
