@@ -42,6 +42,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       name,
       provider.source.name,
       provider.destination.name,
+      '', // Status column  -- TODO can we even get a sort value for this?
       '', // Action column
     ];
   };
@@ -62,6 +63,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
+    { title: 'Status' },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
@@ -79,6 +81,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
         name,
         provider.source.name,
         provider.destination.name,
+        'TODO',
         {
           title: (
             <MappingsActionsDropdown
