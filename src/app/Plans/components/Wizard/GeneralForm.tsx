@@ -1,9 +1,16 @@
 import * as React from 'react';
-import { Form, FormGroup, Select, SelectOption, TextArea, Title } from '@patternfly/react-core';
+import {
+  Form,
+  FormGroup,
+  Select,
+  SelectGroup,
+  SelectOption,
+  TextArea,
+  Title,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IPlan } from '@app/queries/types';
 import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
@@ -30,6 +37,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
 
   const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
+  const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
 
   return (
     <ResolvedQueries
@@ -92,15 +100,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
+              isGrouped
               id="target-namespace"
               aria-label="Target namespace"
               isDisabled={!form.values.targetProvider}
             >
-              {(namespacesQuery.data?.map((namespace) => namespace.name) || []).map(
-                (option, index) => (
-                  <SelectOption key={`${index}-${option.toString()}`} value={option} />
-                )
-              )}
+              {[
+                <SelectGroup key="group" label="Type to search or to create a new namespace">
+                  {namespaceOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} />
+                  ))}
+                </SelectGroup>,
+              ]}
             </Select>
           </ResolvedQuery>
         </FormGroup>
