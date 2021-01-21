@@ -73,7 +73,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                     return (
                       <li key={sourceName}>
                         <TruncatedText>
-                          {sourceName || <span className="missing-item">[missing]</span>}
+                          {sourceName || <span className="missing-item">Not available</span>}
                         </TruncatedText>
                       </li>
                     );
@@ -85,7 +85,7 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
               </GridItem>
               <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
                 <TruncatedText>
-                  {targetName || <span className="missing-item">[missing]</span>}
+                  {targetName || <span className="missing-item">Not available</span>}
                 </TruncatedText>
               </GridItem>
             </Grid>
