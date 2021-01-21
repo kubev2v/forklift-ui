@@ -1,9 +1,16 @@
 import * as React from 'react';
-import { Form, FormGroup, TextArea, Title } from '@patternfly/react-core';
+import {
+  Form,
+  FormGroup,
+  Select,
+  SelectGroup,
+  SelectOption,
+  TextArea,
+  Title,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import SimpleSelect from '@app/common/components/SimpleSelect';
 import { IPlan } from '@app/queries/types';
 import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
@@ -28,6 +35,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
+
+  const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
+  const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
 
   return (
     <ResolvedQueries
@@ -79,17 +89,30 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             spinnerProps={{ className: spacing.mXs }}
             spinnerMode={QuerySpinnerMode.Inline}
           >
-            <SimpleSelect
+            <Select
+              placeholderText="Select a namespace"
+              isOpen={isNamespaceSelectOpen}
+              onToggle={setIsNamespaceSelectOpen}
+              onSelect={(_event, selection) => {
+                form.fields.targetNamespace.setValue(selection as string);
+                setIsNamespaceSelectOpen(false);
+              }}
+              selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
+              isGrouped
               id="target-namespace"
               aria-label="Target namespace"
-              options={namespacesQuery.data?.map((namespace) => namespace.name) || []}
-              value={form.values.targetNamespace}
-              onChange={(selection) => form.fields.targetNamespace.setValue(selection as string)}
-              placeholderText="Select a namespace"
               isDisabled={!form.values.targetProvider}
-            />
+            >
+              {[
+                <SelectGroup key="group" label="Select or type to create a namespace">
+                  {namespaceOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} />
+                  ))}
+                </SelectGroup>,
+              ]}
+            </Select>
           </ResolvedQuery>
         </FormGroup>
       </Form>
