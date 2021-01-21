@@ -1,10 +1,15 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { MappingType, Mapping } from '@app/queries/types';
-import { useClusterProvidersQuery, useDeleteMappingMutation } from '@app/queries';
+import {
+  useClusterProvidersQuery,
+  useDeleteMappingMutation,
+  useResourceQueriesForMapping,
+} from '@app/queries';
 import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { isMappingValid } from './helpers';
 
 interface IMappingsActionsDropdownProps {
   mappingType: MappingType;
@@ -28,6 +33,12 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
     () => kebabIsOpen && areAssociatedProvidersReady(clusterProvidersQuery, mapping.spec.provider),
     [kebabIsOpen, clusterProvidersQuery, mapping.spec.provider]
   );
+  const {
+    availableSources,
+    availableTargets,
+    isLoading: isLoadingResourceQueries,
+  } = useResourceQueriesForMapping(mappingType, mapping);
+  const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
   return (
     <>
       <Dropdown
@@ -38,8 +49,14 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         dropdownItems={[
           <ConditionalTooltip
             key="edit"
-            isTooltipEnabled={!areProvidersReady}
-            content="This mapping cannot be edited because the inventory data for its associated providers is not ready"
+            isTooltipEnabled={!isLoadingResourceQueries && (!areProvidersReady || !isValid)}
+            content={
+              !areProvidersReady
+                ? 'This mapping cannot be edited because the inventory data for its associated providers is not ready'
+                : !isValid
+                ? 'This mapping cannot be edited because it includes missing source or target resources'
+                : ''
+            }
           >
             <DropdownItem
               onClick={() => {
@@ -47,7 +64,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
                 openEditMappingModal(mapping);
               }}
               key="edit"
-              isDisabled={!areProvidersReady}
+              isDisabled={isLoadingResourceQueries || !areProvidersReady || !isValid}
             >
               Edit
             </DropdownItem>
