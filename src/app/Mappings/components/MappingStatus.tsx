@@ -2,26 +2,20 @@ import * as React from 'react';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { useResourceQueriesForMapping } from '@app/queries';
-import { isSameResource } from '@app/queries/helpers';
-import {
-  MappingType,
-  Mapping,
-  MappingItem,
-  IStorageMappingItem,
-  INetworkMappingItem,
-} from '@app/queries/types';
+import { MappingType, Mapping } from '@app/queries/types';
 
 import './MappingStatus.css';
+import { isMappingValid } from './helpers';
+import { Button, Popover } from '@patternfly/react-core';
 
 interface IMappingStatusProps {
   mappingType: MappingType;
   mapping: Mapping;
 }
 
-// TODO if invalid, prevent editing.
-// TODO if invalid, prevent selecting in the wizard and show a warning?
+// TODO if invalid, prevent editing with a tooltip
+// TODO if invalid, prevent selecting in the wizard with a tooltip
 // TODO if invalid, either prevent expandable content or edit MappingDetailView so it can show "missing" in place of the missing items.
-// TODO factor out any shared logic between this, MappingActionsDropdown, and MappingDetailView.
 
 const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
   mappingType,
@@ -31,19 +25,12 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
     mappingType,
     mapping
   );
-  const isMappingValid = (mapping.spec.map as MappingItem[]).every(
-    (mappingItem) =>
-      availableSources.some((source) => source.id === mappingItem.source.id) &&
-      availableTargets.some((target) => {
-        if (mappingType === MappingType.Storage) {
-          return target.name === (mappingItem as IStorageMappingItem).destination.storageClass;
-        }
-        if (mappingType === MappingType.Network) {
-          const item = mappingItem as INetworkMappingItem;
-          return item.destination.type === 'pod' || isSameResource(target, item.destination);
-        }
-        return false;
-      })
+  const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
+  const icon = (
+    <StatusIcon
+      status={isValid ? StatusType.Ok : StatusType.Error}
+      label={isValid ? 'OK' : 'Invalid'}
+    />
   );
   return (
     <ResolvedQueries
@@ -59,10 +46,18 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
         className: 'status-spinner',
       }}
     >
-      <StatusIcon
-        status={isMappingValid ? StatusType.Ok : StatusType.Error}
-        label={isMappingValid ? 'OK' : 'Invalid'}
-      />
+      {isValid ? (
+        icon
+      ) : (
+        <Popover
+          hasAutoWidth
+          bodyContent="This mapping includes missing source or target resources"
+        >
+          <Button variant="link" isInline>
+            {icon}
+          </Button>
+        </Popover>
+      )}
     </ResolvedQueries>
   );
 };

@@ -7,6 +7,7 @@ import {
   IStorageMappingItem,
   IVMwareProvider,
   Mapping,
+  MappingItem,
   MappingSource,
   MappingTarget,
   MappingType,
@@ -112,3 +113,24 @@ export const useEditingMappingPrefillEffect = (
   ]);
   return { isDonePrefilling };
 };
+
+export const isMappingValid = (
+  mappingType: MappingType,
+  mapping: Mapping,
+  availableSources: MappingSource[],
+  availableTargets: MappingTarget[]
+): boolean =>
+  (mapping.spec.map as MappingItem[]).every(
+    (mappingItem) =>
+      availableSources.some((source) => source.id === mappingItem.source.id) &&
+      availableTargets.some((target) => {
+        if (mappingType === MappingType.Storage) {
+          return target.name === (mappingItem as IStorageMappingItem).destination.storageClass;
+        }
+        if (mappingType === MappingType.Network) {
+          const item = mappingItem as INetworkMappingItem;
+          return item.destination.type === 'pod' || isSameResource(target, item.destination);
+        }
+        return false;
+      })
+  );
