@@ -54,7 +54,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
               !areProvidersReady
                 ? 'This mapping cannot be edited because the inventory data for its associated providers is not ready'
                 : !isValid
-                ? 'This mapping cannot be edited because it includes missing source or target resources'
+                ? 'This mapping cannot be edited because it includes missing source or target resources. Delete and recreate the mapping.'
                 : ''
             }
           >
