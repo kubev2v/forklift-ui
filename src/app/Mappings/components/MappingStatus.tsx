@@ -13,9 +13,6 @@ interface IMappingStatusProps {
   mapping: Mapping;
 }
 
-// TODO if invalid, prevent selecting in the wizard with a tooltip
-// TODO if invalid, either prevent expandable content or edit MappingDetailView so it can show "missing" in place of the missing items.
-
 const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
   mappingType,
   mapping,

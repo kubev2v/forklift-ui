@@ -23,7 +23,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   className = '',
 }: IMappingDetailViewProps) => {
   const mappingResourceQueries = useResourceQueriesForMapping(mappingType, mapping);
-  const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
+  const mappingItemGroups = groupMappingItemsByTarget(
+    mapping?.spec.map || [],
+    mappingType,
+    mappingResourceQueries.availableTargets
+  );
 
   return (
     <ResolvedQueries
@@ -50,7 +54,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
           </GridItem>
         </Grid>
         {mappingItemGroups.map((items, index) => {
-          const targetName = getMappingItemTargetName(items[0], mappingType);
+          const targetName = getMappingItemTargetName(
+            items[0],
+            mappingType,
+            mappingResourceQueries.availableTargets
+          );
           const isLastGroup = index === mappingItemGroups.length - 1;
           return (
             <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
@@ -64,7 +72,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                     const sourceName = source ? source.name : '';
                     return (
                       <li key={sourceName}>
-                        <TruncatedText>{sourceName}</TruncatedText>
+                        <TruncatedText>
+                          {sourceName || <span className="missing-item">[missing]</span>}
+                        </TruncatedText>
                       </li>
                     );
                   })}
@@ -74,7 +84,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                 <LineArrow />
               </GridItem>
               <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-                <TruncatedText>{targetName}</TruncatedText>
+                <TruncatedText>
+                  {targetName || <span className="missing-item">[missing]</span>}
+                </TruncatedText>
               </GridItem>
             </Grid>
           );
