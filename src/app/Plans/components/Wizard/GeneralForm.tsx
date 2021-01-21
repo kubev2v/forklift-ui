@@ -106,7 +106,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               isDisabled={!form.values.targetProvider}
             >
               {[
-                <SelectGroup key="group" label="Type to search or to create a new namespace">
+                <SelectGroup key="group" label="Select or type to create a namespace">
                   {namespaceOptions.map((option) => (
                     <SelectOption key={option.toString()} value={option} />
                   ))}
