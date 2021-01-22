@@ -175,5 +175,9 @@ module.exports = (env) => {
       symlinks: false,
       cacheWithContext: false,
     },
+    node: {
+      Buffer: false,
+      process: false,
+    },
   };
 };
