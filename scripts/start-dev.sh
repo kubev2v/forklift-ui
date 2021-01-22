@@ -7,5 +7,5 @@ export EXPRESS_PORT=9001
 export NODE_TLS_REJECT_UNAUTHORIZED="0"
 $(npm bin)/concurrently --names "EXPRESS,WEBPACK" -c "green.bold.inverse,blue.bold.inverse" \
   "$_dir/run-local-express.sh --auto-reload" \
-  "$(npm bin)/webpack-dev-server \
-    --hot --color --info=true --config=$_dir/../config/webpack.dev.js"
+  "$(npm bin)/webpack serve \
+    --hot --color --config=$_dir/../config/webpack.dev.js"
