@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
@@ -164,6 +165,7 @@ module.exports = (env) => {
         systemvars: true,
         silent: true,
       }),
+      new webpack.EnvironmentPlugin(['DATA_SOURCE', 'BRAND_TYPE', 'NODE_ENV']),
     ],
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.jsx'],
@@ -174,10 +176,6 @@ module.exports = (env) => {
       ],
       symlinks: false,
       cacheWithContext: false,
-    },
-    node: {
-      Buffer: false,
-      process: false,
     },
   };
 };
