@@ -45,7 +45,17 @@ module.exports = merge(common('production'), {
             '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
           ),
         ],
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '',
+            },
+          },
+          {
+            loader: 'css-loader',
+          },
+        ],
       },
     ],
   },
