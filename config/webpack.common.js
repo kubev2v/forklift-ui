@@ -71,6 +71,7 @@ module.exports = (env) => {
               },
             },
           ],
+          type: 'javascript/auto',
         },
         {
           test: /\.svg$/,
@@ -95,6 +96,7 @@ module.exports = (env) => {
             loader: 'raw-loader',
             options: {},
           },
+          type: 'javascript/auto',
         },
         {
           test: /\.(jpg|jpeg|png|gif)$/i,
@@ -130,6 +132,7 @@ module.exports = (env) => {
               },
             },
           ],
+          type: 'javascript/auto',
         },
       ],
     },
