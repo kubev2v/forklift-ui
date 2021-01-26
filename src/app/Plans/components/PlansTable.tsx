@@ -172,6 +172,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
+    // TODO use this cancel button type and get rid of the kebab item
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
@@ -230,7 +231,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ),
         },
         {
-          // TODO: Cancellation is disabled until we have API support.
+          // TODO: Cancelation is disabled until we have API support.
           //   When it is ready, this condition should just be `title: buttonType ? (`
           title:
             (buttonType && buttonType === ActionButtonType.Start) ||

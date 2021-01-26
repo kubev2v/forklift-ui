@@ -93,7 +93,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             isTooltipEnabled={!hasCondition(conditions, PlanStatusType.Executing)}
             content={
               !hasCondition(conditions, PlanStatusType.Executing)
-                ? 'This plan cannot be cancelled because it is not running'
+                ? 'This plan cannot be canceled because it is not running'
                 : ''
             }
           >
@@ -139,7 +139,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             <strong>{plan.metadata.name}</strong>&quot;?
           </>
         }
-        errorText="Error cancelling plan"
+        errorText="Error canceling plan"
       />
     </>
   );

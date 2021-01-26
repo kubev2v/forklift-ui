@@ -169,11 +169,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
   });
-  const cancellableVms = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+  const cancelableVms = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
     ? []
     : (vmStatuses as IVMStatus[]).filter((vm) => !!vm.started && !vm.completed);
-  const selectAllCancellable = (isSelected: boolean) =>
-    isSelected ? setSelectedItems(cancellableVms) : setSelectedItems([]);
+  const selectAllCancelable = (isSelected: boolean) =>
+    isSelected ? setSelectedItems(cancelableVms) : setSelectedItems([]);
 
   const {
     toggleItemSelected: toggleVMExpanded,
@@ -208,7 +208,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     rows.push({
       meta: { vmStatus },
       selected: isItemSelected(vmStatus),
-      disableSelection: !cancellableVms.find((vm) => vm === vmStatus),
+      disableSelection: !cancelableVms.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
@@ -290,12 +290,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                   }}
                   onSelect={(_event, isSelected, rowIndex, rowData) => {
                     if (rowIndex === -1) {
-                      selectAllCancellable(isSelected);
+                      selectAllCancelable(isSelected);
                     } else {
                       toggleItemSelected(rowData.meta.vmStatus, isSelected);
                     }
                   }}
-                  canSelectAll={cancellableVms.length > 0}
+                  canSelectAll={cancelableVms.length > 0}
                 >
                   <TableHeader />
                   <TableBody />
@@ -337,7 +337,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             </ul>
           </>
         }
-        errorText="Error cancelling migrations"
+        errorText="Error canceling migrations"
       />
     </>
   );
