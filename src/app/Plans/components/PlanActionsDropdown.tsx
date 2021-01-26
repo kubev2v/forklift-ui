@@ -6,7 +6,7 @@ import { IPlan } from '@app/queries/types';
 import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
-import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 
@@ -19,6 +19,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
 }: IPlansActionDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
@@ -82,15 +83,35 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
               Delete
             </DropdownItem>
           </ConditionalTooltip>,
+          <ConditionalTooltip
+            key="Cancel"
+            isTooltipEnabled={!hasCondition(conditions, PlanStatusType.Executing)}
+            content={
+              !hasCondition(conditions, PlanStatusType.Executing)
+                ? 'This plan cannot be cancelled because it is not running'
+                : ''
+            }
+          >
+            <DropdownItem
+              isDisabled={!hasCondition(conditions, PlanStatusType.Executing)}
+              onClick={() => {
+                setKebabIsOpen(false);
+                toggleCancelModal();
+              }}
+            >
+              Cancel
+            </DropdownItem>
+          </ConditionalTooltip>,
         ]}
         position={DropdownPosition.right}
       />
-      <ConfirmDeleteModal
+      <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        deleteFn={() => deletePlan(plan)}
-        deleteResult={deletePlanResult}
+        mutateFn={() => deletePlan(plan)}
+        mutateResult={deletePlanResult}
         title="Delete migration plan"
+        confirmButtonText="Delete"
         body={
           <>
             Are you sure you want to delete the migration plan &quot;
@@ -98,6 +119,22 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           </>
         }
         errorText="Error deleting plan"
+      />
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        toggleOpen={toggleCancelModal}
+        mutateFn={() => alert('TODO: this API call is not yet implemented')}
+        // mutateResult={cancelPlanResult}
+        title="Cancel migration plan"
+        confirmButtonText="Cancel migration"
+        cancelButtonText="Don't cancel migration" // TODO need to revisit this phrasing
+        body={
+          <>
+            Are you sure you want to cancel the migration plan &quot;
+            <strong>{plan.metadata.name}</strong>&quot;?
+          </>
+        }
+        errorText="Error cancelling plan"
       />
     </>
   );

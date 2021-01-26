@@ -3,7 +3,7 @@ import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternf
 import { useDeleteProviderMutation } from '@app/queries';
 import { ICorrelatedProvider, InventoryProvider } from '@app/queries/types';
 import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { hasCondition } from '@app/common/helpers';
@@ -89,19 +89,19 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         ]}
         position={DropdownPosition.right}
       />
-      <ConfirmDeleteModal
+      <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        deleteFn={() => deleteProvider(provider)}
-        deleteResult={deleteProviderResult}
+        mutateFn={() => deleteProvider(provider)}
+        mutateResult={deleteProviderResult}
         title="Remove provider"
+        confirmButtonText="Remove"
         body={
           <>
             Are you sure you want to remove the {PROVIDER_TYPE_NAMES[providerType]} provider &quot;
             <strong>{provider.metadata.name}</strong>&quot;?
           </>
         }
-        deleteButtonText="Remove"
         errorText="Error removing provider"
       />
     </>
