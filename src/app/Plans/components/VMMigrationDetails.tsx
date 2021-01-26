@@ -10,6 +10,8 @@ import {
   Title,
   Level,
   LevelItem,
+  Button,
+  Flex,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -154,6 +156,16 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const {
+    selectedItems,
+    isItemSelected,
+    toggleItemSelected,
+    selectAll,
+  } = useSelectionState<IVMStatus>({
+    items: sortedItems,
+    isEqual: (a, b) => a.id === b.id,
+  });
+
+  const {
     toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
   } = useSelectionState<IVMStatus>({
@@ -185,6 +197,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
     rows.push({
       meta: { vmStatus },
+      selected: isItemSelected(vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
@@ -235,11 +248,20 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             <CardBody>
               <Level>
                 <LevelItem>
-                  <FilterToolbar<IVMStatus>
-                    filterCategories={filterCategories}
-                    filterValues={filterValues}
-                    setFilterValues={setFilterValues}
-                  />
+                  <Flex>
+                    <FilterToolbar<IVMStatus>
+                      filterCategories={filterCategories}
+                      filterValues={filterValues}
+                      setFilterValues={setFilterValues}
+                    />
+                    <Button
+                      variant="secondary"
+                      isDisabled={selectedItems.length === 0}
+                      onClick={() => alert('Not yet implemented')}
+                    >
+                      Cancel selected
+                    </Button>
+                  </Flex>
                 </LevelItem>
                 <LevelItem>
                   <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
@@ -254,6 +276,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                   onSort={onSort}
                   onCollapse={(event, rowKey, isOpen, rowData) => {
                     toggleVMExpanded(rowData.meta.vmStatus);
+                  }}
+                  onSelect={(_event, isSelected, rowIndex, rowData) => {
+                    if (rowIndex === -1) {
+                      selectAll(isSelected);
+                    } else {
+                      toggleItemSelected(rowData.meta.vmStatus, isSelected);
+                    }
                   }}
                 >
                   <TableHeader />
