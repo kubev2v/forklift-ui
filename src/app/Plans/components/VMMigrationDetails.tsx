@@ -40,7 +40,7 @@ import { FilterCategory, FilterToolbar, FilterType } from '@app/common/component
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
 import { usePlansQuery } from '@app/queries';
-import { formatTimestamp } from '@app/common/helpers';
+import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
@@ -48,6 +48,7 @@ import {
   findVMById,
 } from '@app/queries';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { PlanStatusType } from '@app/common/constants';
 
 export interface IPlanMatchParams {
   url: string;
@@ -159,11 +160,16 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     selectedItems,
     isItemSelected,
     toggleItemSelected,
-    selectAll,
+    setSelectedItems,
   } = useSelectionState<IVMStatus>({
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
   });
+  const cancellableVms = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+    ? []
+    : (vmStatuses as IVMStatus[]).filter((vm) => !!vm.started && !vm.completed);
+  const selectAllCancellable = (isSelected: boolean) =>
+    isSelected ? setSelectedItems(cancellableVms) : setSelectedItems([]);
 
   const {
     toggleItemSelected: toggleVMExpanded,
@@ -198,6 +204,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     rows.push({
       meta: { vmStatus },
       selected: isItemSelected(vmStatus),
+      disableSelection: !cancellableVms.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
@@ -279,11 +286,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                   }}
                   onSelect={(_event, isSelected, rowIndex, rowData) => {
                     if (rowIndex === -1) {
-                      selectAll(isSelected);
+                      selectAllCancellable(isSelected);
                     } else {
                       toggleItemSelected(rowData.meta.vmStatus, isSelected);
                     }
                   }}
+                  canSelectAll={cancellableVms.length > 0}
                 >
                   <TableHeader />
                   <TableBody />
