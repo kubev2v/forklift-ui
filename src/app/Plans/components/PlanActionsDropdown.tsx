@@ -5,7 +5,11 @@ import { useHistory } from 'react-router-dom';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
+import {
+  useCancelPlanMutation,
+  useClusterProvidersQuery,
+  useDeletePlanMutation,
+} from '@app/queries';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
@@ -21,6 +25,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
+  const [cancelPlan, cancelPlanResult] = useCancelPlanMutation(toggleCancelModal);
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -123,8 +128,8 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       <ConfirmModal
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}
-        mutateFn={() => alert('TODO: this API call is not yet implemented')}
-        // mutateResult={cancelPlanResult}
+        mutateFn={() => cancelPlan(plan)}
+        mutateResult={cancelPlanResult}
         title="Cancel migration plan"
         confirmButtonText="Cancel migration"
         cancelButtonText="Don't cancel migration" // TODO need to revisit this phrasing
