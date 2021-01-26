@@ -11,7 +11,7 @@ import {
   useMockableQuery,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
-import { IPlan } from './types';
+import { IPlan, IVMStatus } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
@@ -98,6 +98,22 @@ export const useCancelPlanMutation = (
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
     (plan: IPlan) => Promise.reject('Not yet implemented'),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useCancelVMsMutation = (
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[], unknown> => {
+  // const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[]>(
+    (vms: IVMStatus[]) => Promise.reject('Not yet implemented'),
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');

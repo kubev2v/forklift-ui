@@ -39,7 +39,7 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
-import { usePlansQuery } from '@app/queries';
+import { useCancelVMsMutation, usePlansQuery } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
@@ -49,6 +49,7 @@ import {
 } from '@app/queries';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanStatusType } from '@app/common/constants';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 
 export interface IPlanMatchParams {
   url: string;
@@ -74,6 +75,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   });
 
   const plansQuery = usePlansQuery();
+  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation();
+  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
+
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
   const planStarted = !!plan?.status?.migration?.started;
   const vmStatuses = planStarted
@@ -263,8 +267,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                     />
                     <Button
                       variant="secondary"
-                      isDisabled={selectedItems.length === 0}
-                      onClick={() => alert('Not yet implemented')}
+                      isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
+                      onClick={toggleCancelModal}
                     >
                       Cancel selected
                     </Button>
@@ -311,6 +315,30 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           </Card>
         </ResolvedQueries>
       </PageSection>
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        toggleOpen={toggleCancelModal}
+        mutateFn={() => cancelVMs(selectedItems)}
+        mutateResult={cancelVMsResult}
+        title="Cancel VM migrations"
+        confirmButtonText="Cancel migrations"
+        cancelButtonText="Don't cancel migrations" // TODO need to revisit this phrasing
+        body={
+          <>
+            Are you sure you want to cancel migration of the following VMs?
+            <br />
+            <br />
+            <ul>
+              {selectedItems.map((vm) => (
+                <li key={vm.id}>
+                  <strong>{findVMById(vm.id, vmsQuery)?.name || ''}</strong>
+                </li>
+              ))}
+            </ul>
+          </>
+        }
+        errorText="Error cancelling migrations"
+      />
     </>
   );
 };
