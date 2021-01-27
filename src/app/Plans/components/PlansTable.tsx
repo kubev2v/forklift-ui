@@ -160,7 +160,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   enum ActionButtonType {
     Start = 'Start',
-    Cancel = 'Cancel',
     Restart = 'Restart',
   }
 
@@ -172,12 +171,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
-    // TODO use this cancel button type and get rid of the kebab item
-    //   -- or delete this and the kebab, and only allow cancelling at the VM level?
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
-      buttonType = ActionButtonType.Cancel;
+      buttonType = null;
       title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
@@ -232,51 +229,37 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ),
         },
         {
-          // TODO: Cancelation is disabled until we have API support.
-          //   When it is ready, this condition should just be `title: buttonType ? (`
-          title:
-            (buttonType && buttonType === ActionButtonType.Start) ||
-            buttonType === ActionButtonType.Restart ? (
-              <>
-                <Flex
-                  flex={{ default: 'flex_2' }}
-                  spaceItems={{ default: 'spaceItemsNone' }}
-                  alignItems={{ default: 'alignItemsCenter' }}
-                  flexWrap={{ default: 'nowrap' }}
-                >
-                  <FlexItem align={{ default: 'alignRight' }}>
-                    {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
-                      <Spinner size="md" className={spacing.mxLg} />
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          if (
-                            buttonType === ActionButtonType.Start ||
-                            buttonType === ActionButtonType.Restart
-                          ) {
-                            createMigration(plan);
-                          }
-                          if (buttonType === ActionButtonType.Cancel) {
-                            alert('TODO');
-                          }
-                        }}
-                        isDisabled={
-                          buttonType === ActionButtonType.Start && createMigrationResult.isLoading
-                        }
-                      >
-                        {buttonType}
-                      </Button>
-                    )}
-                  </FlexItem>
-                  <FlexItem>
-                    <PlanActionsDropdown plan={plan} />
-                  </FlexItem>
-                </Flex>
-              </>
-            ) : !isPending ? (
-              <PlanActionsDropdown plan={plan} />
-            ) : null,
+          title: buttonType ? (
+            <>
+              <Flex
+                flex={{ default: 'flex_2' }}
+                spaceItems={{ default: 'spaceItemsNone' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                flexWrap={{ default: 'nowrap' }}
+              >
+                <FlexItem align={{ default: 'alignRight' }}>
+                  {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
+                    <Spinner size="md" className={spacing.mxLg} />
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        createMigration(plan);
+                      }}
+                      isDisabled={createMigrationResult.isLoading}
+                    >
+                      {buttonType}
+                    </Button>
+                  )}
+                </FlexItem>
+                <FlexItem>
+                  <PlanActionsDropdown plan={plan} />
+                </FlexItem>
+              </Flex>
+            </>
+          ) : !isPending ? (
+            <PlanActionsDropdown plan={plan} />
+          ) : null,
         },
       ],
     });
