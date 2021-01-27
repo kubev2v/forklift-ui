@@ -23,9 +23,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
 }: IPlansActionDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
-  const [cancelPlan, cancelPlanResult] = useCancelPlanMutation(toggleCancelModal);
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -88,25 +86,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
               Delete
             </DropdownItem>
           </ConditionalTooltip>,
-          <ConditionalTooltip
-            key="Cancel"
-            isTooltipEnabled={!hasCondition(conditions, PlanStatusType.Executing)}
-            content={
-              !hasCondition(conditions, PlanStatusType.Executing)
-                ? 'This plan cannot be canceled because it is not running'
-                : ''
-            }
-          >
-            <DropdownItem
-              isDisabled={!hasCondition(conditions, PlanStatusType.Executing)}
-              onClick={() => {
-                setKebabIsOpen(false);
-                toggleCancelModal();
-              }}
-            >
-              Cancel
-            </DropdownItem>
-          </ConditionalTooltip>,
         ]}
         position={DropdownPosition.right}
       />
@@ -124,22 +103,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           </>
         }
         errorText="Error deleting plan"
-      />
-      <ConfirmModal
-        isOpen={isCancelModalOpen}
-        toggleOpen={toggleCancelModal}
-        mutateFn={() => cancelPlan(plan)}
-        mutateResult={cancelPlanResult}
-        title="Cancel migration plan"
-        confirmButtonText="Cancel migration"
-        cancelButtonText="Don't cancel migration" // TODO need to revisit this phrasing
-        body={
-          <>
-            Are you sure you want to cancel the migration plan &quot;
-            <strong>{plan.metadata.name}</strong>&quot;?
-          </>
-        }
-        errorText="Error canceling plan"
       />
     </>
   );
