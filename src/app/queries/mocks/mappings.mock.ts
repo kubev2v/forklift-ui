@@ -60,7 +60,32 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_STORAGE_MAPPINGS = [storageMapping1, storageMapping2];
+  const invalidStorageMapping: IStorageMapping = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'StorageMap',
+    metadata: {
+      name: 'vcenter1-invalid-storage-mapping',
+      namespace: META.namespace,
+    },
+    spec: {
+      provider: {
+        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[2]),
+        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+      },
+      map: [
+        {
+          source: {
+            id: 'invalid-id',
+          },
+          destination: {
+            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][1].name,
+          },
+        },
+      ],
+    },
+  };
+
+  MOCK_STORAGE_MAPPINGS = [storageMapping1, storageMapping2, invalidStorageMapping];
 
   const networkMapping1: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
@@ -114,11 +139,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  const networkMapping3: INetworkMapping = {
+  const invalidNetworkMapping: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
-    kind: 'StorageMap',
+    kind: 'NetworkMap',
     metadata: {
-      name: 'vcenter1-netstore-to-pod',
+      name: 'vcenter3-invalid-network-map',
       namespace: META.namespace,
     },
     spec: {
@@ -132,12 +157,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: MOCK_VMWARE_NETWORKS[1].id,
           },
           destination: {
-            type: 'pod',
+            type: 'multus',
+            name: 'missing-network',
+            namespace: 'doesnt-matter',
           },
         },
       ],
     },
   };
 
-  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2, networkMapping3];
+  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2, invalidNetworkMapping];
 }

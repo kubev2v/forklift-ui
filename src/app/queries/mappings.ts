@@ -26,6 +26,7 @@ import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/cli
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedK8sClient } from './fetchHelpers';
+import { findProvidersByRefs, useInventoryProvidersQuery } from './providers';
 
 const getMappingResource = (mappingType: MappingType) => {
   const kind =
@@ -126,6 +127,11 @@ export interface IMappingResourcesResult {
   queries: QueryResult<unknown>[];
 }
 
+export interface ISpecificMappingResourcesResult extends IMappingResourcesResult {
+  sourceProvider: IVMwareProvider | null;
+  targetProvider: IOpenShiftProvider | null;
+}
+
 export const useMappingResourceQueries = (
   sourceProvider: IVMwareProvider | null,
   targetProvider: IOpenShiftProvider | null,
@@ -172,6 +178,35 @@ export const useMappingResourceQueries = (
     status,
     error,
     queries: queriesToWatch,
+  };
+};
+
+export const useResourceQueriesForMapping = (
+  mappingType: MappingType,
+  mapping: Mapping | null
+): ISpecificMappingResourcesResult => {
+  const providersQuery = useInventoryProvidersQuery();
+  const { sourceProvider, targetProvider } = findProvidersByRefs(
+    mapping?.spec.provider || null,
+    providersQuery
+  );
+  const mappingResourceQueries = useMappingResourceQueries(
+    sourceProvider,
+    targetProvider,
+    mappingType
+  );
+  const allQueries = [providersQuery, ...mappingResourceQueries.queries];
+  const status = getAggregateQueryStatus(allQueries);
+  const error = getFirstQueryError(allQueries);
+  return {
+    ...mappingResourceQueries,
+    queries: allQueries,
+    isLoading: status === QueryStatus.Loading,
+    isError: status === QueryStatus.Error,
+    status,
+    error,
+    sourceProvider,
+    targetProvider,
   };
 };
 

@@ -9,8 +9,14 @@ import {
   MappingType,
   POD_NETWORK,
 } from '@app/queries/types';
+import { doesTargetExist } from '../helpers';
 
-export const getMappingItemTargetName = (item: MappingItem, mappingType: MappingType): string => {
+export const getMappingItemTargetName = (
+  item: MappingItem,
+  mappingType: MappingType,
+  availableTargets: MappingTarget[]
+): string => {
+  if (!doesTargetExist(mappingType, availableTargets, item)) return '';
   if (mappingType === MappingType.Network) {
     const networkItem = item as INetworkMappingItem;
     if (networkItem.destination.type === 'pod') return POD_NETWORK.name;
@@ -21,13 +27,18 @@ export const getMappingItemTargetName = (item: MappingItem, mappingType: Mapping
 
 export const groupMappingItemsByTarget = (
   mappingItems: MappingItem[],
-  mappingType: MappingType
+  mappingType: MappingType,
+  availableTargets: MappingTarget[]
 ): MappingItem[][] => {
   const targetNames: string[] = Array.from(
-    new Set(mappingItems.map((item) => getMappingItemTargetName(item, mappingType)))
+    new Set(
+      mappingItems.map((item) => getMappingItemTargetName(item, mappingType, availableTargets))
+    )
   );
   return targetNames.map((targetName) =>
-    mappingItems.filter((item) => getMappingItemTargetName(item, mappingType) === targetName)
+    mappingItems.filter(
+      (item) => getMappingItemTargetName(item, mappingType, availableTargets) === targetName
+    )
   );
 };
 
