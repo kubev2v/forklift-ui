@@ -5,3 +5,7 @@
 .mapping-view-arrow-cell {
   padding-top: 12px;
 }
+
+.missing-item {
+  color: var(--pf-global--danger-color--100);
+}

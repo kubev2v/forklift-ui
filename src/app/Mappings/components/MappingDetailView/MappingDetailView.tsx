@@ -3,17 +3,13 @@ import { Grid, GridItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
+import { useResourceQueriesForMapping } from '@app/queries';
+import TruncatedText from '@app/common/components/TruncatedText';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
-import {
-  findProvidersByRefs,
-  useMappingResourceQueries,
-  useInventoryProvidersQuery,
-} from '@app/queries';
-import TruncatedText from '@app/common/components/TruncatedText';
-import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
@@ -26,21 +22,16 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mapping,
   className = '',
 }: IMappingDetailViewProps) => {
-  const providersQuery = useInventoryProvidersQuery();
-  const { sourceProvider, targetProvider } = findProvidersByRefs(
-    mapping?.spec.provider || null,
-    providersQuery
+  const mappingResourceQueries = useResourceQueriesForMapping(mappingType, mapping);
+  const mappingItemGroups = groupMappingItemsByTarget(
+    mapping?.spec.map || [],
+    mappingType,
+    mappingResourceQueries.availableTargets
   );
-  const mappingResourceQueries = useMappingResourceQueries(
-    sourceProvider,
-    targetProvider,
-    mappingType
-  );
-  const mappingItemGroups = groupMappingItemsByTarget(mapping?.spec.map || [], mappingType);
 
   return (
     <ResolvedQueries
-      results={[providersQuery, ...mappingResourceQueries.queries]}
+      results={mappingResourceQueries.queries}
       errorTitles={[
         'Error loading providers',
         'Error loading source provider resources',
@@ -63,7 +54,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
           </GridItem>
         </Grid>
         {mappingItemGroups.map((items, index) => {
-          const targetName = getMappingItemTargetName(items[0], mappingType);
+          const targetName = getMappingItemTargetName(
+            items[0],
+            mappingType,
+            mappingResourceQueries.availableTargets
+          );
           const isLastGroup = index === mappingItemGroups.length - 1;
           return (
             <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
@@ -77,7 +72,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                     const sourceName = source ? source.name : '';
                     return (
                       <li key={sourceName}>
-                        <TruncatedText>{sourceName}</TruncatedText>
+                        <TruncatedText>
+                          {sourceName || <span className="missing-item">Not available</span>}
+                        </TruncatedText>
                       </li>
                     );
                   })}
@@ -87,7 +84,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
                 <LineArrow />
               </GridItem>
               <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
-                <TruncatedText>{targetName}</TruncatedText>
+                <TruncatedText>
+                  {targetName || <span className="missing-item">Not available</span>}
+                </TruncatedText>
               </GridItem>
             </Grid>
           );

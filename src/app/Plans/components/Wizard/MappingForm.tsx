@@ -38,6 +38,8 @@ import { isSameResource } from '@app/queries/helpers';
 import './MappingForm.css';
 import { QueryStatus } from 'react-query';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { isMappingValid } from '@app/Mappings/components/helpers';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -61,6 +63,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     targetProvider,
     mappingType
   );
+  const { availableSources, availableTargets } = mappingResourceQueries;
 
   const hasInitialized = React.useRef(false);
   React.useEffect(() => {
@@ -103,20 +106,30 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
     value: 'new',
   };
-  const mappingOptions = Object.values(filteredMappings).map((mapping) => ({
-    toString: () => mapping.metadata.name,
-    value: mapping,
-  })) as OptionWithValue<Mapping>[];
+  const mappingOptions = Object.values(filteredMappings).map((mapping) => {
+    const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
+    return {
+      toString: () => mapping.metadata.name,
+      value: mapping,
+      props: {
+        isDisabled: !isValid,
+        className: !isValid ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={!isValid}
+            content="This mapping cannot be selected because it includes missing source or target resources"
+          >
+            <div>{mapping.metadata.name}</div>
+          </ConditionalTooltip>
+        ),
+      },
+    };
+  }) as OptionWithValue<Mapping>[];
 
   const populateMappingBuilder = (mapping?: Mapping) => {
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
-      : getBuilderItemsFromMapping(
-          mapping,
-          mappingType,
-          mappingResourceQueries.availableSources,
-          mappingResourceQueries.availableTargets
-        );
+      : getBuilderItemsFromMapping(mapping, mappingType, availableSources, availableTargets);
     form.fields.builderItems.setValue(
       getBuilderItemsWithMissingSources(
         newBuilderItems,
@@ -204,7 +217,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                     }
                   >
                     {mappingOptions.map((option) => (
-                      <SelectOption key={option.toString()} value={option} />
+                      <SelectOption key={option.toString()} value={option} {...option.props} />
                     ))}
                   </SelectGroup>
                 </Select>
@@ -218,8 +231,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             <>
               <MappingBuilder
                 mappingType={mappingType}
-                availableSources={mappingResourceQueries.availableSources}
-                availableTargets={mappingResourceQueries.availableTargets}
+                availableSources={availableSources}
+                availableTargets={availableTargets}
                 builderItems={form.values.builderItems}
                 setBuilderItems={form.fields.builderItems.setValue}
                 isWizardMode
