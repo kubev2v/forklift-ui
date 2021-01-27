@@ -171,7 +171,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   });
   const cancelableVms = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
     ? []
-    : (vmStatuses as IVMStatus[]).filter((vm) => !!vm.started && !vm.completed);
+    : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed);
   const selectAllCancelable = (isSelected: boolean) =>
     isSelected ? setSelectedItems(cancelableVms) : setSelectedItems([]);
 
