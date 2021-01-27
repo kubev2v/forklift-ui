@@ -94,6 +94,9 @@ export const useDeletePlanMutation = (
 export const useCancelVMsMutation = (
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[], unknown> => {
+  // TODO look up the Migration CR in plan.status.migration.history
+  // TODO PATCH the Migration CR to add a list of cancelled VM ids
+  // TODO figure out if we need a "cancelling" spinner or something
   // const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[]>(
