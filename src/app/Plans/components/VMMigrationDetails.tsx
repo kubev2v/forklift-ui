@@ -12,6 +12,9 @@ import {
   LevelItem,
   Button,
   Flex,
+  List,
+  ListItem,
+  FlexItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -260,18 +263,22 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               <Level>
                 <LevelItem>
                   <Flex>
-                    <FilterToolbar<IVMStatus>
-                      filterCategories={filterCategories}
-                      filterValues={filterValues}
-                      setFilterValues={setFilterValues}
-                    />
-                    <Button
-                      variant="secondary"
-                      isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
-                      onClick={toggleCancelModal}
-                    >
-                      Cancel selected
-                    </Button>
+                    <FlexItem spacer={{ default: 'spacerNone' }}>
+                      <FilterToolbar<IVMStatus>
+                        filterCategories={filterCategories}
+                        filterValues={filterValues}
+                        setFilterValues={setFilterValues}
+                      />
+                    </FlexItem>
+                    <FlexItem>
+                      <Button
+                        variant="secondary"
+                        isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
+                        onClick={toggleCancelModal}
+                      >
+                        Cancel selected
+                      </Button>
+                    </FlexItem>
                   </Flex>
                 </LevelItem>
                 <LevelItem>
@@ -320,21 +327,20 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         toggleOpen={toggleCancelModal}
         mutateFn={() => cancelVMs(selectedItems)}
         mutateResult={cancelVMsResult}
-        title="Cancel VM migrations"
-        confirmButtonText="Cancel migrations"
-        cancelButtonText="Don't cancel migrations" // TODO need to revisit this phrasing
+        title="Cancel migrations?"
+        confirmButtonText="Yes, cancel"
+        cancelButtonText="No, keep migrating"
         body={
           <>
-            Are you sure you want to cancel migration of the following VMs?
-            <br />
-            <br />
-            <ul>
+            Migration of the following VMs will be stopped. Any partially-created resources on the
+            target provider will be deleted.
+            <List className={spacing.mtSm}>
               {selectedItems.map((vm) => (
-                <li key={vm.id}>
+                <ListItem key={vm.id}>
                   <strong>{findVMById(vm.id, vmsQuery)?.name || ''}</strong>
-                </li>
+                </ListItem>
               ))}
-            </ul>
+            </List>
           </>
         }
         errorText="Error canceling migrations"

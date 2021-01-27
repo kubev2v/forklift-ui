@@ -5,11 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import {
-  useCancelPlanMutation,
-  useClusterProvidersQuery,
-  useDeletePlanMutation,
-} from '@app/queries';
+import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
