@@ -332,8 +332,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         cancelButtonText="No, keep migrating"
         body={
           <>
-            Migration of the following VMs will be stopped. Any partially-created resources on the
-            target provider will be deleted.
+            Migration of the following VMs will be stopped, and any partially created resources on
+            the target provider will be deleted.
             <List className={spacing.mtSm}>
               {selectedItems.map((vm) => (
                 <ListItem key={vm.id}>
