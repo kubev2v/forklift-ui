@@ -173,6 +173,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const conditions = plan.status?.conditions || [];
 
     // TODO use this cancel button type and get rid of the kebab item
+    //   -- or delete this and the kebab, and only allow cancelling at the VM level?
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
