@@ -168,7 +168,11 @@ module.exports = (env) => {
         systemvars: true,
         silent: true,
       }),
-      new webpack.EnvironmentPlugin(['DATA_SOURCE', 'BRAND_TYPE', 'NODE_ENV']),
+      new webpack.EnvironmentPlugin({
+        DATA_SOURCE: 'remote',
+        BRAND_TYPE: 'Konveyor',
+        NODE_ENV: 'production',
+      }),
     ],
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.jsx'],

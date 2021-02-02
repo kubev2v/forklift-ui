@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "dr:surge": "node dr-surge.js",
-    "build": "npm run clean && NODE_ENV=production BRAND_TYPE=Konveyor $(npm bin)/webpack --config ./config/webpack.prod.js",
+    "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock npm run build && npm run dr:surge",
     "setup:dev:remote": "node --trace-deprecation ./scripts/remote-dev.js",
