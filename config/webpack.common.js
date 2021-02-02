@@ -2,6 +2,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
@@ -70,6 +71,7 @@ module.exports = (env) => {
               },
             },
           ],
+          type: 'javascript/auto',
         },
         {
           test: /\.svg$/,
@@ -94,6 +96,7 @@ module.exports = (env) => {
             loader: 'raw-loader',
             options: {},
           },
+          type: 'javascript/auto',
         },
         {
           test: /\.(jpg|jpeg|png|gif)$/i,
@@ -129,6 +132,7 @@ module.exports = (env) => {
               },
             },
           ],
+          type: 'javascript/auto',
         },
       ],
     },
@@ -163,6 +167,11 @@ module.exports = (env) => {
       new Dotenv({
         systemvars: true,
         silent: true,
+      }),
+      new webpack.EnvironmentPlugin({
+        DATA_SOURCE: 'remote',
+        BRAND_TYPE: 'Konveyor',
+        NODE_ENV: 'production',
       }),
     ],
     resolve: {
