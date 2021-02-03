@@ -26,6 +26,7 @@ import {
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
+import SelectOCPNetworkModal from '@app/common/components/SelectOCPNetworkModal';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -57,6 +58,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       </SelectGroup>,
     ];
   };
+
+  const [isSelectNetworkModalOpen, toggleSelectNetworkModal] = React.useReducer(
+    (isOpen) => !isOpen,
+    false
+  );
 
   return (
     <ResolvedQueries
@@ -130,9 +136,10 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             {form.values.targetNamespace ? (
               <TextContent className={spacing.mtSm}>
                 <Text component="p">
+                  {/* TODO show the actual selected network here */}
                   The migration transfer network for this namespace is: <strong>pod_network</strong>
                   .
-                  <Button variant="link" onClick={() => alert('TODO')}>
+                  <Button variant="link" onClick={toggleSelectNetworkModal}>
                     Change
                   </Button>
                 </Text>
@@ -141,6 +148,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </ResolvedQuery>
         </FormGroup>
       </Form>
+      {isSelectNetworkModalOpen ? (
+        <SelectOCPNetworkModal
+          targetProvider={form.values.targetProvider}
+          onClose={toggleSelectNetworkModal}
+        />
+      ) : null}
     </ResolvedQueries>
   );
 };
