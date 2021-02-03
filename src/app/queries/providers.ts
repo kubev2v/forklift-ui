@@ -110,6 +110,18 @@ export const useCreateProviderMutation = (
       if (providerAddResult.status === 201) {
         providerAddResults.push(providerAddResult);
       }
+
+      const secretWithOwnerRef = convertFormValuesToSecret(
+        values,
+        ForkliftResourceKind.Provider,
+        providerAddResult.data
+      );
+      await client.patch<ISecret>(
+        secretResource,
+        secretWithOwnerRef.metadata.name || '',
+        secretWithOwnerRef
+      );
+
       return providerAddResult;
     }
 
