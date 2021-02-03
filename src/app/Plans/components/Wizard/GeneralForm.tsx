@@ -6,7 +6,10 @@ import {
   SelectGroup,
   SelectOption,
   TextArea,
+  TextContent,
+  Text,
   Title,
+  Button,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
@@ -124,6 +127,17 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             >
               {getFilteredOptions()}
             </Select>
+            {form.values.targetNamespace ? (
+              <TextContent className={spacing.mtSm}>
+                <Text component="p">
+                  The migration transfer network for this namespace is: <strong>pod_network</strong>
+                  .
+                  <Button variant="link" onClick={() => alert('TODO')}>
+                    Change
+                  </Button>
+                </Text>
+              </TextContent>
+            ) : null}
           </ResolvedQuery>
         </FormGroup>
       </Form>
