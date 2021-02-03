@@ -110,6 +110,18 @@ export const useCreateProviderMutation = (
       if (providerAddResult.status === 201) {
         providerAddResults.push(providerAddResult);
       }
+
+      const secretWithOwnerRef = convertFormValuesToSecret(
+        values,
+        ForkliftResourceKind.Provider,
+        providerAddResult.data
+      );
+      await client.patch<ISecret>(
+        secretResource,
+        secretWithOwnerRef.metadata.name || '',
+        secretWithOwnerRef
+      );
+
       return providerAddResult;
     }
 
@@ -234,11 +246,7 @@ export const useDeleteProviderMutation = (
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IProviderObject>(
-    async (provider: IProviderObject) => {
-      const providerResponse = await client.delete(providerResource, provider.metadata.name);
-      await client.delete(secretResource, provider.spec.secret?.name || '');
-      return providerResponse;
-    },
+    (provider: IProviderObject) => client.delete(providerResource, provider.metadata.name),
     {
       onSuccess: (_data, provider) => {
         // Optimistically remove this provider from the cache immediately
