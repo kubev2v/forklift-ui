@@ -54,6 +54,16 @@ export function convertFormValuesToSecret(
   createdForResourceType: ForkliftResourceKind,
   providerBeingEdited: IProviderObject | null
 ): ISecret {
+  const ownerReferences = !providerBeingEdited
+    ? []
+    : [
+        {
+          apiVersion: CLUSTER_API_VERSION,
+          kind: 'Provider',
+          name: providerBeingEdited.metadata.name,
+          uid: providerBeingEdited.metadata.uid,
+        },
+      ];
   if (values.providerType === ProviderType.openshift) {
     const openshiftValues = values as OpenshiftProviderFormValues;
     // btoa => to base64, atob => from base64
@@ -75,6 +85,7 @@ export function convertFormValuesToSecret(
           createdForResourceType,
           createdForResource: openshiftValues.name,
         },
+        ownerReferences,
       },
       type: 'Opaque',
     };
@@ -100,6 +111,7 @@ export function convertFormValuesToSecret(
           createdForResourceType,
           createdForResource: vmwareValues.name,
         },
+        ownerReferences,
       },
       type: 'Opaque',
     };
