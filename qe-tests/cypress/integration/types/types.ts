@@ -28,12 +28,12 @@ export type PlanData = {
   tProvider: string;
   namespace: string;
   vmwareSourceFqdn: string;
-  vmwareSourceVms: string[];
+  vmwareSourceVmList: string[];
   useExistingNetworkMapping: boolean;
   useExistingStorageMapping: boolean;
   providerData: ProviderData;
-  networkMappingData: MappingData[];
-  storageMappingData: MappingData[];
+  networkMappingData: MappingData;
+  storageMappingData: MappingData;
 };
 export type TestData = {
   loginData: LoginData;

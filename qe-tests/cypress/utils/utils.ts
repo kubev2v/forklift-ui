@@ -1,11 +1,17 @@
 import { LoginData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
-import { button, deleteButton, loginButton, tr } from '../integration/types/constants';
+import {
+  button,
+  // deleteButton,
+  loginButton,
+  nextButton,
+  trTag,
+} from '../integration/types/constants';
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 
 export function inputText(fieldId: string, text: string) {
-  cy.get(fieldId).type(text);
+  cy.get(fieldId).clear().type(text);
 }
 
 export function click(fieldId: string, buttonText: string) {
@@ -35,10 +41,14 @@ export function openSidebarMenu() {
 
 export function applyAction(itemName: string, action: string) {
   cy.contains(itemName)
-    .parent(tr)
+    .parent(trTag)
     .within(() => {
       clickWithNoText(kebab);
     });
   click(kebabDropDownItem, action);
   click(button, action);
+}
+
+export function next(): void {
+  click(button, nextButton);
 }

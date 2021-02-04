@@ -13,6 +13,7 @@ export class Provider {
   openMenu(): void {
     //TODO: replace hardcoded timeout by expecting button to become clickable
     cy.wait(3000);
+    // cy.findAllByRole(button).findByText(addProvider).should('be.enabled').click();
     click(button, addProvider);
     click(button, selectProviderType);
   }
