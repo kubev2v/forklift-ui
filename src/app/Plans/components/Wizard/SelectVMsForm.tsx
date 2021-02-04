@@ -154,7 +154,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const { isItemSelected, toggleItemSelected, selectAll } = useSelectionState<IVMwareVM>({
     items: sortedItems,
-    isEqual: (a, b) => a.name === b.name,
+    isEqual: (a, b) => a.selfLink === b.selfLink,
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
@@ -163,7 +163,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     IVMwareVM
   >({
     items: sortedItems,
-    isEqual: (a, b) => a.name === b.name,
+    isEqual: (a, b) => a.selfLink === b.selfLink,
   });
   */
 
