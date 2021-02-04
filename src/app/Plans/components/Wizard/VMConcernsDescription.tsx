@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { TextContent, Text, List, ListItem } from '@patternfly/react-core';
+import { TextContent, Text, List, ListItem, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { IVMwareVM } from '@app/queries/types';
-import { getMostSevereVMConcern, getVMConcernStatusLabel, getVMConcernStatusType } from './helpers';
+import { getMostSevereVMConcern, getVMConcernStatusType } from './helpers';
 
 interface IVMConcernsDescriptionProps {
   vm: IVMwareVM;
@@ -35,20 +35,24 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
     );
   } else {
     return (
-      <TextContent className={spacing.myMd}>
+      <TextContent className={spacing.myMd} style={{ maxWidth: '100%' }}>
         <Text component="p">{conditionsText}</Text>
         {vm.concerns && vm.concerns.length > 0 ? (
-          <List>
+          <List style={{ listStyle: 'none' }}>
             {vm.concerns.map((concern, index) => (
               <ListItem key={`${index}-${concern.label}`}>
-                <StatusIcon
-                  status={getVMConcernStatusType(concern) || StatusType.Warning}
-                  label={
-                    <>
-                      {concern.label}: {concern.assessment}
-                    </>
-                  }
-                />
+                <Flex
+                  spaceItems={{ default: 'spaceItemsSm' }}
+                  alignItems={{ default: 'alignItemsFlexStart' }}
+                  flexWrap={{ default: 'nowrap' }}
+                >
+                  <FlexItem>
+                    <StatusIcon status={getVMConcernStatusType(concern) || StatusType.Warning} />
+                  </FlexItem>
+                  <FlexItem>
+                    <strong>{concern.label}:</strong> {concern.assessment}
+                  </FlexItem>
+                </Flex>
               </ListItem>
             ))}
           </List>
