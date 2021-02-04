@@ -29,7 +29,7 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
   ) : null;
   if (vm.revisionValidated < vm.revision) {
     return (
-      <TextContent>
+      <TextContent className={spacing.myMd}>
         <Text component="p">Completing migration Analysis. This might take a few minutes.</Text>
       </TextContent>
     );
