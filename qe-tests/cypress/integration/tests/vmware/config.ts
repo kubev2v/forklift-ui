@@ -19,6 +19,13 @@ export const providerData: VmwareProviderData = {
   cert: '7E:E7:4C:5C:3C:0E:51:D2:D7:8B:89:F1:DF:0A:9E:A5:D6:13:98:F6',
 };
 
+export const ocpVData: ocpVData = {
+  type: ocpV,
+  name: 'mgn01',
+  url: 'https://api.mgn01.cnv-qe.rhcloud.com:6443',
+  saToken: 'sha256~Yj6bkXsV4Gtobk_CyXL7EZMRehJI0b-b33xlFAEwE9A',
+};
+
 export const networkMappingData: MappingData = {
   name: 'network-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
