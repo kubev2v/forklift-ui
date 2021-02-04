@@ -1,9 +1,9 @@
 import { Provider } from './provider';
 import { click, inputText } from '../../utils/utils';
 import { selectProvider } from '../views/provider.view';
-import { vmware, add } from '../types/constants';
+import { vmware, addButton } from '../types/constants';
 import {
-  addButton,
+  addButtonModal,
   instanceFingerprint,
   instanceHostname,
   instanceName,
@@ -20,7 +20,7 @@ export class ProviderVmware extends Provider {
     inputText(instanceUsername, this.providerData.username);
     inputText(instancePassword, this.providerData.password);
     inputText(instanceFingerprint, this.providerData.cert);
-    click(addButton, add);
+    click(addButtonModal, addButton);
     click(vmwareMenu, vmware);
   }
 
