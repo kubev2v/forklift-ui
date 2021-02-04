@@ -35,6 +35,7 @@ import {
   useVMwareVMsQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
+import { StatusType } from '@konveyor/lib-ui';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -269,15 +270,33 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
   if (!vm.concerns || vm.concerns.length === 0) {
     return null;
   }
-  const critical = vm.concerns.find((concern) => concern.severity === 'Critical');
-  const warning = vm.concerns.find((concern) => concern.severity === 'Warning');
-  const advisory = vm.concerns.find((concern) => concern.severity === 'Advisory');
+  const critical = vm.concerns.find((concern) => concern.category === 'Critical');
+  const warning = vm.concerns.find((concern) => concern.category === 'Warning');
+  const advisory = vm.concerns.find(
+    (concern) => concern.category === 'Information' || concern.category === 'Advisory'
+  );
   if (critical) return critical;
   if (warning) return warning;
   if (advisory) return advisory;
   // Default to warning if an unexpected severity is found
-  return { severity: 'Warning', name: 'Unknown' };
+  return { category: 'Warning', label: 'Unknown', assessment: '' };
 };
+
+export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): StatusType | null =>
+  !concern
+    ? StatusType.Ok
+    : concern.category === 'Critical'
+    ? StatusType.Error
+    : concern.category === 'Warning'
+    ? StatusType.Warning
+    : concern.category === 'Information' || concern.category === 'Advisory'
+    ? StatusType.Info
+    : null;
+
+export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): string =>
+  concern?.category === 'Information' || concern?.category === 'Advisory'
+    ? 'Advisory'
+    : concern?.category || 'Ok';
 
 export const generateMappings = (
   forms: PlanWizardFormState

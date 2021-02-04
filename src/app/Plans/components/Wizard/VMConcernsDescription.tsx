@@ -1,8 +1,9 @@
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { IVMwareVM } from '@app/queries/types';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { TextContent, Text, List, ListItem } from '@patternfly/react-core';
 import * as React from 'react';
-import { getMostSevereVMConcern } from './helpers';
+import { getMostSevereVMConcern, getVMConcernStatusLabel, getVMConcernStatusType } from './helpers';
 
 interface IVMConcernsDescriptionProps {
   vm: IVMwareVM;
@@ -14,18 +15,18 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
   const worstConcern = getMostSevereVMConcern(vm);
   const conditionsText = !worstConcern ? (
     <>No conditions have been identified that would make this VM a risk to migrate.</>
-  ) : worstConcern.severity === 'Critical' ? (
+  ) : worstConcern.category === 'Critical' ? (
     <>
       Conditions have been identified that make this VM a <strong>high risk</strong> to migrate.
     </>
-  ) : worstConcern.severity === 'Warning' ? (
+  ) : worstConcern.category === 'Warning' ? (
     <>
       Conditions have been identified that make this VM a <strong>moderate risk</strong> to migrate.
     </>
-  ) : worstConcern.severity === 'Advisory' ? (
+  ) : worstConcern.category === 'Information' || worstConcern.category === 'Advisory' ? (
     <>Conditions have been identified, but they do not affect the migration risk.</>
   ) : null;
-  if (vm.revisionAnalyzed < vm.revision) {
+  if (vm.revisionValidated < vm.revision) {
     return (
       <TextContent>
         <Text component="p">Completing migration Analysis. This might take a few minutes.</Text>
@@ -38,7 +39,19 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
         {vm.concerns && vm.concerns.length > 0 ? (
           <List>
             {vm.concerns.map((concern, index) => (
-              <ListItem key={`${index}-${concern.name}`}>{concern.name}</ListItem>
+              <ListItem key={`${index}-${concern.label}`}>
+                <StatusIcon
+                  status={getVMConcernStatusType(concern) || StatusType.Warning}
+                  label={
+                    <>
+                      <strong>
+                        {getVMConcernStatusLabel(concern)} - {concern.label}:
+                      </strong>{' '}
+                      {concern.assessment}
+                    </>
+                  }
+                />
+              </ListItem>
             ))}
           </List>
         ) : null}
