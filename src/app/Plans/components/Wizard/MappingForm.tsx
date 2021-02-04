@@ -40,6 +40,7 @@ import { QueryStatus } from 'react-query';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -58,6 +59,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   selectedVMs,
   planBeingEdited,
 }: IMappingFormProps) => {
+  usePausedPollingEffect();
+
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
