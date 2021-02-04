@@ -1,8 +1,9 @@
-import { PRODUCT_DOCO_LINK } from '@app/common/constants';
-import { IVMwareVM } from '@app/queries/types';
+import * as React from 'react';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { TextContent, Text, List, ListItem } from '@patternfly/react-core';
-import * as React from 'react';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { PRODUCT_DOCO_LINK } from '@app/common/constants';
+import { IVMwareVM } from '@app/queries/types';
 import { getMostSevereVMConcern, getVMConcernStatusLabel, getVMConcernStatusType } from './helpers';
 
 interface IVMConcernsDescriptionProps {
@@ -34,7 +35,7 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
     );
   } else {
     return (
-      <TextContent>
+      <TextContent className={spacing.myMd}>
         <Text component="p">{conditionsText}</Text>
         {vm.concerns && vm.concerns.length > 0 ? (
           <List>
@@ -44,10 +45,7 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
                   status={getVMConcernStatusType(concern) || StatusType.Warning}
                   label={
                     <>
-                      <strong>
-                        {getVMConcernStatusLabel(concern)} - {concern.label}:
-                      </strong>{' '}
-                      {concern.assessment}
+                      {concern.label}: {concern.assessment}
                     </>
                   }
                 />

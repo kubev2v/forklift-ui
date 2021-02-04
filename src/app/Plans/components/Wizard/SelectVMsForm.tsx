@@ -207,7 +207,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       rows.push({
         parent: rows.length - 1,
         fullWidth: true,
-        cells: [{ title: <VMConcernsDescription vm={vm} /> }],
+        cells: [
+          { title: <VMConcernsDescription vm={vm} />, props: { colSpan: columns.length + 2 } },
+        ],
       });
     }
   });

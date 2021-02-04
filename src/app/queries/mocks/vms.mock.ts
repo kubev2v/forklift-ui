@@ -33,7 +33,26 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           datastore: { kind: 'Datastore', id: '1' },
         },
       ],
-      concerns: [{ category: 'Warning', label: 'Example', assessment: 'Something is wrong' }],
+      concerns: [
+        {
+          category: 'Warning',
+          label: 'Shareable disk detected',
+          assessment:
+            'Shared disks are only supported by certain OpenShift Virtualization storage configurations. Ensure that the correct storage is selected for the disk.',
+        },
+        {
+          category: 'Warning',
+          label: 'VM running in HA-enabled cluster',
+          assessment:
+            'Host/Node HA is not currently supported by OpenShift Virtualization. The VM can be migrated but it will not have this feature in the target environment.',
+        },
+        {
+          category: 'Information',
+          label: 'VM running in a DRS-enabled cluster',
+          assessment:
+            'Distributed resource scheduling is not currently supported by OpenShift Virtualization. The VM can be migrated but it will not have this feature in the target environment.',
+        },
+      ],
       revisionValidated: 1,
     },
     {
