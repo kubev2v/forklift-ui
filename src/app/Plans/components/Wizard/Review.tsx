@@ -17,6 +17,7 @@ import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings } from './helpers';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
@@ -35,6 +36,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   createStorageMappingResult,
   planBeingEdited,
 }: IReviewProps) => {
+  usePausedPollingEffect();
+
   const { networkMapping, storageMapping } = generateMappings(forms);
   return (
     <Form>

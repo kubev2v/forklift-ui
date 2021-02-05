@@ -6,8 +6,9 @@ export interface IVMwareVMDisk {
 }
 
 export interface IVMwareVMConcern {
-  name: string;
-  severity: 'Warning' | 'Critical' | 'Advisory';
+  label: string;
+  category: 'Warning' | 'Critical' | 'Information' | 'Advisory';
+  assessment: string;
 }
 
 export interface IVMwareVM {
@@ -31,5 +32,5 @@ export interface IVMwareVM {
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
   concerns: IVMwareVMConcern[];
-  revisionAnalyzed: number;
+  revisionValidated: number; // TODO verify this in real data
 }

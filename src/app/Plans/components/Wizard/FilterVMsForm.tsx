@@ -15,6 +15,7 @@ import { PlanWizardFormState } from './PlanWizard';
 
 import './FilterVMsForm.css';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -27,6 +28,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   sourceProvider,
   planBeingEdited,
 }: IFilterVMsFormProps) => {
+  usePausedPollingEffect();
+
   const [searchText, setSearchText] = React.useState('');
 
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
