@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { IVMwareVM } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { InfoCircleIcon } from '@patternfly/react-icons';
 
-import { getMostSevereVMConcern } from './helpers';
+import { getMostSevereVMConcern, getVMConcernStatusLabel, getVMConcernStatusType } from './helpers';
 interface IVMConcernsIconProps {
   vm: IVMwareVM;
 }
@@ -11,29 +10,13 @@ interface IVMConcernsIconProps {
 const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
-  if (vm.revisionAnalyzed < vm.revision) {
+  if (vm.revisionValidated !== vm.revision) {
     return <StatusIcon status={StatusType.Loading} label="Analyzing" />;
   }
-
   const worstConcern = getMostSevereVMConcern(vm);
-  if (!worstConcern) {
-    return <StatusIcon status={StatusType.Ok} label="Ok" />;
-  }
-  if (worstConcern.severity === 'Critical') {
-    return <StatusIcon status={StatusType.Error} label="Critical" />;
-  }
-  if (worstConcern.severity === 'Warning') {
-    return <StatusIcon status={StatusType.Warning} label="Warning" />;
-  }
-  if (worstConcern.severity === 'Advisory') {
-    return (
-      <>
-        <InfoCircleIcon />
-        &nbsp;Advisory
-      </>
-    );
-  }
-  return null;
+  const statusType = getVMConcernStatusType(worstConcern);
+  const statusLabel = getVMConcernStatusLabel(worstConcern);
+  return statusType ? <StatusIcon status={statusType} label={statusLabel} /> : null;
 };
 
 export default VMConcernsIcon;

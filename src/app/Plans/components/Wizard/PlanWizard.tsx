@@ -31,7 +31,6 @@ import {
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
-import { usePausedPollingEffect } from '@app/common/context';
 import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
@@ -113,7 +112,6 @@ const usePlanWizardFormState = (
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
 const PlanWizard: React.FunctionComponent = () => {
-  usePausedPollingEffect(); // Polling can interfere with form state
   const history = useHistory();
   const plansQuery = usePlansQuery();
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);

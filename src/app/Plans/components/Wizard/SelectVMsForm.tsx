@@ -24,11 +24,18 @@ import { useSelectionState } from '@konveyor/lib-ui';
 
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import { PlanWizardFormState } from './PlanWizard';
-import { getAvailableVMs, getVMTreePathInfoByVM } from './helpers';
+import {
+  getAvailableVMs,
+  getMostSevereVMConcern,
+  getVMConcernStatusLabel,
+  getVMTreePathInfoByVM,
+} from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import VMConcernsIcon from './VMConcernsIcon';
+import VMConcernsDescription from './VMConcernsDescription';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -70,7 +77,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by VM ...',
     },
-    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       key: 'migrationAnalysis',
       title: 'Migration analysis',
@@ -83,10 +89,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       ],
       getItemValue: (item) => {
         const worstConcern = getMostSevereVMConcern(item);
-        return worstConcern ? worstConcern.severity : 'Ok';
+        return getVMConcernStatusLabel(worstConcern);
       },
     },
-    */
     {
       key: 'dataCenter',
       title: 'Datacenter',
@@ -136,9 +141,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const getSortValues = (vm: IVMwareVM) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
-      // '', // Expand control column // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
+      '', // Expand control column
       '', // Checkbox column
-      // 'TBD', // Analytics column // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled (and it shouldn't be TBD...)
+      getVMConcernStatusLabel(getMostSevereVMConcern(vm)),
       vm.name,
       datacenter?.name || '',
       cluster?.name || '',
@@ -158,22 +163,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
   });
 
-  /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-  const { toggleItemSelected: toggleVMsExpanded, isItemSelected: isVMExpanded } = useSelectionState<
-    IVMwareVM
-  >({
+  const {
+    toggleItemSelected: toggleVMsExpanded,
+    isItemSelected: isVMExpanded,
+  } = useSelectionState<IVMwareVM>({
     items: sortedItems,
     isEqual: (a, b) => a.selfLink === b.selfLink,
   });
-  */
 
   const columns: ICell[] = [
-    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     {
       title: 'Migration analysis',
       transforms: [sortable, wrappable],
     },
-    */
     { title: 'VM name', transforms: [sortable, wrappable] },
     { title: 'Datacenter', transforms: [sortable] },
     { title: 'Cluster', transforms: [sortable] },
@@ -184,20 +186,16 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const rows: IRow[] = [];
 
   currentPageItems.forEach((vm: IVMwareVM) => {
-    // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-    // const isExpanded = isVMExpanded(vm);
+    const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
       selected: isItemSelected(vm),
-      // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-      // isOpen: isExpanded,
+      isOpen: isExpanded,
       cells: [
-        /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
         {
           title: <VMConcernsIcon vm={vm} />,
         },
-        */
         vm.name,
         datacenter?.name || '',
         cluster?.name || '',
@@ -205,15 +203,15 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         folderPathStr || '',
       ],
     });
-    /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
         fullWidth: true,
-        cells: [{ title: <VMConcernsDescription vm={vm} /> }],
+        cells: [
+          { title: <VMConcernsDescription vm={vm} />, props: { colSpan: columns.length + 2 } },
+        ],
       });
     }
-    */
   });
 
   return (
@@ -266,11 +264,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
                   toggleItemSelected(rowData.meta.vm, isSelected);
                 }
               }}
-              /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-          onCollapse={(event, rowKey, isOpen, rowData) => {
-            toggleVMsExpanded(rowData.meta.vm);
-          }}
-          */
+              onCollapse={(_event, _rowKey, _isOpen, rowData) => {
+                toggleVMsExpanded(rowData.meta.vm);
+              }}
             >
               <TableHeader />
               <TableBody />
