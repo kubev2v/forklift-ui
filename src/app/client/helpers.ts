@@ -144,7 +144,7 @@ export const convertFormValuesToProvider = (
     kind: 'Provider',
     metadata: {
       name,
-      namespace: 'openshift-migration',
+      namespace: META.namespace,
     },
     spec: {
       type: values.providerType,
