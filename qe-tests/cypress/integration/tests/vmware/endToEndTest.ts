@@ -6,32 +6,32 @@ import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 
 describe('End to End test, creating provider, mapping, plan, running plan and deleting at the end', () => {
-  const provider = new ProviderVmware(testData.planData.providerData);
-  const networkMapping = new MappingNetwork(testData.planData.networkMappingData);
-  const storageMapping = new MappingStorage(testData.planData.storageMappingData);
-  const plan = new Plan(testData.planData);
-  const instances = [provider, networkMapping, storageMapping, plan];
+  const provider = new ProviderVmware();
+  const networkMapping = new MappingNetwork();
+  const storageMapping = new MappingStorage();
+  const plan = new Plan();
+  // const instances = [provider, networkMapping, storageMapping, plan];
 
   beforeEach(() => {
     login(testData.loginData);
   });
 
   it('Login to MTV and create provider', () => {
-    provider.create();
+    provider.create(testData.planData.providerData);
   });
 
   it('Create new network and storage mapping', () => {
-    networkMapping.create();
-    storageMapping.create();
+    networkMapping.create(testData.planData.networkMappingData);
+    storageMapping.create(testData.planData.storageMappingData);
   });
 
   it('Creating plan with existing network and storage mapping', () => {
-    plan.create();
+    plan.create(testData.planData);
   });
 
-  it('Clearing resources by deleting mappings, provider and plan', () => {
-    instances.forEach((instance) => {
-      instance.delete();
-    });
-  });
+  // it('Clearing resources by deleting mappings, provider and plan', () => {
+  //   instances.forEach((instance) => {
+  //     instance.delete();
+  //   });
+  // });
 });
