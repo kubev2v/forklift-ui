@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, List, ListItem } from '@patternfly/react-core';
+import { Pagination, List, ListItem, Level, LevelItem, Button } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -55,6 +55,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
     const storageClasses = getStorageClasses(provider);
     return [
+      '', // Radio button column
       provider.metadata.name,
       provider.spec.url || '',
       numStr(namespaceCount),
@@ -78,6 +79,11 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
   });
 
+  const [
+    selectedProvider,
+    setSelectedProvider,
+  ] = React.useState<ICorrelatedProvider<IOpenShiftProvider> | null>(null);
+
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: ICorrelatedProvider<IOpenShiftProvider>) => {
     const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
@@ -86,6 +92,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     rows.push({
       meta: { provider },
       isOpen: isExpanded,
+      selected: isSameResource(selectedProvider?.metadata, provider.metadata),
       cells: [
         provider.metadata.name,
         provider.spec.url,
@@ -134,7 +141,16 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   return (
     <>
-      <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+      <Level>
+        <LevelItem>
+          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={!selectedProvider}>
+            Select migration network
+          </Button>
+        </LevelItem>
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+        </LevelItem>
+      </Level>
       <Table
         aria-label="OpenShift Virtualization providers table"
         cells={columns}
@@ -144,6 +160,10 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
           toggleProviderExpanded(rowData.meta.provider);
         }}
+        onSelect={(_event, _isSelected, _rowIndex, rowData) => {
+          setSelectedProvider(rowData.meta.provider);
+        }}
+        selectVariant="radio"
       >
         <TableHeader />
         <TableBody />
