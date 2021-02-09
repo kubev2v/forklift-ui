@@ -1,12 +1,12 @@
 import { MappingData } from '../types/types';
 import * as view from '../views/mapping.view';
-import { applyAction, click, inputText, openSidebarMenu } from '../../utils/utils';
+import { applyAction, clickByText, inputText, openSidebarMenu } from '../../utils/utils';
 import {
   button,
   selectSource,
   selectTarget,
-  sProvider,
-  tProvider,
+  selectProvider,
+  // tProvider,
   create,
   mappings,
   createMapping,
@@ -15,21 +15,22 @@ import {
 import { buttonNavLink, buttonModal, inputAttr } from '../views/mapping.view';
 
 export class Mapping {
-  mappingData: MappingData;
+  // mappingData: MappingData;
+  //
+  // constructor(mappingData: MappingData) {
+  //   this.mappingData = mappingData;
+  // }
 
-  constructor(mappingData: MappingData) {
-    this.mappingData = mappingData;
-  }
-
-  selectProvider(provider: string, providerName: string): void {
-    click(button, provider);
-    click(button, providerName);
+  selectProvider(providerName: string): void {
+    clickByText(button, selectProvider);
+    clickByText(button, providerName);
   }
 
   selectInputByAttr(inputAttrName: string, inputAttrValue: string, inputStr: string): void {
-    const selector = '[' + inputAttrName + '="' + inputAttrValue + '"]';
+    // const selector = '[' + inputAttrName + '="' + inputAttrValue + '"]';
+    const selector = `[${inputAttrName}="${inputAttrValue}"]`;
     inputText(selector, inputStr);
-    click(button, inputStr);
+    clickByText(button, inputStr);
   }
 
   openMenu(): void {
@@ -39,23 +40,25 @@ export class Mapping {
     // Expanding sidebar mapping menu
     cy.get(buttonNavLink).then(($mappings) => {
       if ($mappings.attr('aria-expanded') == 'false') {
-        click(buttonNavLink, mappings);
+        clickByText(buttonNavLink, mappings);
       }
     });
   }
 
-  createDialog(): void {
-    click(button, createMapping);
-    inputText(view.mappingName, this.mappingData.name);
-    this.selectProvider(sProvider, this.mappingData.sProviderName);
-    this.selectProvider(tProvider, this.mappingData.tProviderName);
-    this.selectInputByAttr(inputAttr, selectSource, this.mappingData.sProvider);
-    this.selectInputByAttr(inputAttr, selectTarget, this.mappingData.dProvider);
+  createDialog(mappingData: MappingData): void {
+    const { name, sProvider, dProvider, sProviderName, tProviderName } = mappingData;
+    clickByText(button, createMapping);
+    inputText(view.mappingName, name);
+    this.selectProvider(sProviderName);
+    this.selectProvider(tProviderName);
+    this.selectInputByAttr(inputAttr, selectSource, sProvider);
+    this.selectInputByAttr(inputAttr, selectTarget, dProvider);
     cy.wait(2000);
-    click(buttonModal, create);
+    clickByText(buttonModal, create);
   }
 
-  delete(): void {
-    applyAction(this.mappingData.name, deleteButton);
+  delete(mappingData: MappingData): void {
+    const { name } = mappingData;
+    applyAction(name, deleteButton);
   }
 }

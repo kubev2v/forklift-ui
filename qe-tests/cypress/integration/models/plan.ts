@@ -1,26 +1,27 @@
 import { PlanData } from '../types/types';
 import {
   applyAction,
+  clickByText,
   click,
-  clickWithNoText,
   inputText,
   next,
   openSidebarMenu,
+  selectFromDroplist,
 } from '../../utils/utils';
-import { navMigrationPlan } from '../views/menu.view';
+import { navMenuPoint } from '../views/menu.view';
 
 import {
   button,
   createPlan,
   deleteButton,
+  finish,
   migrationPLan,
-  selectANetworkMapping,
-  selectAStorageMapping,
   tdTag,
   trTag,
 } from '../types/constants';
 
 import {
+  mappingDropdown,
   planDescriptionInput,
   planNameInput,
   searchInput,
@@ -30,104 +31,120 @@ import {
 } from '../views/plan.view';
 
 export class Plan {
-  planData: PlanData;
-  constructor(planData: PlanData) {
-    this.planData = planData;
-  }
-
-  private static openList(): void {
+  protected static openList(): void {
     openSidebarMenu();
-    click(navMigrationPlan, migrationPLan);
+    clickByText(navMenuPoint, migrationPLan);
+  }
+  protected fillName(name: string): void {
+    inputText(planNameInput, name);
   }
 
-  private generalStep(): void {
-    inputText(planNameInput, this.planData.name);
-    if (this.planData.description) {
-      inputText(planDescriptionInput, this.planData.description);
+  protected fillDescription(description: string): void {
+    if (description) {
+      inputText(planDescriptionInput, description);
     }
-    clickWithNoText(selectSourceProviderMenu);
-    click(button, this.planData.sProvider);
-    clickWithNoText(selectDestProviderMenu);
-    click(button, this.planData.tProvider);
-    clickWithNoText(selectTargetNamespace);
-    click(button, this.planData.namespace);
+  }
+
+  protected selectSourceProvider(sProvider: string): void {
+    selectFromDroplist(selectSourceProviderMenu, sProvider);
+  }
+
+  protected selectTargetProvider(tProvider: string): void {
+    selectFromDroplist(selectDestProviderMenu, tProvider);
+  }
+
+  protected selectNamespace(namespace: string): void {
+    selectFromDroplist(selectTargetNamespace, namespace);
+  }
+
+  protected generalStep(planData: PlanData): void {
+    const { name, description, sProvider, tProvider, namespace } = planData;
+    this.fillName(name);
+    this.fillDescription(description);
+    this.selectSourceProvider(sProvider);
+    this.selectTargetProvider(tProvider);
+    this.selectNamespace(namespace);
     next();
   }
 
-  private vmSelectionStep(): void {
-    this.filterVm();
-    this.selectVm();
-  }
-
-  private filterVm(): void {
-    const selector = '[aria-label="Select Host ' + this.planData.vmwareSourceFqdn + '"]';
-    // cy.log(selector);
-    clickWithNoText(selector);
+  protected filterVm(planData: PlanData): void {
+    const { vmwareSourceFqdn } = planData;
+    const selector = `[aria-label="Select Host ${vmwareSourceFqdn}"]`;
+    click(selector);
     next();
   }
 
-  private selectVm(): void {
-    // const selector = '[area-label="search button for search input"]';
+  protected selectVm(planData: PlanData): void {
+    const { vmwareSourceVmList } = planData;
     const selector = 'button.pf-c-button.pf-m-control';
-    this.planData.vmwareSourceVmList.forEach((name) => {
+    vmwareSourceVmList.forEach((name) => {
       inputText(searchInput, name);
-      clickWithNoText(selector);
+      click(selector);
       cy.get(tdTag)
         .contains(name)
         .parent(trTag)
         .within(() => {
-          clickWithNoText('input');
+          click('input');
         });
     });
     next();
   }
 
-  private networkMappingStep(): void {
-    if (this.planData.useExistingNetworkMapping) {
-      click(button, selectANetworkMapping);
-      click(button, this.planData.networkMappingData.name);
+  protected vmSelectionStep(planData: PlanData): void {
+    this.filterVm(planData);
+    this.selectVm(planData);
+  }
+
+  protected networkMappingStep(planData: PlanData): void {
+    const { name } = planData.networkMappingData;
+    const { useExistingNetworkMapping } = planData;
+    if (useExistingNetworkMapping) {
+      selectFromDroplist(mappingDropdown, name);
     }
     next();
   }
 
-  private storageMappingStep(): void {
-    if (this.planData.useExistingStorageMapping) {
-      click(button, selectAStorageMapping);
-      click(button, this.planData.storageMappingData.name);
+  protected storageMappingStep(planData: PlanData): void {
+    const { name } = planData.storageMappingData;
+    const { useExistingStorageMapping } = planData;
+    if (useExistingStorageMapping) {
+      selectFromDroplist(mappingDropdown, name);
     }
     next();
   }
 
-  private finalReviewStep(): void {
-    click(button, 'Finish');
+  protected finalReviewStep(): void {
+    clickByText(button, finish);
   }
 
-  create(): void {
+  create(planData: PlanData): void {
     Plan.openList();
-    click(button, createPlan);
-    this.generalStep();
-    this.vmSelectionStep();
-    this.networkMappingStep();
-    this.storageMappingStep();
+    clickByText(button, createPlan);
+    this.generalStep(planData);
+    this.vmSelectionStep(planData);
+    this.networkMappingStep(planData);
+    this.storageMappingStep(planData);
     this.finalReviewStep();
   }
 
-  delete(): void {
+  delete(planData: PlanData): void {
+    const { name } = planData;
     Plan.openList();
-    applyAction(this.planData.name, deleteButton);
+    applyAction(name, deleteButton);
   }
 
-  start(): void {
+  start(planData: PlanData): void {
+    const { name } = planData;
     Plan.openList();
     cy.get(tdTag)
-      .contains(this.planData.name)
+      .contains(name)
       .parent(tdTag)
       .parent(trTag)
       .within(() => {
-        click(button, 'Start');
+        clickByText(button, 'Start');
       });
     cy.get(tdTag)
-      .contains(this.planData.name)
+      .contains(name)
       .parent(tdTag)
       .parent(trTag)
       .within(() => {

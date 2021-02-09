@@ -1,9 +1,9 @@
-import { ProviderVmware } from '../models/providerVmware';
+import { ProviderVmware } from '../../models/providerVmware';
 import { testData } from './config';
-import { login } from '../../utils/utils';
-import { MappingNetwork } from '../models/mappingNetwork';
-import { MappingStorage } from '../models/mappingStorage';
-import { Plan } from '../models/plan';
+import { login } from '../../../utils/utils';
+import { MappingNetwork } from '../../models/mappingNetwork';
+import { MappingStorage } from '../../models/mappingStorage';
+import { Plan } from '../../models/plan';
 
 describe('End to End test, creating provider, mapping, plan, running plan and deleting at the end', () => {
   const provider = new ProviderVmware(testData.planData.providerData);

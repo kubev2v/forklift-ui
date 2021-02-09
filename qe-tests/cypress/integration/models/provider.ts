@@ -1,25 +1,35 @@
-import { ProviderData } from '../types/types';
+// import { OcpVirtData, ProviderData, VmwareProviderData } from '../types/types';
 import { addProvider, button, removeButton, selectProviderType, vmware } from '../types/constants';
-import { applyAction, click } from '../../utils/utils';
-import { providerData } from '../tests/config';
-import { vmwareMenu } from '../views/providerVmware.view';
+import { applyAction, clickByText, inputText, openSidebarMenu } from '../../utils/utils';
+import { providerData } from '../tests/vmware/config';
+import { instanceName, vmwareMenu } from '../views/providerVmware.view';
+import { navMenuPoint } from '../views/menu.view';
+import { ProviderData } from '../types/types';
+import { selectProvider } from '../views/provider.view';
 
 export class Provider {
-  providerData: ProviderData;
-  constructor(providerData: ProviderData) {
-    this.providerData = providerData;
+  protected static openList() {
+    openSidebarMenu();
+    clickByText(navMenuPoint, 'Providers');
   }
 
-  openMenu(): void {
+  protected fillName(name: string) {
+    inputText(instanceName, name);
+  }
+  protected openMenu(): void {
     //TODO: replace hardcoded timeout by expecting button to become clickable
-    cy.wait(3000);
-    // cy.findAllByRole(button).findByText(addProvider).should('be.enabled').click();
-    click(button, addProvider);
-    click(button, selectProviderType);
+    cy.wait(2000);
+    Provider.openList();
   }
 
-  delete(): void {
-    click(vmwareMenu, vmware);
-    applyAction(providerData.name, removeButton);
+  protected runWizard(providerData: ProviderData): void {
+    const { type } = providerData;
+    clickByText(button, addProvider);
+    clickByText(button, selectProviderType);
+    clickByText(selectProvider, type);
   }
+
+  // delete(): void {
+  //   Provider.openList();
+  // }
 }

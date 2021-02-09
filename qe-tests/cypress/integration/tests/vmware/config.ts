@@ -1,5 +1,5 @@
-import { LoginData, MappingData, PlanData, ProviderData, TestData } from '../types/types';
-import { vmware } from '../types/constants';
+import { LoginData, MappingData, PlanData, TestData, VmwareProviderData } from '../../types/types';
+import { storageType, vmware } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -10,7 +10,7 @@ export const loginData: LoginData = {
   url: url,
 };
 
-export const providerData: ProviderData = {
+export const providerData: VmwareProviderData = {
   type: vmware,
   name: 'qe-vmware',
   hostname: '10.8.58.136',
@@ -32,7 +32,7 @@ export const storageMappingData: MappingData = {
   sProviderName: providerData.name,
   tProviderName: 'host',
   sProvider: 'env-esxi67-ims-h02_localdisk',
-  dProvider: 'nfs',
+  dProvider: storageType.nfs,
 };
 
 export const planData: PlanData = {

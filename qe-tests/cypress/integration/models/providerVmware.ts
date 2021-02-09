@@ -1,31 +1,54 @@
 import { Provider } from './provider';
-import { click, inputText } from '../../utils/utils';
-import { selectProvider } from '../views/provider.view';
-import { vmware, addButton } from '../types/constants';
+import { applyAction, clickByText, inputText } from '../../utils/utils';
+import { addButton, removeButton } from '../types/constants';
 import {
   addButtonModal,
   instanceFingerprint,
   instanceHostname,
-  instanceName,
   instancePassword,
   instanceUsername,
   vmwareMenu,
 } from '../views/providerVmware.view';
+import { VmwareProviderData } from '../types/types';
 
 export class ProviderVmware extends Provider {
-  runWizard(): void {
-    click(selectProvider, vmware);
-    inputText(instanceName, this.providerData.name);
-    inputText(instanceHostname, this.providerData.hostname);
-    inputText(instanceUsername, this.providerData.username);
-    inputText(instancePassword, this.providerData.password);
-    inputText(instanceFingerprint, this.providerData.cert);
-    click(addButtonModal, addButton);
-    click(vmwareMenu, vmware);
+  protected fillHostname(hostname: string) {
+    inputText(instanceHostname, hostname);
   }
 
-  create(): void {
+  protected fillUsername(username: string) {
+    inputText(instanceUsername, username);
+  }
+
+  protected fillPassword(password: string) {
+    inputText(instancePassword, password);
+  }
+
+  protected fillFingerprint(cert: string) {
+    inputText(instanceFingerprint, cert);
+  }
+
+  protected runWizard(providerData: VmwareProviderData): void {
+    const { name, hostname, username, password, cert } = providerData;
+    super.runWizard(providerData);
+    this.fillName(name);
+    this.fillHostname(hostname);
+    this.fillUsername(username);
+    this.fillPassword(password);
+    this.fillFingerprint(cert);
+    clickByText(addButtonModal, addButton);
+    // clickByText(vmwareMenu, vmware);
+  }
+
+  delete(providerData: VmwareProviderData) {
+    const { name, type } = providerData;
+    Provider.openList();
+    clickByText(vmwareMenu, type);
+    applyAction(name, removeButton);
+  }
+
+  create(providerData: VmwareProviderData): void {
     this.openMenu();
-    this.runWizard();
+    this.runWizard(providerData);
   }
 }

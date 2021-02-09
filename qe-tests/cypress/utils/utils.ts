@@ -10,45 +10,49 @@ import {
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 
-export function inputText(fieldId: string, text: string) {
+export function inputText(fieldId: string, text: string): void {
   cy.get(fieldId).clear().type(text);
 }
 
-export function click(fieldId: string, buttonText: string) {
+export function clickByText(fieldId: string, buttonText: string): void {
   cy.contains(fieldId, buttonText).click();
 }
 
-export function clickWithNoText(fieldId: string) {
+export function click(fieldId: string): void {
   cy.get(fieldId).click();
 }
 
-export function login(loginData: LoginData) {
+export function login(loginData: LoginData): void {
   cy.visit(loginData.url);
   inputText(loginView.userNameInput, loginData.username);
   inputText(loginView.userPasswordInput, loginData.password);
-  click(button, loginButton);
-  click(button, 'Get started');
+  clickByText(button, loginButton);
+  clickByText(button, 'Get started');
 }
 
-export function openSidebarMenu() {
+export function openSidebarMenu(): void {
   // Checking if sidebar is collapsed and opening it if required
   cy.get(page_sidebar).then(($sidebar) => {
     if ($sidebar.hasClass(sidebar_collapsed)) {
-      clickWithNoText(nav_toggle);
+      click(nav_toggle);
     }
   });
 }
 
-export function applyAction(itemName: string, action: string) {
+export function applyAction(itemName: string, action: string): void {
   cy.contains(itemName)
     .parent(trTag)
     .within(() => {
-      clickWithNoText(kebab);
+      click(kebab);
     });
-  click(kebabDropDownItem, action);
-  click(button, action);
+  clickByText(kebabDropDownItem, action);
+  clickByText(button, action);
+}
+export function selectFromDroplist(selector: string, point: string): void {
+  click(selector);
+  clickByText(button, point);
 }
 
 export function next(): void {
-  click(button, nextButton);
+  clickByText(button, nextButton);
 }
