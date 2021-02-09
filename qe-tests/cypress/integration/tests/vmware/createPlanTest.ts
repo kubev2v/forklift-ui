@@ -1,0 +1,19 @@
+import { testData } from './config';
+import { Plan } from '../../models/plan';
+import { login } from '../../../utils/utils';
+
+describe('Creating plan', () => {
+  const plan = new Plan();
+
+  beforeEach(() => {
+    login(testData.loginData);
+  });
+
+  it('Creating plan', () => {
+    plan.create(testData.planData);
+  });
+
+  it.skip('Running plan', () => {
+    plan.start(testData.planData);
+  });
+});

@@ -1,31 +1,32 @@
 import { Mapping } from './mapping';
-import { click } from '../../utils/utils';
+import { clickByText } from '../../utils/utils';
 import { storage } from '../types/constants';
 import { menuNavLink } from '../views/mapping.view';
+import { MappingData } from '../types/types';
 
 export class MappingStorage extends Mapping {
   openMenu(): void {
     super.openMenu();
 
     //Clicking on Network menu item
-    click(menuNavLink, storage);
+    clickByText(menuNavLink, storage);
   }
 
-  create(): void {
+  create(mappingData: MappingData): void {
     //Navigating to the sidebar menu
     this.openMenu();
 
     //Clicking on Network menu item
-    click(menuNavLink, storage);
+    clickByText(menuNavLink, storage);
 
     //Creating new mapping instance
-    this.createDialog();
+    this.createDialog(mappingData);
   }
 
-  delete(): void {
+  delete(mappingData: MappingData): void {
     //Navigating to the sidebar menu
     this.openMenu();
 
-    super.delete();
+    super.delete(mappingData);
   }
 }

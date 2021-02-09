@@ -12,14 +12,23 @@ export type MappingData = {
   dProvider: string;
 };
 
-export type ProviderData = {
+export type VmwareProviderData = {
   type: string;
   name: string;
-  hostname: string;
-  username: string;
-  password: string;
-  cert: string;
+  hostname?: string;
+  username?: string;
+  password?: string;
+  cert?: string;
 };
+
+export type OcpVirtData = {
+  type: string;
+  name: string;
+  url?: string;
+  saToken?: string;
+};
+
+export type ProviderData = VmwareProviderData | OcpVirtData;
 
 export type PlanData = {
   name: string;

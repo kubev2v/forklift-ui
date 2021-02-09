@@ -6,3 +6,4 @@ export const selectTargetNamespace = 'input.pf-c-form-control.pf-c-select__toggl
 export const allDcCheckbox =
   '#converted-root > div > button > span.pf-c-tree-view__node-check > input[type=checkbox]';
 export const searchInput = '#name-input';
+export const mappingDropdown = 'button.pf-c-select__toggle';

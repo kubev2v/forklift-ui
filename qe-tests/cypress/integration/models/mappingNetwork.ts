@@ -1,28 +1,28 @@
 import { Mapping } from './mapping';
-import { click } from '../../utils/utils';
+import { clickByText } from '../../utils/utils';
 import { network } from '../types/constants';
 import { menuNavLink } from '../views/mapping.view';
+import { MappingData } from '../types/types';
 
 export class MappingNetwork extends Mapping {
   openMenu(): void {
     super.openMenu();
-
     //Clicking on Network menu item
-    click(menuNavLink, network);
+    clickByText(menuNavLink, network);
   }
 
-  create(): void {
+  create(mappingData: MappingData): void {
     //Navigating to the sidebar menu
     this.openMenu();
 
     //Creating new mapping instance
-    this.createDialog();
+    this.createDialog(mappingData);
   }
 
-  delete(): void {
+  delete(mappingData: MappingData): void {
     //Navigating to the sidebar menu
     this.openMenu();
 
-    super.delete();
+    super.delete(mappingData);
   }
 }
