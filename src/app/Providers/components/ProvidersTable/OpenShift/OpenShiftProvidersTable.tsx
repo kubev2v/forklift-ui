@@ -10,7 +10,7 @@ import {
   ICell,
   IRow,
 } from '@patternfly/react-table';
-import { DatabaseIcon } from '@patternfly/react-icons';
+import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -25,9 +25,15 @@ import { getMostSeriousCondition, numStr } from '@app/common/helpers';
 import './OpenShiftProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
+import OpenShiftNetworkList from './OpenShiftNetworkList';
 
 interface IOpenShiftProvidersTableProps {
   providers: ICorrelatedProvider<IOpenShiftProvider>[];
+}
+
+interface IExpandedItem {
+  provider: ICorrelatedProvider<IOpenShiftProvider>;
+  column: 'Networks' | 'Storage classes';
 }
 
 const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
@@ -43,22 +49,20 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Endpoint', transforms: [sortable] },
-    { title: 'Namespaces', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
-    { title: 'Networks', transforms: [sortable] },
+    { title: 'Networks', transforms: [sortable], cellTransforms: [compoundExpand] },
     { title: 'Storage classes', transforms: [sortable], cellTransforms: [compoundExpand] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
   const getSortValues = (provider: ICorrelatedProvider<IOpenShiftProvider>) => {
-    const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
+    const { vmCount, networkCount } = provider.inventory || {};
     const storageClasses = getStorageClasses(provider);
     return [
       '', // Radio button column
       provider.metadata.name,
       provider.spec.url || '',
-      numStr(namespaceCount),
       numStr(vmCount),
       numStr(networkCount),
       numStr(storageClasses.length),
@@ -71,13 +75,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const {
-    toggleItemSelected: toggleProviderExpanded,
-    isItemSelected: isProviderExpanded,
-  } = useSelectionState<ICorrelatedProvider<IOpenShiftProvider>>({
-    items: sortedItems,
-    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
-  });
+  const [expandedItem, setExpandedItem] = React.useState<IExpandedItem | null>(null);
 
   const [
     selectedProvider,
@@ -86,8 +84,8 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: ICorrelatedProvider<IOpenShiftProvider>) => {
-    const { namespaceCount, vmCount, networkCount } = provider.inventory || {};
-    const isExpanded = isProviderExpanded(provider);
+    const { vmCount, networkCount } = provider.inventory || {};
+    const isExpanded = isSameResource(expandedItem?.provider.metadata, provider.metadata);
     const storageClasses = getStorageClasses(provider);
     rows.push({
       meta: { provider },
@@ -96,9 +94,17 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       cells: [
         provider.metadata.name,
         provider.spec.url,
-        numStr(namespaceCount),
         numStr(vmCount),
-        numStr(networkCount),
+        {
+          title: (
+            <>
+              <NetworkIcon key="networks-icon" /> {numStr(networkCount)}
+            </>
+          ),
+          props: {
+            isOpen: isExpanded && expandedItem?.column === 'Networks',
+          },
+        },
         {
           title: (
             <>
@@ -106,7 +112,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
             </>
           ),
           props: {
-            isOpen: isExpanded,
+            isOpen: isExpanded && expandedItem?.column === 'Storage classes',
           },
         },
         {
@@ -122,17 +128,21 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
-        compoundExpand: 5,
+        compoundExpand: columns.findIndex((column) => column.title === expandedItem?.column) + 1,
+        fullWidth: true,
         cells: [
           {
-            title: (
-              <List className={`provider-storage-classes-list ${spacing.mMd}`}>
-                {storageClasses.map((storageClass) => (
-                  <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
-                ))}
-              </List>
-            ),
-            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+            title:
+              expandedItem?.column === 'Networks' ? (
+                <OpenShiftNetworkList provider={provider} />
+              ) : (
+                <List className={`provider-storage-classes-list ${spacing.mMd}`}>
+                  {storageClasses.map((storageClass) => (
+                    <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
+                  ))}
+                </List>
+              ),
+            props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
         ],
       });
@@ -157,8 +167,15 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         rows={rows}
         sortBy={sortBy}
         onSort={onSort}
-        onExpand={(_event, _rowIndex, _colIndex, _isOpen, rowData) => {
-          toggleProviderExpanded(rowData.meta.provider);
+        onExpand={(_event, _rowIndex, colIndex, isOpen, rowData) => {
+          setExpandedItem(
+            !isOpen
+              ? {
+                  provider: rowData.meta.provider,
+                  column: columns[colIndex - 1].title as IExpandedItem['column'],
+                }
+              : null
+          );
         }}
         onSelect={(_event, _isSelected, _rowIndex, rowData) => {
           setSelectedProvider(rowData.meta.provider);
