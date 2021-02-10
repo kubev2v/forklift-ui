@@ -149,13 +149,17 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     }
   });
 
-  const [isSelectNetworkModalOpen, toggleSelectNetworkModal] = React.useReducer(
+  const [isSelectNetworkModalOpen, toggleModalAction] = React.useReducer(
     (isOpen) => !isOpen,
     false
   );
   const [setMigrationNetwork, migrationNetworkMutationResult] = useOCPMigrationNetworkMutation(
-    toggleSelectNetworkModal
+    toggleModalAction
   );
+  const toggleSelectNetworkModal = () => {
+    toggleModalAction();
+    migrationNetworkMutationResult.reset();
+  };
 
   return (
     <>
