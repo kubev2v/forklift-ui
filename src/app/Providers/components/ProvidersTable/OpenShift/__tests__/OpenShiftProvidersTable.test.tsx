@@ -36,15 +36,9 @@ describe('<OpenShiftProvidersTable />', () => {
     expect(
       screen.getByRole('grid', { name: /OpenShift Virtualization providers table/ })
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('row', { name: /ocpv-1 https:\/\/my_OCPv_url 41 26 8 0 Ready Actions/ })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('row', { name: /ocpv-2 https:\/\/my_OCPv_url 41 26 8 0 Critical Actions/ })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('row', { name: /ocpv-3 https:\/\/my_OCPv_url 41 26 8 0 Ready Actions/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: /ocpv-1/ })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: /ocpv-2/ })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: /ocpv-3/ })).toBeInTheDocument();
   });
 
   // The expanding section doesn't render, is it the right button?
