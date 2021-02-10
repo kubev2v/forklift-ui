@@ -129,7 +129,6 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       rows.push({
         parent: rows.length - 1,
         compoundExpand: columns.findIndex((column) => column.title === expandedItem?.column) + 1,
-        fullWidth: true,
         cells: [
           {
             title:
@@ -142,7 +141,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
                   ))}
                 </List>
               ),
-            props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
+            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
           },
         ],
       });
