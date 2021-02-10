@@ -92,7 +92,7 @@ const usePlanWizardFormState = (
         yup.mixed<IOpenShiftProvider>().label('Target provider').required()
       ),
       targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
-      migrationNetwork: useFormField<IOpenShiftNetwork>(
+      migrationNetwork: useFormField<IOpenShiftNetwork | null>(
         POD_NETWORK,
         yup.mixed<IOpenShiftNetwork>().label('Migration network')
       ),
