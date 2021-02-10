@@ -136,9 +136,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             {form.values.targetNamespace ? (
               <TextContent className={spacing.mtSm}>
                 <Text component="p">
-                  {/* TODO show the actual selected network here */}
+                  {/* TODO Fall back on provider default instead of pod network if present */}
                   The migration transfer network for this migration plan is:{' '}
-                  <strong>pod_network</strong>.
+                  <strong>{form.values.migrationNetwork?.name || 'Pod network'}</strong>.
                   <Button variant="link" onClick={toggleSelectNetworkModal}>
                     Change
                   </Button>
@@ -153,6 +153,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           targetProvider={form.values.targetProvider}
           instructions="Select the network that will be used for migrating data."
           onClose={toggleSelectNetworkModal}
+          onSubmit={(network) => {
+            form.fields.migrationNetwork.setValue(network);
+            toggleSelectNetworkModal();
+          }}
+          // TODO use the form value when creating the plan
         />
       ) : null}
     </ResolvedQueries>

@@ -14,7 +14,7 @@ import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { useStorageClassesQuery } from '@app/queries';
+import { useOCPMigrationNetworkMutation, useStorageClassesQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/providers.types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
@@ -153,6 +153,9 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     (isOpen) => !isOpen,
     false
   );
+  const [setMigrationNetwork, migrationNetworkMutationResult] = useOCPMigrationNetworkMutation(
+    toggleSelectNetworkModal
+  );
 
   return (
     <>
@@ -204,6 +207,10 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           targetProvider={selectedProvider?.inventory || null}
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
           onClose={toggleSelectNetworkModal}
+          onSubmit={(network) =>
+            setMigrationNetwork({ provider: selectedProvider?.inventory || null, network })
+          }
+          mutationResult={migrationNetworkMutationResult}
         />
       ) : null}
     </>

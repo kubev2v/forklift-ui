@@ -22,12 +22,14 @@ import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import {
+  IOpenShiftNetwork,
   IOpenShiftProvider,
   IPlan,
   IVMwareProvider,
   IVMwareVM,
   Mapping,
   MappingType,
+  POD_NETWORK,
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
@@ -90,6 +92,10 @@ const usePlanWizardFormState = (
         yup.mixed<IOpenShiftProvider>().label('Target provider').required()
       ),
       targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
+      migrationNetwork: useFormField<IOpenShiftNetwork>(
+        POD_NETWORK,
+        yup.mixed<IOpenShiftNetwork>().label('Migration network')
+      ),
     }),
     filterVMs: useFormState({
       treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),

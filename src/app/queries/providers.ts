@@ -22,6 +22,7 @@ import {
   ISrcDestRefs,
   IProviderObject,
   IMetaObjectMeta,
+  IOpenShiftNetwork,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -298,6 +299,35 @@ export const useHasSufficientProvidersQuery = (): {
     isError: result.isError,
     hasSufficientProviders,
   };
+};
+
+interface IProviderMigrationNetworkMutationVars {
+  provider: IOpenShiftProvider | null;
+  network: IOpenShiftNetwork | null;
+}
+
+export const useOCPMigrationNetworkMutation = (
+  onSuccess?: () => void
+): MutationResultPair<
+  IKubeResponse<IKubeStatus>,
+  KubeClientError,
+  IProviderMigrationNetworkMutationVars,
+  unknown
+> => {
+  // TODO figure out where we need to store the default migration network
+  // TODO also add logic to display it after the providers query reloads
+  // const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<
+    IKubeResponse<IKubeStatus>,
+    KubeClientError,
+    IProviderMigrationNetworkMutationVars
+  >(({ provider, network }) => Promise.reject('Not yet implemented'), {
+    onSuccess: () => {
+      queryCache.invalidateQueries('providers');
+      onSuccess && onSuccess();
+    },
+  });
 };
 
 export const findProvidersByRefs = (
