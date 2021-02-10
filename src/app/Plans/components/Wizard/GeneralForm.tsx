@@ -137,8 +137,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               <TextContent className={spacing.mtSm}>
                 <Text component="p">
                   {/* TODO show the actual selected network here */}
-                  The migration transfer network for this namespace is: <strong>pod_network</strong>
-                  .
+                  The migration transfer network for this migration plan is:{' '}
+                  <strong>pod_network</strong>.
                   <Button variant="link" onClick={toggleSelectNetworkModal}>
                     Change
                   </Button>
@@ -151,6 +151,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       {isSelectNetworkModalOpen ? (
         <SelectOpenShiftNetworkModal
           targetProvider={form.values.targetProvider}
+          instructions="Select the network that will be used for migrating data."
           onClose={toggleSelectNetworkModal}
         />
       ) : null}

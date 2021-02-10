@@ -11,6 +11,9 @@ interface IOpenShiftNetworkListProps {
   provider: ICorrelatedProvider<IOpenShiftProvider>;
 }
 
+// TODO can we show the IP address?
+// TODO always have pod network as a choice
+
 const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
   provider,
 }: IOpenShiftNetworkListProps) => {
