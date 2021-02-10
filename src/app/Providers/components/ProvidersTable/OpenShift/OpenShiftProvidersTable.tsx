@@ -149,17 +149,13 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     }
   });
 
-  const [isSelectNetworkModalOpen, toggleModalAction] = React.useReducer(
+  const [isSelectNetworkModalOpen, toggleSelectNetworkModal] = React.useReducer(
     (isOpen) => !isOpen,
     false
   );
   const [setMigrationNetwork, migrationNetworkMutationResult] = useOCPMigrationNetworkMutation(
-    toggleModalAction
+    toggleSelectNetworkModal
   );
-  const toggleSelectNetworkModal = () => {
-    toggleModalAction();
-    migrationNetworkMutationResult.reset();
-  };
 
   return (
     <>
@@ -210,7 +206,11 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         <SelectOpenShiftNetworkModal
           targetProvider={selectedProvider?.inventory || null}
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
-          onClose={toggleSelectNetworkModal}
+          onClose={() => {
+            toggleSelectNetworkModal();
+            migrationNetworkMutationResult.reset();
+            setSelectedProvider(null);
+          }}
           onSubmit={(network) =>
             setMigrationNetwork({ provider: selectedProvider?.inventory || null, network })
           }
