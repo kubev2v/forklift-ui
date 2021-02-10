@@ -26,7 +26,7 @@ import {
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
-import SelectOCPNetworkModal from '@app/common/components/SelectOCPNetworkModal';
+import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -149,7 +149,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </FormGroup>
       </Form>
       {isSelectNetworkModalOpen ? (
-        <SelectOCPNetworkModal
+        <SelectOpenShiftNetworkModal
           targetProvider={form.values.targetProvider}
           onClose={toggleSelectNetworkModal}
         />

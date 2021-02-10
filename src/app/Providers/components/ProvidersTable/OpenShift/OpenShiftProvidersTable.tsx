@@ -13,7 +13,6 @@ import {
 import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useStorageClassesQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/providers.types';
@@ -26,6 +25,7 @@ import './OpenShiftProvidersTable.css';
 import { ProviderType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
+import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 
 interface IOpenShiftProvidersTableProps {
   providers: ICorrelatedProvider<IOpenShiftProvider>[];
@@ -129,30 +129,40 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       rows.push({
         parent: rows.length - 1,
         compoundExpand: columns.findIndex((column) => column.title === expandedItem?.column) + 1,
+        fullWidth: true,
         cells: [
           {
             title:
               expandedItem?.column === 'Networks' ? (
                 <OpenShiftNetworkList provider={provider} />
               ) : (
-                <List className={`provider-storage-classes-list ${spacing.mMd}`}>
+                <List className={`provider-storage-classes-list ${spacing.mMd} ${spacing.mlXl}`}>
                   {storageClasses.map((storageClass) => (
                     <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
                   ))}
                 </List>
               ),
-            props: { colSpan: columns.length, className: tableStyles.modifiers.noPadding },
+            props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },
         ],
       });
     }
   });
 
+  const [isSelectNetworkModalOpen, toggleSelectNetworkModal] = React.useReducer(
+    (isOpen) => !isOpen,
+    false
+  );
+
   return (
     <>
       <Level>
         <LevelItem>
-          <Button variant="secondary" onClick={() => alert('TODO')} isDisabled={!selectedProvider}>
+          <Button
+            variant="secondary"
+            onClick={toggleSelectNetworkModal}
+            isDisabled={!selectedProvider}
+          >
             Select migration network
           </Button>
         </LevelItem>
@@ -189,6 +199,12 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         widgetId="providers-table-pagination-bottom"
         variant="bottom"
       />
+      {isSelectNetworkModalOpen ? (
+        <SelectOpenShiftNetworkModal
+          targetProvider={selectedProvider?.inventory || null}
+          onClose={toggleSelectNetworkModal}
+        />
+      ) : null}
     </>
   );
 };
