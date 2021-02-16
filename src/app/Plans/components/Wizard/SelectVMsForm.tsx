@@ -93,6 +93,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       },
     },
     {
+      key: 'analysisCondition',
+      title: 'Analysis condition',
+      type: FilterType.search,
+      placeholderText: 'Filter by analysis condition...',
+      getItemValue: (item) => {
+        // Mash all the concerns together to match against them as a continuous string
+        const concernStrings = item.concerns.map(
+          (concern) => `${concern.category} - ${concern.label} - ${concern.assessment}`
+        );
+        return concernStrings.join(' ; ');
+      },
+    },
+    {
       key: 'dataCenter',
       title: 'Datacenter',
       type: FilterType.search,
