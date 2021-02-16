@@ -194,7 +194,8 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         toggleVMExpanded(firstMatchingVM);
       }
     }
-  }, [filterValues.analysisCondition, isVMExpanded, sortedItems, toggleVMExpanded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterValues.analysisCondition]);
 
   const columns: ICell[] = [
     {
