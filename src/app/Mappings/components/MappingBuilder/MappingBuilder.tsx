@@ -32,7 +32,6 @@ interface IMappingBuilderProps {
   builderItems: IMappingBuilderItem[];
   setBuilderItems: (groups: IMappingBuilderItem[]) => void;
   isWizardMode?: boolean;
-  hasItemsAddedMessage?: boolean;
 }
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
@@ -42,7 +41,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   builderItems,
   setBuilderItems,
   isWizardMode = false,
-  hasItemsAddedMessage = false,
 }: IMappingBuilderProps) => {
   const messageSelectBoth = 'You must select a source and target before adding another mapping.';
   const messageExhausted = `All source ${
@@ -70,19 +68,19 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
 
   let instructionText = '';
   if (mappingType === MappingType.Network) {
-    instructionText = 'Map source and target networks.';
+    if (isWizardMode) {
+      instructionText = 'Select target networks.';
+    } else {
+      instructionText = 'Map source and target networks.';
+    }
+    instructionText = `${instructionText} The OpenShift pod network is the default target network. You can select a different target network from the network list.`;
   }
   if (mappingType === MappingType.Storage) {
-    instructionText = 'Map source datastores to target storage classes.';
-  }
-  if (hasItemsAddedMessage) {
-    instructionText = `${instructionText} Sources missing from your selected mapping have been added.`;
-  }
-  if (mappingType === MappingType.Network) {
-    instructionText = `${instructionText} The default OpenShift pod network is pre-selected. Other networks can be selected in the dropdowns.`;
-  }
-  if (mappingType === MappingType.Storage) {
-    instructionText = `${instructionText} The default storage class is pre-selected. Other storage classes can be selected in the dropdowns.`;
+    if (isWizardMode) {
+      instructionText = 'Select target storage classes.';
+    } else {
+      instructionText = 'Map source datastores to target storage classes.';
+    }
   }
 
   return (
