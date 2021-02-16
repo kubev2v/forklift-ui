@@ -134,7 +134,7 @@ export const useConfigureHostsMutation = (
   allHostConfigs: IHostConfig[],
   onSuccess?: () => void
 ): MutationResultPair<
-  IKubeResponse<IHostConfig>[],
+  (IKubeResponse<IHostConfig> | null)[],
   KubeClientError,
   SelectNetworkFormValues,
   unknown
@@ -149,6 +149,13 @@ export const useConfigureHostsMutation = (
       selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
         const existingSecret = existingConfig?.spec.secret || null;
+
+        if (values.selectedNetworkAdapter?.name === 'Management Network') {
+          if (existingConfig) {
+            return client.delete<IHostConfig>(hostConfigResource, existingConfig.metadata.name);
+          }
+          return Promise.resolve(null); // No action needed if there is no Host CR and we're selecting the default network
+        }
 
         // Create or update a secret CR
         const newSecret = generateSecret(values, existingSecret, host, provider);
@@ -173,7 +180,7 @@ export const useConfigureHostsMutation = (
   };
 
   return useMockableMutation<
-    IKubeResponse<IHostConfig>[],
+    (IKubeResponse<IHostConfig> | null)[],
     KubeClientError,
     SelectNetworkFormValues
   >(configureHosts, {

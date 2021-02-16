@@ -14,9 +14,12 @@ export const findSelectedNetworkAdapter = (
   host: IHost,
   hostConfig: IHostConfig | null
 ): IHostNetworkAdapter | null => {
-  if (!hostConfig) return null;
+  const managementNetwork =
+    host.networkAdapters.find((adapter) => adapter.name === 'Management Network') || null;
+  if (!hostConfig) return managementNetwork;
   return (
-    host.networkAdapters.find((adapter) => adapter.ipAddress === hostConfig?.spec.ipAddress) || null
+    host.networkAdapters.find((adapter) => adapter.ipAddress === hostConfig?.spec.ipAddress) ||
+    managementNetwork
   );
 };
 

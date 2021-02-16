@@ -15,6 +15,7 @@ import { formatHostNetworkAdapter, usePrefillHostConfigEffect } from './helpers'
 import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -24,15 +25,27 @@ interface ISelectNetworkModalProps {
   onClose: () => void;
 }
 
-const useSelectNetworkFormState = () =>
-  useFormState({
-    selectedNetworkAdapter: useFormField<IHostNetworkAdapter | null>(
-      null,
-      yup.mixed<IHostNetworkAdapter>().label('Host network').required()
+const useSelectNetworkFormState = () => {
+  const selectedNetworkAdapterField = useFormField<IHostNetworkAdapter | null>(
+    null,
+    yup.mixed<IHostNetworkAdapter>().label('Host network').required()
+  );
+  const isManagementNetworkSelected =
+    selectedNetworkAdapterField.value?.name === 'Management Network';
+  const usernameSchema = yup.string().max(320).label('Host admin username');
+  const passwordSchema = yup.string().max(256).label('Host admin password');
+  return useFormState({
+    selectedNetworkAdapter: selectedNetworkAdapterField,
+    adminUsername: useFormField(
+      '',
+      !isManagementNetworkSelected ? usernameSchema.required() : usernameSchema
     ),
-    adminUsername: useFormField('', yup.string().max(320).label('Host admin username').required()),
-    adminPassword: useFormField('', yup.string().max(256).label('Host admin password').required()),
+    adminPassword: useFormField(
+      '',
+      !isManagementNetworkSelected ? passwordSchema.required() : passwordSchema
+    ),
   });
+};
 export type SelectNetworkFormState = ReturnType<typeof useSelectNetworkFormState>;
 export type SelectNetworkFormValues = SelectNetworkFormState['values'];
 
@@ -63,6 +76,9 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     value: networkAdapter,
     props: { description: `${networkAdapter.linkSpeed} Mbps; MTU: ${networkAdapter.mtu}` },
   }));
+
+  const isManagementNetworkSelected =
+    form.values.selectedNetworkAdapter?.name === 'Management Network';
 
   return (
     <Modal
@@ -102,28 +118,6 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           </Flex>
         </Stack>
       }
-      actions={[
-        <Button
-          key="confirm"
-          variant="primary"
-          isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
-          onClick={() => {
-            if (form.isValid) {
-              configureHosts(form.values);
-            }
-          }}
-        >
-          Add
-        </Button>,
-        <Button
-          key="cancel"
-          variant="link"
-          onClick={onClose}
-          isDisabled={configureHostsResult.isLoading}
-        >
-          Cancel
-        </Button>,
-      ]}
     >
       {!isDonePrefilling ? (
         <LoadingEmptyState />
@@ -155,26 +149,33 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
             />
           </FormGroup>
 
-          <ValidatedTextInput
-            field={form.fields.adminUsername}
-            label="Host admin username"
-            isRequired
-            fieldId="admin-username"
-          />
-          <ValidatedTextInput
-            type="password"
-            field={form.fields.adminPassword}
-            label="Host admin password"
-            isRequired
-            fieldId="admin-password"
-          />
-          {/* TODO re-enable this when we have the API capability
-        <div>
-          <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
-            Check connections
-          </Button>
-        </div>
-        */}
+          <ConditionalTooltip
+            isTooltipEnabled={isManagementNetworkSelected}
+            content="Credentials are not needed when selecting the provider’s default management network."
+            position="left"
+          >
+            <ValidatedTextInput
+              field={form.fields.adminUsername}
+              label="Host admin username"
+              isRequired
+              fieldId="admin-username"
+              inputProps={isManagementNetworkSelected ? { isDisabled: true, value: '' } : {}}
+            />
+          </ConditionalTooltip>
+          <ConditionalTooltip
+            isTooltipEnabled={isManagementNetworkSelected}
+            content="Credentials are not needed when selecting the provider’s default management network."
+            position="left"
+          >
+            <ValidatedTextInput
+              type="password"
+              field={form.fields.adminPassword}
+              label="Host admin password"
+              isRequired
+              fieldId="admin-password"
+              inputProps={isManagementNetworkSelected ? { isDisabled: true, value: '' } : {}}
+            />
+          </ConditionalTooltip>
         </Form>
       )}
     </Modal>
