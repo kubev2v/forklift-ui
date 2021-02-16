@@ -29,6 +29,7 @@ import {
   getMostSevereVMConcern,
   getVMConcernStatusLabel,
   getVMTreePathInfoByVM,
+  vmMatchesConcernFilter,
 } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
@@ -178,12 +179,22 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   });
 
   const {
-    toggleItemSelected: toggleVMsExpanded,
+    toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
   } = useSelectionState<IVMwareVM>({
     items: sortedItems,
     isEqual: (a, b) => a.selfLink === b.selfLink,
   });
+
+  React.useEffect(() => {
+    if (filterValues.analysisCondition) {
+      const filterText = filterValues.analysisCondition[0];
+      const firstMatchingVM = sortedItems.find((vm) => vmMatchesConcernFilter(vm, filterText));
+      if (firstMatchingVM && !isVMExpanded(firstMatchingVM)) {
+        toggleVMExpanded(firstMatchingVM);
+      }
+    }
+  }, [filterValues.analysisCondition, isVMExpanded, sortedItems, toggleVMExpanded]);
 
   const columns: ICell[] = [
     {
@@ -289,7 +300,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
                 }
               }}
               onCollapse={(_event, _rowKey, _isOpen, rowData) => {
-                toggleVMsExpanded(rowData.meta.vm);
+                toggleVMExpanded(rowData.meta.vm);
               }}
             >
               <TableHeader />
