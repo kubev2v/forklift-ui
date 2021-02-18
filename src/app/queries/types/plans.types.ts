@@ -1,4 +1,4 @@
-import { ICR, INameNamespaceRef, IStatusCondition } from './common.types';
+import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '../types/common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {
@@ -40,12 +40,20 @@ export interface IPlanVM {
   // hook?: ??? // TODO add this when we add hooks
 }
 
+export interface IMigrationHistoryItem {
+  conditions: IStatusCondition[];
+  migration: IMetaObjectMeta;
+  plan: IMetaObjectMeta;
+  provider: IMetaObjectMeta;
+}
+
 export interface IPlanStatus {
   migration?: {
     active: string;
     completed?: string;
     started?: string;
     vms?: IVMStatus[];
+    history?: IMigrationHistoryItem[];
   };
   conditions: IStatusCondition[];
   observedGeneration: number;

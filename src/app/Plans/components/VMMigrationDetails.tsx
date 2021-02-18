@@ -41,7 +41,7 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { IVMStatus } from '@app/queries/types';
+import { IVMStatus, IVMwareVM } from '@app/queries/types';
 import { useCancelVMsMutation, usePlansQuery } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
@@ -78,9 +78,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   });
 
   const plansQuery = usePlansQuery();
-  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation();
-  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
-
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
   const planStarted = !!plan?.status?.migration?.started;
   const vmStatuses = planStarted
@@ -90,6 +87,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         pipeline: [],
         phase: '',
       })) || [];
+
+  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null);
+  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
 
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
@@ -325,7 +325,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       <ConfirmModal
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}
-        mutateFn={() => cancelVMs(selectedItems)}
+        mutateFn={() => {
+          const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
+          if (vmsToCancel.some((vm) => !vm)) return;
+          cancelVMs(vmsToCancel as IVMwareVM[]);
+        }}
         mutateResult={cancelVMsResult}
         title="Cancel migrations?"
         confirmButtonText="Yes, cancel"

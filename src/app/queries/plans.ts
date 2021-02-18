@@ -11,7 +11,7 @@ import {
   useMockableQuery,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
-import { IPlan, IVMStatus } from './types';
+import { IPlan } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
@@ -82,25 +82,6 @@ export const useDeletePlanMutation = (
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
     (plan: IPlan) => client.delete(planResource, plan.metadata.name),
-    {
-      onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        onSuccess && onSuccess();
-      },
-    }
-  );
-};
-
-export const useCancelVMsMutation = (
-  onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[], unknown> => {
-  // TODO look up the Migration CR in plan.status.migration.history
-  // TODO PATCH the Migration CR to add a list of cancelled VM ids
-  // TODO figure out if we need a "cancelling" spinner or something
-  // const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
-  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IVMStatus[]>(
-    (vms: IVMStatus[]) => Promise.reject('Not yet implemented'),
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
