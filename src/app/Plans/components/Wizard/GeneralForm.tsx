@@ -23,7 +23,6 @@ import {
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
-import './GeneralForm.css';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -49,27 +48,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       : namespaceOptions.filter((option) => !!option.toLowerCase().match(searchText.toLowerCase()));
     return [
       <SelectGroup key="group" label="Select or type to create a namespace">
-        {filteredNamespaces.map((option) => {
-          let renderedOption: (string | React.ReactNode)[] = [option];
-          if (searchText) {
-            const fragments = option.split(searchText);
-            renderedOption = option.split(searchText).flatMap((fragment, index) =>
-              index === fragments.length - 1
-                ? [fragment]
-                : [
-                    fragment,
-                    <span className="highlight-match" key={index}>
-                      {searchText}
-                    </span>,
-                  ]
-            );
-          }
-          return (
-            <SelectOption key={option} value={option}>
-              {renderedOption}
-            </SelectOption>
-          );
-        })}
+        {filteredNamespaces.map((option) => (
+          <SelectOption key={option.toString()} value={option} />
+        ))}
       </SelectGroup>,
     ];
   };
