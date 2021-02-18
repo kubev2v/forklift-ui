@@ -110,7 +110,6 @@ export const useCancelVMsMutation = (
           (vm): ICanceledVM => ({
             id: vm.id,
             name: vm.name,
-            type: 'vsphere',
           })
         );
       const migrationPatch: Partial<IMigration> = {

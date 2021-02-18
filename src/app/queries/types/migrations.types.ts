@@ -4,7 +4,6 @@ import { IPlanStatus } from './plans.types';
 export interface ICanceledVM {
   id: string;
   name: string;
-  type: 'vsphere';
 }
 
 export interface IMigration extends ICR {
