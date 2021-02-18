@@ -55,5 +55,17 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       status: MOCK_PLANS[3].status?.migration,
     },
+    {
+      apiVersion: CLUSTER_API_VERSION,
+      kind: 'Migration',
+      metadata: {
+        name: 'plan-4-mock-migration',
+        namespace: META.namespace,
+      },
+      spec: {
+        plan: nameAndNamespace(MOCK_PLANS[4].metadata),
+      },
+      status: MOCK_PLANS[4].status?.migration,
+    },
   ];
 }

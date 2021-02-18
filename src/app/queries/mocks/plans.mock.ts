@@ -1,6 +1,6 @@
 import { IPlan, IPlanVM, IVMStatus } from '../types';
 import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
-import { CLUSTER_API_VERSION } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
 import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
@@ -280,6 +280,20 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         active: '',
         started: '2020-10-10T14:04:10Z',
         vms: [vmStatus1, vmStatus2],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-0-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-1',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
       },
     },
   };
@@ -367,6 +381,20 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         active: '',
         started: '2020-10-10T14:04:10Z',
         vms: [vmStatus1, vmStatusWithYellow, vmStatus3, vmStatus4],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-2-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-3',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
       },
     },
   };
@@ -414,6 +442,20 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         started: '2020-10-10T14:04:10Z',
         completed: '2020-10-10T15:58:43Z',
         vms: [vmStatus3],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-3-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-4',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
       },
     },
   };
@@ -479,6 +521,20 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         active: '',
         started: '2020-10-10T14:04:10Z',
         vms: [vmStatus1WithError, vmStatus2WithError],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-4-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-5',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
       },
     },
   };
