@@ -29,6 +29,7 @@ import {
   getMostSevereVMConcern,
   getVMConcernStatusLabel,
   getVMTreePathInfoByVM,
+  vmMatchesConcernFilter,
 } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
@@ -93,6 +94,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       },
     },
     {
+      key: 'analysisCondition',
+      title: 'Analysis condition',
+      type: FilterType.search,
+      placeholderText: 'Filter by analysis condition...',
+      getItemValue: (item) => {
+        // Mash all the concerns together to match against them as a continuous string
+        const concernStrings = item.concerns.map(
+          (concern) => `${concern.category} - ${concern.label}: ${concern.assessment}`
+        );
+        return concernStrings.join(' ; ');
+      },
+    },
+    {
       key: 'dataCenter',
       title: 'Datacenter',
       type: FilterType.search,
@@ -138,6 +152,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     availableVMs,
     filterCategories
   );
+
   const getSortValues = (vm: IVMwareVM) => {
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     return [
@@ -164,12 +179,23 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   });
 
   const {
-    toggleItemSelected: toggleVMsExpanded,
+    toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
   } = useSelectionState<IVMwareVM>({
     items: sortedItems,
     isEqual: (a, b) => a.selfLink === b.selfLink,
   });
+
+  React.useEffect(() => {
+    if (filterValues.analysisCondition) {
+      const filterText = filterValues.analysisCondition[0];
+      const firstMatchingVM = sortedItems.find((vm) => vmMatchesConcernFilter(vm, filterText));
+      if (firstMatchingVM && !isVMExpanded(firstMatchingVM)) {
+        toggleVMExpanded(firstMatchingVM);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterValues.analysisCondition]);
 
   const columns: ICell[] = [
     {
@@ -208,7 +234,17 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         parent: rows.length - 1,
         fullWidth: true,
         cells: [
-          { title: <VMConcernsDescription vm={vm} />, props: { colSpan: columns.length + 2 } },
+          {
+            title: (
+              <VMConcernsDescription
+                vm={vm}
+                filterText={
+                  (filterValues.analysisCondition && filterValues.analysisCondition[0]) || ''
+                }
+              />
+            ),
+            props: { colSpan: columns.length + 2 },
+          },
         ],
       });
     }
@@ -265,7 +301,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
                 }
               }}
               onCollapse={(_event, _rowKey, _isOpen, rowData) => {
-                toggleVMsExpanded(rowData.meta.vm);
+                toggleVMExpanded(rowData.meta.vm);
               }}
             >
               <TableHeader />
