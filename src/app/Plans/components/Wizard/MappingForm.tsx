@@ -106,7 +106,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   const [isMappingSelectOpen, setIsMappingSelectOpen] = React.useState(false);
 
   const newMappingOption = {
-    toString: () => `Create a new ${mappingType.toLowerCase()} mapping`,
+    toString: () => `Create a ${mappingType.toLowerCase()} mapping`,
     value: 'new',
   };
   const mappingOptions = Object.values(filteredMappings).map((mapping) => {
@@ -167,8 +167,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         {!form.values.isPrefilled ? (
           <TextContent>
             <Text component="p">
-              Start with an existing {mappingType.toLowerCase()} mapping between your source and
-              target providers, or create a new one.
+              Select an existing {mappingType.toLowerCase()} mapping to modify or create a new{' '}
+              {mappingType.toLowerCase()} mapping.
             </Text>
           </TextContent>
         ) : null}
@@ -239,7 +239,6 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 builderItems={form.values.builderItems}
                 setBuilderItems={form.fields.builderItems.setValue}
                 isWizardMode
-                hasItemsAddedMessage={hasAddedItems}
               />
               {form.values.isCreateMappingSelected || form.values.isPrefilled || hasAddedItems ? (
                 <>
