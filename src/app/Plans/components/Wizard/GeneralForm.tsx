@@ -40,7 +40,20 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
 
   const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
-  const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
+
+  const getFilteredOptions = (searchText?: string) => {
+    const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
+    const filteredNamespaces = !searchText
+      ? namespaceOptions
+      : namespaceOptions.filter((option) => !!option.toLowerCase().match(searchText.toLowerCase()));
+    return [
+      <SelectGroup key="group" label="Select or type to create a namespace">
+        {filteredNamespaces.map((option) => (
+          <SelectOption key={option.toString()} value={option} />
+        ))}
+      </SelectGroup>,
+    ];
+  };
 
   return (
     <ResolvedQueries
@@ -100,6 +113,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 form.fields.targetNamespace.setValue(selection as string);
                 setIsNamespaceSelectOpen(false);
               }}
+              onFilter={(event) => getFilteredOptions(event.target.value)}
               selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
@@ -108,13 +122,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               aria-label="Target namespace"
               isDisabled={!form.values.targetProvider}
             >
-              {[
-                <SelectGroup key="group" label="Select or type to create a namespace">
-                  {namespaceOptions.map((option) => (
-                    <SelectOption key={option.toString()} value={option} />
-                  ))}
-                </SelectGroup>,
-              ]}
+              {getFilteredOptions()}
             </Select>
           </ResolvedQuery>
         </FormGroup>
