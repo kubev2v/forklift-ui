@@ -3,6 +3,7 @@ import { applyAction, clickByText, inputText } from '../../utils/utils';
 import { addButton, removeButton } from '../types/constants';
 import {
   addButtonModal,
+  instanceName,
   instanceFingerprint,
   instanceHostname,
   instancePassword,
@@ -12,6 +13,10 @@ import {
 import { VmwareProviderData } from '../types/types';
 
 export class ProviderVmware extends Provider {
+  protected fillname(name: string) {
+    inputText(instanceName, name);
+  }
+
   protected fillHostname(hostname: string) {
     inputText(instanceHostname, hostname);
   }
@@ -31,7 +36,7 @@ export class ProviderVmware extends Provider {
   protected runWizard(providerData: VmwareProviderData): void {
     const { name, hostname, username, password, cert } = providerData;
     super.runWizard(providerData);
-    this.fillName(name);
+    this.fillname(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
