@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
+  INameNamespaceRef,
   INetworkMapping,
   IPlan,
   IStorageMapping,
@@ -298,15 +299,30 @@ export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
-export const generateMappings = (
-  forms: PlanWizardFormState
-): { networkMapping: INetworkMapping | null; storageMapping: IStorageMapping | null } => {
+export interface IGenerateMappingsArgs {
+  forms: PlanWizardFormState;
+  generateName?: string;
+  owner?: IPlan;
+}
+
+export const generateMappings = ({
+  forms,
+  generateName,
+  owner,
+}: IGenerateMappingsArgs): {
+  networkMapping: INetworkMapping | null;
+  storageMapping: IStorageMapping | null;
+} => {
   const { sourceProvider, targetProvider } = forms.general.values;
+  const existingMappingRefs = owner?.spec.map;
   const networkMapping =
     sourceProvider && targetProvider
       ? (getMappingFromBuilderItems({
           mappingType: MappingType.Network,
-          mappingName: forms.networkMapping.values.newMappingName || '',
+          mappingName:
+            existingMappingRefs?.network.name || forms.networkMapping.values.newMappingName || null,
+          generateName: generateName || null,
+          owner,
           sourceProvider,
           targetProvider,
           builderItems: forms.networkMapping.values.builderItems,
@@ -316,7 +332,10 @@ export const generateMappings = (
     sourceProvider && targetProvider
       ? (getMappingFromBuilderItems({
           mappingType: MappingType.Storage,
-          mappingName: forms.storageMapping.values.newMappingName || '',
+          mappingName:
+            existingMappingRefs?.storage.name || forms.storageMapping.values.newMappingName || null,
+          generateName: generateName || null,
+          owner,
           sourceProvider,
           targetProvider,
           builderItems: forms.storageMapping.values.builderItems,
@@ -327,8 +346,8 @@ export const generateMappings = (
 
 export const generatePlan = (
   forms: PlanWizardFormState,
-  networkMapping: INetworkMapping | null,
-  storageMapping: IStorageMapping | null
+  networkMappingRef: INameNamespaceRef,
+  storageMappingRef: INameNamespaceRef
 ): IPlan => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
@@ -344,8 +363,8 @@ export const generatePlan = (
     },
     targetNamespace: forms.general.values.targetNamespace,
     map: {
-      networks: networkMapping?.spec.map || [],
-      datastores: storageMapping?.spec.map || [],
+      network: networkMappingRef,
+      storage: storageMappingRef,
     },
     vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
   },

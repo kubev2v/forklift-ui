@@ -1,5 +1,4 @@
-import { ICR, IStatusCondition } from '../types/common.types';
-import { INetworkMappingItem, IStorageMappingItem } from '../types/mappings.types';
+import { ICR, INameNamespaceRef, IStatusCondition } from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {
@@ -60,8 +59,8 @@ export interface IPlan extends ICR {
     provider: ISrcDestRefs;
     targetNamespace: string;
     map: {
-      networks: INetworkMappingItem[];
-      datastores: IStorageMappingItem[];
+      network: INameNamespaceRef;
+      storage: INameNamespaceRef;
     };
     vms: IPlanVM[];
   };

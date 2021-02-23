@@ -12,6 +12,7 @@ import {
   INetworkMapping,
   IStorageMapping,
   IVMwareVM,
+  IPlan,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
@@ -54,7 +55,9 @@ export const getBuilderItemsFromMapping = (
 
 interface IGetMappingParams {
   mappingType: MappingType;
-  mappingName: string;
+  mappingName: string | null;
+  generateName: string | null;
+  owner?: IPlan;
   sourceProvider: IVMwareProvider;
   targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
@@ -63,6 +66,8 @@ interface IGetMappingParams {
 export const getMappingFromBuilderItems = ({
   mappingType,
   mappingName,
+  generateName,
+  owner,
   sourceProvider,
   targetProvider,
   builderItems,
@@ -101,8 +106,21 @@ export const getMappingFromBuilderItems = ({
     apiVersion: CLUSTER_API_VERSION,
     kind: mappingType === MappingType.Network ? 'NetworkMap' : 'StorageMap',
     metadata: {
-      name: mappingName,
+      ...(mappingName ? { name: mappingName } : { generateName: generateName || '' }),
       namespace: META.namespace,
+      ...(owner
+        ? {
+            ownerReferences: [
+              {
+                apiVersion: owner.apiVersion,
+                kind: owner.kind,
+                name: owner.metadata.name,
+                namespace: owner.metadata.namespace,
+                uid: owner.metadata.uid,
+              },
+            ],
+          }
+        : {}),
     },
     spec: {
       provider: {

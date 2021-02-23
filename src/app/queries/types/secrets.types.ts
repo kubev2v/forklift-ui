@@ -1,4 +1,4 @@
-import { IMetaObjectGenerateName, IMetaTypeMeta } from '.';
+import { IMetaObjectGenerateName, IMetaTypeMeta, IMetaObjectMeta } from './common.types';
 
 export interface ISecret extends IMetaTypeMeta {
   data: {
@@ -7,6 +7,6 @@ export interface ISecret extends IMetaTypeMeta {
     thumbprint?: string;
     token?: string;
   };
-  metadata: IMetaObjectGenerateName;
+  metadata: IMetaObjectGenerateName | IMetaObjectMeta;
   type: string;
 }

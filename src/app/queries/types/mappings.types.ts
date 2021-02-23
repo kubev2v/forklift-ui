@@ -1,7 +1,7 @@
 import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
 import { IVMwareDatastore } from './datastores.types';
 import { IAnnotatedStorageClass } from './storageClasses.types';
-import { ICR } from './common.types';
+import { IMetaObjectGenerateName, IMetaObjectMeta, IMetaTypeMeta } from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export enum MappingType {
@@ -59,10 +59,11 @@ export interface IStorageMappingSpec extends ICommonMappingSpec {
   map: IStorageMappingItem[];
 }
 
-export interface ICommonMapping extends ICR {
+export interface ICommonMapping extends IMetaTypeMeta {
   apiVersion: string;
   kind: 'NetworkMap' | 'StorageMap';
   spec: ICommonMappingSpec;
+  metadata: IMetaObjectGenerateName | IMetaObjectMeta;
 }
 
 export interface INetworkMapping extends ICommonMapping {

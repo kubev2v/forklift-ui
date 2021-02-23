@@ -21,19 +21,18 @@ import { usePausedPollingEffect } from '@app/common/context';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
-  createPlanResult: MutationResult<IKubeResponse<IPlan>, KubeClientError>;
-  patchPlanResult: MutationResult<IKubeResponse<IPlan>, KubeClientError>;
-  createNetworkMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
-  createStorageMappingResult: MutationResult<IKubeResponse<Mapping>, KubeClientError>;
+  allMutationResults: (
+    | MutationResult<IKubeResponse<IPlan>, KubeClientError>
+    | MutationResult<IKubeResponse<Mapping>, KubeClientError>
+  )[];
+  allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
-  createPlanResult,
-  patchPlanResult,
-  createNetworkMappingResult,
-  createStorageMappingResult,
+  allMutationResults,
+  allMutationErrorTitles,
   planBeingEdited,
 }: IReviewProps) => {
   usePausedPollingEffect();
@@ -90,16 +89,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         </GridItem>
       </Grid>
       <ResolvedQueries
-        results={[
-          !planBeingEdited ? createPlanResult : patchPlanResult,
-          createNetworkMappingResult,
-          createStorageMappingResult,
-        ]}
-        errorTitles={[
-          `Error ${!planBeingEdited ? 'creating' : 'patching'} migration plan`,
-          'Error creating network mapping',
-          'Error creating storage mapping',
-        ]}
+        results={allMutationResults}
+        errorTitles={allMutationErrorTitles}
         spinnerMode={QuerySpinnerMode.Inline}
       />
     </Form>

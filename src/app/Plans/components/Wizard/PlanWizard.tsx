@@ -38,14 +38,15 @@ import {
 import { generateMappings, generatePlan, useEditingPlanPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
-  useCreateMappingMutation,
   useMappingsQuery,
   getPlanNameSchema,
   useCreatePlanMutation,
   usePatchPlanMutation,
   usePlansQuery,
+  useCreateMappingMutations,
+  usePatchMappingMutations,
 } from '@app/queries';
-import { getAggregateQueryStatus } from '@app/queries/helpers';
+import { getAggregateQueryStatus, nameAndNamespace } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -173,34 +174,109 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const [createPlan, createPlanResult] = useCreatePlanMutation();
   const [patchPlan, patchPlanResult] = usePatchPlanMutation();
-  const [createNetworkMapping, createNetworkMappingResult] = useCreateMappingMutation(
-    MappingType.Network
-  );
-  const [createStorageMapping, createStorageMappingResult] = useCreateMappingMutation(
-    MappingType.Storage
-  );
 
-  const onSave = () => {
-    const { networkMapping, storageMapping } = generateMappings(forms);
-    const plan = generatePlan(forms, networkMapping, storageMapping);
-    if (!planBeingEdited) {
-      createPlan(plan);
-    } else {
-      patchPlan(plan);
-    }
-    if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
-      createNetworkMapping(networkMapping);
-    }
-    if (storageMapping && forms.storageMapping.values.isSaveNewMapping) {
-      createStorageMapping(storageMapping);
+  const {
+    network: [createOwnedNetworkMap, createOwnedNetworkMapResult],
+    storage: [createOwnedStorageMap, createOwnedStorageMapResult],
+  } = useCreateMappingMutations();
+  const {
+    network: [createSharedNetworkMap, createSharedNetworkMapResult],
+    storage: [createSharedStorageMap, createSharedStorageMapResult],
+  } = useCreateMappingMutations();
+  const {
+    network: [patchNetworkMap, patchNetworkMapResult],
+    storage: [patchStorageMap, patchStorageMapResult],
+  } = usePatchMappingMutations();
+
+  // TODO should the create+create+patch logic be in the query file instead?
+  const createPlanAndOwnedMappings = async () => {
+    // Create mappings with generated names and collect refs to them
+    const { networkMapping, storageMapping } = generateMappings({
+      forms,
+      generateName: `${forms.general.values.planName}-`,
+    });
+    const [networkMappingRef, storageMappingRef] = (
+      await Promise.all([
+        networkMapping && createOwnedNetworkMap(networkMapping),
+        storageMapping && createOwnedStorageMap(storageMapping),
+      ])
+    ).map((response) => nameAndNamespace(response?.data.metadata));
+
+    // Create plan referencing new mappings
+    const planResponse = await createPlan(
+      generatePlan(forms, networkMappingRef, storageMappingRef)
+    );
+
+    // Patch mappings with ownerReferences to new plan
+    const {
+      networkMapping: networkMapWithOwnerRef,
+      storageMapping: storageMapWithOwnerRef,
+    } = generateMappings({
+      forms,
+      owner: planResponse?.data,
+    });
+    if (networkMapWithOwnerRef && storageMapWithOwnerRef) {
+      await Promise.all([
+        patchNetworkMap(networkMapWithOwnerRef),
+        patchStorageMap(storageMapWithOwnerRef),
+      ]);
     }
   };
 
-  const mutationStatus = getAggregateQueryStatus([
-    !editRouteMatch ? createPlanResult : patchPlanResult,
-    ...(forms.networkMapping.values.isSaveNewMapping ? [createNetworkMappingResult] : []),
-    ...(forms.storageMapping.values.isSaveNewMapping ? [createStorageMappingResult] : []),
-  ]);
+  const patchPlanAndOwnedMappings = () => {
+    if (!planBeingEdited) return;
+    const { networkMapping, storageMapping } = generateMappings({
+      forms,
+      owner: planBeingEdited,
+    });
+    networkMapping && patchNetworkMap(networkMapping);
+    storageMapping && patchStorageMap(storageMapping);
+    const { network: networkMappingRef, storage: storageMappingRef } = planBeingEdited.spec.map;
+    patchPlan(generatePlan(forms, networkMappingRef, storageMappingRef));
+  };
+
+  const createSharedMappings = async () => {
+    const { networkMapping, storageMapping } = generateMappings({ forms });
+    if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
+      createSharedNetworkMap(networkMapping);
+    }
+    if (storageMapping && forms.storageMapping.values.isSaveNewMapping) {
+      createSharedStorageMap(storageMapping);
+    }
+  };
+
+  const onSave = () => {
+    if (!planBeingEdited) {
+      createPlanAndOwnedMappings();
+    } else {
+      patchPlanAndOwnedMappings();
+    }
+    createSharedMappings();
+  };
+
+  const allMutationResults = [
+    ...(!editRouteMatch
+      ? [createPlanResult, createOwnedNetworkMapResult, createOwnedStorageMapResult]
+      : [patchPlanResult]),
+    patchNetworkMapResult,
+    patchStorageMapResult,
+    ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapResult] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapResult] : []),
+  ];
+  const allMutationErrorTitles = [
+    ...(!editRouteMatch
+      ? [
+          'Error creating migration plan',
+          'Error creating network mapping',
+          'Error creating storage mapping',
+        ]
+      : ['Error saving migration plan']),
+    'Error saving network mapping',
+    'Error saving storage mapping',
+    ...(forms.networkMapping.values.isSaveNewMapping ? ['Error creating network mapping'] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? ['Error creating storage mapping'] : []),
+  ];
+  const mutationStatus = getAggregateQueryStatus(allMutationResults);
 
   React.useEffect(() => {
     if (mutationStatus === QueryStatus.Success) onClose();
@@ -298,10 +374,8 @@ const PlanWizard: React.FunctionComponent = () => {
         <WizardStepContainer title="Review the migration plan">
           <Review
             forms={forms}
-            createPlanResult={createPlanResult}
-            patchPlanResult={patchPlanResult}
-            createNetworkMappingResult={createNetworkMappingResult}
-            createStorageMappingResult={createStorageMappingResult}
+            allMutationResults={allMutationResults}
+            allMutationErrorTitles={allMutationErrorTitles}
             planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
@@ -314,9 +388,7 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const resetResultsOnNav: WizardStepFunctionType = (_newStep, prevStep) => {
     if (prevStep.prevId === StepId.Review) {
-      createPlanResult.reset();
-      createNetworkMappingResult.reset();
-      createStorageMappingResult.reset();
+      allMutationResults.forEach((result) => result.reset());
     }
   };
 
