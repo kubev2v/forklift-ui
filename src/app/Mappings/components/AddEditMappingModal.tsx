@@ -134,6 +134,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                   const generatedMapping = getMappingFromBuilderItems({
                     mappingType,
                     mappingName: form.values.name,
+                    generateName: null,
                     sourceProvider: form.values.sourceProvider,
                     targetProvider: form.values.targetProvider,
                     builderItems: form.values.builderItems,
