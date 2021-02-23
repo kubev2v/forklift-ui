@@ -15,7 +15,7 @@ import { VmwareProviderData } from '../types/types';
 export class ProviderVmware extends Provider {
   protected fillname(name: string) {
     inputText(instanceName, name);
-   }
+  }
 
   protected fillHostname(hostname: string) {
     inputText(instanceHostname, hostname);

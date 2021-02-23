@@ -12,7 +12,7 @@ import {
 
 export class ProviderocpV extends Provider {
   protected fillocpname(name: string) {
-   inputText(ocpinstanceName, name);
+    inputText(ocpinstanceName, name);
   }
 
   protected fillinstanceUrl(url: string) {
