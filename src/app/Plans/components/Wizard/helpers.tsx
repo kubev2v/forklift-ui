@@ -498,3 +498,10 @@ export const useEditingPlanPrefillEffect = (
     prefillErrorTitles: errorTitles,
   };
 };
+
+export const concernMatchesFilter = (concern: IVMwareVMConcern, filterText?: string): boolean =>
+  !!filterText &&
+  `${concern.label}: ${concern.assessment}`.toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
+
+export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): boolean =>
+  !!filterText && vm.concerns.some((concern) => concernMatchesFilter(concern, filterText));

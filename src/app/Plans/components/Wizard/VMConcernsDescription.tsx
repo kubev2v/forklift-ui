@@ -4,14 +4,17 @@ import { TextContent, Text, List, ListItem, Flex, FlexItem } from '@patternfly/r
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { IVMwareVM } from '@app/queries/types';
-import { getMostSevereVMConcern, getVMConcernStatusType } from './helpers';
+import { concernMatchesFilter, getMostSevereVMConcern, getVMConcernStatusType } from './helpers';
+import './VMConcernsDescription.css';
 
 interface IVMConcernsDescriptionProps {
   vm: IVMwareVM;
+  filterText?: string;
 }
 
 const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps> = ({
   vm,
+  filterText,
 }: IVMConcernsDescriptionProps) => {
   const worstConcern = getMostSevereVMConcern(vm);
   const conditionsText = !worstConcern ? (
@@ -45,6 +48,9 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
                   spaceItems={{ default: 'spaceItemsSm' }}
                   alignItems={{ default: 'alignItemsFlexStart' }}
                   flexWrap={{ default: 'nowrap' }}
+                  className={
+                    concernMatchesFilter(concern, filterText) ? 'matches-analysis-filter' : ''
+                  }
                 >
                   <FlexItem>
                     <StatusIcon status={getVMConcernStatusType(concern) || StatusType.Warning} />

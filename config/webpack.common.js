@@ -3,7 +3,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
-const Dotenv = require('dotenv-webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
 
@@ -163,10 +162,6 @@ module.exports = (env) => {
             ? '../src/favicon-redhat.ico'
             : '../src/favicon-konveyor.ico'
         ),
-      }),
-      new Dotenv({
-        systemvars: true,
-        silent: true,
       }),
       new webpack.EnvironmentPlugin({
         DATA_SOURCE: 'remote',

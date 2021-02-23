@@ -121,7 +121,17 @@ const generateHostConfig = (
   return {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Host',
-    metadata: existingConfig?.metadata || getHostConfigRef(provider, host),
+    metadata: {
+      ...(existingConfig?.metadata || getHostConfigRef(provider, host)),
+      ownerReferences: [
+        {
+          apiVersion: provider.object.apiVersion,
+          kind: provider.object.kind,
+          name: provider.object.metadata.name,
+          uid: provider.object.metadata.uid,
+        },
+      ],
+    },
     spec: {
       id: host.id,
       ipAddress: matchingNetworkAdapter?.ipAddress || '',
