@@ -28,8 +28,6 @@ interface IMappingsTableProps {
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
-// TODO filter out mappings with ownerReferences
-
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,

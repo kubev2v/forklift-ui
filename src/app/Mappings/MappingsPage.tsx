@@ -32,6 +32,13 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
   const clusterProvidersQuery = useClusterProvidersQuery();
   const mappingsQuery = useMappingsQuery(mappingType);
 
+  // Only include mappings with no ownerReferences - those not owned by any one plan.
+  const filteredMappings =
+    mappingsQuery.data?.items.filter((mapping) => {
+      const { ownerReferences } = mapping.metadata;
+      return !ownerReferences || ownerReferences.length === 0;
+    }) || null;
+
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [mappingBeingEdited, setMappingBeingEdited] = React.useState<Mapping | null>(null);
 
@@ -62,7 +69,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
         >
           <Card>
             <CardBody>
-              {!mappingsQuery.data ? null : mappingsQuery.data.items.length === 0 ? (
+              {!filteredMappings ? null : filteredMappings.length === 0 ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
@@ -77,7 +84,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
                 </EmptyState>
               ) : (
                 <MappingsTable
-                  mappings={mappingsQuery.data?.items || []}
+                  mappings={filteredMappings || []}
                   mappingType={mappingType}
                   openCreateMappingModal={toggleModalAndResetEdit}
                   openEditMappingModal={openEditMappingModal}
