@@ -37,7 +37,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
 }: IReviewProps) => {
   usePausedPollingEffect();
 
-  const { networkMapping, storageMapping } = generateMappings(forms);
+  const { networkMapping, storageMapping } = generateMappings({ forms });
   return (
     <Form>
       <TextContent>

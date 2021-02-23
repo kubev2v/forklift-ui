@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
+  IMetaObjectMeta,
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
@@ -26,6 +27,7 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
+  isSameResource,
   nameAndNamespace,
 } from '@app/queries/helpers';
 import {
@@ -34,6 +36,7 @@ import {
   useInventoryProvidersQuery,
   useVMwareTreeQuery,
   useVMwareVMsQuery,
+  useMappingsQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -413,6 +416,9 @@ export const useEditingPlanPrefillEffect = (
     MappingType.Storage
   );
 
+  const networkMappingsQuery = useMappingsQuery(MappingType.Network);
+  const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
+
   const queries = [
     providersQuery,
     vmsQuery,
@@ -420,6 +426,8 @@ export const useEditingPlanPrefillEffect = (
     vmTreeQuery,
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
+    networkMappingsQuery,
+    storageMappingsQuery,
   ];
   const errorTitles = [
     'Error loading providers',
@@ -430,6 +438,8 @@ export const useEditingPlanPrefillEffect = (
     'Error loading target networks',
     'Error loading source datastores',
     'Error loading target storage classes',
+    'Error loading network mappings',
+    'Error loading storage mappings',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
@@ -444,6 +454,12 @@ export const useEditingPlanPrefillEffect = (
       const treeQuery =
         forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+      const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
+        isSameResource(mapping.metadata as IMetaObjectMeta, planBeingEdited.spec.map.network)
+      );
+      const storageMapping = networkMappingsQuery.data?.items.find((mapping) =>
+        isSameResource(mapping.metadata as IMetaObjectMeta, planBeingEdited.spec.map.storage)
+      );
 
       forms.general.fields.planName.setInitialValue(planBeingEdited.metadata.name);
       if (planBeingEdited.spec.description) {
@@ -461,7 +477,7 @@ export const useEditingPlanPrefillEffect = (
       forms.networkMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
-            planBeingEdited.spec.map.networks,
+            networkMapping?.spec.map || [],
             MappingType.Network,
             networkMappingResourceQueries.availableSources,
             networkMappingResourceQueries.availableTargets
@@ -477,7 +493,7 @@ export const useEditingPlanPrefillEffect = (
       forms.storageMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
-            planBeingEdited.spec.map.datastores,
+            storageMapping?.spec.map || [],
             MappingType.Storage,
             storageMappingResourceQueries.availableSources,
             storageMappingResourceQueries.availableTargets
@@ -507,6 +523,8 @@ export const useEditingPlanPrefillEffect = (
     vmsQuery,
     hostTreeQuery,
     vmTreeQuery,
+    networkMappingsQuery,
+    storageMappingsQuery,
   ]);
 
   return {
