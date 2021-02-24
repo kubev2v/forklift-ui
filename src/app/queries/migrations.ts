@@ -29,6 +29,7 @@ export const useCreateMigrationMutation = (
               apiVersion: plan.apiVersion,
               kind: plan.kind,
               name: plan.metadata.name,
+              namespace: plan.metadata.namespace,
               uid: plan.metadata.uid,
             },
           ],
