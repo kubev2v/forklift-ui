@@ -5,10 +5,13 @@ export interface IMetaTypeMeta {
 }
 
 export interface IObjectReference {
-  apiVersion: string;
-  kind: string;
   name: string;
-  uid: string | undefined;
+  namespace: string;
+  apiVersion?: string;
+  fieldPath?: string;
+  kind?: string;
+  resourceVersion?: string;
+  uid?: string;
 }
 
 // TODO: lib-ui candidate
@@ -20,9 +23,7 @@ export interface IMetaObjectMeta {
   resourceVersion?: string;
   generation?: number;
   creationTimestamp?: string; // ISO timestamp
-  annotations?: {
-    'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
-  };
+  annotations?: Record<string, string>;
   labels?: {
     createdForResourceType?: string;
     createdForResource?: string;
@@ -31,8 +32,8 @@ export interface IMetaObjectMeta {
   ownerReferences?: IObjectReference[];
 }
 
-export interface IMetaObjectGenerateName extends Partial<IMetaObjectMeta> {
-  generateName?: string;
+export interface IMetaObjectGenerateName extends Omit<IMetaObjectMeta, 'name'> {
+  generateName: string;
 }
 
 export interface ICR extends IMetaTypeMeta {

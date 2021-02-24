@@ -8,6 +8,7 @@ import {
   MappingTarget,
   Mapping,
   POD_NETWORK,
+  IMetaObjectMeta,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
 import {
@@ -65,9 +66,12 @@ export const useCreateMappingMutation = (
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
-    async (mapping: Mapping) => {
+    async (mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
-      await checkIfResourceExists(client, kind, resource, mapping.metadata.name);
+      const existingMappingName = (mapping.metadata as IMetaObjectMeta).name || null;
+      if (existingMappingName) {
+        await checkIfResourceExists(client, kind, resource, existingMappingName);
+      }
       return await client.create<Mapping>(resource, mapping);
     },
     {
@@ -79,6 +83,14 @@ export const useCreateMappingMutation = (
   );
 };
 
+export const useCreateMappingMutations = (): {
+  network: ReturnType<typeof useCreateMappingMutation>;
+  storage: ReturnType<typeof useCreateMappingMutation>;
+} => ({
+  network: useCreateMappingMutation(MappingType.Network),
+  storage: useCreateMappingMutation(MappingType.Storage),
+});
+
 export const usePatchMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
@@ -88,7 +100,7 @@ export const usePatchMappingMutation = (
   return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { resource } = getMappingResource(mappingType);
-      return await client.patch(resource, mapping.metadata.name, mapping);
+      return await client.patch(resource, (mapping.metadata as IMetaObjectMeta).name, mapping);
     },
     {
       onSuccess: () => {
@@ -99,6 +111,14 @@ export const usePatchMappingMutation = (
   );
 };
 
+export const usePatchMappingMutations = (): {
+  network: ReturnType<typeof usePatchMappingMutation>;
+  storage: ReturnType<typeof usePatchMappingMutation>;
+} => ({
+  network: usePatchMappingMutation(MappingType.Network),
+  storage: usePatchMappingMutation(MappingType.Storage),
+});
+
 export const useDeleteMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
@@ -107,7 +127,7 @@ export const useDeleteMappingMutation = (
   const { resource } = getMappingResource(mappingType);
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Mapping>(
-    (mapping: Mapping) => client.delete(resource, mapping.metadata.name),
+    (mapping: Mapping) => client.delete(resource, (mapping.metadata as IMetaObjectMeta).name),
     {
       onSuccess: () => {
         queryCache.invalidateQueries(['mappings', mappingType]);
@@ -215,7 +235,18 @@ export const getMappingNameSchema = (
   mappingBeingEdited: Mapping | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A mapping with this name already exists', (value) => {
-    if (mappingBeingEdited?.metadata.name === value) return true;
-    if (mappingsQuery.data?.items.find((mapping) => mapping.metadata.name === value)) return false;
+    if (mappingBeingEdited && (mappingBeingEdited.metadata as IMetaObjectMeta).name === value)
+      return true;
+    if (
+      mappingsQuery.data?.items.find(
+        (mapping) => mapping && (mapping.metadata as IMetaObjectMeta).name === value
+      )
+    )
+      return false;
     return true;
   });
+
+export const filterSharedMappings = (mappings?: Mapping[]): Mapping[] =>
+  (mappings || []).filter(
+    (mapping) => mapping.metadata.annotations?.['forklift.konveyor.io/shared'] !== 'false'
+  ) || null;

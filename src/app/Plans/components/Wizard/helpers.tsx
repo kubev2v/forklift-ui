@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
+  INameNamespaceRef,
   INetworkMapping,
   IPlan,
   IStorageMapping,
@@ -25,6 +26,7 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
+  isSameResource,
   nameAndNamespace,
 } from '@app/queries/helpers';
 import {
@@ -33,6 +35,7 @@ import {
   useInventoryProvidersQuery,
   useVMwareTreeQuery,
   useVMwareVMsQuery,
+  useMappingsQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -298,15 +301,30 @@ export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
-export const generateMappings = (
-  forms: PlanWizardFormState
-): { networkMapping: INetworkMapping | null; storageMapping: IStorageMapping | null } => {
+export interface IGenerateMappingsArgs {
+  forms: PlanWizardFormState;
+  generateName?: string;
+  owner?: IPlan;
+}
+
+export const generateMappings = ({
+  forms,
+  generateName,
+  owner,
+}: IGenerateMappingsArgs): {
+  networkMapping: INetworkMapping | null;
+  storageMapping: IStorageMapping | null;
+} => {
   const { sourceProvider, targetProvider } = forms.general.values;
+  const existingMappingRefs = owner?.spec.map;
   const networkMapping =
     sourceProvider && targetProvider
       ? (getMappingFromBuilderItems({
           mappingType: MappingType.Network,
-          mappingName: forms.networkMapping.values.newMappingName || '',
+          mappingName:
+            existingMappingRefs?.network.name || forms.networkMapping.values.newMappingName || null,
+          generateName: generateName || null,
+          owner,
           sourceProvider,
           targetProvider,
           builderItems: forms.networkMapping.values.builderItems,
@@ -316,7 +334,10 @@ export const generateMappings = (
     sourceProvider && targetProvider
       ? (getMappingFromBuilderItems({
           mappingType: MappingType.Storage,
-          mappingName: forms.storageMapping.values.newMappingName || '',
+          mappingName:
+            existingMappingRefs?.storage.name || forms.storageMapping.values.newMappingName || null,
+          generateName: generateName || null,
+          owner,
           sourceProvider,
           targetProvider,
           builderItems: forms.storageMapping.values.builderItems,
@@ -327,8 +348,8 @@ export const generateMappings = (
 
 export const generatePlan = (
   forms: PlanWizardFormState,
-  networkMapping: INetworkMapping | null,
-  storageMapping: IStorageMapping | null
+  networkMappingRef: INameNamespaceRef,
+  storageMappingRef: INameNamespaceRef
 ): IPlan => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
@@ -344,8 +365,8 @@ export const generatePlan = (
     },
     targetNamespace: forms.general.values.targetNamespace,
     map: {
-      networks: networkMapping?.spec.map || [],
-      datastores: storageMapping?.spec.map || [],
+      network: networkMappingRef,
+      storage: storageMappingRef,
     },
     vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
   },
@@ -394,6 +415,9 @@ export const useEditingPlanPrefillEffect = (
     MappingType.Storage
   );
 
+  const networkMappingsQuery = useMappingsQuery(MappingType.Network);
+  const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
+
   const queries = [
     providersQuery,
     vmsQuery,
@@ -401,6 +425,8 @@ export const useEditingPlanPrefillEffect = (
     vmTreeQuery,
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
+    networkMappingsQuery,
+    storageMappingsQuery,
   ];
   const errorTitles = [
     'Error loading providers',
@@ -411,6 +437,8 @@ export const useEditingPlanPrefillEffect = (
     'Error loading target networks',
     'Error loading source datastores',
     'Error loading target storage classes',
+    'Error loading network mappings',
+    'Error loading storage mappings',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
@@ -425,6 +453,12 @@ export const useEditingPlanPrefillEffect = (
       const treeQuery =
         forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+      const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
+        isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
+      );
+      const storageMapping = networkMappingsQuery.data?.items.find((mapping) =>
+        isSameResource(mapping.metadata, planBeingEdited.spec.map.storage)
+      );
 
       forms.general.fields.planName.setInitialValue(planBeingEdited.metadata.name);
       if (planBeingEdited.spec.description) {
@@ -442,7 +476,7 @@ export const useEditingPlanPrefillEffect = (
       forms.networkMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
-            planBeingEdited.spec.map.networks,
+            networkMapping?.spec.map || [],
             MappingType.Network,
             networkMappingResourceQueries.availableSources,
             networkMappingResourceQueries.availableTargets
@@ -458,7 +492,7 @@ export const useEditingPlanPrefillEffect = (
       forms.storageMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
-            planBeingEdited.spec.map.datastores,
+            storageMapping?.spec.map || [],
             MappingType.Storage,
             storageMappingResourceQueries.availableSources,
             storageMappingResourceQueries.availableTargets
@@ -488,6 +522,8 @@ export const useEditingPlanPrefillEffect = (
     vmsQuery,
     hostTreeQuery,
     vmTreeQuery,
+    networkMappingsQuery,
+    storageMappingsQuery,
   ]);
 
   return {

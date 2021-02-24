@@ -12,6 +12,7 @@ import {
   INetworkMapping,
   IStorageMapping,
   IVMwareVM,
+  IPlan,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
@@ -19,6 +20,7 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
 import { IMappingResourcesResult } from '@app/queries';
+import { getObjectRef } from '@app/common/helpers';
 
 export const getBuilderItemsFromMappingItems = (
   items: MappingItem[] | null,
@@ -54,7 +56,9 @@ export const getBuilderItemsFromMapping = (
 
 interface IGetMappingParams {
   mappingType: MappingType;
-  mappingName: string;
+  mappingName: string | null;
+  generateName: string | null;
+  owner?: IPlan;
   sourceProvider: IVMwareProvider;
   targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
@@ -63,6 +67,8 @@ interface IGetMappingParams {
 export const getMappingFromBuilderItems = ({
   mappingType,
   mappingName,
+  generateName,
+  owner,
   sourceProvider,
   targetProvider,
   builderItems,
@@ -101,8 +107,20 @@ export const getMappingFromBuilderItems = ({
     apiVersion: CLUSTER_API_VERSION,
     kind: mappingType === MappingType.Network ? 'NetworkMap' : 'StorageMap',
     metadata: {
-      name: mappingName,
+      ...(mappingName ? { name: mappingName } : { generateName: generateName || '' }),
       namespace: META.namespace,
+      ...(owner
+        ? {
+            ownerReferences: [getObjectRef(owner)],
+            annotations: {
+              'forklift.konveyor.io/shared': 'false',
+            },
+          }
+        : {
+            annotations: {
+              'forklift.konveyor.io/shared': generateName ? 'false' : 'true',
+            },
+          }),
     },
     spec: {
       provider: {

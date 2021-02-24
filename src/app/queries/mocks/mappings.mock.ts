@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-datastore-to-ocpv-storageclass1',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -35,12 +36,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const storageMapping1WithOwner: IStorageMapping = {
+    ...storageMapping1,
+    metadata: {
+      ...storageMapping1.metadata,
+      name: 'plantest1-generated-asdf',
+      annotations: { 'forklift.konveyor.io/shared': 'false' },
+      ownerReferences: [
+        {
+          apiVersion: CLUSTER_API_VERSION,
+          kind: 'Plan',
+          name: 'plantest-1',
+          namespace: 'openshift-migration',
+          uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+        },
+      ],
+    },
+  };
+
   const storageMapping2: IStorageMapping = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'StorageMap',
     metadata: {
       name: 'vcenter3-datastore-to-ocpv-storageclass2',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -66,6 +86,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-invalid-storage-mapping',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -85,7 +106,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_STORAGE_MAPPINGS = [storageMapping1, storageMapping2, invalidStorageMapping];
+  MOCK_STORAGE_MAPPINGS = [
+    storageMapping1,
+    storageMapping1WithOwner,
+    storageMapping2,
+    invalidStorageMapping,
+  ];
 
   const networkMapping1: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
@@ -93,6 +119,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-netstore-to-ocp1-network1',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -113,12 +140,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const networkMapping1WithOwner: INetworkMapping = {
+    ...networkMapping1,
+    metadata: {
+      ...networkMapping1.metadata,
+      name: 'plantest1-generated-zxcv',
+      annotations: { 'forklift.konveyor.io/shared': 'false' },
+      ownerReferences: [
+        {
+          apiVersion: CLUSTER_API_VERSION,
+          kind: 'Plan',
+          name: 'plantest-1',
+          namespace: 'openshift-migration',
+          uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+        },
+      ],
+    },
+  };
+
   const networkMapping2: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'NetworkMap',
     metadata: {
       name: 'vcenter1-netstore-to-ocp1-network2',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -145,6 +191,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter3-invalid-network-map',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -166,5 +213,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2, invalidNetworkMapping];
+  MOCK_NETWORK_MAPPINGS = [
+    networkMapping1,
+    networkMapping1WithOwner,
+    networkMapping2,
+    invalidNetworkMapping,
+  ];
 }

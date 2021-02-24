@@ -14,11 +14,12 @@ import {
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { Mapping, MappingType } from '@app/queries/types';
+import { IMetaObjectMeta, Mapping, MappingType } from '@app/queries/types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
 import CreateMappingButton from './CreateMappingButton';
 import MappingStatus from './MappingStatus';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
@@ -35,12 +36,12 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
     const {
-      metadata: { name },
+      metadata,
       spec: { provider },
     } = mapping;
     return [
       '', // Expand control column
-      name,
+      (metadata as IMetaObjectMeta).name || '',
       provider.source.name,
       provider.destination.name,
       '', // Status column  -- TODO can we even get a sort value for this?
@@ -57,7 +58,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     isItemSelected: isMappingExpanded,
   } = useSelectionState<Mapping>({
     items: sortedItems,
-    isEqual: (a, b) => a.metadata.name === b.metadata.name,
+    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
   });
 
   const columns: ICell[] = [
@@ -71,7 +72,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const rows: IRow[] = [];
   currentPageItems.forEach((mapping: Mapping) => {
     const {
-      metadata: { name },
+      metadata,
       spec: { provider },
     } = mapping;
     const isExpanded = isMappingExpanded(mapping);
@@ -79,7 +80,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       meta: { mapping },
       isOpen: isExpanded,
       cells: [
-        name,
+        (metadata as IMetaObjectMeta).name,
         provider.source.name,
         provider.destination.name,
         {

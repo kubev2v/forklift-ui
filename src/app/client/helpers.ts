@@ -61,6 +61,7 @@ export function convertFormValuesToSecret(
           apiVersion: CLUSTER_API_VERSION,
           kind: 'Provider',
           name: providerBeingEdited.metadata.name,
+          namespace: providerBeingEdited.metadata.namespace,
           uid: providerBeingEdited.metadata.uid,
         },
       ];

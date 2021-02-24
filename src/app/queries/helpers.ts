@@ -191,8 +191,8 @@ export const nameAndNamespace = (
 });
 
 export const isSameResource = (
-  refA: INameNamespaceRef | null | undefined,
-  refB: INameNamespaceRef | null | undefined
+  refA: Partial<INameNamespaceRef> | null | undefined,
+  refB: Partial<INameNamespaceRef> | null | undefined
 ): boolean => !!refA && !!refB && refA.name === refB.name && refA.namespace === refB.namespace;
 
 export const areAssociatedProvidersReady = (
