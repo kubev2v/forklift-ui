@@ -162,6 +162,13 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     : planBeingEdited && mappingInPlan
     ? mappingInPlan.spec.map.length < form.values.builderItems.length
     : false;
+  console.log({
+    mappingInPlan,
+    planBeingEdited,
+    builderItems: form.values.builderItems,
+    selectedExistingMapping: form.values.selectedExistingMapping,
+    hasAddedItems,
+  });
 
   return (
     <ResolvedQueries

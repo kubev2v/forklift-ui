@@ -33,6 +33,7 @@ export interface IVMStatus {
   error?: IError;
   started?: string;
   completed?: string;
+  condition?: IStatusCondition[];
 }
 
 export interface IPlanVM {

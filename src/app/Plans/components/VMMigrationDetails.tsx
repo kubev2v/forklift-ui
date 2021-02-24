@@ -88,9 +88,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         phase: '',
       })) || [];
 
-  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null);
-  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
-
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
@@ -177,6 +174,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed);
   const selectAllCancelable = (isSelected: boolean) =>
     isSelected ? setSelectedItems(cancelableVms) : setSelectedItems([]);
+
+  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null, () => {
+    toggleCancelModal();
+    setSelectedItems([]);
+  });
 
   const {
     toggleItemSelected: toggleVMExpanded,
