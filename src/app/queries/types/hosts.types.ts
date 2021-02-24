@@ -3,6 +3,7 @@ import { ICR, INameNamespaceRef, IStatusCondition, IVMwareObjRef } from './commo
 export interface IHostNetworkAdapter {
   name: string;
   ipAddress: string;
+  subnetMask: string;
   linkSpeed: number;
   mtu: number;
 }
@@ -14,6 +15,7 @@ export interface IHost {
   name: string;
   selfLink: string;
   inMaintenance: boolean;
+  managementServerIp: string;
   thumbprint: string;
   cpuSockets: number;
   cpuCores: number;

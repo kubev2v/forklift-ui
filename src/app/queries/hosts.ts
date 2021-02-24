@@ -17,6 +17,7 @@ import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProvide
 import { secretResource, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { getObjectRef } from '@app/common/helpers';
+import { isManagementNetworkSelected } from '@app/Providers/components/VMwareProviderHostsTable/helpers';
 
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
@@ -134,7 +135,7 @@ export const useConfigureHostsMutation = (
   allHostConfigs: IHostConfig[],
   onSuccess?: () => void
 ): MutationResultPair<
-  IKubeResponse<IHostConfig>[],
+  (IKubeResponse<IHostConfig> | null)[],
   KubeClientError,
   SelectNetworkFormValues,
   unknown
@@ -145,10 +146,21 @@ export const useConfigureHostsMutation = (
 
   const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
+    const isMgmtSelected = isManagementNetworkSelected(
+      selectedHosts,
+      values.selectedNetworkAdapter
+    );
     return Promise.all(
       selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
         const existingSecret = existingConfig?.spec.secret || null;
+
+        if (isMgmtSelected) {
+          if (existingConfig) {
+            return client.delete<IHostConfig>(hostConfigResource, existingConfig.metadata.name);
+          }
+          return Promise.resolve(null); // No action needed if there is no Host CR and we're selecting the default network
+        }
 
         // Create or update a secret CR
         const newSecret = generateSecret(values, existingSecret, host, provider);
@@ -173,7 +185,7 @@ export const useConfigureHostsMutation = (
   };
 
   return useMockableMutation<
-    IKubeResponse<IHostConfig>[],
+    (IKubeResponse<IHostConfig> | null)[],
     KubeClientError,
     SelectNetworkFormValues
   >(configureHosts, {
