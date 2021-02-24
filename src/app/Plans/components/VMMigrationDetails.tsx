@@ -42,7 +42,7 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus, IVMwareVM } from '@app/queries/types';
-import { useCancelVMsMutation, usePlansQuery } from '@app/queries';
+import { useCancelVMsMutation, useLatestMigrationQuery, usePlansQuery } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
@@ -92,6 +92,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
+
+  const latestMigration = useLatestMigrationQuery(plan || null);
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
@@ -169,11 +171,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
   });
-  const cancelableVms = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+  const isVMCanceled = (vm: IVMStatus) =>
+    !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
+  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
     ? []
-    : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed);
+    : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
   const selectAllCancelable = (isSelected: boolean) =>
-    isSelected ? setSelectedItems(cancelableVms) : setSelectedItems([]);
+    isSelected ? setSelectedItems(cancelableVMs) : setSelectedItems([]);
 
   const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
   const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null, () => {
@@ -214,7 +218,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     rows.push({
       meta: { vmStatus },
       selected: isItemSelected(vmStatus),
-      disableSelection: !cancelableVms.find((vm) => vm === vmStatus),
+      disableSelection: !cancelableVMs.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
@@ -305,7 +309,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                       toggleItemSelected(rowData.meta.vmStatus, isSelected);
                     }
                   }}
-                  canSelectAll={cancelableVms.length > 0}
+                  canSelectAll={cancelableVMs.length > 0}
                 >
                   <TableHeader />
                   <TableBody />
