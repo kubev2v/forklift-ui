@@ -2,7 +2,6 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
-  IMetaObjectMeta,
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
