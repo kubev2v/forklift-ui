@@ -25,6 +25,7 @@ import {
   IOpenShiftProvider,
   IVMwareVM,
   IPlan,
+  IMetaObjectMeta,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
@@ -112,7 +113,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   const mappingOptions = Object.values(filteredMappings).map((mapping) => {
     const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
     return {
-      toString: () => mapping.metadata.name,
+      toString: () => (mapping.metadata as IMetaObjectMeta).name,
       value: mapping,
       props: {
         isDisabled: !isValid,
@@ -122,7 +123,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             isTooltipEnabled={!isValid}
             content="This mapping cannot be selected because it includes missing source or target resources"
           >
-            <div>{mapping.metadata.name}</div>
+            <div>{(mapping.metadata as IMetaObjectMeta).name}</div>
           </ConditionalTooltip>
         ),
       },
@@ -145,13 +146,21 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     form.fields.isSaveNewMapping.setValue(false);
   };
 
+  const mappingInPlanRef = planBeingEdited
+    ? mappingType === MappingType.Network
+      ? planBeingEdited.spec.map.network
+      : planBeingEdited.spec.map.storage
+    : null;
+  const mappingInPlan =
+    (mappingInPlanRef &&
+      (mappingsQuery.data?.items || []).find((mapping) =>
+        isSameResource(mappingInPlanRef, mapping.metadata)
+      )) ||
+    null;
   const hasAddedItems = form.values.selectedExistingMapping
     ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
-    : planBeingEdited
-    ? (mappingType === MappingType.Network
-        ? planBeingEdited.spec.map.networks
-        : planBeingEdited.spec.map.datastores
-      ).length < form.values.builderItems.length
+    : planBeingEdited && mappingInPlan
+    ? mappingInPlan.spec.map.length < form.values.builderItems.length
     : false;
 
   return (

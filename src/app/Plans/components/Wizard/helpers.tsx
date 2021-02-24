@@ -455,10 +455,10 @@ export const useEditingPlanPrefillEffect = (
         forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
-        isSameResource(mapping.metadata as IMetaObjectMeta, planBeingEdited.spec.map.network)
+        isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
       );
       const storageMapping = networkMappingsQuery.data?.items.find((mapping) =>
-        isSameResource(mapping.metadata as IMetaObjectMeta, planBeingEdited.spec.map.storage)
+        isSameResource(mapping.metadata, planBeingEdited.spec.map.storage)
       );
 
       forms.general.fields.planName.setInitialValue(planBeingEdited.metadata.name);

@@ -58,7 +58,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     isItemSelected: isMappingExpanded,
   } = useSelectionState<Mapping>({
     items: sortedItems,
-    isEqual: (a, b) => isSameResource(a.metadata as IMetaObjectMeta, b.metadata as IMetaObjectMeta),
+    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
   });
 
   const columns: ICell[] = [

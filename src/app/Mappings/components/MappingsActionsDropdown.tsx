@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
-import { MappingType, Mapping } from '@app/queries/types';
+import { MappingType, Mapping, IMetaObjectMeta } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useDeleteMappingMutation,
@@ -91,7 +91,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         body={
           <>
             Are you sure you want to delete the {mappingType.toLowerCase()} mapping &quot;
-            <strong>{mapping.metadata.name}</strong>&quot;?
+            <strong>{(mapping.metadata as IMetaObjectMeta).name}</strong>&quot;?
           </>
         }
         errorText="Error deleting mapping"

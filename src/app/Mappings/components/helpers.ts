@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { isSameResource } from '@app/queries/helpers';
 import {
+  IMetaObjectMeta,
   INetworkMappingItem,
   IOpenShiftProvider,
   IProvidersByType,
@@ -84,7 +85,7 @@ export const useEditingMappingPrefillEffect = (
       const { sourceProvider, targetProvider } = mappingBeingEditedProviders;
       const { availableSources, availableTargets } = mappingResourceQueries;
 
-      form.fields.name.setInitialValue(mappingBeingEdited.metadata.name);
+      form.fields.name.setInitialValue((mappingBeingEdited.metadata as IMetaObjectMeta).name);
       form.fields.sourceProvider.setInitialValue(sourceProvider);
       form.fields.targetProvider.setInitialValue(targetProvider);
 
