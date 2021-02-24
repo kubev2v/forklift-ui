@@ -28,7 +28,7 @@ import {
   IMetaObjectMeta,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
-import { useMappingResourceQueries, useMappingsQuery } from '@app/queries';
+import { filterSharedMappings, useMappingResourceQueries, useMappingsQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import {
   getBuilderItemsFromMapping,
@@ -96,7 +96,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   const mappingsQuery = useMappingsQuery(mappingType);
 
-  const filteredMappings = (mappingsQuery.data?.items || []).filter(
+  const filteredMappings = filterSharedMappings(mappingsQuery.data?.items).filter(
     ({
       spec: {
         provider: { source, destination },

@@ -112,8 +112,15 @@ export const getMappingFromBuilderItems = ({
       ...(owner
         ? {
             ownerReferences: [getObjectRef(owner)],
+            annotations: {
+              'forklift.konveyor.io/shared': 'false',
+            },
           }
-        : {}),
+        : {
+            annotations: {
+              'forklift.konveyor.io/shared': generateName ? 'false' : 'true',
+            },
+          }),
     },
     spec: {
       provider: {

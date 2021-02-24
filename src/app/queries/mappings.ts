@@ -245,3 +245,8 @@ export const getMappingNameSchema = (
       return false;
     return true;
   });
+
+export const filterSharedMappings = (mappings?: Mapping[]): Mapping[] =>
+  (mappings || []).filter(
+    (mapping) => mapping.metadata.annotations?.['forklift.konveyor.io/shared'] === 'true'
+  ) || null;

@@ -23,9 +23,7 @@ export interface IMetaObjectMeta {
   resourceVersion?: string;
   generation?: number;
   creationTimestamp?: string; // ISO timestamp
-  annotations?: {
-    'kubectl.kubernetes.io/last-applied-configuration': string; // JSON
-  };
+  annotations?: Record<string, string>;
   labels?: {
     createdForResourceType?: string;
     createdForResource?: string;

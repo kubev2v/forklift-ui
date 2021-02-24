@@ -14,6 +14,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import MappingsTable from './components/MappingsTable';
 import AddEditMappingModal from './components/AddEditMappingModal';
 import {
+  filterSharedMappings,
   useClusterProvidersQuery,
   useHasSufficientProvidersQuery,
   useMappingsQuery,
@@ -32,12 +33,7 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
   const clusterProvidersQuery = useClusterProvidersQuery();
   const mappingsQuery = useMappingsQuery(mappingType);
 
-  // Only include mappings with no ownerReferences - those not owned by any one plan.
-  const filteredMappings =
-    mappingsQuery.data?.items.filter((mapping) => {
-      const { ownerReferences } = mapping.metadata;
-      return !ownerReferences || ownerReferences.length === 0;
-    }) || null;
+  const filteredMappings = filterSharedMappings(mappingsQuery.data?.items);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [mappingBeingEdited, setMappingBeingEdited] = React.useState<Mapping | null>(null);
