@@ -7,6 +7,7 @@ import { IMigration } from './types/migrations.types';
 import { IPlan } from './types/plans.types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { usePollingContext } from '@app/common/context';
+import { getObjectRef } from '@app/common/helpers';
 
 const migrationResource = new ForkliftResource(ForkliftResourceKind.Migration, META.namespace);
 
@@ -24,15 +25,7 @@ export const useCreateMigrationMutation = (
         metadata: {
           name: `${plan.metadata.name}-${Date.now()}`,
           namespace: META.namespace,
-          ownerReferences: [
-            {
-              apiVersion: plan.apiVersion,
-              kind: plan.kind,
-              name: plan.metadata.name,
-              namespace: plan.metadata.namespace,
-              uid: plan.metadata.uid,
-            },
-          ],
+          ownerReferences: [getObjectRef(plan)],
         },
         spec: {
           plan: nameAndNamespace(plan.metadata),

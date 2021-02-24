@@ -16,6 +16,7 @@ import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
 import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProviderHostsTable/SelectNetworkModal';
 import { secretResource, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { getObjectRef } from '@app/common/helpers';
 
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
@@ -94,15 +95,7 @@ const generateSecret = (
     },
     ...(hostConfig
       ? {
-          ownerReferences: [
-            {
-              apiVersion: hostConfig.apiVersion,
-              kind: hostConfig.kind,
-              name: hostConfig.metadata.name,
-              namespace: hostConfig.metadata.namespace,
-              uid: hostConfig.metadata.uid,
-            },
-          ],
+          ownerReferences: [getObjectRef(hostConfig)],
         }
       : {}),
   },
@@ -124,15 +117,7 @@ const generateHostConfig = (
     kind: 'Host',
     metadata: {
       ...(existingConfig?.metadata || getHostConfigRef(provider, host)),
-      ownerReferences: [
-        {
-          apiVersion: provider.object.apiVersion,
-          kind: provider.object.kind,
-          name: provider.object.metadata.name,
-          namespace: provider.object.metadata.namespace,
-          uid: provider.object.metadata.uid,
-        },
-      ],
+      ownerReferences: [getObjectRef(provider.object)],
     },
     spec: {
       id: host.id,

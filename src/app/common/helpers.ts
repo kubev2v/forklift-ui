@@ -3,7 +3,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { StatusCategoryType, PlanStatusType, StepType } from '@app/common/constants';
-import { IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
+import { ICR, IObjectReference, IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -103,3 +103,11 @@ export const numStr = (num: number | undefined): string => {
   if (num === undefined) return '';
   return String(num);
 };
+
+export const getObjectRef = (cr: ICR): IObjectReference => ({
+  apiVersion: cr.apiVersion,
+  kind: cr.kind,
+  name: cr.metadata.name,
+  namespace: cr.metadata.namespace,
+  uid: cr.metadata.uid,
+});

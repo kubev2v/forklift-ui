@@ -20,6 +20,7 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
 import { IMappingResourcesResult } from '@app/queries';
+import { getObjectRef } from '@app/common/helpers';
 
 export const getBuilderItemsFromMappingItems = (
   items: MappingItem[] | null,
@@ -110,15 +111,7 @@ export const getMappingFromBuilderItems = ({
       namespace: META.namespace,
       ...(owner
         ? {
-            ownerReferences: [
-              {
-                apiVersion: owner.apiVersion,
-                kind: owner.kind,
-                name: owner.metadata.name,
-                namespace: owner.metadata.namespace,
-                uid: owner.metadata.uid,
-              },
-            ],
+            ownerReferences: [getObjectRef(owner)],
           }
         : {}),
     },

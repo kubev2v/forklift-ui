@@ -5,6 +5,8 @@ import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './networks.mock';
 import { MOCK_VMWARE_DATASTORES } from './datastores.mock';
 import { nameAndNamespace } from '../helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { getObjectRef } from '@app/common/helpers';
+import { MOCK_PLANS } from './plans.mock';
 
 export let MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [];
 export let MOCK_STORAGE_MAPPINGS: IStorageMapping[] = [];
@@ -32,6 +34,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
         },
       ],
+    },
+  };
+
+  const storageMapping1WithOwner: IStorageMapping = {
+    ...storageMapping1,
+    metadata: {
+      ...storageMapping1.metadata,
+      name: 'plantest1-generated-asdf',
+      ownerReferences: [getObjectRef(MOCK_PLANS[0])],
     },
   };
 
@@ -85,7 +96,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_STORAGE_MAPPINGS = [storageMapping1, storageMapping2, invalidStorageMapping];
+  MOCK_STORAGE_MAPPINGS = [
+    storageMapping1,
+    storageMapping1WithOwner,
+    storageMapping2,
+    invalidStorageMapping,
+  ];
 
   const networkMapping1: INetworkMapping = {
     apiVersion: CLUSTER_API_VERSION,
@@ -110,6 +126,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           },
         },
       ],
+    },
+  };
+
+  const networkMapping1WithOwner: INetworkMapping = {
+    ...networkMapping1,
+    metadata: {
+      ...networkMapping1.metadata,
+      name: 'plantest1-generated-zxcv',
+      ownerReferences: [getObjectRef(MOCK_PLANS[0])],
     },
   };
 
@@ -166,5 +191,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_NETWORK_MAPPINGS = [networkMapping1, networkMapping2, invalidNetworkMapping];
+  MOCK_NETWORK_MAPPINGS = [
+    networkMapping1,
+    networkMapping1WithOwner,
+    networkMapping2,
+    invalidNetworkMapping,
+  ];
 }
