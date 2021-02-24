@@ -21,6 +21,7 @@ import {
   IOpenShiftProvider,
   ISrcDestRefs,
   IProviderObject,
+  IMetaObjectMeta,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -118,7 +119,7 @@ export const useCreateProviderMutation = (
       );
       await client.patch<ISecret>(
         secretResource,
-        secretWithOwnerRef.metadata.name || '',
+        (secretWithOwnerRef.metadata as IMetaObjectMeta).name || '',
         secretWithOwnerRef
       );
 
@@ -147,7 +148,10 @@ export const useCreateProviderMutation = (
       const rollbackObjs = providerAddResults.reduce(
         (rollbackAccum: IRollbackObj[], res: IKubeResponse<IProviderObject | ISecret>) => {
           return res.status === 201
-            ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name || '' }]
+            ? [
+                ...rollbackAccum,
+                { kind: res.data.kind, name: (res.data.metadata as IMetaObjectMeta).name || '' },
+              ]
             : rollbackAccum;
         },
         []
@@ -217,7 +221,7 @@ export const usePatchProviderMutation = (
       ForkliftResourceKind.Provider,
       providerBeingEdited
     );
-    await client.patch(secretResource, secret.metadata.name || '', secret);
+    await client.patch(secretResource, (secret.metadata as IMetaObjectMeta).name || '', secret);
     return await client.patch<IProviderObject>(
       providerResource,
       providerWithSecret.metadata.name,

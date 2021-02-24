@@ -8,7 +8,6 @@ import {
   MappingTarget,
   Mapping,
   POD_NETWORK,
-  INameNamespaceRef,
   IMetaObjectMeta,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
@@ -16,7 +15,6 @@ import {
   getAggregateQueryStatus,
   getFirstQueryError,
   mockKubeList,
-  nameAndNamespace,
   sortKubeResultsByName,
   useMockableMutation,
   useMockableQuery,
@@ -237,7 +235,13 @@ export const getMappingNameSchema = (
   mappingBeingEdited: Mapping | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A mapping with this name already exists', (value) => {
-    if (mappingBeingEdited?.metadata.name === value) return true;
-    if (mappingsQuery.data?.items.find((mapping) => mapping.metadata.name === value)) return false;
+    if (mappingBeingEdited && (mappingBeingEdited.metadata as IMetaObjectMeta).name === value)
+      return true;
+    if (
+      mappingsQuery.data?.items.find(
+        (mapping) => mapping && (mapping.metadata as IMetaObjectMeta).name === value
+      )
+    )
+      return false;
     return true;
   });
