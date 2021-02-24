@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-datastore-to-ocpv-storageclass1',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       ...storageMapping1.metadata,
       name: 'plantest1-generated-asdf',
+      annotations: { 'forklift.konveyor.io/shared': 'false' },
       ownerReferences: [
         {
           apiVersion: CLUSTER_API_VERSION,
@@ -58,6 +60,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter3-datastore-to-ocpv-storageclass2',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -83,6 +86,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-invalid-storage-mapping',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -115,6 +119,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-netstore-to-ocp1-network1',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -140,6 +145,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       ...networkMapping1.metadata,
       name: 'plantest1-generated-zxcv',
+      annotations: { 'forklift.konveyor.io/shared': 'false' },
       ownerReferences: [
         {
           apiVersion: CLUSTER_API_VERSION,
@@ -158,6 +164,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter1-netstore-to-ocp1-network2',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {
@@ -184,6 +191,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'vcenter3-invalid-network-map',
       namespace: META.namespace,
+      annotations: { 'forklift.konveyor.io/shared': 'true' },
     },
     spec: {
       provider: {

@@ -59,12 +59,24 @@ export interface IStorageMappingSpec extends ICommonMappingSpec {
   map: IStorageMappingItem[];
 }
 
-interface ICommonMappingMetadata
-  extends Omit<IMetaObjectGenerateName | IMetaObjectMeta, 'annotations'> {
+interface IMappingAnnotations {
   annotations?: {
     'forklift.konveyor.io/shared'?: 'true' | 'false';
   };
 }
+
+interface IMetaObjectGenerateNameWithMappingAnnotations
+  extends Omit<IMetaObjectGenerateName, 'annotations'>,
+    IMappingAnnotations {}
+
+interface IMetaObjectMetaWithMappingAnnotations
+  extends Omit<IMetaObjectMeta, 'annotations'>,
+    IMappingAnnotations {}
+
+export type ICommonMappingMetadata =
+  | IMetaObjectGenerateNameWithMappingAnnotations
+  | IMetaObjectMetaWithMappingAnnotations;
+
 export interface ICommonMapping extends IMetaTypeMeta {
   apiVersion: string;
   kind: 'NetworkMap' | 'StorageMap';
