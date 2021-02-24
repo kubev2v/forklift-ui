@@ -99,16 +99,19 @@ describe('<AddEditProviderModal />', () => {
     });
 
     const nextButton = await screen.findByRole('button', { name: /Next/ });
+    expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Filter VMs/ })).toBeInTheDocument();
     expect(
       screen.getByRole('checkbox', { name: /Select Host esx13.v2v.bos.redhat.com/ })
     ).toBeChecked();
+    expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Select VMs/ })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /Select row 0/ })).toBeChecked();
+    expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Network mapping/ })).toBeInTheDocument();
@@ -116,6 +119,7 @@ describe('<AddEditProviderModal />', () => {
     const networkTarget = screen.getByRole('textbox', { name: /select target.../i });
     expect(networkTarget).toHaveValue('foo-namespace / ocp-network-1');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
+    await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Storage mapping/ })).toBeInTheDocument();
@@ -123,6 +127,7 @@ describe('<AddEditProviderModal />', () => {
     const storageTarget = screen.getByRole('textbox', { name: /select target.../i });
     expect(storageTarget).toHaveValue('standard (default)');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
+    await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
 
     // Review step
