@@ -14,6 +14,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     name: 'esx12.v2v.bos.redhat.com',
     selfLink: '/namespaces/openshift-migration/providers/vsphere/test/hosts/host-44',
     inMaintenance: false,
+    managementServerIp: '10.19.2.12',
     thumbprint: 'D3:47:18:B1:11:39:87:25:F4:52:B2:04:EC:85:88:FA:9D:78:73:11',
     cpuSockets: 2,
     cpuCores: 16,
@@ -165,10 +166,34 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       { kind: 'VM', id: 'vm-2849' },
     ],
     networkAdapters: [
-      { name: 'VM_Migration', ipAddress: '192.168.79.12', linkSpeed: 10000, mtu: 9000 },
-      { name: 'VMkernel', ipAddress: '172.31.2.12', linkSpeed: 10000, mtu: 1500 },
-      { name: 'vDS-1', ipAddress: '192.168.61.12', linkSpeed: 10000, mtu: 1500 },
-      { name: 'Management Network', ipAddress: '10.19.2.12', linkSpeed: 1000, mtu: 1500 },
+      {
+        name: 'VM_Migration',
+        ipAddress: '192.168.79.12',
+        linkSpeed: 10000,
+        mtu: 9000,
+        subnetMask: '0.0.0.0',
+      },
+      {
+        name: 'VMkernel',
+        ipAddress: '172.31.2.12',
+        linkSpeed: 10000,
+        mtu: 1500,
+        subnetMask: '0.0.0.0',
+      },
+      {
+        name: 'vDS-1',
+        ipAddress: '192.168.61.12',
+        linkSpeed: 10000,
+        mtu: 1500,
+        subnetMask: '0.0.0.0',
+      },
+      {
+        name: 'Management Network',
+        ipAddress: '10.19.2.12',
+        linkSpeed: 1000,
+        mtu: 1500,
+        subnetMask: '0.0.0.0',
+      },
     ],
   };
 

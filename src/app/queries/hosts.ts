@@ -17,6 +17,7 @@ import { SelectNetworkFormValues } from '@app/Providers/components/VMwareProvide
 import { secretResource, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { getObjectRef } from '@app/common/helpers';
+import { isManagementNetworkSelected } from '@app/Providers/components/VMwareProviderHostsTable/helpers';
 
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
@@ -145,12 +146,16 @@ export const useConfigureHostsMutation = (
 
   const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
+    const isMgmtSelected = isManagementNetworkSelected(
+      selectedHosts,
+      values.selectedNetworkAdapter
+    );
     return Promise.all(
       selectedHosts.map(async (host, index) => {
         const existingConfig = existingHostConfigs[index] || null;
         const existingSecret = existingConfig?.spec.secret || null;
 
-        if (values.selectedNetworkAdapter?.name === 'Management Network') {
+        if (isMgmtSelected) {
           if (existingConfig) {
             return client.delete<IHostConfig>(hostConfigResource, existingConfig.metadata.name);
           }

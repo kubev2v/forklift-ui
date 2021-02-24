@@ -15,11 +15,24 @@ export const findSelectedNetworkAdapter = (
   hostConfig: IHostConfig | null
 ): IHostNetworkAdapter | null => {
   const managementNetwork =
-    host.networkAdapters.find((adapter) => adapter.name === 'Management Network') || null;
+    host.networkAdapters.find((adapter) => adapter.ipAddress === host.managementServerIp) || null;
   if (!hostConfig) return managementNetwork;
   return (
     host.networkAdapters.find((adapter) => adapter.ipAddress === hostConfig?.spec.ipAddress) ||
     managementNetwork
+  );
+};
+
+export const isManagementNetworkSelected = (
+  selectedHosts: IHost[],
+  selectedNetwork: IHostNetworkAdapter | null
+): boolean => {
+  const allHostsHaveSameManagementNetwork = selectedHosts.every(
+    (host) => host.managementServerIp === selectedHosts[0].managementServerIp
+  );
+  return (
+    allHostsHaveSameManagementNetwork &&
+    selectedNetwork?.ipAddress === selectedHosts[0].managementServerIp
   );
 };
 

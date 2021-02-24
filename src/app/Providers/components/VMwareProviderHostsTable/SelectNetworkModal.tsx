@@ -11,7 +11,11 @@ import {
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 
-import { formatHostNetworkAdapter, usePrefillHostConfigEffect } from './helpers';
+import {
+  formatHostNetworkAdapter,
+  isManagementNetworkSelected,
+  usePrefillHostConfigEffect,
+} from './helpers';
 import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -25,25 +29,21 @@ interface ISelectNetworkModalProps {
   onClose: () => void;
 }
 
-const useSelectNetworkFormState = () => {
+const useSelectNetworkFormState = (selectedHosts: IHost[]) => {
   const selectedNetworkAdapterField = useFormField<IHostNetworkAdapter | null>(
     null,
     yup.mixed<IHostNetworkAdapter>().label('Host network').required()
   );
-  const isManagementNetworkSelected =
-    selectedNetworkAdapterField.value?.name === 'Management Network';
+  const isMgmtSelected = isManagementNetworkSelected(
+    selectedHosts,
+    selectedNetworkAdapterField.value
+  );
   const usernameSchema = yup.string().max(320).label('Host admin username');
   const passwordSchema = yup.string().max(256).label('Host admin password');
   return useFormState({
     selectedNetworkAdapter: selectedNetworkAdapterField,
-    adminUsername: useFormField(
-      '',
-      !isManagementNetworkSelected ? usernameSchema.required() : usernameSchema
-    ),
-    adminPassword: useFormField(
-      '',
-      !isManagementNetworkSelected ? passwordSchema.required() : passwordSchema
-    ),
+    adminUsername: useFormField('', !isMgmtSelected ? usernameSchema.required() : usernameSchema),
+    adminPassword: useFormField('', !isMgmtSelected ? passwordSchema.required() : passwordSchema),
   });
 };
 export type SelectNetworkFormState = ReturnType<typeof useSelectNetworkFormState>;
@@ -63,7 +63,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     onClose
   );
 
-  const form = useSelectNetworkFormState();
+  const form = useSelectNetworkFormState(selectedHosts);
   const { isDonePrefilling } = usePrefillHostConfigEffect(
     form,
     selectedHosts,
@@ -77,8 +77,10 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     props: { description: `${networkAdapter.linkSpeed} Mbps; MTU: ${networkAdapter.mtu}` },
   }));
 
-  const isManagementNetworkSelected =
-    form.values.selectedNetworkAdapter?.name === 'Management Network';
+  const isMgmtSelected = isManagementNetworkSelected(
+    selectedHosts,
+    form.values.selectedNetworkAdapter
+  );
 
   return (
     <Modal
@@ -150,7 +152,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           </FormGroup>
 
           <ConditionalTooltip
-            isTooltipEnabled={isManagementNetworkSelected}
+            isTooltipEnabled={isMgmtSelected}
             content="Credentials are not needed when selecting the provider’s default management network."
             position="left"
           >
@@ -159,11 +161,11 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               label="Host admin username"
               isRequired
               fieldId="admin-username"
-              inputProps={isManagementNetworkSelected ? { isDisabled: true, value: '' } : {}}
+              inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}
             />
           </ConditionalTooltip>
           <ConditionalTooltip
-            isTooltipEnabled={isManagementNetworkSelected}
+            isTooltipEnabled={isMgmtSelected}
             content="Credentials are not needed when selecting the provider’s default management network."
             position="left"
           >
@@ -173,7 +175,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               label="Host admin password"
               isRequired
               fieldId="admin-password"
-              inputProps={isManagementNetworkSelected ? { isDisabled: true, value: '' } : {}}
+              inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}
             />
           </ConditionalTooltip>
         </Form>
