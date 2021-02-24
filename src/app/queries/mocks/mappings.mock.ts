@@ -5,8 +5,6 @@ import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './networks.mock';
 import { MOCK_VMWARE_DATASTORES } from './datastores.mock';
 import { nameAndNamespace } from '../helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
-import { getObjectRef } from '@app/common/helpers';
-import { MOCK_PLANS } from './plans.mock';
 
 export let MOCK_NETWORK_MAPPINGS: INetworkMapping[] = [];
 export let MOCK_STORAGE_MAPPINGS: IStorageMapping[] = [];
@@ -42,7 +40,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       ...storageMapping1.metadata,
       name: 'plantest1-generated-asdf',
-      ownerReferences: [getObjectRef(MOCK_PLANS[0])],
+      ownerReferences: [
+        {
+          apiVersion: CLUSTER_API_VERSION,
+          kind: 'Plan',
+          name: 'plantest-1',
+          namespace: 'openshift-migration',
+          uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+        },
+      ],
     },
   };
 
@@ -134,7 +140,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       ...networkMapping1.metadata,
       name: 'plantest1-generated-zxcv',
-      ownerReferences: [getObjectRef(MOCK_PLANS[0])],
+      ownerReferences: [
+        {
+          apiVersion: CLUSTER_API_VERSION,
+          kind: 'Plan',
+          name: 'plantest-1',
+          namespace: 'openshift-migration',
+          uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+        },
+      ],
     },
   };
 
