@@ -18,9 +18,12 @@ import {
   migrationPLan,
   tdTag,
   trTag,
+  SEC,
+  planSuccessMessage,
 } from '../types/constants';
 
 import {
+  dataLabel,
   mappingDropdown,
   planDescriptionInput,
   planNameInput,
@@ -117,6 +120,26 @@ export class Plan {
     clickByText(button, finish);
   }
 
+  protected run(name: string): void {
+    cy.get(tdTag)
+      .contains(name)
+      .parent(tdTag)
+      .parent(trTag)
+      .within(() => {
+        clickByText(button, 'Start');
+      });
+  }
+
+  protected waitForSuccess(name: string): void {
+    cy.get(tdTag)
+      .contains(name)
+      .parent(tdTag)
+      .parent(trTag)
+      .within(() => {
+        cy.get(dataLabel.status).contains(planSuccessMessage, { timeout: 3600 * SEC });
+      });
+  }
+
   create(planData: PlanData): void {
     Plan.openList();
     clickByText(button, createPlan);
@@ -133,22 +156,10 @@ export class Plan {
     applyAction(name, deleteButton);
   }
 
-  start(planData: PlanData): void {
+  execute(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
-    cy.get(tdTag)
-      .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
-      .within(() => {
-        clickByText(button, 'Start');
-      });
-    cy.get(tdTag)
-      .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
-      .within(() => {
-        cy.contains('Succeeded', { timeout: 10000 });
-      });
+    this.run(name);
+    this.waitForSuccess(name);
   }
 }

@@ -29,4 +29,9 @@ export class MappingStorage extends Mapping {
 
     super.delete(mappingData);
   }
+
+  edit(mappingData: MappingData): void {
+    this.openMenu();
+    super.edit(mappingData);
+  }
 }

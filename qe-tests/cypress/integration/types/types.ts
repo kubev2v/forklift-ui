@@ -4,12 +4,16 @@ export type LoginData = {
   url: string;
 };
 
+export type MappingPeer = {
+  sProvider: string;
+  dProvider: string;
+};
+
 export type MappingData = {
   name: string;
   sProviderName: string;
   tProviderName: string;
-  sProvider: string;
-  dProvider: string;
+  mappingPeer: MappingPeer[];
 };
 
 export type VmwareProviderData = {
@@ -47,4 +51,5 @@ export type PlanData = {
 export type TestData = {
   loginData: LoginData;
   planData: PlanData;
+  timeout?: number;
 };

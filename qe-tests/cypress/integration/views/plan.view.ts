@@ -7,3 +7,10 @@ export const allDcCheckbox =
   '#converted-root > div > button > span.pf-c-tree-view__node-check > input[type=checkbox]';
 export const searchInput = '#name-input';
 export const mappingDropdown = 'button.pf-c-select__toggle';
+export enum dataLabel {
+  name = '[data-label=Name]',
+  sourceProvider = '[data-label="Source provider"]',
+  targetProvider = '[data-label="Target provider"]',
+  vms = '[data-label=VMs]',
+  status = '[data-label="Plan status"]',
+}

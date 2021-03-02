@@ -1,5 +1,12 @@
-import { LoginData, MappingData, PlanData, TestData, VmwareProviderData } from '../../types/types';
-import { storageType, vmware } from '../../types/constants';
+import {
+  LoginData,
+  MappingData,
+  MappingPeer,
+  PlanData,
+  TestData,
+  VmwareProviderData,
+} from '../../types/types';
+import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -11,7 +18,7 @@ export const loginData: LoginData = {
 };
 
 export const providerData: VmwareProviderData = {
-  type: vmware,
+  type: providerType.vmware,
   name: 'qe-vmware',
   hostname: '10.8.58.136',
   username: 'administrator@vsphere.local',
@@ -19,27 +26,39 @@ export const providerData: VmwareProviderData = {
   cert: '7E:E7:4C:5C:3C:0E:51:D2:D7:8B:89:F1:DF:0A:9E:A5:D6:13:98:F6',
 };
 
+export const networkMappingPeer: MappingPeer[] = [
+  {
+    sProvider: 'VM Network',
+    dProvider: 'Pod network',
+  },
+];
+
+export const storageMappingPeer: MappingPeer[] = [
+  {
+    sProvider: 'env-esxi67-ims-h02_localdisk',
+    dProvider: storageType.cephRbd,
+  },
+];
+
 export const networkMappingData: MappingData = {
   name: 'network-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
   tProviderName: 'host',
-  sProvider: 'VM Network',
-  dProvider: 'Pod network',
+  mappingPeer: networkMappingPeer,
 };
 
 export const storageMappingData: MappingData = {
   name: 'storage-qe-vmware-mapping',
   sProviderName: providerData.name,
   tProviderName: 'host',
-  sProvider: 'env-esxi67-ims-h02_localdisk',
-  dProvider: storageType.nfs,
+  mappingPeer: storageMappingPeer,
 };
 
 export const planData: PlanData = {
   name: 'testplan',
   sProvider: providerData.name,
   tProvider: 'host',
-  namespace: 'default',
+  namespace: 'openshift-rhmtv',
   vmwareSourceFqdn: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
   vmwareSourceVmList: ['v2v-rhel7-igor'],
   useExistingNetworkMapping: true,

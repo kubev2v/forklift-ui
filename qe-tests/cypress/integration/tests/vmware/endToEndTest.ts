@@ -29,6 +29,10 @@ describe('End to End test, creating provider, mapping, plan, running plan and de
     plan.create(testData.planData);
   });
 
+  it('Running plan created in a previous tests', () => {
+    plan.execute(testData.planData);
+  });
+
   // it('Clearing resources by deleting mappings, provider and plan', () => {
   //   instances.forEach((instance) => {
   //     instance.delete();
