@@ -41,6 +41,7 @@ export enum PlanStatusDisplayType {
   Ready = 'Ready',
   Executing = 'Running',
   Succeeded = 'Succeeded',
+  Canceled = 'Canceled',
   Failed = 'Failed',
   Pending = 'Pending',
 }

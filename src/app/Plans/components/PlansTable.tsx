@@ -136,7 +136,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const ratioVMs = (plan: IPlan) => {
     const totalVMs = plan.spec.vms.length;
     const numVMsDone =
-      plan.status?.migration?.vms?.filter((vm) => !!vm.completed && !vm.error).length || 0;
+      plan.status?.migration?.vms?.filter(
+        (vm) =>
+          !!vm.completed &&
+          !vm.error &&
+          !vm.conditions?.find((condition) => condition.type === 'Canceled')
+      ).length || 0;
     const statusValue = totalVMs > 0 ? (numVMsDone * 100) / totalVMs : 0;
     const statusMessage = `${numVMsDone} of ${totalVMs} VMs migrated`;
 
@@ -177,8 +182,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       buttonType = null;
       title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
-      title = PlanStatusDisplayType.Succeeded;
-      variant = ProgressVariant.success;
+      const allVMsCanceled =
+        plan.status?.migration?.vms?.every(
+          (vm) => !!vm.conditions?.find((condition) => condition.type === 'Canceled')
+        ) || false;
+      if (allVMsCanceled) {
+        title = PlanStatusDisplayType.Canceled;
+      } else {
+        title = PlanStatusDisplayType.Succeeded;
+        variant = ProgressVariant.success;
+      }
     } else if (hasCondition(conditions, PlanStatusType.Failed)) {
       buttonType = ActionButtonType.Restart;
       title = PlanStatusDisplayType.Failed;
