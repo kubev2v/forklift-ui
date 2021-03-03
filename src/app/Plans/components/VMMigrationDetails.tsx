@@ -285,7 +285,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                         isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
                         onClick={toggleCancelModal}
                       >
-                        Cancel selected
+                        Cancel
                       </Button>
                     </FlexItem>
                   </Flex>
