@@ -35,6 +35,7 @@ export enum PlanStatusType {
   Executing = 'Executing',
   Succeeded = 'Succeeded',
   Failed = 'Failed',
+  Canceled = 'Canceled',
 }
 
 export enum PlanStatusDisplayType {
