@@ -6,7 +6,7 @@ import { IPlan } from '@app/queries/types';
 import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
-import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 
@@ -85,12 +85,13 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         ]}
         position={DropdownPosition.right}
       />
-      <ConfirmDeleteModal
+      <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        deleteFn={() => deletePlan(plan)}
-        deleteResult={deletePlanResult}
+        mutateFn={() => deletePlan(plan)}
+        mutateResult={deletePlanResult}
         title="Delete migration plan"
+        confirmButtonText="Delete"
         body={
           <>
             Are you sure you want to delete the migration plan &quot;

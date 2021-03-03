@@ -41,6 +41,7 @@ export enum PlanStatusDisplayType {
   Ready = 'Ready',
   Executing = 'Running',
   Succeeded = 'Succeeded',
+  Canceled = 'Canceled',
   Failed = 'Failed',
   Pending = 'Pending',
 }
@@ -49,6 +50,7 @@ export enum StepType {
   Full = 'Full',
   Half = 'Half',
   Empty = 'Empty',
+  Canceled = 'Canceled',
 }
 
 export const PROVIDER_TYPE_NAMES = {

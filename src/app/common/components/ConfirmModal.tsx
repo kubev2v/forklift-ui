@@ -3,29 +3,33 @@ import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
 import { MutationResult } from 'react-query';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 
-interface IConfirmDeleteModalProps {
+// TODO lib-ui candidate
+
+interface IConfirmModalProps {
   isOpen: boolean;
   toggleOpen: () => void;
-  deleteFn: () => void;
-  deleteResult: MutationResult<unknown>;
+  mutateFn: () => void;
+  mutateResult: MutationResult<unknown>;
   title: string;
   body: React.ReactNode;
-  deleteButtonText?: string;
+  confirmButtonText: string;
+  cancelButtonText?: string;
   errorText: string;
 }
 
-const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
+const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
   isOpen,
   toggleOpen,
-  deleteFn,
-  deleteResult,
+  mutateFn,
+  mutateResult,
   title,
   body,
-  deleteButtonText = 'Delete',
+  confirmButtonText,
+  cancelButtonText = 'Cancel',
   errorText,
-}: IConfirmDeleteModalProps) => {
+}: IConfirmModalProps) => {
   React.useEffect(() => {
-    if (!isOpen) deleteResult.reset();
+    if (!isOpen) mutateResult.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
@@ -38,26 +42,26 @@ const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
       footer={
         <Stack hasGutter>
           <ResolvedQuery
-            result={deleteResult}
+            result={mutateResult}
             errorTitle={errorText}
             spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
-              key="delete"
+              key="confirm"
               variant="primary"
-              onClick={deleteFn}
-              isDisabled={deleteResult.isLoading}
+              onClick={mutateFn}
+              isDisabled={mutateResult.isLoading}
             >
-              {deleteButtonText}
+              {confirmButtonText}
             </Button>
             <Button
               key="cancel"
               variant="link"
               onClick={toggleOpen}
-              isDisabled={deleteResult.isLoading}
+              isDisabled={mutateResult.isLoading}
             >
-              Cancel
+              {cancelButtonText}
             </Button>
           </Flex>
         </Stack>
@@ -68,4 +72,4 @@ const ConfirmDeleteModal: React.FunctionComponent<IConfirmDeleteModalProps> = ({
   ) : null;
 };
 
-export default ConfirmDeleteModal;
+export default ConfirmModal;

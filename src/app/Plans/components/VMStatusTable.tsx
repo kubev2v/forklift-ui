@@ -17,10 +17,12 @@ import { findCurrentStep, getStepType, isStepOnError } from '@app/common/helpers
 
 interface IVMStatusTableProps {
   status: IVMStatus;
+  isCanceled: boolean;
 }
 
 const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
   status,
+  isCanceled,
 }: IVMStatusTableProps) => {
   const columns: ICell[] = [
     {
@@ -49,7 +51,7 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
               <FlexItem>
                 <Step
                   vmStatus={status}
-                  type={getStepType(status, index)}
+                  type={getStepType(status, index, isCanceled)}
                   error={isStepOnError(status, index)}
                 />
               </FlexItem>

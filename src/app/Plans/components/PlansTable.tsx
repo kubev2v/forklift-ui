@@ -136,7 +136,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const ratioVMs = (plan: IPlan) => {
     const totalVMs = plan.spec.vms.length;
     const numVMsDone =
-      plan.status?.migration?.vms?.filter((vm) => !!vm.completed && !vm.error).length || 0;
+      plan.status?.migration?.vms?.filter(
+        (vm) =>
+          !!vm.completed &&
+          !vm.error &&
+          !vm.conditions?.find((condition) => condition.type === 'Canceled')
+      ).length || 0;
     const statusValue = totalVMs > 0 ? (numVMsDone * 100) / totalVMs : 0;
     const statusMessage = `${numVMsDone} of ${totalVMs} VMs migrated`;
 
@@ -160,7 +165,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   enum ActionButtonType {
     Start = 'Start',
-    Cancel = 'Cancel',
     Restart = 'Restart',
   }
 
@@ -175,11 +179,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = ActionButtonType.Start;
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
-      buttonType = ActionButtonType.Cancel;
+      buttonType = null;
       title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
-      title = PlanStatusDisplayType.Succeeded;
-      variant = ProgressVariant.success;
+      const allVMsCanceled =
+        plan.status?.migration?.vms?.every(
+          (vm) => !!vm.conditions?.find((condition) => condition.type === 'Canceled')
+        ) || false;
+      if (allVMsCanceled) {
+        title = PlanStatusDisplayType.Canceled;
+      } else {
+        title = PlanStatusDisplayType.Succeeded;
+        variant = ProgressVariant.success;
+      }
     } else if (hasCondition(conditions, PlanStatusType.Failed)) {
       buttonType = ActionButtonType.Restart;
       title = PlanStatusDisplayType.Failed;
@@ -230,51 +242,37 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ),
         },
         {
-          // TODO: Cancellation is disabled until we have API support.
-          //   When it is ready, this condition should just be `title: buttonType ? (`
-          title:
-            (buttonType && buttonType === ActionButtonType.Start) ||
-            buttonType === ActionButtonType.Restart ? (
-              <>
-                <Flex
-                  flex={{ default: 'flex_2' }}
-                  spaceItems={{ default: 'spaceItemsNone' }}
-                  alignItems={{ default: 'alignItemsCenter' }}
-                  flexWrap={{ default: 'nowrap' }}
-                >
-                  <FlexItem align={{ default: 'alignRight' }}>
-                    {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
-                      <Spinner size="md" className={spacing.mxLg} />
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          if (
-                            buttonType === ActionButtonType.Start ||
-                            buttonType === ActionButtonType.Restart
-                          ) {
-                            createMigration(plan);
-                          }
-                          if (buttonType === ActionButtonType.Cancel) {
-                            alert('TODO');
-                          }
-                        }}
-                        isDisabled={
-                          buttonType === ActionButtonType.Start && createMigrationResult.isLoading
-                        }
-                      >
-                        {buttonType}
-                      </Button>
-                    )}
-                  </FlexItem>
-                  <FlexItem>
-                    <PlanActionsDropdown plan={plan} />
-                  </FlexItem>
-                </Flex>
-              </>
-            ) : !isPending ? (
-              <PlanActionsDropdown plan={plan} />
-            ) : null,
+          title: buttonType ? (
+            <>
+              <Flex
+                flex={{ default: 'flex_2' }}
+                spaceItems={{ default: 'spaceItemsNone' }}
+                alignItems={{ default: 'alignItemsCenter' }}
+                flexWrap={{ default: 'nowrap' }}
+              >
+                <FlexItem align={{ default: 'alignRight' }}>
+                  {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
+                    <Spinner size="md" className={spacing.mxLg} />
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        createMigration(plan);
+                      }}
+                      isDisabled={createMigrationResult.isLoading}
+                    >
+                      {buttonType}
+                    </Button>
+                  )}
+                </FlexItem>
+                <FlexItem>
+                  <PlanActionsDropdown plan={plan} />
+                </FlexItem>
+              </Flex>
+            </>
+          ) : !isPending ? (
+            <PlanActionsDropdown plan={plan} />
+          ) : null,
         },
       ],
     });

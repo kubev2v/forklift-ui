@@ -6,7 +6,7 @@ import {
   useDeleteMappingMutation,
   useResourceQueriesForMapping,
 } from '@app/queries';
-import ConfirmDeleteModal from '@app/common/components/ConfirmDeleteModal';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { isMappingValid } from './helpers';
@@ -82,12 +82,13 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         ]}
         position={DropdownPosition.right}
       />
-      <ConfirmDeleteModal
+      <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        deleteFn={() => deleteMapping(mapping)}
-        deleteResult={deleteMappingResult}
+        mutateFn={() => deleteMapping(mapping)}
+        mutateResult={deleteMappingResult}
         title={`Delete ${mappingType.toLowerCase()} mapping`}
+        confirmButtonText="Delete"
         body={
           <>
             Are you sure you want to delete the {mappingType.toLowerCase()} mapping &quot;

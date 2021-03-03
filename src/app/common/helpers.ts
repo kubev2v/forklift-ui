@@ -61,8 +61,7 @@ export const findCurrentStep = (
     pipeline
       .slice(0)
       .reverse()
-      .find((step) => !!step.error || (!!step.started && !step.completed)) ||
-    pipeline[pipeline.length - 1];
+      .find((step) => !!step.error || !!step.started) || pipeline[pipeline.length - 1];
   const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
   return { currentStep, currentStepIndex };
 };
@@ -85,11 +84,15 @@ export const formatDuration = (
   return `${padNum(hours)}:${padNum(minutes)}:${padNum(seconds)}`;
 };
 
-export const getStepType = (status: IVMStatus, index: number): StepType => {
+export const getStepType = (status: IVMStatus, index: number, isCanceled: boolean): StepType => {
   const { currentStepIndex } = findCurrentStep(status.pipeline);
   const step = status.pipeline[index];
+  if (step?.started && step?.completed && index === currentStepIndex && isCanceled) {
+    return StepType.Canceled;
+  }
   if (step?.completed || index < currentStepIndex) return StepType.Full;
-  if (status.started && index === currentStepIndex) return StepType.Half;
+  if (status.started && index === currentStepIndex)
+    return isCanceled ? StepType.Canceled : StepType.Half;
   return StepType.Empty;
 };
 

@@ -8,6 +8,7 @@ import {
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,
+  global_disabled_color_100 as canceledColor,
   global_info_color_100 as infoColor,
   global_success_color_100 as successColor,
 } from '@patternfly/react-tokens';
@@ -32,6 +33,7 @@ const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) =>
 
 export const getPipelineSummaryTitle = (status: IVMStatus): string => {
   const { currentStep } = findCurrentStep(status.pipeline);
+  if (status.conditions?.find((condition) => condition.type === 'Canceled')) return 'Canceled';
   if (status.completed && !status.error) {
     return 'Complete';
   }
@@ -45,13 +47,16 @@ export const getPipelineSummaryTitle = (status: IVMStatus): string => {
 interface IGetStepTypeIcon {
   status: IVMStatus;
   index: number;
+  isCanceled: boolean;
 }
 
+// TODO this is mostly redundant with the Step component. We should refactor.
 const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
   status,
   index,
+  isCanceled,
 }: IGetStepTypeIcon) => {
-  const res = getStepType(status, index);
+  const res = getStepType(status, index, isCanceled);
   const { currentStepIndex } = findCurrentStep(status.pipeline);
   let icon: React.ReactNode;
   if (res === StepType.Full) {
@@ -64,6 +69,14 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
     icon = (
       <ResourcesAlmostFullIcon
         color={isStepOnError(status, index) || status.error ? dangerColor.value : infoColor.value}
+      />
+    );
+  } else if (res === StepType.Canceled) {
+    icon = (
+      <ResourcesAlmostFullIcon
+        color={
+          isStepOnError(status, index) || status.error ? dangerColor.value : canceledColor.value
+        }
       />
     );
   } else {
@@ -79,9 +92,11 @@ const GetStepTypeIcon: React.FunctionComponent<IGetStepTypeIcon> = ({
 
 interface IPipelineSummaryProps {
   status: IVMStatus;
+  isCanceled: boolean;
 }
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
+  isCanceled,
 }: IPipelineSummaryProps) => {
   const title = getPipelineSummaryTitle(status);
 
@@ -95,7 +110,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
           flexWrap={{ default: 'nowrap' }}
         >
           {status.pipeline.map((_, index) => (
-            <GetStepTypeIcon key={index} status={status} index={index} />
+            <GetStepTypeIcon key={index} status={status} index={index} isCanceled={isCanceled} />
           ))}
         </Flex>
       </FlexItem>

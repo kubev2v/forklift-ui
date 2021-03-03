@@ -7,6 +7,7 @@ import {
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,
+  global_disabled_color_100 as canceledColor,
   global_info_color_100 as infoColor,
   global_success_color_100 as successColor,
 } from '@patternfly/react-tokens';
@@ -20,6 +21,7 @@ interface IStepProps {
   error?: boolean;
 }
 
+// TODO this is mostly redundant with the GetStepTypeIcon component in PipelineSummary. We should refactor.
 const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IStepProps) => {
   let step: React.ReactElement | null = null;
   if (type === StepType.Full) {
@@ -39,6 +41,16 @@ const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IS
         height="1em"
         width="1em"
         color={error || vmStatus.error ? dangerColor.value : infoColor.value}
+      />
+    );
+  }
+  if (type === StepType.Canceled) {
+    step = (
+      <ResourcesAlmostFullIcon
+        className={spacing.mlSm}
+        height="1em"
+        width="1em"
+        color={error || vmStatus.error ? dangerColor.value : canceledColor.value}
       />
     );
   }

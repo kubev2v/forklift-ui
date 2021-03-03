@@ -10,6 +10,11 @@ import {
   Title,
   Level,
   LevelItem,
+  Button,
+  Flex,
+  List,
+  ListItem,
+  FlexItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -36,9 +41,9 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { IVMStatus } from '@app/queries/types';
-import { usePlansQuery } from '@app/queries';
-import { formatTimestamp } from '@app/common/helpers';
+import { IVMStatus, IVMwareVM } from '@app/queries/types';
+import { useCancelVMsMutation, useLatestMigrationQuery, usePlansQuery } from '@app/queries';
+import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
@@ -46,6 +51,8 @@ import {
   findVMById,
 } from '@app/queries';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { PlanStatusType } from '@app/common/constants';
+import ConfirmModal from '@app/common/components/ConfirmModal';
 
 export interface IPlanMatchParams {
   url: string;
@@ -85,6 +92,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
+
+  const latestMigration = useLatestMigrationQuery(plan || null);
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
@@ -154,6 +163,30 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
   const {
+    selectedItems,
+    isItemSelected,
+    toggleItemSelected,
+    setSelectedItems,
+  } = useSelectionState<IVMStatus>({
+    items: sortedItems,
+    isEqual: (a, b) => a.id === b.id,
+  });
+
+  const isVMCanceled = (vm: IVMStatus) =>
+    !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
+  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+    ? []
+    : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
+  const selectAllCancelable = (isSelected: boolean) =>
+    isSelected ? setSelectedItems(cancelableVMs) : setSelectedItems([]);
+
+  const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null, () => {
+    toggleCancelModal();
+    setSelectedItems([]);
+  });
+
+  const {
     toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
   } = useSelectionState<IVMStatus>({
@@ -182,9 +215,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   currentPageItems.forEach((vmStatus: IVMStatus) => {
     const isExpanded = isVMExpanded(vmStatus);
     const ratio = getTotalCopiedRatio(vmStatus);
+    const isCanceled = isVMCanceled(vmStatus);
 
     rows.push({
       meta: { vmStatus },
+      selected: isItemSelected(vmStatus),
+      disableSelection: !cancelableVMs.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
@@ -192,7 +228,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         formatTimestamp(vmStatus.completed),
         `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
         {
-          title: <PipelineSummary status={vmStatus} />,
+          title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} />,
         },
       ],
     });
@@ -202,7 +238,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         fullWidth: true,
         cells: [
           {
-            title: <VMStatusTable status={vmStatus} />,
+            title: <VMStatusTable status={vmStatus} isCanceled={isCanceled} />,
             columnTransforms: [classNamesTransform(alignment.textAlignRight)],
           },
         ],
@@ -235,11 +271,24 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             <CardBody>
               <Level>
                 <LevelItem>
-                  <FilterToolbar<IVMStatus>
-                    filterCategories={filterCategories}
-                    filterValues={filterValues}
-                    setFilterValues={setFilterValues}
-                  />
+                  <Flex>
+                    <FlexItem spacer={{ default: 'spacerNone' }}>
+                      <FilterToolbar<IVMStatus>
+                        filterCategories={filterCategories}
+                        filterValues={filterValues}
+                        setFilterValues={setFilterValues}
+                      />
+                    </FlexItem>
+                    <FlexItem>
+                      <Button
+                        variant="secondary"
+                        isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
+                        onClick={toggleCancelModal}
+                      >
+                        Cancel
+                      </Button>
+                    </FlexItem>
+                  </Flex>
                 </LevelItem>
                 <LevelItem>
                   <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
@@ -255,6 +304,14 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                   onCollapse={(event, rowKey, isOpen, rowData) => {
                     toggleVMExpanded(rowData.meta.vmStatus);
                   }}
+                  onSelect={(_event, isSelected, rowIndex, rowData) => {
+                    if (rowIndex === -1) {
+                      selectAllCancelable(isSelected);
+                    } else {
+                      toggleItemSelected(rowData.meta.vmStatus, isSelected);
+                    }
+                  }}
+                  canSelectAll={cancelableVMs.length > 0}
                 >
                   <TableHeader />
                   <TableBody />
@@ -274,6 +331,33 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           </Card>
         </ResolvedQueries>
       </PageSection>
+      <ConfirmModal
+        isOpen={isCancelModalOpen}
+        toggleOpen={toggleCancelModal}
+        mutateFn={() => {
+          const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
+          if (vmsToCancel.some((vm) => !vm)) return;
+          cancelVMs(vmsToCancel as IVMwareVM[]);
+        }}
+        mutateResult={cancelVMsResult}
+        title="Cancel migrations?"
+        confirmButtonText="Yes, cancel"
+        cancelButtonText="No, keep migrating"
+        body={
+          <>
+            Migration of the following VMs will be stopped, and any partially created resources on
+            the target provider will be deleted.
+            <List className={spacing.mtSm}>
+              {selectedItems.map((vm) => (
+                <ListItem key={vm.id}>
+                  <strong>{findVMById(vm.id, vmsQuery)?.name || ''}</strong>
+                </ListItem>
+              ))}
+            </List>
+          </>
+        }
+        errorText="Error canceling migrations"
+      />
     </>
   );
 };
