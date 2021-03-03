@@ -14,6 +14,6 @@ describe('Creating plan', () => {
   });
 
   it.skip('Running plan', () => {
-    plan.start(testData.planData);
+    plan.execute(testData.planData);
   });
 });

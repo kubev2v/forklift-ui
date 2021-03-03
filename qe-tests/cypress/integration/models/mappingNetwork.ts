@@ -5,7 +5,7 @@ import { menuNavLink } from '../views/mapping.view';
 import { MappingData } from '../types/types';
 
 export class MappingNetwork extends Mapping {
-  openMenu(): void {
+  protected openMenu(): void {
     super.openMenu();
     //Clicking on Network menu item
     clickByText(menuNavLink, network);
@@ -24,5 +24,10 @@ export class MappingNetwork extends Mapping {
     this.openMenu();
 
     super.delete(mappingData);
+  }
+
+  edit(mappingData: MappingData): void {
+    this.openMenu();
+    super.edit(mappingData);
   }
 }

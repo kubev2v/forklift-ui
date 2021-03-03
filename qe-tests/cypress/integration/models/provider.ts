@@ -1,13 +1,11 @@
-// import { OcpVirtData, ProviderData, VmwareProviderData } from '../types/types';
-import { addProvider, button, removeButton, selectProviderType, vmware } from '../types/constants';
-import { applyAction, clickByText, inputText, openSidebarMenu } from '../../utils/utils';
-import { providerData } from '../tests/vmware/config';
+import { addProvider, button, selectProviderType } from '../types/constants';
+import { clickByText, openSidebarMenu } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import { ProviderData } from '../types/types';
 import { selectProvider } from '../views/provider.view';
 
 export class Provider {
-  protected static openList() {
+  protected static openList(): void {
     openSidebarMenu();
     clickByText(navMenuPoint, 'Providers');
   }
@@ -24,8 +22,4 @@ export class Provider {
     clickByText(button, selectProviderType);
     clickByText(selectProvider, type);
   }
-
-  // delete(): void {
-  //   Provider.openList();
-  // }
 }

@@ -1,13 +1,12 @@
 import {
   LoginData,
   MappingData,
+  MappingPeer,
   PlanData,
   TestData,
-  OcpVirtData,
-  MappingPeer,
+  VmwareProviderData,
 } from '../../types/types';
-import { storageType } from '../../types/constants';
-
+import { storageType, vmware } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -18,11 +17,13 @@ export const loginData: LoginData = {
   url: url,
 };
 
-export const providerData: OcpVirtData = {
-  type: 'OpenShift Virtualization',
-  name: 'mgn02',
-  url: 'https://api.mgn02.cnv-qe.rhcloud.com:6443',
-  saToken: 'sha256~i3ZkqZC5P41Vs3SWSyL7Z1hnF4vifp-4CTKqsasXW6s',
+export const providerData: VmwareProviderData = {
+  type: vmware,
+  name: 'boston-vmware',
+  hostname: 'vcenter.v2v.bos.redhat.com',
+  username: 'administrator@vsphere.local',
+  password: '100Mgmt-',
+  cert: '39:5C:6A:2D:36:38:B2:52:2B:21:EA:74:11:59:89:5E:20:D5:D9:A2',
 };
 
 export const networkMappingPeer: MappingPeer[] = [
@@ -52,6 +53,7 @@ export const storageMappingData: MappingData = {
   tProviderName: 'host',
   mappingPeer: storageMappingPeer,
 };
+
 export const planData: PlanData = {
   name: 'testplan',
   sProvider: providerData.name,
@@ -66,7 +68,7 @@ export const planData: PlanData = {
   storageMappingData: storageMappingData,
 };
 
-export const tData: TestData = {
+export const testData: TestData = {
   loginData: loginData,
   planData: planData,
 };
