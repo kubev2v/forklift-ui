@@ -185,7 +185,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  const vmStatusWithYellow: IVMStatus = {
+  const vmStatusWithTopLevelError: IVMStatus = {
     id: vm2.id,
     pipeline: [
       {
@@ -339,6 +339,25 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const vmStatus1WithCancel: IVMStatus = {
+    ...vmStatus1,
+    pipeline: [
+      vmStatus1.pipeline[0],
+      vmStatus1.pipeline[1],
+      { ...vmStatus1.pipeline[2], completed: '2020-10-10T17:34:10Z' },
+      vmStatus1.pipeline[3],
+    ],
+    conditions: [
+      {
+        type: 'Canceled',
+        category: 'Information',
+        status: 'True',
+        message: 'Canceled by user',
+        lastTransitionTime: '2020-10-10T17:34:10Z',
+      },
+    ],
+  };
+
   const plan3: IPlan = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
@@ -380,7 +399,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
-        vms: [vmStatus1, vmStatusWithYellow, vmStatus3, vmStatus4],
+        vms: [vmStatus1WithCancel, vmStatusWithTopLevelError, vmStatus3, vmStatus4],
         history: [
           {
             conditions: [],
@@ -460,7 +479,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  const vmStatus1WithError = {
+  const vmStatus1WithError: IVMStatus = {
     ...vmStatus1,
     pipeline: [
       vmStatus1.pipeline[0],
@@ -480,7 +499,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  const vmStatus2WithError = {
+  const vmStatus2WithError: IVMStatus = {
     ...vmStatus1,
     pipeline: [
       vmStatus1.pipeline[0],

@@ -49,6 +49,7 @@ export enum StepType {
   Full = 'Full',
   Half = 'Half',
   Empty = 'Empty',
+  Canceled = 'Canceled',
 }
 
 export const PROVIDER_TYPE_NAMES = {

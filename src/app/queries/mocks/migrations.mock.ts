@@ -40,6 +40,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       spec: {
         plan: nameAndNamespace(MOCK_PLANS[2].metadata),
+        cancel: [
+          {
+            id: 'vm-1630',
+            name: 'fdupont-test-migration',
+          },
+        ],
       },
       status: MOCK_PLANS[2].status?.migration,
     },

@@ -171,6 +171,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     items: sortedItems,
     isEqual: (a, b) => a.id === b.id,
   });
+
   const isVMCanceled = (vm: IVMStatus) =>
     !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
   const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
@@ -214,6 +215,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   currentPageItems.forEach((vmStatus: IVMStatus) => {
     const isExpanded = isVMExpanded(vmStatus);
     const ratio = getTotalCopiedRatio(vmStatus);
+    const isCanceled = isVMCanceled(vmStatus);
 
     rows.push({
       meta: { vmStatus },
@@ -226,7 +228,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         formatTimestamp(vmStatus.completed),
         `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
         {
-          title: <PipelineSummary status={vmStatus} />,
+          title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} />,
         },
       ],
     });
@@ -236,7 +238,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         fullWidth: true,
         cells: [
           {
-            title: <VMStatusTable status={vmStatus} />,
+            title: <VMStatusTable status={vmStatus} isCanceled={isCanceled} />,
             columnTransforms: [classNamesTransform(alignment.textAlignRight)],
           },
         ],
