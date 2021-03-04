@@ -76,3 +76,5 @@ export interface IPlan extends ICR {
   };
   status?: IPlanStatus;
 }
+
+export type PlanType = 'Cold' | 'Warm';
