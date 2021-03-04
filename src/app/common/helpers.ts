@@ -57,11 +57,16 @@ export const findCurrentStep = (
   pipeline: IStep[]
 ): { currentStep: IStep | undefined; currentStepIndex: number } => {
   if (pipeline.length === 0) return { currentStep: undefined, currentStepIndex: 0 };
-  const currentStep =
-    pipeline
-      .slice(0)
-      .reverse()
-      .find((step) => !!step.error || !!step.started) || pipeline[pipeline.length - 1];
+  let currentStep: IStep;
+  if (!pipeline[0].started) {
+    currentStep = pipeline[0];
+  } else {
+    currentStep =
+      pipeline
+        .slice(0)
+        .reverse()
+        .find((step) => !!step.error || !!step.started) || pipeline[pipeline.length - 1];
+  }
   const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
   return { currentStep, currentStepIndex };
 };

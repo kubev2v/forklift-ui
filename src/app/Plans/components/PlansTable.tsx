@@ -182,16 +182,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       buttonType = null;
       title = PlanStatusDisplayType.Executing;
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
-      const allVMsCanceled =
-        plan.status?.migration?.vms?.every(
-          (vm) => !!vm.conditions?.find((condition) => condition.type === 'Canceled')
-        ) || false;
-      if (allVMsCanceled) {
-        title = PlanStatusDisplayType.Canceled;
-      } else {
-        title = PlanStatusDisplayType.Succeeded;
-        variant = ProgressVariant.success;
-      }
+      title = PlanStatusDisplayType.Succeeded;
+      variant = ProgressVariant.success;
+    } else if (hasCondition(conditions, PlanStatusType.Canceled)) {
+      title = PlanStatusDisplayType.Canceled;
     } else if (hasCondition(conditions, PlanStatusType.Failed)) {
       buttonType = ActionButtonType.Restart;
       title = PlanStatusDisplayType.Failed;
