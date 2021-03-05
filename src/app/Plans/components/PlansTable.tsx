@@ -72,6 +72,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       },
     },
     {
+      key: 'type',
+      title: 'Type',
+      type: FilterType.select,
+      placeholderText: 'Filter by type...',
+      selectOptions: [
+        { key: 'Cold', value: 'Cold' },
+        { key: 'Warm', value: 'Warm' },
+      ],
+      getItemValue: (item) => {
+        return item.spec.warm ? 'Warm' : 'Cold';
+      },
+    },
+    {
       key: 'sourceProvider',
       title: 'Source provider',
       type: FilterType.search,
@@ -121,6 +134,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     );
     return [
       plan.metadata.name,
+      plan.spec.warm,
       sourceProvider?.name || '',
       targetProvider?.name || '',
       plan.spec.vms.length,
@@ -150,6 +164,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable] },
+    { title: 'Type', transforms: [sortable] },
     { title: 'Source provider', transforms: [sortable, wrappable] },
     { title: 'Target provider', transforms: [sortable, wrappable] },
     { title: 'VMs', transforms: [sortable] },
@@ -216,6 +231,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             </>
           ),
         },
+        plan.spec.warm ? 'Warm' : 'Cold',
         sourceProvider?.name || '',
         targetProvider?.name || '',
         plan.spec.vms.length,

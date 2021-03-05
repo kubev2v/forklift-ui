@@ -247,6 +247,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
       vms: [vm1, vm2],
+      warm: false,
     },
     status: {
       conditions: [
@@ -324,6 +325,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
       vms: [vm1],
+      warm: false,
     },
     status: {
       conditions: [
@@ -384,6 +386,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
       vms: [vm1, vm2, vm3, vm4],
+      warm: false,
     },
     status: {
       conditions: [
@@ -444,6 +447,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
       vms: [vm3],
+      warm: false,
     },
     status: {
       conditions: [
@@ -573,7 +577,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
     spec: {
-      description: 'has a non-ready provider',
+      description: '',
       provider: {
         source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
@@ -584,6 +588,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
       vms: [vm1],
+      warm: true,
     },
     status: {
       conditions: [
