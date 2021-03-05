@@ -13,3 +13,16 @@
 .pf-c-table.plans-table tbody > tr > td.pf-c-table__toggle .pf-c-button {
   margin-top: 0;
 }
+
+.pf-c-table.plans-table table.expanded-content tr {
+  border-bottom: 0;
+}
+
+.pf-c-table.plans-table table.expanded-content tr:not(:first-child) > * {
+  padding-top: var(--pf-global--spacer--xs);
+}
+
+.pf-c-table.plans-table table.expanded-content tr > th {
+  padding-left: 0;
+  font-weight: bold;
+}

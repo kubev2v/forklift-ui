@@ -128,21 +128,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
-  const getSortValues = (plan: IPlan) => {
-    const { sourceProvider, targetProvider } = findProvidersByRefs(
-      plan.spec.provider,
-      providersQuery
-    );
-    return [
-      plan.metadata.name,
-      plan.spec.warm,
-      sourceProvider?.name || '',
-      targetProvider?.name || '',
-      plan.spec.vms.length,
-      getPlanStatusTitle(plan),
-      '', // Action column
-    ];
-  };
+  const getSortValues = (plan: IPlan) => [
+    '', // Expand/collapse column
+    plan.metadata.name,
+    plan.spec.warm,
+    getPlanStatusTitle(plan),
+    '', // Action column
+  ];
 
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
@@ -174,9 +166,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable], cellFormatters: [expandable] },
     { title: 'Type', transforms: [sortable] },
-    { title: 'Source provider', transforms: [sortable, wrappable] },
-    { title: 'Target provider', transforms: [sortable, wrappable] },
-    { title: 'VMs', transforms: [sortable] },
     { title: 'Plan status', transforms: [sortable, cellWidth(30)] },
     {
       title: '',
@@ -244,9 +233,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ),
         },
         plan.spec.warm ? 'Warm' : 'Cold',
-        sourceProvider?.name || '',
-        targetProvider?.name || '',
-        plan.spec.vms.length,
         {
           title: isPending ? (
             <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
@@ -301,14 +287,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
-        fullWidth: true,
         cells: [
           {
-            title: <h1>TODO</h1>,
-            props: {
-              colSpan: columns.length + 1,
-              // className: tableStyles.modifiers.noPadding,
-            },
+            title: (
+              <table className="expanded-content">
+                <tr>
+                  <th>Source provider</th>
+                  <td>{sourceProvider?.name || ''}</td>
+                </tr>
+                <tr>
+                  <th>Target provider</th>
+                  <td>{targetProvider?.name || ''}</td>
+                </tr>
+                <tr>
+                  <th>VMs</th>
+                  <td>{plan.spec.vms.length}</td>
+                </tr>
+              </table>
+            ),
           },
         ],
       });
