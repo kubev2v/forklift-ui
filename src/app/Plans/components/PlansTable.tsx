@@ -20,13 +20,14 @@ import {
   IRow,
   sortable,
   wrappable,
+  expandable,
   classNames,
   cellWidth,
 } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon, StatusType, useSelectionState } from '@konveyor/lib-ui';
 
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
@@ -147,6 +148,14 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
+  const {
+    toggleItemSelected: togglePlanExpanded,
+    isItemSelected: isPlanExpanded,
+  } = useSelectionState<IPlan>({
+    items: sortedItems,
+    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
+  });
+
   const ratioVMs = (plan: IPlan) => {
     const totalVMs = plan.spec.vms.length;
     const numVMsDone =
@@ -163,7 +172,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   };
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable, wrappable] },
+    { title: 'Name', transforms: [sortable, wrappable], cellFormatters: [expandable] },
     { title: 'Type', transforms: [sortable] },
     { title: 'Source provider', transforms: [sortable, wrappable] },
     { title: 'Target provider', transforms: [sortable, wrappable] },
@@ -218,8 +227,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       providersQuery
     );
 
+    const isExpanded = isPlanExpanded(plan);
+
     rows.push({
       meta: { plan },
+      isOpen: isExpanded,
       cells: [
         {
           title: (
@@ -286,6 +298,21 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
       ],
     });
+    if (isExpanded) {
+      rows.push({
+        parent: rows.length - 1,
+        fullWidth: true,
+        cells: [
+          {
+            title: <h1>TODO</h1>,
+            props: {
+              colSpan: columns.length + 1,
+              // className: tableStyles.modifiers.noPadding,
+            },
+          },
+        ],
+      });
+    }
   });
 
   return (
@@ -320,6 +347,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           rows={rows}
           sortBy={sortBy}
           onSort={onSort}
+          onCollapse={(_event, _rowKey, _isOpen, rowData) => {
+            togglePlanExpanded(rowData.meta.plan);
+          }}
         >
           <TableHeader />
           <TableBody />

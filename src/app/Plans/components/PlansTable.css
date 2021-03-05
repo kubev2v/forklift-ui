@@ -5,3 +5,11 @@
 .pf-c-table.plans-table tbody > tr > * {
   vertical-align: middle;
 }
+
+.pf-c-table.plans-table tbody > tr > td.pf-c-table__toggle {
+  padding-bottom: var(--pf-c-table--tbody--cell--PaddingBottom);
+}
+
+.pf-c-table.plans-table tbody > tr > td.pf-c-table__toggle .pf-c-button {
+  margin-top: 0;
+}
