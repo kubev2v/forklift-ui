@@ -73,6 +73,8 @@ export interface IPlan extends ICR {
       storage: INameNamespaceRef;
     };
     vms: IPlanVM[];
+    warm: boolean;
+    cutover?: string; // ISO timestamp
   };
   status?: IPlanStatus;
 }
