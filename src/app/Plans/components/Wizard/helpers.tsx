@@ -370,6 +370,7 @@ export const generatePlan = (
       storage: storageMappingRef,
     },
     vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+    warm: forms.type.values.type === 'Warm',
   },
 });
 
