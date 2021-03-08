@@ -74,7 +74,7 @@ export interface IPlan extends ICR {
     };
     vms: IPlanVM[];
     warm: boolean;
-    cutover?: string; // ISO timestamp
+    cutover?: string; // ISO timestamp -- default for all migrations of this plan?
   };
   status?: IPlanStatus;
 }

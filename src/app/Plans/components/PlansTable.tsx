@@ -38,7 +38,13 @@ import { FilterToolbar, FilterType, FilterCategory } from '@app/common/component
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { findProvidersByRefs, useInventoryProvidersQuery } from '@app/queries';
+import {
+  findLatestMigration,
+  findProvidersByRefs,
+  ISetCutoverArgs,
+  useInventoryProvidersQuery,
+  useMigrationsQuery,
+} from '@app/queries';
 
 import './PlansTable.css';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
@@ -52,16 +58,19 @@ interface IPlansTableProps {
   plans: IPlan[];
   createMigration: MutateFunction<IKubeResponse<IMigration>, KubeClientError, IPlan>;
   createMigrationResult: MutationResult<IKubeResponse<IMigration>, KubeClientError>;
-  planBeingStarted: IPlan | null;
+  setCutover: MutateFunction<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs, unknown>;
+  setCutoverResult: MutationResult<IKubeResponse<IMigration>, KubeClientError>;
 }
 
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   createMigration,
   createMigrationResult,
-  planBeingStarted,
+  setCutover,
+  setCutoverResult,
 }: IPlansTableProps) => {
   const providersQuery = useInventoryProvidersQuery();
+  const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
     {
       key: 'name',
@@ -176,10 +185,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const rows: IRow[] = [];
 
-  enum ActionButtonType {
-    Start = 'Start',
-    Restart = 'Restart',
-  }
+  type ActionButtonType = 'Start' | 'Restart' | 'Cutover';
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
@@ -190,17 +196,22 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const conditions = plan.status?.conditions || [];
 
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
-      buttonType = ActionButtonType.Start;
+      // TODO also show spinner if currently setting cutover time
+      buttonType = 'Start';
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
       buttonType = null;
       title = PlanStatusDisplayType.Executing;
+      if (plan.spec.warm) {
+        buttonType = 'Cutover';
+        // TODO only if we aren't cutting over yet.. need to look at structure of status data
+      }
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
       variant = ProgressVariant.success;
     } else if (hasCondition(conditions, PlanStatusType.Canceled)) {
       title = PlanStatusDisplayType.Canceled;
     } else if (hasCondition(conditions, PlanStatusType.Failed)) {
-      buttonType = ActionButtonType.Restart;
+      buttonType = 'Restart';
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else if (!plan.status) {
@@ -217,6 +228,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     );
 
     const isExpanded = isPlanExpanded(plan);
+    const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
+    const isBeingStarted = !!latestMigration && (plan.status?.migration?.vms?.length || 0) === 0;
 
     rows.push({
       meta: { plan },
@@ -259,13 +272,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 flexWrap={{ default: 'nowrap' }}
               >
                 <FlexItem align={{ default: 'alignRight' }}>
-                  {isSameResource(planBeingStarted?.metadata, plan.metadata) ? (
+                  {createMigrationResult.isLoading ||
+                  isBeingStarted ||
+                  setCutoverResult.isLoading ? (
                     <Spinner size="md" className={spacing.mxLg} />
                   ) : (
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        createMigration(plan);
+                        if (buttonType === 'Start' || buttonType === 'Restart') {
+                          createMigration(plan);
+                        } else if (buttonType === 'Cutover') {
+                          setCutover({ plan, cutover: new Date().toISOString() });
+                        }
                       }}
                       isDisabled={createMigrationResult.isLoading}
                     >
