@@ -468,6 +468,9 @@ export const useEditingPlanPrefillEffect = (
       forms.general.fields.sourceProvider.setInitialValue(sourceProvider);
       forms.general.fields.targetProvider.setInitialValue(targetProvider);
       forms.general.fields.targetNamespace.setInitialValue(planBeingEdited.spec.targetNamespace);
+      forms.general.fields.migrationNetwork.setInitialValue(
+        planBeingEdited.spec.transferNetwork || null
+      );
 
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
       forms.filterVMs.fields.isPrefilled.setInitialValue(true);

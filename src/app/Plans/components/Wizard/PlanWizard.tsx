@@ -51,7 +51,6 @@ import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
