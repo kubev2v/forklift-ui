@@ -205,6 +205,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       {isSelectNetworkModalOpen ? (
         <SelectOpenShiftNetworkModal
           targetProvider={selectedProvider?.inventory || null}
+          targetNamespace={null}
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
           onClose={() => {
             toggleSelectNetworkModal();

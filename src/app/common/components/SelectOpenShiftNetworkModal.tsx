@@ -55,9 +55,12 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
 }: ISelectOpenShiftNetworkModalProps) => {
   const form = useSelectNetworkFormState();
   const networksQuery = useOpenShiftNetworksQuery(targetProvider);
-  const networksInNamespace = (networksQuery.data || []).filter(
-    (network) => network.namespace === targetNamespace
-  );
+  let networksInNamespace = networksQuery.data || [];
+  if (targetNamespace) {
+    networksInNamespace = networksInNamespace.filter(
+      (network) => network.namespace === targetNamespace
+    );
+  }
   const networks = [POD_NETWORK, ...networksInNamespace];
   const networkOptions = networks.map((network) => ({
     toString: () => network.name,

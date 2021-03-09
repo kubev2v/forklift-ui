@@ -16,7 +16,7 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
   provider,
 }: IOpenShiftNetworkListProps) => {
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(provider.inventory);
-  const networks = [POD_NETWORK, ...openshiftNetworksQuery.data];
+  const networks = [POD_NETWORK, ...(openshiftNetworksQuery.data || [])];
   const defaultNetworkName = provider.metadata.annotations
     ? provider.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']
     : '';
