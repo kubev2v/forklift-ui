@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Pagination, List, ListItem, Level, LevelItem, Button } from '@patternfly/react-core';
+import { Pagination, Level, LevelItem, Button } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -12,7 +12,6 @@ import {
 } from '@patternfly/react-table';
 import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useOCPMigrationNetworkMutation, useStorageClassesQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/providers.types';
@@ -26,6 +25,7 @@ import { ProviderType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
+import OpenShiftStorageClassList from './OpenShiftStorageClassList';
 
 interface IOpenShiftProvidersTableProps {
   providers: ICorrelatedProvider<IOpenShiftProvider>[];
@@ -136,11 +136,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
               expandedItem?.column === 'Networks' ? (
                 <OpenShiftNetworkList provider={provider} />
               ) : (
-                <List className={`provider-storage-classes-list ${spacing.mMd} ${spacing.mlXl}`}>
-                  {storageClasses.map((storageClass) => (
-                    <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
-                  ))}
-                </List>
+                <OpenShiftStorageClassList provider={provider} storageClasses={storageClasses} />
               ),
             props: { colSpan: columns.length + 1, className: tableStyles.modifiers.noPadding },
           },

@@ -7,6 +7,9 @@ import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 import { ICorrelatedProvider, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
 import { isSameResource } from '@app/queries/helpers';
+import { hasCondition } from '@app/common/helpers';
+import { PlanStatusType } from '@app/common/constants';
+import { Alert } from '@patternfly/react-core';
 
 interface IOpenShiftNetworkListProps {
   provider: ICorrelatedProvider<IOpenShiftProvider>;
@@ -20,6 +23,14 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
   const defaultNetworkName = provider.metadata.annotations
     ? provider.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']
     : '';
+  const isProviderReady = hasCondition(provider.status?.conditions || [], PlanStatusType.Ready);
+  if (!isProviderReady) {
+    return (
+      <Alert variant="warning" isInline title="Cannot view networks" className={spacing.mMd}>
+        The provider inventory data is not ready
+      </Alert>
+    );
+  }
   return (
     <ResolvedQuery result={openshiftNetworksQuery} errorTitle="Error loading networks">
       <TableComposable
