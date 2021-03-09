@@ -12,7 +12,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { IPlan, Mapping, MappingType } from '@app/queries/types';
+import { IPlan, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -62,6 +62,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9}>{forms.general.values.targetProvider?.name}</GridItem>
         <GridItem md={3}>Target namespace</GridItem>
         <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
+        <GridItem md={3}>Migration transfer network</GridItem>
+        <GridItem md={9}>{forms.general.values.migrationNetwork || POD_NETWORK.name}</GridItem>
         <GridItem md={3}>Selected VMs</GridItem>
         <GridItem md={9}>
           <Popover
