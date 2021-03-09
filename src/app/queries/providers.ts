@@ -338,7 +338,8 @@ export const useOCPMigrationNetworkMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('providers');
+        queryCache.invalidateQueries('cluster-providers');
+        queryCache.invalidateQueries('inventory-providers');
         onSuccess && onSuccess();
       },
     }
