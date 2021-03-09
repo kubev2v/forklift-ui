@@ -183,6 +183,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <SelectOpenShiftNetworkModal
           targetProvider={form.values.targetProvider}
           targetNamespace={form.values.targetNamespace}
+          initialSelectedNetwork={form.values.migrationNetwork}
           instructions="Select the network that will be used for migrating data to the namespace."
           onClose={toggleSelectNetworkModal}
           onSubmit={(network) => {

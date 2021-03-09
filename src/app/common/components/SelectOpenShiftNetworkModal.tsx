@@ -20,8 +20,6 @@ import {
   POD_NETWORK,
 } from '@app/queries/types';
 
-import { isSameResource } from '@app/queries/helpers';
-
 import './SelectOpenShiftNetworkModal.css';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
@@ -31,29 +29,31 @@ import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 interface ISelectOpenShiftNetworkModalProps {
   targetProvider: IOpenShiftProvider | null;
   targetNamespace: string | null;
+  initialSelectedNetwork: string | null;
   instructions: string;
   onClose: () => void;
   onSubmit: (network: IOpenShiftNetwork | null) => void;
   mutationResult?: MutationResult<IKubeResponse<IProviderObject>, KubeClientError>;
 }
 
-const useSelectNetworkFormState = () =>
+const useSelectNetworkFormState = (initialSelectedNetwork: string | null) =>
   useFormState({
-    selectedNetwork: useFormField<IOpenShiftNetwork | null>(
-      null,
-      yup.mixed<IOpenShiftNetwork>().label('Migration network').required()
+    selectedNetworkName: useFormField<string | null>(
+      initialSelectedNetwork,
+      yup.string().label('Migration network').required()
     ),
   });
 
 const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetworkModalProps> = ({
   targetProvider,
   targetNamespace,
+  initialSelectedNetwork,
   instructions,
   onClose,
   onSubmit,
   mutationResult,
 }: ISelectOpenShiftNetworkModalProps) => {
-  const form = useSelectNetworkFormState();
+  const form = useSelectNetworkFormState(initialSelectedNetwork);
   const networksQuery = useOpenShiftNetworksQuery(targetProvider);
   let networksInNamespace = networksQuery.data || [];
   if (targetNamespace) {
@@ -66,6 +66,13 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
     toString: () => network.name,
     value: network,
   }));
+
+  let selectedNetworkOption: OptionWithValue<IOpenShiftNetwork> | undefined = networkOptions[0]; // Pod network
+  if (form.values.selectedNetworkName) {
+    selectedNetworkOption = networkOptions.find(
+      (option) => option.value.name === form.values.selectedNetworkName
+    );
+  }
 
   return (
     <Modal
@@ -89,7 +96,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
               variant="primary"
               isDisabled={!form.isDirty || !form.isValid || mutationResult?.isLoading}
               onClick={() => {
-                onSubmit(form.values.selectedNetwork);
+                onSubmit(selectedNetworkOption?.value || null);
               }}
             >
               Select
@@ -114,22 +121,18 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
           <FormGroup
             isRequired
             fieldId="network"
-            validated={form.fields.selectedNetwork.isValid ? 'default' : 'error'}
-            {...getFormGroupProps(form.fields.selectedNetwork)}
+            validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
+            {...getFormGroupProps(form.fields.selectedNetworkName)}
             className="extraSelectMargin"
           >
             <SimpleSelect
               id="network"
               aria-label="Migration network"
               options={networkOptions}
-              value={[
-                networkOptions.find((option) =>
-                  isSameResource(option.value, form.values.selectedNetwork)
-                ),
-              ]}
+              value={[selectedNetworkOption]}
               onChange={(selection) =>
-                form.fields.selectedNetwork.setValue(
-                  (selection as OptionWithValue<IOpenShiftNetwork>).value
+                form.fields.selectedNetworkName.setValue(
+                  (selection as OptionWithValue<IOpenShiftNetwork>).value.name
                 )
               }
               placeholderText="Select a network..."

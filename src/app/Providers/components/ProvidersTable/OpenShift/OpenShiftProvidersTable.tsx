@@ -151,8 +151,20 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     false
   );
   const [setMigrationNetwork, migrationNetworkMutationResult] = useOCPMigrationNetworkMutation(
-    toggleSelectNetworkModal
+    () => {
+      toggleSelectNetworkModal();
+      setExpandedItem({
+        provider: selectedProvider as ICorrelatedProvider<IOpenShiftProvider>,
+        column: 'Networks',
+      });
+      setSelectedProvider(null);
+    }
   );
+
+  const selectedNetworkName =
+    (selectedProvider?.metadata.annotations &&
+      selectedProvider?.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']) ||
+    null;
 
   return (
     <>
@@ -201,8 +213,10 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       />
       {isSelectNetworkModalOpen ? (
         <SelectOpenShiftNetworkModal
+          key={selectedNetworkName}
           targetProvider={selectedProvider?.inventory || null}
           targetNamespace={null}
+          initialSelectedNetwork={selectedNetworkName}
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
           onClose={() => {
             toggleSelectNetworkModal();
