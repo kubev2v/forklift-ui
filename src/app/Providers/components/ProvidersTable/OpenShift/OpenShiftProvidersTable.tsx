@@ -18,10 +18,10 @@ import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/prov
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
-import { getMostSeriousCondition, numStr } from '@app/common/helpers';
+import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 
 import './OpenShiftProvidersTable.css';
-import { ProviderType } from '@app/common/constants';
+import { PlanStatusType, ProviderType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
@@ -91,6 +91,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       meta: { provider },
       isOpen: isExpanded,
       selected: isSameResource(selectedProvider?.metadata, provider.metadata),
+      disableSelection: !hasCondition(provider.status?.conditions || [], PlanStatusType.Ready),
       cells: [
         provider.metadata.name,
         provider.spec.url,
