@@ -38,7 +38,7 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
           {networks.map((network) => {
             let isDefault = defaultNetworkName === network.name;
             if (isSameResource(network, POD_NETWORK)) {
-              isDefault = defaultNetworkName === 'pod' || !defaultNetworkName;
+              isDefault = !defaultNetworkName;
             }
             return (
               <Tr key={network.uid}>

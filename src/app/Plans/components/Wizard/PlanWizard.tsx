@@ -22,14 +22,12 @@ import SelectVMsForm from './SelectVMsForm';
 import Review from './Review';
 import MappingForm from './MappingForm';
 import {
-  IOpenShiftNetwork,
   IOpenShiftProvider,
   IPlan,
   IVMwareProvider,
   IVMwareVM,
   Mapping,
   MappingType,
-  POD_NETWORK,
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
@@ -53,6 +51,7 @@ import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -92,9 +91,9 @@ const usePlanWizardFormState = (
         yup.mixed<IOpenShiftProvider>().label('Target provider').required()
       ),
       targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
-      migrationNetwork: useFormField<IOpenShiftNetwork | null>(
-        POD_NETWORK,
-        yup.mixed<IOpenShiftNetwork>().label('Migration network')
+      migrationNetwork: useFormField<string | null>(
+        null,
+        yup.mixed<string>().label('Migration network')
       ),
     }),
     filterVMs: useFormState({
@@ -108,6 +107,7 @@ const usePlanWizardFormState = (
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
   };
+
   return {
     ...forms,
     isSomeFormDirty: (Object.keys(forms) as (keyof typeof forms)[]).some(

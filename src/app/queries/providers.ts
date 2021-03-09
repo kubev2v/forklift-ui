@@ -324,13 +324,13 @@ export const useOCPMigrationNetworkMutation = (
   >(
     ({ provider, network }) => {
       if (!provider) return Promise.reject('No such provider');
-      const networkName = isSameResource(network, POD_NETWORK) ? 'pod' : network?.name || '';
+      const networkName = (!isSameResource(network, POD_NETWORK) && network?.name) || null;
       const providerPatch: Partial<IProviderObject> = {
         metadata: {
           ...provider?.object.metadata,
           annotations: {
             ...provider?.object.metadata.annotations,
-            'forklift.konveyor.io/defaultTransferNetwork': networkName,
+            'forklift.konveyor.io/defaultTransferNetwork': networkName || '',
           },
         },
       };
