@@ -115,6 +115,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...vmwareProvider1.object.metadata,
         name: 'ocpv-1',
+        annotations: {
+          'forklift.konveyor.io/defaultTransferNetwork': 'ocp-network-3',
+        },
       },
       spec: {
         ...vmwareProvider1.object.spec,
@@ -137,6 +140,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...openshiftProvider1.object.metadata,
         name: 'ocpv-2',
+        annotations: {
+          'forklift.konveyor.io/defaultTransferNetwork': 'pod',
+        },
       },
       status: {
         conditions: [

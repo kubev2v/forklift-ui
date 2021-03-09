@@ -5,19 +5,21 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
-import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types';
+import { ICorrelatedProvider, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IOpenShiftNetworkListProps {
   provider: ICorrelatedProvider<IOpenShiftProvider>;
 }
 
-// TODO can we show the IP address?
-// TODO always have pod network as a choice
-
 const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
   provider,
 }: IOpenShiftNetworkListProps) => {
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(provider.inventory);
+  const networks = [POD_NETWORK, ...openshiftNetworksQuery.data];
+  const defaultNetworkName = provider.metadata.annotations
+    ? provider.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']
+    : '';
   return (
     <ResolvedQuery result={openshiftNetworksQuery} errorTitle="Error loading networks">
       <TableComposable
@@ -33,18 +35,21 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
           </Tr>
         </Thead>
         <Tbody>
-          {(openshiftNetworksQuery.data || []).map((network) => (
-            <Tr key={network.uid}>
-              <Td modifier="fitContent" className={spacing.pl_4xl}>
-                {network.name}
-              </Td>
-              {/* TODO how to determine if it's really the default? */}
-              <Td className={alignment.textAlignCenter}>
-                {network.name === 'ocp-network-1' ? <CheckIcon /> : null}
-              </Td>
-              <Td />
-            </Tr>
-          ))}
+          {networks.map((network) => {
+            let isDefault = defaultNetworkName === network.name;
+            if (isSameResource(network, POD_NETWORK)) {
+              isDefault = defaultNetworkName === 'pod' || !defaultNetworkName;
+            }
+            return (
+              <Tr key={network.uid}>
+                <Td modifier="fitContent" className={spacing.pl_4xl}>
+                  {network.name}
+                </Td>
+                <Td className={alignment.textAlignCenter}>{isDefault ? <CheckIcon /> : null}</Td>
+                <Td />
+              </Tr>
+            );
+          })}
         </Tbody>
       </TableComposable>
     </ResolvedQuery>

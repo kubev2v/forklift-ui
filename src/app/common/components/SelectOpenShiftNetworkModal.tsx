@@ -13,14 +13,18 @@ import {
 import { useFormState, useFormField, getFormGroupProps } from '@konveyor/lib-ui';
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { IOpenShiftNetwork, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
+import {
+  IOpenShiftNetwork,
+  IOpenShiftProvider,
+  IProviderObject,
+  POD_NETWORK,
+} from '@app/queries/types';
 
-import { MOCK_OPENSHIFT_NETWORKS } from '@app/queries/mocks/networks.mock';
 import { isSameResource } from '@app/queries/helpers';
 
 import './SelectOpenShiftNetworkModal.css';
 import { MutationResult } from 'react-query';
-import { IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
+import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 
@@ -29,7 +33,7 @@ interface ISelectOpenShiftNetworkModalProps {
   instructions: string;
   onClose: () => void;
   onSubmit: (network: IOpenShiftNetwork | null) => void;
-  mutationResult?: MutationResult<IKubeResponse<IKubeStatus>, KubeClientError>;
+  mutationResult?: MutationResult<IKubeResponse<IProviderObject>, KubeClientError>;
 }
 
 const useSelectNetworkFormState = () =>

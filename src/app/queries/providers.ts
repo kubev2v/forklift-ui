@@ -23,6 +23,7 @@ import {
   IProviderObject,
   IMetaObjectMeta,
   IOpenShiftNetwork,
+  POD_NETWORK,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -309,25 +310,39 @@ interface IProviderMigrationNetworkMutationVars {
 export const useOCPMigrationNetworkMutation = (
   onSuccess?: () => void
 ): MutationResultPair<
-  IKubeResponse<IKubeStatus>,
+  IKubeResponse<IProviderObject>,
   KubeClientError,
   IProviderMigrationNetworkMutationVars,
   unknown
 > => {
-  // TODO figure out where we need to store the default migration network
-  // TODO also add logic to display it after the providers query reloads
-  // const client = useAuthorizedK8sClient();
+  const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<
-    IKubeResponse<IKubeStatus>,
+    IKubeResponse<IProviderObject>,
     KubeClientError,
     IProviderMigrationNetworkMutationVars
-  >(({ provider, network }) => Promise.reject('Not yet implemented'), {
-    onSuccess: () => {
-      queryCache.invalidateQueries('providers');
-      onSuccess && onSuccess();
+  >(
+    ({ provider, network }) => {
+      if (!provider) return Promise.reject('No such provider');
+      const networkName = isSameResource(network, POD_NETWORK) ? 'pod' : network?.name || '';
+      const providerPatch: Partial<IProviderObject> = {
+        metadata: {
+          ...provider?.object.metadata,
+          annotations: {
+            ...provider?.object.metadata.annotations,
+            'forklift.konveyor.io/defaultTransferNetwork': networkName,
+          },
+        },
+      };
+      return client.patch<IProviderObject>(providerResource, provider.name, providerPatch);
     },
-  });
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('providers');
+        onSuccess && onSuccess();
+      },
+    }
+  );
 };
 
 export const findProvidersByRefs = (
