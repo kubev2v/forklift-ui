@@ -135,7 +135,8 @@ describe('<AddEditProviderModal />', () => {
     expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
     expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
     expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();
-    expect(screen.getByText(/openshift-migration/i)).toBeInTheDocument();
+    expect(screen.getByText(/openshift-migration$/i)).toBeInTheDocument();
+    expect(screen.getByText(/ocp-network-2/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /1/i })).toBeEnabled();
     expect(networkTarget).toHaveValue('openshift-migration / ocp-network-1');
     expect(storageTarget).toHaveValue('standard (default)');
