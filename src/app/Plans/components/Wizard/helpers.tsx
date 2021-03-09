@@ -364,6 +364,7 @@ export const generatePlan = (
       destination: nameAndNamespace(forms.general.values.targetProvider),
     },
     targetNamespace: forms.general.values.targetNamespace,
+    transferNetwork: forms.general.values.migrationNetwork || '',
     map: {
       network: networkMappingRef,
       storage: storageMappingRef,
