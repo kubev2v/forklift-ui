@@ -92,6 +92,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
           ) : null}
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               isDisabled={!form.isDirty || !form.isValid || mutationResult?.isLoading}
@@ -102,6 +103,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
               Select
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={onClose}

@@ -127,6 +127,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               onClick={() => {
@@ -147,6 +148,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
               {!mappingBeingEdited ? 'Create' : 'Save'}
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={onClose}
