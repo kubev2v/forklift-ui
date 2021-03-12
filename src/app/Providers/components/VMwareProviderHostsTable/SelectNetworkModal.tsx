@@ -98,6 +98,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
@@ -110,6 +111,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               Save
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={onClose}

@@ -129,6 +129,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               isDisabled={!isFormDirty || !isFormValid || mutateProviderResult.isLoading}
@@ -139,6 +140,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               {!providerBeingEdited ? 'Add' : 'Save'}
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={onClose}
