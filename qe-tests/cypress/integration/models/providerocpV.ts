@@ -30,7 +30,6 @@ export class ProviderocpV extends Provider {
     this.fillinstanceUrl(url);
     this.filltoken(saToken);
     clickByText(addButtonModal, addButton);
-    // clickByText(vmwareMenu, vmware);
   }
 
   delete(providerData: OcpVirtData) {

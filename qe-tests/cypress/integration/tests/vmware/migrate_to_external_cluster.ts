@@ -15,8 +15,8 @@ describe('Migrate VMware VM to external cluster', () => {
 
   before(() => {
     login(loginData);
-    target.create(tData.planData.targetprovider);
     source.create(tData.planData.providerData);
+    target.create(tData.planData.targetProvider);
     networkMapping.create(tData.planData.networkMappingData);
     storageMapping.create(tData.planData.storageMappingData);
     plan.create(tData.planData);
