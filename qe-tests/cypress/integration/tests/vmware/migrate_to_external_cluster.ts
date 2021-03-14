@@ -30,7 +30,7 @@ describe('Migrate VMware VM to external cluster', () => {
     plan.delete(tData.planData);
     networkMapping.delete(tData.planData.networkMappingData);
     storageMapping.delete(tData.planData.storageMappingData);
-    target.delete(tData.planData.providerData);
+    target.delete(tData.planData.targetProvider);
     source.delete(tData.planData.providerData);
   });
 });

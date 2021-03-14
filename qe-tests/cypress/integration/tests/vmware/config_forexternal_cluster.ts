@@ -23,7 +23,6 @@ export const target_ocpData: OcpVirtData = {
   type: 'OpenShift Virtualization',
   name: 'mgn01',
   url: 'https://api.mgn01.cnv-qe.rhcloud.com:6443',
-  //saToken: 'sha256~i3ZkqZC5P41Vs3SWSyL7Z1hnF4vifp-4CTKqsasXW6s',
   saToken: 'sha256~QM4Ak3TvLuvyB52QR-3nSMZCTVCr7ujQ_TU6BJyt4tA',
 };
 
