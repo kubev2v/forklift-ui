@@ -72,7 +72,7 @@ export const planData: PlanData = {
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: source_vmwareData,
-  targetprovider: target_ocpData,
+  targetProvider: target_ocpData,
   networkMappingData: networkMappingData,
   storageMappingData: storageMappingData,
 };
