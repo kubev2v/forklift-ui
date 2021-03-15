@@ -22,6 +22,8 @@ import {
   ISrcDestRefs,
   IProviderObject,
   IMetaObjectMeta,
+  IOpenShiftNetwork,
+  POD_NETWORK,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -298,6 +300,49 @@ export const useHasSufficientProvidersQuery = (): {
     isError: result.isError,
     hasSufficientProviders,
   };
+};
+
+interface IProviderMigrationNetworkMutationVars {
+  provider: IOpenShiftProvider | null;
+  network: IOpenShiftNetwork | null;
+}
+
+export const useOCPMigrationNetworkMutation = (
+  onSuccess?: () => void
+): MutationResultPair<
+  IKubeResponse<IProviderObject>,
+  KubeClientError,
+  IProviderMigrationNetworkMutationVars,
+  unknown
+> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<
+    IKubeResponse<IProviderObject>,
+    KubeClientError,
+    IProviderMigrationNetworkMutationVars
+  >(
+    ({ provider, network }) => {
+      if (!provider) return Promise.reject('No such provider');
+      const networkName = (!isSameResource(network, POD_NETWORK) && network?.name) || null;
+      const providerPatch: { metadata: Partial<IMetaObjectMeta> } = {
+        metadata: {
+          annotations: {
+            ...provider?.object.metadata.annotations,
+            'forklift.konveyor.io/defaultTransferNetwork': networkName || '',
+          },
+        },
+      };
+      return client.patch<IProviderObject>(providerResource, provider.name, providerPatch);
+    },
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('cluster-providers');
+        queryCache.invalidateQueries('inventory-providers');
+        onSuccess && onSuccess();
+      },
+    }
+  );
 };
 
 export const findProvidersByRefs = (

@@ -16,7 +16,7 @@ import { useAuthorizedFetch } from './fetchHelpers';
 export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   provider: InventoryProvider | null,
   providerType: ProviderType,
-  mappingType: MappingType,
+  mappingType: MappingType | null,
   mockNetworks: T[]
 ): QueryResult<T[]> => {
   const apiSlug =
@@ -26,7 +26,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
       queryKey: ['networks', providerType, provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
-        enabled: !!provider && mappingType === MappingType.Network,
+        enabled: !!provider && (!mappingType || mappingType === MappingType.Network),
         refetchInterval: usePollingContext().refetchInterval,
       },
     },
@@ -37,12 +37,12 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
 
 export const useVMwareNetworksQuery = (
   provider: IVMwareProvider | null,
-  mappingType: MappingType
+  mappingType?: MappingType
 ): QueryResult<IVMwareNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.vsphere, mappingType, MOCK_VMWARE_NETWORKS);
+  useNetworksQuery(provider, ProviderType.vsphere, mappingType || null, MOCK_VMWARE_NETWORKS);
 
 export const useOpenShiftNetworksQuery = (
   provider: IOpenShiftProvider | null,
-  mappingType: MappingType
+  mappingType?: MappingType
 ): QueryResult<IOpenShiftNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.openshift, mappingType, MOCK_OPENSHIFT_NETWORKS);
+  useNetworksQuery(provider, ProviderType.openshift, mappingType || null, MOCK_OPENSHIFT_NETWORKS);

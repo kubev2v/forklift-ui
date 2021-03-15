@@ -90,6 +90,10 @@ const usePlanWizardFormState = (
         yup.mixed<IOpenShiftProvider>().label('Target provider').required()
       ),
       targetNamespace: useFormField('', dnsLabelNameSchema.label('Target namespace').required()),
+      migrationNetwork: useFormField<string | null>(
+        null,
+        yup.mixed<string>().label('Migration network')
+      ),
     }),
     filterVMs: useFormState({
       treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
@@ -102,6 +106,7 @@ const usePlanWizardFormState = (
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
   };
+
   return {
     ...forms,
     isSomeFormDirty: (Object.keys(forms) as (keyof typeof forms)[]).some(

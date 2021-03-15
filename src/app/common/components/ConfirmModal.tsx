@@ -48,6 +48,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               onClick={mutateFn}
@@ -56,6 +57,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
               {confirmButtonText}
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={toggleOpen}
