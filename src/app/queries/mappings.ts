@@ -29,7 +29,9 @@ import { usePollingContext } from '@app/common/context';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { findProvidersByRefs, useInventoryProvidersQuery } from './providers';
 
-const getMappingResource = (mappingType: MappingType) => {
+export const getMappingResource = (
+  mappingType: MappingType
+): { kind: ForkliftResourceKind; resource: ForkliftResource } => {
   const kind =
     mappingType === MappingType.Network
       ? ForkliftResourceKind.NetworkMap

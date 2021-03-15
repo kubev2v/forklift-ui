@@ -35,7 +35,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, generatePlan, useEditingPlanPrefillEffect } from './helpers';
+import { generateMappings, useEditingPlanPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
   useMappingsQuery,
@@ -44,9 +44,8 @@ import {
   usePatchPlanMutation,
   usePlansQuery,
   useCreateMappingMutations,
-  usePatchMappingMutations,
 } from '@app/queries';
-import { getAggregateQueryStatus, nameAndNamespace } from '@app/queries/helpers';
+import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
@@ -181,64 +180,9 @@ const PlanWizard: React.FunctionComponent = () => {
   const [patchPlan, patchPlanResult] = usePatchPlanMutation();
 
   const {
-    network: [createOwnedNetworkMap, createOwnedNetworkMapResult],
-    storage: [createOwnedStorageMap, createOwnedStorageMapResult],
-  } = useCreateMappingMutations();
-  const {
     network: [createSharedNetworkMap, createSharedNetworkMapResult],
     storage: [createSharedStorageMap, createSharedStorageMapResult],
   } = useCreateMappingMutations();
-  const {
-    network: [patchNetworkMap, patchNetworkMapResult],
-    storage: [patchStorageMap, patchStorageMapResult],
-  } = usePatchMappingMutations();
-
-  // TODO should the create+create+patch logic be in the query file instead?
-  const createPlanAndOwnedMappings = async () => {
-    // Create mappings with generated names and collect refs to them
-    const { networkMapping, storageMapping } = generateMappings({
-      forms,
-      generateName: `${forms.general.values.planName}-`,
-    });
-    const [networkMappingRef, storageMappingRef] = (
-      await Promise.all([
-        networkMapping && createOwnedNetworkMap(networkMapping),
-        storageMapping && createOwnedStorageMap(storageMapping),
-      ])
-    ).map((response) => nameAndNamespace(response?.data.metadata));
-
-    // Create plan referencing new mappings
-    const planResponse = await createPlan(
-      generatePlan(forms, networkMappingRef, storageMappingRef)
-    );
-
-    // Patch mappings with ownerReferences to new plan
-    const {
-      networkMapping: networkMapWithOwnerRef,
-      storageMapping: storageMapWithOwnerRef,
-    } = generateMappings({
-      forms,
-      owner: planResponse?.data,
-    });
-    if (networkMapWithOwnerRef && storageMapWithOwnerRef) {
-      await Promise.all([
-        patchNetworkMap(networkMapWithOwnerRef),
-        patchStorageMap(storageMapWithOwnerRef),
-      ]);
-    }
-  };
-
-  const patchPlanAndOwnedMappings = () => {
-    if (!planBeingEdited) return;
-    const { networkMapping, storageMapping } = generateMappings({
-      forms,
-      owner: planBeingEdited,
-    });
-    networkMapping && patchNetworkMap(networkMapping);
-    storageMapping && patchStorageMap(storageMapping);
-    const { network: networkMappingRef, storage: storageMappingRef } = planBeingEdited.spec.map;
-    patchPlan(generatePlan(forms, networkMappingRef, storageMappingRef));
-  };
 
   const createSharedMappings = async () => {
     const { networkMapping, storageMapping } = generateMappings({ forms });
@@ -252,32 +196,20 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onSave = () => {
     if (!planBeingEdited) {
-      createPlanAndOwnedMappings();
+      createPlan(forms);
     } else {
-      patchPlanAndOwnedMappings();
+      patchPlan({ planBeingEdited, forms });
     }
     createSharedMappings();
   };
 
   const allMutationResults = [
-    ...(!editRouteMatch
-      ? [createPlanResult, createOwnedNetworkMapResult, createOwnedStorageMapResult]
-      : [patchPlanResult]),
-    patchNetworkMapResult,
-    patchStorageMapResult,
+    !editRouteMatch ? createPlanResult : patchPlanResult,
     ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapResult] : []),
     ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapResult] : []),
   ];
   const allMutationErrorTitles = [
-    ...(!editRouteMatch
-      ? [
-          'Error creating migration plan',
-          'Error creating network mapping',
-          'Error creating storage mapping',
-        ]
-      : ['Error saving migration plan']),
-    'Error saving network mapping',
-    'Error saving storage mapping',
+    !editRouteMatch ? 'Error creating migration plan' : 'Error saving migration plan',
     ...(forms.networkMapping.values.isSaveNewMapping ? ['Error creating network mapping'] : []),
     ...(forms.storageMapping.values.isSaveNewMapping ? ['Error creating storage mapping'] : []),
   ];
