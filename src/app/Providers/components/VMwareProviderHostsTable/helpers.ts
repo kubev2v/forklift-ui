@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Netmask } from 'netmask';
 import { configMatchesHost, getExistingHostConfigs, useSecretQuery } from '@app/queries';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 import { SelectNetworkFormState } from './SelectNetworkModal';
@@ -38,7 +39,8 @@ export const isManagementNetworkSelected = (
 
 export const formatHostNetworkAdapter = (network: IHostNetworkAdapter): string => {
   if (network) {
-    return network.name;
+    const netmask = new Netmask(network.ipAddress, network.subnetMask);
+    return `${network.name} - ${netmask.toString()}`;
   }
   return 'Network not found';
 };
