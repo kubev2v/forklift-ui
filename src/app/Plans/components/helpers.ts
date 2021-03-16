@@ -11,3 +11,12 @@ export const getPlanStatusTitle = (plan: IPlan): string => {
   );
   return condition ? PlanStatusDisplayType[condition.type] : '';
 };
+
+/*
+interface IWarmMigrationStatus {
+  // whether it's warm, whether it's in cutover, whether there are errors etc
+  // TODO or maybe just have a union type for states of a warm plan
+}
+
+export const getWarmMigrationStatus = (plan: IPlan) => {};
+*/

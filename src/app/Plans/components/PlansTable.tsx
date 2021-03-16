@@ -257,6 +257,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ) : !plan.status?.migration?.started ? (
             <StatusCondition status={plan.status} />
           ) : (
+            //) : isWarmAndNotInCutover ? (
+            //  <div>TODO</div>
             <Progress
               title={title}
               value={statusValue}
