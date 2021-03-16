@@ -14,15 +14,11 @@
   margin-top: 0;
 }
 
-.pf-c-table.plans-table table.expanded-content tr {
-  border-bottom: 0;
-}
-
-.pf-c-table.plans-table table.expanded-content tr:not(:first-child) > * {
-  padding-top: var(--pf-global--spacer--xs);
-}
-
 .pf-c-table.plans-table table.expanded-content tr > th {
   padding-left: 0;
   font-weight: bold;
+}
+
+.pf-c-table.plans-table table.expanded-content tr > td {
+  padding-left: var(--pf-global--spacer--xl);
 }

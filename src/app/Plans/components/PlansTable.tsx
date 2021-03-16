@@ -23,6 +23,11 @@ import {
   expandable,
   classNames,
   cellWidth,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Tr,
 } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
@@ -309,22 +314,27 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         cells: [
           {
             title: (
-              <table className="expanded-content">
-                <tbody>
-                  <tr>
-                    <th>Source provider</th>
-                    <td>{sourceProvider?.name || ''}</td>
-                  </tr>
-                  <tr>
-                    <th>Target provider</th>
-                    <td>{targetProvider?.name || ''}</td>
-                  </tr>
-                  <tr>
-                    <th>VMs</th>
-                    <td>{plan.spec.vms.length}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <TableComposable
+                aria-label={`Expanded details of plan ${plan.metadata.name}`}
+                variant="compact"
+                borders={false}
+                className="expanded-content"
+              >
+                <Tbody>
+                  <Tr>
+                    <Th modifier="fitContent">Source provider</Th>
+                    <Td>{sourceProvider?.name || ''}</Td>
+                  </Tr>
+                  <Tr>
+                    <Th modifier="fitContent">Target provider</Th>
+                    <Td>{targetProvider?.name || ''}</Td>
+                  </Tr>
+                  <Tr>
+                    <Th modifier="fitContent">VMs</Th>
+                    <Td>{plan.spec.vms.length}</Td>
+                  </Tr>
+                </Tbody>
+              </TableComposable>
             ),
           },
         ],
