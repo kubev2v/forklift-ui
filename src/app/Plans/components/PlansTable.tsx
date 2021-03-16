@@ -310,18 +310,20 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           {
             title: (
               <table className="expanded-content">
-                <tr>
-                  <th>Source provider</th>
-                  <td>{sourceProvider?.name || ''}</td>
-                </tr>
-                <tr>
-                  <th>Target provider</th>
-                  <td>{targetProvider?.name || ''}</td>
-                </tr>
-                <tr>
-                  <th>VMs</th>
-                  <td>{plan.spec.vms.length}</td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <th>Source provider</th>
+                    <td>{sourceProvider?.name || ''}</td>
+                  </tr>
+                  <tr>
+                    <th>Target provider</th>
+                    <td>{targetProvider?.name || ''}</td>
+                  </tr>
+                  <tr>
+                    <th>VMs</th>
+                    <td>{plan.spec.vms.length}</td>
+                  </tr>
+                </tbody>
               </table>
             ),
           },
