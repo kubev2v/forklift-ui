@@ -510,6 +510,8 @@ export const useEditingPlanPrefillEffect = (
       );
       forms.storageMapping.fields.isPrefilled.setInitialValue(true);
 
+      forms.type.fields.type.setValue(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
+
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
         setIsDonePrefilling(true);
