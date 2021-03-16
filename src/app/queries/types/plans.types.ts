@@ -34,6 +34,16 @@ export interface IVMStatus {
   started?: string;
   completed?: string;
   conditions?: IStatusCondition[];
+  warm?: {
+    consecutiveFailures: number;
+    failures: number;
+    successes: number;
+    nextPrecopyAt?: string; // ISO timestamp
+    precopies: {
+      start: string;
+      end?: string;
+    }[];
+  };
 }
 
 export interface IPlanVM {
