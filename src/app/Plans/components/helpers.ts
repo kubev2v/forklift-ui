@@ -26,9 +26,15 @@ export const getWarmPlanState = (
   if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
   const conditions = plan.status?.conditions || [];
   if (hasCondition(conditions, PlanStatusType.Executing)) {
-    if (plan.status?.migration?.vms?.some((vm) => vm.started)) return 'Cutover';
-    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies.length || 0) > 0))
+    if (
+      !!migration.spec.cutover &&
+      plan.status?.migration?.vms?.some((vm) => vm.pipeline.some((step) => !!step.started))
+    ) {
+      return 'Cutover';
+    }
+    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies.length || 0) > 0)) {
       return 'Copying';
+    }
     return 'Starting';
   }
   if (

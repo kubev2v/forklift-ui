@@ -242,6 +242,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const warmState = getWarmPlanState(plan, latestMigration);
 
+    console.log(plan.metadata.name, warmState);
+
     rows.push({
       meta: { plan },
       isOpen: isExpanded,
