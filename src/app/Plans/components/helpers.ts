@@ -15,7 +15,13 @@ export const getPlanStatusTitle = (plan: IPlan): string => {
 };
 
 // TODO maybe generalize this for cold migrations too
-type WarmPlanState = 'NotStarted' | 'Starting' | 'Copying' | 'Cutover' | 'Finished';
+type WarmPlanState =
+  | 'NotStarted'
+  | 'Starting'
+  | 'Copying'
+  | 'StartingCutover'
+  | 'Cutover'
+  | 'Finished';
 
 export const getWarmPlanState = (
   plan: IPlan,
@@ -26,10 +32,13 @@ export const getWarmPlanState = (
   if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
   const conditions = plan.status?.conditions || [];
   if (hasCondition(conditions, PlanStatusType.Executing)) {
-    if (
-      !!migration.spec.cutover &&
-      plan.status?.migration?.vms?.some((vm) => vm.pipeline.some((step) => !!step.started))
-    ) {
+    const pipelineHasStarted = plan.status?.migration?.vms?.some((vm) =>
+      vm.pipeline.some((step) => !!step.started)
+    );
+    if (migration.spec.cutover && !pipelineHasStarted) {
+      return 'StartingCutover';
+    }
+    if (migration.spec.cutover && pipelineHasStarted) {
       return 'Cutover';
     }
     if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies.length || 0) > 0)) {

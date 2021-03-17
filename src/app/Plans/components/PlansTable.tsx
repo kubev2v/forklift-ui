@@ -199,6 +199,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     let variant: ProgressVariant | undefined;
 
     const conditions = plan.status?.conditions || [];
+    const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
 
     // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
     // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
@@ -208,8 +209,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       buttonType = null;
       title = PlanStatusDisplayType.Executing;
       if (plan.spec.warm) {
-        buttonType = 'Cutover';
         title = 'Running cutover';
+        if (!latestMigration?.spec.cutover) {
+          buttonType = 'Cutover';
+        }
       }
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
@@ -234,7 +237,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     );
 
     const isExpanded = isPlanExpanded(plan);
-    const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
 
     // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
     // TODO what's the difference between isBeingStarted and isPending?
@@ -265,8 +267,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
             ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
               <StatusCondition status={plan.status} />
-            ) : plan.spec.warm && warmState === 'Copying' ? (
+            ) : warmState === 'Copying' ? (
               'Running - performing incremental data copies'
+            ) : warmState === 'StartingCutover' ? (
+              'Running - preparing for cutover'
             ) : (
               <Progress
                 title={title}
