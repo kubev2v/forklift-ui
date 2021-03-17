@@ -238,11 +238,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
 
+    const warmState = getWarmPlanState(plan, latestMigration);
     // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
     // TODO what's the difference between isBeingStarted and isPending?
-    const isBeingStarted = !!latestMigration && (plan.status?.migration?.vms?.length || 0) === 0;
-
-    const warmState = getWarmPlanState(plan, latestMigration);
+    const isBeingStarted =
+      !!latestMigration &&
+      ((plan.status?.migration?.vms?.length || 0) === 0 || warmState === 'Starting');
 
     console.log(plan.metadata.name, warmState);
 
@@ -292,9 +293,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 flexWrap={{ default: 'nowrap' }}
               >
                 <FlexItem align={{ default: 'alignRight' }}>
-                  {createMigrationResult.isLoading ||
-                  isBeingStarted ||
-                  setCutoverResult.isLoading ? (
+                  {isBeingStarted ? (
                     <Spinner size="md" className={spacing.mxLg} />
                   ) : (
                     <Button
@@ -306,7 +305,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                           setCutover({ plan, cutover: new Date().toISOString() });
                         }
                       }}
-                      isDisabled={createMigrationResult.isLoading}
+                      isDisabled={createMigrationResult.isLoading || setCutoverResult.isLoading}
                     >
                       {buttonType}
                     </Button>
