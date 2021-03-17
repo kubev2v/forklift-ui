@@ -572,7 +572,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-6',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -605,5 +605,91 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6];
+  // TODO make this plan running precopies
+  const plan7: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-7',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825024',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-7',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: '',
+      provider: {
+        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
+      },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
+        storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
+      },
+      vms: [vm1],
+      warm: true,
+    },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
+      ],
+      observedGeneration: 2,
+    },
+  };
+
+  // TODO make this plan running cutover
+  const plan8: IPlan = {
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Plan',
+    metadata: {
+      name: 'plantest-8',
+      namespace: 'openshift-migration',
+      generation: 2,
+      resourceVersion: '30825024',
+      selfLink:
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-8',
+      uid: '28fde094-b667-4d21-8f29-27c18f22178c',
+      creationTimestamp: '2020-08-27T19:40:49Z',
+    },
+    spec: {
+      description: '',
+      provider: {
+        source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
+      },
+      targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      map: {
+        network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
+        storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
+      },
+      vms: [vm1],
+      warm: true,
+    },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
+      ],
+      observedGeneration: 2,
+    },
+  };
+
+  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8];
 }

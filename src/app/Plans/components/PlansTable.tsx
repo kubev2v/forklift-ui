@@ -55,7 +55,7 @@ import './PlansTable.css';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutateFunction, MutationResult } from 'react-query';
-import { getPlanStatusTitle } from './helpers';
+import { getPlanStatusTitle, getWarmPlanState } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 
@@ -200,15 +200,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
 
+    // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
+    // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
-      // TODO also show spinner if currently setting cutover time
       buttonType = 'Start';
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
       buttonType = null;
       title = PlanStatusDisplayType.Executing;
       if (plan.spec.warm) {
         buttonType = 'Cutover';
-        // TODO only if we aren't cutting over yet.. need to look at structure of status data
+        title = 'Running cutover';
       }
     } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
       title = PlanStatusDisplayType.Succeeded;
@@ -234,7 +235,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
     const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
+
+    // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
+    // TODO what's the difference between isBeingStarted and isPending?
     const isBeingStarted = !!latestMigration && (plan.status?.migration?.vms?.length || 0) === 0;
+
+    const warmState = getWarmPlanState(plan, latestMigration);
 
     rows.push({
       meta: { plan },
@@ -252,22 +258,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         plan.spec.warm ? 'Warm' : 'Cold',
         {
-          title: isPending ? (
-            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
-          ) : !plan.status?.migration?.started ? (
-            <StatusCondition status={plan.status} />
-          ) : (
-            //) : isWarmAndNotInCutover ? (
-            //  <div>TODO</div>
-            <Progress
-              title={title}
-              value={statusValue}
-              label={statusMessage}
-              valueText={statusMessage}
-              variant={variant}
-              measureLocation={ProgressMeasureLocation.top}
-            />
-          ),
+          title:
+            isPending || warmState === 'Starting' ? (
+              <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
+            ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
+              <StatusCondition status={plan.status} />
+            ) : plan.spec.warm && warmState === 'Copying' ? (
+              'Running - performing incremental data copies'
+            ) : (
+              <Progress
+                title={title}
+                value={statusValue}
+                label={statusMessage}
+                valueText={statusMessage}
+                variant={variant}
+                measureLocation={ProgressMeasureLocation.top}
+              />
+            ),
         },
         {
           title: buttonType ? (

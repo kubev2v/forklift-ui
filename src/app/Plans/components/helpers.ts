@@ -1,5 +1,7 @@
 import { PlanStatusType, PlanStatusDisplayType } from '@app/common/constants';
+import { hasCondition } from '@app/common/helpers';
 import { IPlan } from '@app/queries/types';
+import { IMigration } from '@app/queries/types/migrations.types';
 
 export const getPlanStatusTitle = (plan: IPlan): string => {
   const condition = plan.status?.conditions.find(
@@ -12,11 +14,29 @@ export const getPlanStatusTitle = (plan: IPlan): string => {
   return condition ? PlanStatusDisplayType[condition.type] : '';
 };
 
-/*
-interface IWarmMigrationStatus {
-  // whether it's warm, whether it's in cutover, whether there are errors etc
-  // TODO or maybe just have a union type for states of a warm plan
-}
+// TODO maybe generalize this for cold migrations too
+type WarmPlanState = 'NotStarted' | 'Starting' | 'Copying' | 'Cutover' | 'Finished';
 
-export const getWarmMigrationStatus = (plan: IPlan) => {};
-*/
+export const getWarmPlanState = (
+  plan: IPlan,
+  migration: IMigration | null
+): WarmPlanState | null => {
+  if (!plan.spec.warm) return null;
+  if (!migration) return 'NotStarted';
+  if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
+  const conditions = plan.status?.conditions || [];
+  if (hasCondition(conditions, PlanStatusType.Executing)) {
+    if (plan.status?.migration?.vms?.some((vm) => vm.started)) return 'Cutover';
+    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies.length || 0) > 0))
+      return 'Copying';
+    return 'Starting';
+  }
+  if (
+    hasCondition(conditions, PlanStatusType.Succeeded) ||
+    hasCondition(conditions, PlanStatusType.Canceled) ||
+    hasCondition(conditions, PlanStatusType.Failed)
+  ) {
+    return 'Finished';
+  }
+  return null;
+};
