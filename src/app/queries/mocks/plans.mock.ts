@@ -28,14 +28,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     id: vm1.id,
     pipeline: [
       {
-        name: 'PreHook',
-        description: 'Pre hook',
-        progress: { total: 2, completed: 2 },
-        phase: 'Mock Step Phase',
-        started: '2020-10-10T14:04:10Z',
-        completed: '2020-10-10T14:21:10Z',
-      },
-      {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 30 },
@@ -51,12 +43,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
       },
-      {
-        name: 'PostHook',
-        description: 'Post hook',
-        progress: { total: 2, completed: 0 },
-        phase: 'Mock Step Phase',
-      },
     ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
@@ -65,14 +51,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vmStatus2: IVMStatus = {
     id: vm2.id,
     pipeline: [
-      {
-        name: 'PreHook',
-        description: 'Pre hook',
-        progress: { total: 1, completed: 1 },
-        phase: 'Mock Step Phase',
-        started: '2020-10-10T14:04:10Z',
-        completed: '2020-10-10T14:21:10Z',
-      },
       {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
@@ -89,12 +67,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         phase: 'Mock Step Phase',
         started: '2020-10-10T15:57:10Z',
       },
-      {
-        name: 'PostHook',
-        description: 'Post hook',
-        progress: { total: 1, completed: 0 },
-        phase: 'Mock Step Phase',
-      },
     ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
@@ -103,14 +75,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vmStatus3: IVMStatus = {
     id: vm3.id,
     pipeline: [
-      {
-        name: 'PreHook',
-        description: 'Pre hook',
-        progress: { total: 2, completed: 2 },
-        phase: 'Latest message from controller',
-        started: '2020-10-10T14:04:10Z',
-        completed: '2020-10-10T14:21:10Z',
-      },
       {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
@@ -138,14 +102,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     id: vm4.id,
     pipeline: [
       {
-        name: 'PreHook',
-        description: 'Pre Hook',
-        progress: { total: 2, completed: 2 },
-        phase: 'Latest message from controller',
-        started: '2020-10-10T14:04:10Z',
-        completed: '2020-10-10T14:21:10Z',
-      },
-      {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 1024 * 64 },
@@ -167,12 +123,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           ],
         },
       },
-      {
-        name: 'PostHook',
-        description: 'Post Hook',
-        progress: { total: 1, completed: 0 },
-        phase: 'Mock Step Phase',
-      },
     ],
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
@@ -189,14 +139,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     id: vm2.id,
     pipeline: [
       {
-        name: 'PreHook',
-        description: 'Pre hook',
-        progress: { total: 1, completed: 1 },
-        phase: 'Mock Step Phase',
-        started: '2020-10-10T14:04:10Z',
-        completed: '2020-10-10T14:21:10Z',
-      },
-      {
         name: 'DiskTransfer',
         description: 'Transfer disks.',
         progress: { total: 1024 * 64, completed: 0 },
@@ -206,12 +148,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       {
         name: 'ImageConversion',
         description: 'Convert image to kubevirt.',
-        progress: { total: 1, completed: 0 },
-        phase: 'Mock Step Phase',
-      },
-      {
-        name: 'PostHook',
-        description: 'Post hook',
         progress: { total: 1, completed: 0 },
         phase: 'Mock Step Phase',
       },
