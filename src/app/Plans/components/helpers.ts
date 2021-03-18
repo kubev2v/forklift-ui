@@ -24,10 +24,10 @@ type WarmPlanState =
   | 'Finished';
 
 export const getWarmPlanState = (
-  plan: IPlan,
+  plan: IPlan | null,
   migration: IMigration | null
 ): WarmPlanState | null => {
-  if (!plan.spec.warm) return null;
+  if (!plan || !plan.spec.warm) return null;
   if (!migration) return 'NotStarted';
   if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
   const conditions = plan.status?.conditions || [];

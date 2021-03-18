@@ -245,8 +245,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       !!latestMigration &&
       ((plan.status?.migration?.vms?.length || 0) === 0 || warmState === 'Starting');
 
-    console.log(plan.metadata.name, warmState);
-
     rows.push({
       meta: { plan },
       isOpen: isExpanded,
