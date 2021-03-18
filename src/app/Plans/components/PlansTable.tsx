@@ -262,10 +262,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.warm ? 'Warm' : 'Cold',
         {
           title: isPending ? (
-            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
+            'Running - preparing for migration'
+          ) : warmState === 'Starting' ? (
+            'Running - preparing for incremental data copies'
           ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
             <StatusCondition status={plan.status} />
-          ) : warmState === 'Starting' || warmState === 'Copying' ? (
+          ) : warmState === 'Copying' ? (
             'Running - performing incremental data copies'
           ) : warmState === 'StartingCutover' ? (
             'Running - preparing for cutover'
