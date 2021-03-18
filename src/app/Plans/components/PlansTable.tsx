@@ -261,25 +261,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         plan.spec.warm ? 'Warm' : 'Cold',
         {
-          title:
-            isPending || warmState === 'Starting' ? (
-              <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
-            ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
-              <StatusCondition status={plan.status} />
-            ) : warmState === 'Copying' ? (
-              'Running - performing incremental data copies'
-            ) : warmState === 'StartingCutover' ? (
-              'Running - preparing for cutover'
-            ) : (
-              <Progress
-                title={title}
-                value={statusValue}
-                label={statusMessage}
-                valueText={statusMessage}
-                variant={variant}
-                measureLocation={ProgressMeasureLocation.top}
-              />
-            ),
+          title: isPending ? (
+            <StatusIcon status={StatusType.Loading} label={PlanStatusDisplayType.Pending} />
+          ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
+            <StatusCondition status={plan.status} />
+          ) : warmState === 'Starting' || warmState === 'Copying' ? (
+            'Running - performing incremental data copies'
+          ) : warmState === 'StartingCutover' ? (
+            'Running - preparing for cutover'
+          ) : (
+            <Progress
+              title={title}
+              value={statusValue}
+              label={statusMessage}
+              valueText={statusMessage}
+              variant={variant}
+              measureLocation={ProgressMeasureLocation.top}
+            />
+          ),
         },
         {
           title: buttonType ? (

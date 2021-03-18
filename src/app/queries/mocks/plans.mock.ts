@@ -603,7 +603,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan7: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-07' },
-    spec: { ...plan1.spec, description: '', warm: true, vms: [vm1] },
+    spec: { ...plan1.spec, description: 'running first copy', warm: true, vms: [vm1] },
     status: {
       conditions: [
         {
@@ -641,7 +641,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan8: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-08' },
-    spec: plan7.spec,
+    spec: { ...plan7.spec, description: 'idle between copies' },
     status: {
       conditions: plan7.status?.conditions || [],
       observedGeneration: 2,
@@ -670,7 +670,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan9: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-09' },
-    spec: plan7.spec,
+    spec: { ...plan7.spec, description: 'cutover started' },
     status: {
       conditions: plan7.status?.conditions || [],
       observedGeneration: 2,
@@ -699,7 +699,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan10: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-10' },
-    spec: plan7.spec,
+    spec: { ...plan7.spec, description: 'failed before cutover' },
     status: {
       conditions: [
         {
