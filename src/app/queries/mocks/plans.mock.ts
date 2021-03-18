@@ -513,7 +513,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
     spec: {
-      description: '',
+      description: 'newly created warm plan',
       provider: {
         source: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
