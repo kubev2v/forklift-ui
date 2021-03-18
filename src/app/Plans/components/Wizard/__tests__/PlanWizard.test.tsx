@@ -71,7 +71,7 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows to edit a plan', async () => {
     const history = createMemoryHistory();
-    history.push('/plans/plantest-2/edit');
+    history.push('/plans/plantest-02/edit');
     render(
       <NetworkContextProvider>
         <Router history={history}>
@@ -85,14 +85,14 @@ describe('<AddEditProviderModal />', () => {
         'Migration plans'
       );
       expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent(
-        'plantest-2'
+        'plantest-02'
       );
       expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent('Edit');
       expect(screen.getByRole('link', { name: /Migration plans/ })).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: /Edit migration plan/ })).toBeInTheDocument();
 
       expect(screen.getByRole('heading', { name: /General settings/ })).toBeInTheDocument();
-      expect(screen.getByText(/plantest-2/i)).toBeInTheDocument();
+      expect(screen.getByText(/plantest-02/i)).toBeInTheDocument();
       expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
       expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
       expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();

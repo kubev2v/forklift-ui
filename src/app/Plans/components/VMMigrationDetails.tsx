@@ -99,14 +99,17 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const latestMigration = useLatestMigrationQuery(plan || null);
   const warmPlanState = getWarmPlanState(plan || null, latestMigration);
-  const isWarmCopying =
-    !!plan?.spec.warm && (warmPlanState === 'Starting' || warmPlanState === 'Copying');
+  const isShowingPrecopyView =
+    !!plan?.spec.warm &&
+    (warmPlanState === 'Starting' ||
+      warmPlanState === 'Copying' ||
+      warmPlanState === 'AbortedCopying');
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
       '', // Expand/collapse control column
       findVMById(vmStatus.id, vmsQuery)?.name || '',
-      ...(!isWarmCopying
+      ...(!isShowingPrecopyView
         ? [
             vmStatus.started || '',
             vmStatus.completed || '',
@@ -130,7 +133,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         return findVMById(item.id, vmsQuery)?.name || '';
       },
     },
-    ...(!isWarmCopying
+    ...(!isShowingPrecopyView
       ? [
           {
             key: 'begin',
@@ -220,7 +223,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       transforms: [sortable, wrappable],
       cellFormatters: planStarted ? [expandable] : [],
     },
-    ...(!isWarmCopying
+    ...(!isShowingPrecopyView
       ? [
           { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
           { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
@@ -255,7 +258,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
-        ...(!isWarmCopying
+        ...(!isShowingPrecopyView
           ? [
               formatTimestamp(vmStatus.started),
               formatTimestamp(vmStatus.completed),
@@ -276,7 +279,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         fullWidth: true,
         cells: [
           {
-            title: !isWarmCopying ? (
+            title: !isShowingPrecopyView ? (
               <VMStatusPipelineTable status={vmStatus} isCanceled={isCanceled} />
             ) : (
               <VMStatusPrecopyTable status={vmStatus} isCanceled={isCanceled} />

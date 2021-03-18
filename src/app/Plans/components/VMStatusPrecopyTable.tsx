@@ -56,16 +56,15 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
           title: <TickingElapsedTime start={precopy.start} end={precopy.end || status.completed} />,
         },
         {
-          title:
-            status.error && index === 0 ? (
-              <StatusIcon status={StatusType.Error} label="Failed" />
-            ) : isCanceled ? (
-              <StatusIcon status={StatusType.Info} label="Canceled" />
-            ) : !precopy.end ? (
-              <StatusIcon status={StatusType.Loading} label="Copying data" />
-            ) : (
-              <StatusIcon status={StatusType.Ok} label="Complete" />
-            ),
+          title: precopy.end ? (
+            <StatusIcon status={StatusType.Ok} label="Complete" />
+          ) : status.error && index === 0 ? (
+            <StatusIcon status={StatusType.Error} label="Failed" />
+          ) : isCanceled ? (
+            <StatusIcon status={StatusType.Info} label="Canceled" />
+          ) : (
+            <StatusIcon status={StatusType.Loading} label="Copying data" />
+          ),
         },
       ],
     };

@@ -19,6 +19,7 @@ type WarmPlanState =
   | 'NotStarted'
   | 'Starting'
   | 'Copying'
+  | 'AbortedCopying'
   | 'StartingCutover'
   | 'Cutover'
   | 'Finished';
@@ -31,6 +32,14 @@ export const getWarmPlanState = (
   if (!migration) return 'NotStarted';
   if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
   const conditions = plan.status?.conditions || [];
+  if (
+    (hasCondition(conditions, PlanStatusType.Canceled) ||
+      hasCondition(conditions, PlanStatusType.Failed)) &&
+    !migration.spec.cutover
+  ) {
+    return 'AbortedCopying';
+  }
+  if (!!migration && !!plan.status?.migration?.completed) return 'Finished';
   if (hasCondition(conditions, PlanStatusType.Executing)) {
     const pipelineHasStarted = plan.status?.migration?.vms?.some((vm) =>
       vm.pipeline.some((step) => !!step.started)

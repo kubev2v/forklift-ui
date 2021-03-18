@@ -162,12 +162,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
     metadata: {
-      name: 'plantest-1',
+      name: 'plantest-01',
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-1',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-01',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -225,7 +225,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-1',
+              name: 'plantest-01',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -239,12 +239,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
     metadata: {
-      name: 'plantest-2',
+      name: 'plantest-02',
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-2',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-02',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -301,12 +301,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
     metadata: {
-      name: 'plantest-3',
+      name: 'plantest-03',
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825023',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-3',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-03',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -348,7 +348,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-3',
+              name: 'plantest-03',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -362,12 +362,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
     metadata: {
-      name: 'plantest-4',
+      name: 'plantest-04',
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-4',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-04',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -410,7 +410,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-4',
+              name: 'plantest-04',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -463,7 +463,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan5: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-5' },
+    metadata: { ...plan1.metadata, name: 'plantest-05' },
     spec: { ...plan1.spec, description: 'completed with errors' },
     status: {
       conditions: [
@@ -489,7 +489,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-5',
+              name: 'plantest-05',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -503,12 +503,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Plan',
     metadata: {
-      name: 'plantest-6',
+      name: 'plantest-06',
       namespace: 'openshift-migration',
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-6',
+        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-06',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -566,6 +566,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const warmVmPrecopyingWithError: IVMStatus = {
+    ...warmVmPrecopying,
+    error: { phase: 'Mock Error', reasons: ['Something went wrong with a precopy?'] },
+  };
+
   const warmVmIdle: IVMStatus = {
     ...warmVmPrecopying,
     warm: {
@@ -597,8 +602,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan7: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-7' },
-    spec: { ...plan1.spec, description: '', warm: true },
+    metadata: { ...plan1.metadata, name: 'plantest-07' },
+    spec: { ...plan1.spec, description: '', warm: true, vms: [vm1] },
     status: {
       conditions: [
         {
@@ -623,7 +628,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-7',
+              name: 'plantest-07',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -635,8 +640,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan8: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-8' },
-    spec: { ...plan1.spec, description: '', warm: true },
+    metadata: { ...plan1.metadata, name: 'plantest-08' },
+    spec: plan7.spec,
     status: {
       conditions: plan7.status?.conditions || [],
       observedGeneration: 2,
@@ -652,7 +657,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-8',
+              name: 'plantest-08',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -664,8 +669,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan9: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-9' },
-    spec: { ...plan1.spec, description: '', warm: true },
+    metadata: { ...plan1.metadata, name: 'plantest-09' },
+    spec: plan7.spec,
     status: {
       conditions: plan7.status?.conditions || [],
       observedGeneration: 2,
@@ -681,7 +686,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-9',
+              name: 'plantest-09',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -691,5 +696,44 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9];
+  const plan10: IPlan = {
+    ...plan1,
+    metadata: { ...plan1.metadata, name: 'plantest-10' },
+    spec: plan7.spec,
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-10-10T15:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Failed',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T15:04:10Z',
+        vms: [warmVmPrecopyingWithError],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-9-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-10',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
+      },
+    },
+  };
+
+  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9, plan10];
 }
