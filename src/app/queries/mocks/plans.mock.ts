@@ -590,6 +590,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const warmVmIdle: IVMStatus = {
     ...vmStatus3,
+    completed: undefined,
     pipeline: warmVmPrecopying.pipeline,
     warm: {
       consecutiveFailures: 0,

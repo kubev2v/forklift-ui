@@ -215,7 +215,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
     ? []
     : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
-  /// TODO one of the precopy VMs is showing as not cancelable?
   const selectAllCancelable = (isSelected: boolean) =>
     isSelected ? setSelectedItems(cancelableVMs) : setSelectedItems([]);
 
