@@ -282,9 +282,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ...vmStatus1,
     pipeline: [
       vmStatus1.pipeline[0],
-      vmStatus1.pipeline[1],
-      { ...vmStatus1.pipeline[2], completed: '2020-10-10T17:34:10Z' },
-      vmStatus1.pipeline[3],
+      { ...vmStatus1.pipeline[1], completed: '2020-10-10T17:34:10Z' },
     ],
     conditions: [
       {
@@ -423,16 +421,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vmStatus1WithError: IVMStatus = {
     ...vmStatus1,
     pipeline: [
-      vmStatus1.pipeline[0],
       {
-        ...vmStatus1.pipeline[1],
+        ...vmStatus1.pipeline[0],
         error: {
           phase: 'DiskTransferFailed',
           reasons: ['Error transferring disks'],
         },
       },
-      { ...vmStatus1.pipeline[2], started: undefined },
-      vmStatus1.pipeline[3],
+      { ...vmStatus1.pipeline[1], started: undefined },
     ],
     error: {
       phase: 'DiskTransfer',
@@ -444,16 +440,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ...vmStatus1,
     pipeline: [
       vmStatus1.pipeline[0],
-      vmStatus1.pipeline[1],
       {
-        ...vmStatus1.pipeline[2],
+        ...vmStatus1.pipeline[1],
         completed: '2020-10-10T15:58:10Z',
         error: {
           phase: 'ImageConversionFailed',
           reasons: ['Error converting image'],
         },
       },
-      vmStatus1.pipeline[3],
     ],
     error: {
       phase: 'ImageConversion',
