@@ -287,13 +287,13 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
 
 export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): StatusType | null =>
   !concern
-    ? StatusType.Ok
+    ? 'Ok'
     : concern.category === 'Critical'
-    ? StatusType.Error
+    ? 'Error'
     : concern.category === 'Warning'
-    ? StatusType.Warning
+    ? 'Warning'
     : concern.category === 'Information' || concern.category === 'Advisory'
-    ? StatusType.Info
+    ? 'Info'
     : null;
 
 export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): string =>

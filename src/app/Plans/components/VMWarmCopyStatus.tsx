@@ -13,14 +13,14 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
   if (vmStatus.error) {
     return {
       state: 'Failed',
-      status: StatusType.Error,
+      status: 'Error',
       label: 'Failed',
     };
   }
   if (!vmStatus.warm || vmStatus.warm.precopies.length === 0) {
     return {
       state: 'Starting',
-      status: StatusType.Loading,
+      status: 'Loading',
       label: 'Preparing for incremental copies.',
     };
   }
@@ -28,20 +28,20 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
   if (precopies.some((copy) => !!copy.start && !copy.end)) {
     return {
       state: 'Copying',
-      status: StatusType.Loading,
+      status: 'Loading',
       label: 'Performing incremental data copy.',
     };
   }
   if (precopies.every((copy) => !!copy.start && !!copy.end)) {
     return {
       state: 'Idle',
-      status: StatusType.Info, // TODO add an Idle status type to lib-ui
+      status: 'Paused',
       label: `Idle - Next incremental copy will begin in X minutes.`, // TODO
     };
   }
   return {
     state: 'Warning',
-    status: StatusType.Warning,
+    status: 'Warning',
     label: 'Unknown',
   };
 };
@@ -57,7 +57,7 @@ const VMWarmCopyStatus: React.FunctionComponent<IVMWarmCopyStatusProps> = ({
     return (
       <Popover hasAutoWidth bodyContent={<>{vmStatus.error.reasons.join('; ')}</>}>
         <Button variant="link" isInline>
-          <StatusIcon status={StatusType.Error} label="Failed" />
+          <StatusIcon status="Error" label="Failed" />
         </Button>
       </Popover>
     );

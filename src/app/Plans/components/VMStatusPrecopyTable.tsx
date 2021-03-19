@@ -12,7 +12,7 @@ import {
 
 import { IVMStatus } from '@app/queries/types';
 import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon } from '@konveyor/lib-ui';
 
 interface IVMStatusPrecopyTableProps {
   status: IVMStatus;
@@ -57,13 +57,13 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
         },
         {
           title: precopy.end ? (
-            <StatusIcon status={StatusType.Ok} label="Complete" />
+            <StatusIcon status="Ok" label="Complete" />
           ) : status.error && index === 0 ? (
-            <StatusIcon status={StatusType.Error} label="Failed" />
+            <StatusIcon status="Error" label="Failed" />
           ) : isCanceled ? (
-            <StatusIcon status={StatusType.Info} label="Canceled" />
+            <StatusIcon status="Info" label="Canceled" />
           ) : (
-            <StatusIcon status={StatusType.Loading} label="Copying data" />
+            <StatusIcon status="Loading" label="Copying data" />
           ),
         },
       ],

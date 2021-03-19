@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon } from '@konveyor/lib-ui';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { useResourceQueriesForMapping } from '@app/queries';
 import { MappingType, Mapping } from '@app/queries/types';
@@ -22,12 +22,7 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
     mapping
   );
   const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
-  const icon = (
-    <StatusIcon
-      status={isValid ? StatusType.Ok : StatusType.Error}
-      label={isValid ? 'OK' : 'Invalid'}
-    />
-  );
+  const icon = <StatusIcon status={isValid ? 'Ok' : 'Error'} label={isValid ? 'OK' : 'Invalid'} />;
   return (
     <ResolvedQueries
       results={queries}
