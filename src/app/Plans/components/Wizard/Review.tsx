@@ -89,6 +89,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9}>
           <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
         </GridItem>
+        <GridItem md={3}>Migration type</GridItem>
+        <GridItem md={9}>{forms.type.values.type}</GridItem>
       </Grid>
       <ResolvedQueries
         results={allMutationResults}
