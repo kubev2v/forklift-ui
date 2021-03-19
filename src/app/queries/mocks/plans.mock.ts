@@ -585,6 +585,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const warmVmPrecopyingWithError: IVMStatus = {
     ...warmVmPrecopying,
+    completed: '2021-03-16T19:13:48Z',
     error: { phase: 'Mock Error', reasons: ['Something went wrong with a precopy?'] },
   };
 
