@@ -6,7 +6,7 @@ import { MOCK_PLANS } from './plans.mock';
 export let MOCK_MIGRATIONS: IMigration[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
-  const runningPlanIndexes = [0, 2, 3, 4, 6, 7, 8, 9];
+  const runningPlanIndexes = [0, 2, 3, 4, 6, 7, 8];
   MOCK_MIGRATIONS = runningPlanIndexes.map((index) => ({
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Migration',
@@ -28,6 +28,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   ];
 
-  // plantest-9 (plan index 8) is in cutover
-  MOCK_MIGRATIONS[6].spec.cutover = '2021-03-16T18:31:30Z';
+  // plantest-8 (plan index 7) is in cutover
+  MOCK_MIGRATIONS[5].spec.cutover = '2021-03-16T18:31:30Z';
 }

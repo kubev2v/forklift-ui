@@ -48,6 +48,7 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
   ];
 
   const rows: IRow[] = sortedPrecopies.map((precopy, index) => {
+    const consecutiveFailures = (index === 0 && status.warm?.consecutiveFailures) || 0;
     return {
       meta: { precopy },
       cells: [
@@ -63,7 +64,12 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
           ) : isCanceled ? (
             <StatusIcon status="Info" label="Canceled" />
           ) : (
-            <StatusIcon status="Loading" label="Copying data" />
+            <StatusIcon
+              status="Loading"
+              label={`Copying data${
+                consecutiveFailures > 0 ? ` - Retrying after ${consecutiveFailures} failures` : ''
+              }`}
+            />
           ),
         },
       ],

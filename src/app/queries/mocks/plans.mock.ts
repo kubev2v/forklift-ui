@@ -566,13 +566,37 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const warmVmWithConsecutiveFailures: IVMStatus = {
+    ...vmStatus2,
+    pipeline: warmVmPrecopying.pipeline,
+    warm: {
+      consecutiveFailures: 2,
+      failures: 0,
+      precopies: [
+        {
+          start: '2021-03-16T17:28:48Z',
+          end: '2021-03-16T17:29:42Z',
+        },
+        {
+          start: '2021-03-16T18:29:20Z',
+          end: '2021-03-16T18:30:38Z',
+        },
+        {
+          start: '2021-03-16T18:30:38Z',
+        },
+      ],
+      successes: 0,
+    },
+  };
+
   const warmVmPrecopyingWithError: IVMStatus = {
     ...warmVmPrecopying,
     error: { phase: 'Mock Error', reasons: ['Something went wrong with a precopy?'] },
   };
 
   const warmVmIdle: IVMStatus = {
-    ...warmVmPrecopying,
+    ...vmStatus3,
+    pipeline: warmVmPrecopying.pipeline,
     warm: {
       consecutiveFailures: 0,
       failures: 0,
@@ -595,15 +619,30 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  const warmVmCuttingOver: IVMStatus = {
+  const warmVmCuttingOver1: IVMStatus = {
     ...vmStatus1,
+    warm: warmVmIdle.warm,
+  };
+
+  const warmVmCuttingOver2: IVMStatus = {
+    ...vmStatus2,
+    warm: warmVmIdle.warm,
+  };
+
+  const warmVmCuttingOver3: IVMStatus = {
+    ...vmStatus3,
     warm: warmVmIdle.warm,
   };
 
   const plan7: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-07' },
-    spec: { ...plan1.spec, description: 'running first copy', warm: true, vms: [vm1] },
+    spec: {
+      ...plan1.spec,
+      description: 'various precopy states',
+      warm: true,
+      vms: [vm1, vm2, vm3],
+    },
     status: {
       conditions: [
         {
@@ -619,7 +658,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
-        vms: [warmVmPrecopying],
+        vms: [warmVmPrecopying, warmVmWithConsecutiveFailures, warmVmIdle],
         history: [
           {
             conditions: [],
@@ -641,14 +680,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan8: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-08' },
-    spec: { ...plan7.spec, description: 'idle between copies' },
+    spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3] },
     status: {
       conditions: plan7.status?.conditions || [],
       observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
-        vms: [warmVmIdle],
+        vms: [warmVmCuttingOver1, warmVmCuttingOver2, warmVmCuttingOver3],
         history: [
           {
             conditions: [],
@@ -670,35 +709,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan9: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-09' },
-    spec: { ...plan7.spec, description: 'cutover started' },
-    status: {
-      conditions: plan7.status?.conditions || [],
-      observedGeneration: 2,
-      migration: {
-        active: '',
-        started: '2020-10-10T14:04:10Z',
-        vms: [warmVmCuttingOver],
-        history: [
-          {
-            conditions: [],
-            migration: {
-              name: 'plan-8-mock-migration',
-              namespace: META.namespace,
-            },
-            plan: {
-              name: 'plantest-09',
-              namespace: 'openshift-migration',
-            },
-            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
-          },
-        ],
-      },
-    },
-  };
-
-  const plan10: IPlan = {
-    ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-10' },
     spec: { ...plan7.spec, description: 'failed before cutover' },
     status: {
       conditions: [
@@ -721,11 +731,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           {
             conditions: [],
             migration: {
-              name: 'plan-9-mock-migration',
+              name: 'plan-8-mock-migration',
               namespace: META.namespace,
             },
             plan: {
-              name: 'plantest-10',
+              name: 'plantest-09',
               namespace: 'openshift-migration',
             },
             provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
@@ -735,5 +745,5 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9, plan10];
+  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9];
 }

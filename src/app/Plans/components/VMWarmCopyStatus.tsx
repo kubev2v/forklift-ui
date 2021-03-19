@@ -22,7 +22,7 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
     return {
       state: 'Starting',
       status: 'Loading',
-      label: 'Preparing for incremental copies.',
+      label: 'Preparing for incremental copies',
     };
   }
   const { precopies, nextPrecopyAt } = vmStatus.warm;
@@ -30,7 +30,7 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
     return {
       state: 'Copying',
       status: 'Loading',
-      label: 'Performing incremental data copy.',
+      label: 'Performing incremental data copy',
     };
   }
   if (precopies.every((copy) => !!copy.start && !!copy.end)) {
@@ -38,8 +38,8 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
       state: 'Idle',
       status: 'Paused',
       label: nextPrecopyAt
-        ? `Idle - Next incremental copy will begin in ${getMinutesUntil(nextPrecopyAt)}.`
-        : 'Idle - Waiting for next incremental copy.',
+        ? `Idle - Next incremental copy will begin in ${getMinutesUntil(nextPrecopyAt)}`
+        : 'Idle - Waiting for next incremental copy',
     };
   }
   return {
