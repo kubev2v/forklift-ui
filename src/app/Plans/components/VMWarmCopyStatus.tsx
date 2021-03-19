@@ -2,6 +2,7 @@ import * as React from 'react';
 import { IVMStatus } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { Button, Popover } from '@patternfly/react-core';
+import { getMinutesUntil } from '@app/common/helpers';
 
 interface IWarmVMCopyState {
   state: 'Starting' | 'Copying' | 'Idle' | 'Failed' | 'Warning';
@@ -24,7 +25,7 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
       label: 'Preparing for incremental copies.',
     };
   }
-  const { precopies } = vmStatus.warm;
+  const { precopies, nextPrecopyAt } = vmStatus.warm;
   if (precopies.some((copy) => !!copy.start && !copy.end)) {
     return {
       state: 'Copying',
@@ -36,7 +37,9 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
     return {
       state: 'Idle',
       status: 'Paused',
-      label: `Idle - Next incremental copy will begin in X minutes.`, // TODO
+      label: nextPrecopyAt
+        ? `Idle - Next incremental copy will begin in ${getMinutesUntil(nextPrecopyAt)}.`
+        : 'Idle - Waiting for next incremental copy.',
     };
   }
   return {
