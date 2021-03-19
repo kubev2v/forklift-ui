@@ -57,6 +57,7 @@ import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import { getWarmPlanState } from './helpers';
 import VMStatusPrecopyTable from './VMStatusPrecopyTable';
+import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 
 export interface IPlanMatchParams {
   url: string;
@@ -116,10 +117,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             getTotalCopiedRatio(vmStatus).completed,
             getPipelineSummaryTitle(vmStatus),
           ]
-        : [
-            vmStatus.warm?.precopies.length || 0,
-            'TODO sort value for VM precopy status', // TODO make a getVMPrecopyStatusTitle helper or something
-          ]),
+        : [vmStatus.warm?.precopies.length || 0, getWarmVMCopyState(vmStatus).state]),
     ];
   };
 
@@ -159,19 +157,36 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       key: 'status',
       title: 'Status',
       type: FilterType.select,
-      selectOptions: [
-        // TODO different status options/values for warm migration in copying state?
-        { key: 'Completed', value: 'Completed' },
-        { key: 'Not Started', value: 'Not Started' },
-        { key: 'On Error', value: 'On Error' },
-        { key: 'In Progress', value: 'In Progress' },
-      ],
+      selectOptions: !isShowingPrecopyView
+        ? [
+            { key: 'Completed', value: 'Completed' },
+            { key: 'Not Started', value: 'Not Started' },
+            { key: 'On Error', value: 'On Error' },
+            { key: 'In Progress', value: 'In Progress' },
+            { key: 'Canceled', value: 'Canceled' },
+          ]
+        : [
+            { key: 'Not Started', value: 'Not Started' },
+            { key: 'On Error', value: 'On Error' },
+            { key: 'Idle', value: 'Idle' },
+            { key: 'Copying', value: 'Copying' },
+            { key: 'Canceled', value: 'Canceled' },
+          ],
       getItemValue: (item) => {
-        // TODO should we add a Canceled state here?
-        if (!item.started) return 'Not Started';
-        if (item.completed) return 'Completed';
-        if (item.pipeline.find((step) => step.error)) return 'On Error';
-        return 'In Progress';
+        if (!isShowingPrecopyView) {
+          if (!item.started) return 'Not Started';
+          if (isVMCanceled(item)) return 'Canceled';
+          if (item.completed) return 'Completed';
+          if (item.pipeline.find((step) => step.error)) return 'On Error';
+          return 'In Progress';
+        } else {
+          const { state } = getWarmVMCopyState(item);
+          if (state === 'Starting') return 'Not Started';
+          if (state === 'Copying') return 'In Progress';
+          if (state === 'Idle') return 'Idle';
+          if (state === 'Failed' || state === 'Warning') return 'On Error';
+          return 'In Progress';
+        }
       },
     },
   ];
@@ -263,13 +278,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               formatTimestamp(vmStatus.started),
               formatTimestamp(vmStatus.completed),
               `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
-              {
-                title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} />,
-              },
+              { title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} /> },
             ]
           : [
               vmStatus.warm?.precopies.length || 0,
-              'TODO VM precopy status', // TODO make a getVMPrecopyStatusTitle helper or something
+              { title: <VMWarmCopyStatus vmStatus={vmStatus} /> },
             ]),
       ],
     });

@@ -32,7 +32,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
-import { StatusIcon, StatusType, useSelectionState } from '@konveyor/lib-ui';
+import { useSelectionState } from '@konveyor/lib-ui';
 
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
