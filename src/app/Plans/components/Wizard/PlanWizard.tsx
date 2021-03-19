@@ -28,6 +28,7 @@ import {
   IVMwareVM,
   Mapping,
   MappingType,
+  PlanType,
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
@@ -50,6 +51,7 @@ import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import TypeForm from './TypeForm';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -104,6 +106,9 @@ const usePlanWizardFormState = (
     }),
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
+    type: useFormState({
+      type: useFormField<PlanType>('Cold', yup.string().oneOf(['Cold', 'Warm']).required()),
+    }),
   };
 
   return {
@@ -150,6 +155,7 @@ const PlanWizard: React.FunctionComponent = () => {
     SelectVMs,
     NetworkMapping,
     StorageMapping,
+    Type,
     Review,
   }
 
@@ -303,6 +309,17 @@ const PlanWizard: React.FunctionComponent = () => {
       ),
       enableNext: forms.storageMapping.isValid,
       canJumpTo: stepIdReached >= StepId.StorageMapping,
+    },
+    {
+      id: StepId.Type,
+      name: 'Type',
+      component: (
+        <WizardStepContainer title="Migration type">
+          <TypeForm form={forms.type} />
+        </WizardStepContainer>
+      ),
+      enableNext: forms.type.isValid,
+      canJumpTo: stepIdReached >= StepId.Type,
     },
     {
       id: StepId.Review,

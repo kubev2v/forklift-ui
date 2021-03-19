@@ -15,15 +15,15 @@ import { IVMStatus, IStep } from '@app/queries/types';
 import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
 import { findCurrentStep, getStepType, isStepOnError } from '@app/common/helpers';
 
-interface IVMStatusTableProps {
+interface IVMStatusPipelineTableProps {
   status: IVMStatus;
   isCanceled: boolean;
 }
 
-const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
+const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
   status,
   isCanceled,
-}: IVMStatusTableProps) => {
+}: IVMStatusPipelineTableProps) => {
   const columns: ICell[] = [
     {
       title: 'Step',
@@ -97,4 +97,4 @@ const VMStatusTable: React.FunctionComponent<IVMStatusTableProps> = ({
   );
 };
 
-export default VMStatusTable;
+export default VMStatusPipelineTable;
