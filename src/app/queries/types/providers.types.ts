@@ -1,7 +1,15 @@
 import { ProviderType } from '@app/common/constants';
-import { ICR, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
+import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
+
+interface IProviderMetadata extends IMetaObjectMeta {
+  annotations?: {
+    'forklift.konveyor.io/defaultTransferNetwork': string;
+    [key: string]: string;
+  };
+}
 
 export interface IProviderObject extends ICR {
+  metadata: IProviderMetadata;
   spec: {
     type: ProviderType | null;
     url?: string; // No url = host provider

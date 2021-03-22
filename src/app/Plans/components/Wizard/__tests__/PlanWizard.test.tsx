@@ -71,7 +71,7 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows to edit a plan', async () => {
     const history = createMemoryHistory();
-    history.push('/plans/plantest-2/edit');
+    history.push('/plans/plantest-02/edit');
     render(
       <NetworkContextProvider>
         <Router history={history}>
@@ -85,14 +85,14 @@ describe('<AddEditProviderModal />', () => {
         'Migration plans'
       );
       expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent(
-        'plantest-2'
+        'plantest-02'
       );
       expect(screen.getByRole('navigation', { name: /Breadcrumb/ })).toHaveTextContent('Edit');
       expect(screen.getByRole('link', { name: /Migration plans/ })).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: /Edit migration plan/ })).toBeInTheDocument();
 
       expect(screen.getByRole('heading', { name: /General settings/ })).toBeInTheDocument();
-      expect(screen.getByText(/plantest-2/i)).toBeInTheDocument();
+      expect(screen.getByText(/plantest-02/i)).toBeInTheDocument();
       expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
       expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
       expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe('<AddEditProviderModal />', () => {
     expect(screen.getByRole('heading', { name: /Network mapping/ })).toBeInTheDocument();
     expect(screen.getByText(/vmware-network-1/i)).toBeInTheDocument();
     const networkTarget = screen.getByRole('textbox', { name: /select target.../i });
-    expect(networkTarget).toHaveValue('foo-namespace / ocp-network-1');
+    expect(networkTarget).toHaveValue('openshift-migration / ocp-network-1');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
     await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
@@ -130,14 +130,20 @@ describe('<AddEditProviderModal />', () => {
     await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
 
+    expect(screen.getByRole('heading', { name: /Migration type/ })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Cold migration/)).toHaveAttribute('checked');
+    await waitFor(() => expect(nextButton).toBeEnabled());
+    userEvent.click(nextButton);
+
     // Review step
     expect(screen.getByRole('heading', { name: /Review the migration plan/ })).toBeInTheDocument();
     expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
     expect(screen.getByText(/vcenter-1/i)).toBeInTheDocument();
     expect(screen.getByText(/ocpv-1/i)).toBeInTheDocument();
-    expect(screen.getByText(/openshift-migration/i)).toBeInTheDocument();
+    expect(screen.getByText(/openshift-migration$/i)).toBeInTheDocument();
+    expect(screen.getByText(/ocp-network-2/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /1/i })).toBeEnabled();
-    expect(networkTarget).toHaveValue('foo-namespace / ocp-network-1');
+    expect(networkTarget).toHaveValue('openshift-migration / ocp-network-1');
     expect(storageTarget).toHaveValue('standard (default)');
 
     expect(screen.getByRole('button', { name: /Finish/i })).toBeEnabled();

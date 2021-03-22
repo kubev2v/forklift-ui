@@ -6,23 +6,26 @@ import {
   SelectGroup,
   SelectOption,
   TextArea,
+  TextContent,
+  Text,
   Title,
+  Button,
+  Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan } from '@app/queries/types';
+import { IPlan, POD_NETWORK } from '@app/queries/types';
 import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
-import {
-  QuerySpinnerMode,
-  ResolvedQueries,
-  ResolvedQuery,
-} from '@app/common/components/ResolvedQuery';
+import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
+import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
+import { HelpIcon } from '@patternfly/react-icons';
+import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -53,6 +56,27 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         ))}
       </SelectGroup>,
     ];
+  };
+
+  const [isSelectNetworkModalOpen, toggleSelectNetworkModal] = React.useReducer(
+    (isOpen) => !isOpen,
+    false
+  );
+
+  const openshiftNetworksQuery = useOpenShiftNetworksQuery(form.values.targetProvider);
+
+  const onTargetNamespaceChange = (targetNamespace: string) => {
+    if (targetNamespace !== form.values.targetNamespace) {
+      const providerDefaultNetworkName =
+        form.values.targetProvider?.object.metadata.annotations?.[
+          'forklift.konveyor.io/defaultTransferNetwork'
+        ] || null;
+      const matchingNetwork = openshiftNetworksQuery.data?.find(
+        (network) =>
+          network.name === providerDefaultNetworkName && network.namespace === targetNamespace
+      );
+      form.fields.migrationNetwork.setInitialValue(matchingNetwork?.name || null);
+    }
   };
 
   return (
@@ -99,9 +123,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           fieldId="target-namespace"
           {...getFormGroupProps(form.fields.targetNamespace)}
         >
-          <ResolvedQuery
-            result={namespacesQuery}
-            errorTitle="Error loading namespaces"
+          <ResolvedQueries
+            results={[namespacesQuery, openshiftNetworksQuery]}
+            errorTitles={['Error loading namespaces', 'Error loading networks']}
             spinnerProps={{ className: spacing.mXs }}
             spinnerMode={QuerySpinnerMode.Inline}
           >
@@ -112,6 +136,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               onSelect={(_event, selection) => {
                 form.fields.targetNamespace.setValue(selection as string);
                 setIsNamespaceSelectOpen(false);
+                onTargetNamespaceChange(selection as string);
               }}
               onFilter={(event) => getFilteredOptions(event.target.value)}
               selections={form.values.targetNamespace}
@@ -120,13 +145,53 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               isGrouped
               id="target-namespace"
               aria-label="Target namespace"
-              isDisabled={!form.values.targetProvider}
+              isDisabled={!form.values.targetProvider || !openshiftNetworksQuery.data}
             >
               {getFilteredOptions()}
             </Select>
-          </ResolvedQuery>
+            {form.values.targetNamespace ? (
+              <>
+                <TextContent className={spacing.mtMd}>
+                  <Text component="p">
+                    The migration transfer network for this migration plan is:{' '}
+                    <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
+                    <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
+                      <button
+                        aria-label="More info for migration transfer network field"
+                        onClick={(e) => e.preventDefault()}
+                        className="pf-c-form__group-label-help"
+                      >
+                        <HelpIcon noVerticalAlign />
+                      </button>
+                    </Popover>
+                  </Text>
+                </TextContent>
+                <Button
+                  variant="link"
+                  isInline
+                  onClick={toggleSelectNetworkModal}
+                  className={spacing.mtXs}
+                >
+                  Select a different network
+                </Button>
+              </>
+            ) : null}
+          </ResolvedQueries>
         </FormGroup>
       </Form>
+      {isSelectNetworkModalOpen ? (
+        <SelectOpenShiftNetworkModal
+          targetProvider={form.values.targetProvider}
+          targetNamespace={form.values.targetNamespace}
+          initialSelectedNetwork={form.values.migrationNetwork}
+          instructions="Select the network that will be used for migrating data to the namespace."
+          onClose={toggleSelectNetworkModal}
+          onSubmit={(network) => {
+            form.fields.migrationNetwork.setValue(network?.name || null);
+            toggleSelectNetworkModal();
+          }}
+        />
+      ) : null}
     </ResolvedQueries>
   );
 };

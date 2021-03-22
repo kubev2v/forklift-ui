@@ -38,8 +38,8 @@ const useSelectNetworkFormState = (selectedHosts: IHost[]) => {
     selectedHosts,
     selectedNetworkAdapterField.value
   );
-  const usernameSchema = yup.string().max(320).label('Host admin username');
-  const passwordSchema = yup.string().max(256).label('Host admin password');
+  const usernameSchema = yup.string().max(320).label('ESXi host admin username');
+  const passwordSchema = yup.string().max(256).label('ESXi host admin password');
   return useFormState({
     selectedNetworkAdapter: selectedNetworkAdapterField,
     adminUsername: useFormField('', !isMgmtSelected ? usernameSchema.required() : usernameSchema),
@@ -98,6 +98,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
+              id="modal-confirm-button"
               key="confirm"
               variant="primary"
               isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
@@ -110,6 +111,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               Save
             </Button>
             <Button
+              id="modal-cancel-button"
               key="cancel"
               variant="link"
               onClick={onClose}
@@ -158,7 +160,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
           >
             <ValidatedTextInput
               field={form.fields.adminUsername}
-              label="Host admin username"
+              label="ESXi host admin username"
               isRequired
               fieldId="admin-username"
               inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}
@@ -172,7 +174,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
             <ValidatedTextInput
               type="password"
               field={form.fields.adminPassword}
-              label="Host admin password"
+              label="ESXi host admin password"
               isRequired
               fieldId="admin-password"
               inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}

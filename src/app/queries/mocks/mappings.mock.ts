@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         {
           apiVersion: CLUSTER_API_VERSION,
           kind: 'Plan',
-          name: 'plantest-1',
+          name: 'plantest-01',
           namespace: 'openshift-migration',
           uid: '28fde094-b667-4d21-8f29-27c18f22178c',
         },
@@ -150,7 +150,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         {
           apiVersion: CLUSTER_API_VERSION,
           kind: 'Plan',
-          name: 'plantest-1',
+          name: 'plantest-01',
           namespace: 'openshift-migration',
           uid: '28fde094-b667-4d21-8f29-27c18f22178c',
         },

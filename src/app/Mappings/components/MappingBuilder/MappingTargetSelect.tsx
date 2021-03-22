@@ -1,6 +1,6 @@
 import * as React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon } from '@konveyor/lib-ui';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   IAnnotatedStorageClass,
@@ -92,7 +92,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
             <div>
               {hasNoProvisionerWarning ? (
                 <>
-                  <StatusIcon status={StatusType.Warning} className={spacing.mrSm} />
+                  <StatusIcon status="Warning" className={spacing.mrSm} />
                   <TruncatedText className="inline-option-text">{name}</TruncatedText>
                 </>
               ) : (

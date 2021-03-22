@@ -34,6 +34,16 @@ export interface IVMStatus {
   started?: string;
   completed?: string;
   conditions?: IStatusCondition[];
+  warm?: {
+    consecutiveFailures: number;
+    failures: number;
+    successes: number;
+    nextPrecopyAt?: string; // ISO timestamp
+    precopies: {
+      start: string;
+      end?: string;
+    }[];
+  };
 }
 
 export interface IPlanVM {
@@ -67,11 +77,16 @@ export interface IPlan extends ICR {
     description: string;
     provider: ISrcDestRefs;
     targetNamespace: string;
+    transferNetwork?: string;
     map: {
       network: INameNamespaceRef;
       storage: INameNamespaceRef;
     };
     vms: IPlanVM[];
+    warm: boolean;
+    cutover?: string; // ISO timestamp -- default for all migrations of this plan?
   };
   status?: IPlanStatus;
 }
+
+export type PlanType = 'Cold' | 'Warm';
