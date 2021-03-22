@@ -20,6 +20,7 @@ import {
   trTag,
   SEC,
   planSuccessMessage,
+  // CreateNewNetworkMapping,
 } from '../types/constants';
 
 import {
@@ -31,7 +32,9 @@ import {
   selectDestProviderMenu,
   selectSourceProviderMenu,
   selectTargetNamespace,
+  kebab,
 } from '../views/plan.view';
+import { kebabDropDownItem } from '../views/provider.view';
 
 export class Plan {
   protected static openList(): void {
@@ -101,9 +104,12 @@ export class Plan {
   protected networkMappingStep(planData: PlanData): void {
     const { name } = planData.networkMappingData;
     const { useExistingNetworkMapping } = planData;
-    if (useExistingNetworkMapping) {
-      selectFromDroplist(mappingDropdown, name);
-    }
+    if (useExistingNetworkMapping) selectFromDroplist(mappingDropdown, name);
+    // } else {
+    //   const { networkMappingPeer } = planData.networkMappingData;
+    //   selectFromDroplist(mappingDropdown, CreateNewNetworkMapping);
+    // }
+
     next();
   }
 
@@ -140,6 +146,8 @@ export class Plan {
       });
   }
 
+  // protected populate(planData: PlanData): void {}
+
   create(planData: PlanData): void {
     Plan.openList();
     clickByText(button, createPlan);
@@ -153,7 +161,17 @@ export class Plan {
   delete(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
-    applyAction(name, deleteButton);
+    // applyAction(name, deleteButton);
+    cy.get(tdTag)
+      .contains(name)
+      .parent(tdTag)
+      .parent(trTag)
+      .within(() => {
+        click(kebab);
+      });
+    clickByText(kebabDropDownItem, deleteButton);
+    // clickByText(button, deleteButton);
+    click('#modal-confirm-button');
   }
 
   execute(planData: PlanData): void {
