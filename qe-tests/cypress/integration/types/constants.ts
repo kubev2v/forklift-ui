@@ -20,7 +20,8 @@ export const tdTag = 'td';
 export const mappings = 'Mappings';
 export const createMapping = 'Create mapping';
 export const migrationPLan = 'Migration Plans';
-export const createPlan = 'Create migration plan';
+export const createPlan = 'Create plan';
+// export const createPlan = 'Create migration plan';
 export const addButton = 'Add';
 export const saveButton = 'Save';
 export const selectANetworkMapping = 'Select a network mapping';
@@ -28,6 +29,9 @@ export const selectAStorageMapping = 'Select a storage mapping';
 export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
 export const SEC = 1000;
+
+export const CreateNewNetworkMapping = 'Create a new network mapping';
+export const CreateNewStorageMapping = 'Create a new storage mapping';
 
 export enum storageType {
   nfs = 'nfs',
