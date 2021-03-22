@@ -22,9 +22,6 @@ import {
 import { VmwareProviderData } from '../types/types';
 
 export class ProviderVmware extends Provider {
-  protected fillname(name: string): void {
-    inputText(instanceName, name);
-  }
   protected fillName(name: string): void {
     inputText(instanceName, name);
   }
@@ -53,7 +50,7 @@ export class ProviderVmware extends Provider {
   protected runWizard(providerData: VmwareProviderData): void {
     const { name, hostname, username, password, cert } = providerData;
     super.runWizard(providerData);
-    this.fillname(name);
+    this.fillName(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
@@ -61,13 +58,26 @@ export class ProviderVmware extends Provider {
     clickByText(addButtonModal, addButton);
   }
 
-  protected validateReady(providerData: VmwareProviderData): void {
+  protected populate(providerData: VmwareProviderData): void {
     ProviderVmware.openList();
-    const { name } = providerData;
+    const { name, hostname } = providerData;
     cy.contains(name)
       .parent(trTag)
       .within(() => {
+        // Validating that provider is in `Ready` state
         cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Ready');
+        // Validating that endpoint is in proper format and contains proper URL
+        cy.get(dataLabel.endpoint).should('contain.text', `https://${hostname}/sdk`);
+        // Validating that amount of clusters is not empty and is not 0
+        cy.get(dataLabel.clusters).should('not.be.empty').should('not.contain.text', '0');
+        // Validating that amount of hosts is not empty and is not 0
+        cy.get(dataLabel.hosts).should('not.be.empty').should('not.contain.text', '0');
+        // Validating that amount of VMs is not empty and is not 0
+        cy.get(dataLabel.vms).should('not.be.empty');
+        // Validating that amount of networks is not empty and is not 0
+        cy.get(dataLabel.networks).should('not.be.empty').should('not.contain.text', '0');
+        // Validating that amount of datastores is not empty and is not 0
+        cy.get(dataLabel.datastors).should('not.be.empty').should('not.contain.text', '0');
       });
   }
 
@@ -80,7 +90,7 @@ export class ProviderVmware extends Provider {
   create(providerData: VmwareProviderData): void {
     super.openMenu();
     this.runWizard(providerData);
-    this.validateReady(providerData);
+    this.populate(providerData);
   }
 
   edit(providerData: VmwareProviderData): void {
@@ -92,6 +102,6 @@ export class ProviderVmware extends Provider {
     this.fillPassword(password);
     this.fillFingerprint(cert);
     clickByText(addButtonModal, saveButton);
-    this.validateReady(providerData);
+    this.populate(providerData);
   }
 }
