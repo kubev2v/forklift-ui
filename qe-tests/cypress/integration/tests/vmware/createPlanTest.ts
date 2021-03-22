@@ -16,4 +16,8 @@ describe('Creating plan', () => {
   it.skip('Running plan', () => {
     plan.execute(testData.planData);
   });
+
+  it('Deleting plan', () => {
+    plan.delete(testData.planData);
+  });
 });
