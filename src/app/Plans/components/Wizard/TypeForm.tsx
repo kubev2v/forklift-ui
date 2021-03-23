@@ -18,8 +18,6 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   form,
   selectedVMs,
 }: ITypeFormProps) => {
-  // TODO maybe we need to store only VM ids in selectedVMs state, and find the VM objects here so the concerns can be updated with polling?
-
   const warmCriticalConcernsFound = warmCriticalConcerns.filter((label) =>
     someVMHasConcern(selectedVMs, label)
   );
@@ -32,6 +30,8 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
       : warmWarningConcernsFound.length > 0
       ? 'Warning'
       : 'Ok';
+
+  const isAnalysingVms = selectedVMs.some((vm) => vm.revisionValidated !== vm.revision);
 
   return (
     <>
@@ -61,7 +61,11 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
                 copied, is run later.
               </ListItem>
             </List>
-            {warmWarnStatus !== 'Ok' ? (
+            {isAnalysingVms ? (
+              <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
+                <StatusIcon status="Loading" label="Analysing warm migration compatibility" />
+              </div>
+            ) : warmWarnStatus !== 'Ok' ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon
                   status={warmWarnStatus}
