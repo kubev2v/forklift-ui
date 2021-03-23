@@ -80,7 +80,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     },
     {
       key: 'migrationAnalysis',
-      title: 'Migration analysis',
+      title: 'Migration assessment',
       type: FilterType.select,
       selectOptions: [
         { key: 'Ok', value: 'Ok' },
@@ -95,9 +95,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     },
     {
       key: 'analysisCondition',
-      title: 'Analysis condition',
+      title: 'Assessment condition',
       type: FilterType.search,
-      placeholderText: 'Filter by analysis condition...',
+      placeholderText: 'Filter by assessment condition...',
       getItemValue: (item) => {
         // Mash all the concerns together to match against them as a continuous string
         const concernStrings = item.concerns.map(
@@ -199,7 +199,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const columns: ICell[] = [
     {
-      title: 'Migration analysis',
+      title: 'Migration assessment',
       transforms: [sortable, wrappable],
     },
     { title: 'VM name', transforms: [sortable, wrappable] },
