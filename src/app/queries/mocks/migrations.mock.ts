@@ -6,72 +6,28 @@ import { MOCK_PLANS } from './plans.mock';
 export let MOCK_MIGRATIONS: IMigration[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
-  MOCK_MIGRATIONS = [
-    {
-      apiVersion: CLUSTER_API_VERSION,
-      kind: 'Migration',
-      metadata: {
-        name: 'plan-0-mock-migration',
-        namespace: META.namespace,
-      },
-      spec: {
-        plan: nameAndNamespace(MOCK_PLANS[0].metadata),
-      },
-      status: MOCK_PLANS[0].status?.migration,
+  const runningPlanIndexes = [0, 2, 3, 4, 6, 7, 8];
+  MOCK_MIGRATIONS = runningPlanIndexes.map((index) => ({
+    apiVersion: CLUSTER_API_VERSION,
+    kind: 'Migration',
+    metadata: {
+      name: `plan-${index}-mock-migration`,
+      namespace: META.namespace,
     },
-    {
-      apiVersion: CLUSTER_API_VERSION,
-      kind: 'Migration',
-      metadata: {
-        name: 'plan-1-mock-migration',
-        namespace: META.namespace,
-      },
-      spec: {
-        plan: nameAndNamespace(MOCK_PLANS[1].metadata),
-      },
-      status: MOCK_PLANS[1].status?.migration,
+    spec: {
+      plan: nameAndNamespace(MOCK_PLANS[index].metadata),
     },
+    status: MOCK_PLANS[index].status?.migration,
+  }));
+
+  // plantest-03 (plan index 2) has a canceled VM
+  MOCK_MIGRATIONS[1].spec.cancel = [
     {
-      apiVersion: CLUSTER_API_VERSION,
-      kind: 'Migration',
-      metadata: {
-        name: 'plan-2-mock-migration',
-        namespace: META.namespace,
-      },
-      spec: {
-        plan: nameAndNamespace(MOCK_PLANS[2].metadata),
-        cancel: [
-          {
-            id: 'vm-1630',
-            name: 'fdupont-test-migration',
-          },
-        ],
-      },
-      status: MOCK_PLANS[2].status?.migration,
-    },
-    {
-      apiVersion: CLUSTER_API_VERSION,
-      kind: 'Migration',
-      metadata: {
-        name: 'plan-3-mock-migration',
-        namespace: META.namespace,
-      },
-      spec: {
-        plan: nameAndNamespace(MOCK_PLANS[3].metadata),
-      },
-      status: MOCK_PLANS[3].status?.migration,
-    },
-    {
-      apiVersion: CLUSTER_API_VERSION,
-      kind: 'Migration',
-      metadata: {
-        name: 'plan-4-mock-migration',
-        namespace: META.namespace,
-      },
-      spec: {
-        plan: nameAndNamespace(MOCK_PLANS[4].metadata),
-      },
-      status: MOCK_PLANS[4].status?.migration,
+      id: 'vm-1630',
+      name: 'fdupont-test-migration',
     },
   ];
+
+  // plantest-8 (plan index 7) is in cutover
+  MOCK_MIGRATIONS[5].spec.cutover = '2021-03-16T18:31:30Z';
 }

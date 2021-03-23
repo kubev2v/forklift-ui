@@ -29,6 +29,8 @@ import {
   cellWidth,
   truncate,
   nowrap,
+  textCenter,
+  fitContent,
 } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -36,7 +38,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
-import VMStatusTable from './VMStatusTable';
+import VMStatusPipelineTable from './VMStatusPipelineTable';
 import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components/PipelineSummary';
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
@@ -53,6 +55,9 @@ import {
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
+import { getWarmPlanState } from './helpers';
+import VMStatusPrecopyTable from './VMStatusPrecopyTable';
+import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 
 export interface IPlanMatchParams {
   url: string;
@@ -94,15 +99,25 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   const latestMigration = useLatestMigrationQuery(plan || null);
+  const warmPlanState = getWarmPlanState(plan || null, latestMigration);
+  const isShowingPrecopyView =
+    !!plan?.spec.warm &&
+    (warmPlanState === 'Starting' ||
+      warmPlanState === 'Copying' ||
+      warmPlanState === 'AbortedCopying');
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
       '', // Expand/collapse control column
       findVMById(vmStatus.id, vmsQuery)?.name || '',
-      vmStatus.started || '',
-      vmStatus.completed || '',
-      getTotalCopiedRatio(vmStatus).completed,
-      getPipelineSummaryTitle(vmStatus),
+      ...(!isShowingPrecopyView
+        ? [
+            vmStatus.started || '',
+            vmStatus.completed || '',
+            getTotalCopiedRatio(vmStatus).completed,
+            getPipelineSummaryTitle(vmStatus),
+          ]
+        : [vmStatus.warm?.precopies.length || 0, getWarmVMCopyState(vmStatus).state]),
     ];
   };
 
@@ -116,39 +131,62 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         return findVMById(item.id, vmsQuery)?.name || '';
       },
     },
-    {
-      key: 'begin',
-      title: 'Start time',
-      type: FilterType.search,
-      placeholderText: 'Filter by start time ...',
-      getItemValue: (item) => {
-        return item.started || '';
-      },
-    },
-    {
-      key: 'end',
-      title: 'End time',
-      type: FilterType.search,
-      placeholderText: 'Filter by end time ...',
-      getItemValue: (item) => {
-        return item.completed || '';
-      },
-    },
+    ...(!isShowingPrecopyView
+      ? [
+          {
+            key: 'begin',
+            title: 'Start time',
+            type: FilterType.search,
+            placeholderText: 'Filter by start time ...',
+            getItemValue: (item) => {
+              return item.started || '';
+            },
+          },
+          {
+            key: 'end',
+            title: 'End time',
+            type: FilterType.search,
+            placeholderText: 'Filter by end time ...',
+            getItemValue: (item) => {
+              return item.completed || '';
+            },
+          },
+        ]
+      : []),
     {
       key: 'status',
       title: 'Status',
       type: FilterType.select,
-      selectOptions: [
-        { key: 'Completed', value: 'Completed' },
-        { key: 'Not Started', value: 'Not Started' },
-        { key: 'On Error', value: 'On Error' },
-        { key: 'In Progress', value: 'In Progress' },
-      ],
+      selectOptions: !isShowingPrecopyView
+        ? [
+            { key: 'Completed', value: 'Completed' },
+            { key: 'Not Started', value: 'Not Started' },
+            { key: 'On Error', value: 'On Error' },
+            { key: 'In Progress', value: 'In Progress' },
+            { key: 'Canceled', value: 'Canceled' },
+          ]
+        : [
+            { key: 'Not Started', value: 'Not Started' },
+            { key: 'On Error', value: 'On Error' },
+            { key: 'Idle', value: 'Idle' },
+            { key: 'Copying', value: 'Copying' },
+            { key: 'Canceled', value: 'Canceled' },
+          ],
       getItemValue: (item) => {
-        if (!item.started) return 'Not Started';
-        if (item.completed) return 'Completed';
-        if (item.pipeline.find((step) => step.error)) return 'On Error';
-        return 'In Progress';
+        if (!isShowingPrecopyView) {
+          if (!item.started) return 'Not Started';
+          if (isVMCanceled(item)) return 'Canceled';
+          if (item.completed) return 'Completed';
+          if (item.pipeline.find((step) => step.error)) return 'On Error';
+          return 'In Progress';
+        } else {
+          const { state } = getWarmVMCopyState(item);
+          if (state === 'Starting') return 'Not Started';
+          if (state === 'Copying') return 'In Progress';
+          if (state === 'Idle') return 'Idle';
+          if (state === 'Failed' || state === 'Warning') return 'On Error';
+          return 'In Progress';
+        }
       },
     },
   ];
@@ -200,12 +238,23 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       transforms: [sortable, wrappable],
       cellFormatters: planStarted ? [expandable] : [],
     },
-    { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
-    { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
-    { title: 'Data copied', transforms: [sortable] },
+    ...(!isShowingPrecopyView
+      ? [
+          { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
+          { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
+          { title: 'Data copied', transforms: [sortable] },
+        ]
+      : [
+          {
+            title: 'Incremental copies',
+            transforms: [sortable],
+            columnTransforms: [textCenter, fitContent],
+          },
+        ]),
     {
       title: 'Status',
-      transforms: [sortable, cellWidth(20), nowrap],
+      transforms: [sortable, cellWidth(20)],
+      cellTransforms: [nowrap],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
@@ -224,12 +273,17 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         findVMById(vmStatus.id, vmsQuery)?.name || '',
-        formatTimestamp(vmStatus.started),
-        formatTimestamp(vmStatus.completed),
-        `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
-        {
-          title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} />,
-        },
+        ...(!isShowingPrecopyView
+          ? [
+              formatTimestamp(vmStatus.started),
+              formatTimestamp(vmStatus.completed),
+              `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
+              { title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} /> },
+            ]
+          : [
+              vmStatus.warm?.precopies.length || 0,
+              { title: <VMWarmCopyStatus vmStatus={vmStatus} /> },
+            ]),
       ],
     });
     if (isExpanded) {
@@ -238,7 +292,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         fullWidth: true,
         cells: [
           {
-            title: <VMStatusTable status={vmStatus} isCanceled={isCanceled} />,
+            title: !isShowingPrecopyView ? (
+              <VMStatusPipelineTable status={vmStatus} isCanceled={isCanceled} />
+            ) : (
+              <VMStatusPrecopyTable status={vmStatus} isCanceled={isCanceled} />
+            ),
             columnTransforms: [classNamesTransform(alignment.textAlignRight)],
           },
         ],

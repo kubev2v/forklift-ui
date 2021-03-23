@@ -119,3 +119,10 @@ export const getObjectRef = (cr: ICR): IObjectReference => ({
   namespace: cr.metadata.namespace,
   uid: cr.metadata.uid,
 });
+
+export const getMinutesUntil = (timestamp: Date | string): string => {
+  const minutes = dayjs(timestamp).diff(dayjs(), 'minute');
+  if (minutes <= 0) return 'less than 1 minute';
+  if (minutes === 1) return '1 minute';
+  return `${minutes} minutes`;
+};

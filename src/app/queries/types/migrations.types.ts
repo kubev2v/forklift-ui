@@ -12,6 +12,7 @@ export interface IMigration extends ICR {
   spec: {
     plan: INameNamespaceRef;
     cancel?: ICanceledVM[];
+    cutover?: string; // ISO timestamp
   };
   status?: IPlanStatus['migration'];
 }

@@ -16,15 +16,11 @@ import {
   usePlansQuery,
   useCreateMigrationMutation,
   useClusterProvidersQuery,
+  useSetCutoverMutation,
 } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
 import CreatePlanButton from './components/CreatePlanButton';
-import { IPlan } from '@app/queries/types';
-import { IKubeResponse, KubeClientError } from '@app/client/types';
-import { IMigration } from '@app/queries/types/migrations.types';
-import { MutationResult } from 'react-query';
-import { isSameResource } from '@app/queries/helpers';
 import {
   ResolvedQuery,
   QuerySpinnerMode,
@@ -35,43 +31,8 @@ const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
-  const [planBeingStarted, setPlanBeingStarted] = React.useState<IPlan | null>(null);
-  const [baseCreateMigration, baseCreateMigrationResult] = useCreateMigrationMutation();
-  const createMigration = (plan: IPlan | undefined) => {
-    setPlanBeingStarted(plan || null);
-    return baseCreateMigration(plan);
-  };
-
-  const createMigrationResult: MutationResult<
-    IKubeResponse<IMigration>,
-    KubeClientError
-  > = React.useMemo(
-    () => ({
-      ...baseCreateMigrationResult,
-      reset: () => {
-        setPlanBeingStarted(null);
-        baseCreateMigrationResult.reset();
-      },
-    }),
-    [baseCreateMigrationResult]
-  );
-
-  React.useEffect(() => {
-    if (createMigrationResult.isIdle) {
-      setPlanBeingStarted(null);
-    }
-  }, [createMigrationResult]);
-
-  React.useEffect(() => {
-    if (planBeingStarted) {
-      const matchingPlan = plansQuery.data?.items.find((plan) =>
-        isSameResource(plan.metadata, planBeingStarted.metadata)
-      );
-      if ((matchingPlan?.status?.migration?.vms?.length || 0) > 0) {
-        setPlanBeingStarted(null);
-      }
-    }
-  }, [planBeingStarted, plansQuery.data]);
+  const [createMigration, createMigrationResult] = useCreateMigrationMutation();
+  const [setCutover, setCutoverResult] = useSetCutoverMutation();
 
   return (
     <>
@@ -81,7 +42,14 @@ const PlansPage: React.FunctionComponent = () => {
       <PageSection>
         <ResolvedQuery
           result={createMigrationResult}
-          errorTitle={`Error starting migration for plan: ${planBeingStarted?.metadata.name}`}
+          errorTitle="Error starting migration"
+          errorsInline={false}
+          spinnerMode={QuerySpinnerMode.None}
+          className={spacing.mbMd}
+        />
+        <ResolvedQuery
+          result={setCutoverResult}
+          errorTitle="Error setting cutover time"
           errorsInline={false}
           spinnerMode={QuerySpinnerMode.None}
           className={spacing.mbMd}
@@ -113,7 +81,8 @@ const PlansPage: React.FunctionComponent = () => {
                   plans={plansQuery.data?.items || []}
                   createMigration={createMigration}
                   createMigrationResult={createMigrationResult}
-                  planBeingStarted={planBeingStarted}
+                  setCutover={setCutover}
+                  setCutoverResult={setCutoverResult}
                 />
               )}
             </CardBody>
