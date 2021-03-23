@@ -268,6 +268,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                           field={form.fields.newMappingName}
                           label="Name"
                           fieldId="new-mapping-name"
+                          isRequired
                         />
                       </GridItem>
                     </Grid>
