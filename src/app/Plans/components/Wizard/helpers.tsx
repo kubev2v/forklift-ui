@@ -287,13 +287,13 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
 
 export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): StatusType | null =>
   !concern
-    ? StatusType.Ok
+    ? 'Ok'
     : concern.category === 'Critical'
-    ? StatusType.Error
+    ? 'Error'
     : concern.category === 'Warning'
-    ? StatusType.Warning
+    ? 'Warning'
     : concern.category === 'Information' || concern.category === 'Advisory'
-    ? StatusType.Info
+    ? 'Info'
     : null;
 
 export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): string =>
@@ -370,6 +370,7 @@ export const generatePlan = (
       storage: storageMappingRef,
     },
     vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+    warm: forms.type.values.type === 'Warm',
   },
 });
 
@@ -508,6 +509,8 @@ export const useEditingPlanPrefillEffect = (
         )
       );
       forms.storageMapping.fields.isPrefilled.setInitialValue(true);
+
+      forms.type.fields.type.setValue(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {

@@ -74,18 +74,24 @@ export const useMigrationsQuery = (): QueryResult<IKubeList<IMigration>> => {
   return sortKubeResultsByName(result);
 };
 
-export const useLatestMigrationQuery = (plan: IPlan | null): IMigration | null => {
-  const migrationsQuery = useMigrationsQuery();
+export const findLatestMigration = (
+  plan: IPlan | null,
+  migrations: IMigration[] | null
+): IMigration | null => {
   const history = plan?.status?.migration?.history;
   const latestMigrationMeta = history ? history[history.length - 1].migration : null;
-  if (migrationsQuery.data && latestMigrationMeta) {
+  if (migrations && latestMigrationMeta) {
     return (
-      migrationsQuery.data.items.find((migration) =>
-        isSameResource(migration.metadata, latestMigrationMeta)
-      ) || null
+      migrations.find((migration) => isSameResource(migration.metadata, latestMigrationMeta)) ||
+      null
     );
   }
   return null;
+};
+
+export const useLatestMigrationQuery = (plan: IPlan | null): IMigration | null => {
+  const migrationsQuery = useMigrationsQuery();
+  return findLatestMigration(plan, migrationsQuery.data?.items || null);
 };
 
 export const useCancelVMsMutation = (
@@ -114,9 +120,44 @@ export const useCancelVMsMutation = (
         );
       const migrationPatch: Partial<IMigration> = {
         spec: {
+          ...latestMigration.spec,
           plan: nameAndNamespace(plan?.metadata),
           cancel: [...existingCanceledVMs, ...newCanceledVMs],
         },
+      };
+      return client.patch<IMigration>(
+        migrationResource,
+        latestMigration.metadata.name,
+        migrationPatch
+      );
+    },
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('plans');
+        queryCache.invalidateQueries('migrations');
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export interface ISetCutoverArgs {
+  plan: IPlan;
+  cutover: string;
+}
+
+export const useSetCutoverMutation = (
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs, unknown> => {
+  const migrationsQuery = useMigrationsQuery();
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs>(
+    ({ plan, cutover }) => {
+      const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
+      if (!latestMigration) return Promise.reject('Could not find active Migration CR');
+      const migrationPatch: Partial<IMigration> = {
+        spec: { ...latestMigration.spec, cutover },
       };
       return client.patch<IMigration>(
         migrationResource,
