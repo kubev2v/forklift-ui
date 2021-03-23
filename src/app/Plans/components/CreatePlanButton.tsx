@@ -7,12 +7,10 @@ import { useHistory } from 'react-router-dom';
 
 interface ICreatePlanButtonProps {
   variant?: ButtonProps['variant'];
-  label?: string;
 }
 
 const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
   variant = 'primary',
-  label = 'Create migration plan',
 }: ICreatePlanButtonProps) => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const { hasSufficientProviders } = sufficientProvidersQuery;
@@ -27,8 +25,9 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
           onClick={() => history.push('/plans/create')}
           isDisabled={!hasSufficientProviders}
           variant={variant}
+          id="create-plan-button"
         >
-          {label}
+          Create plan
         </Button>
       </div>
     </ConditionalTooltip>
