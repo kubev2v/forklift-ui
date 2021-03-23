@@ -14,19 +14,19 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status = {},
   unknownFallback = null,
 }: IStatusConditionProps) => {
-  const getStatusType = (severity: string) => {
+  const getStatusType = (severity: string): StatusType => {
     if (status) {
       if (severity === PlanStatusType.Ready) {
-        return StatusType.Ok;
+        return 'Ok';
       }
       if (severity === StatusCategoryType.Advisory) {
-        return StatusType.Info;
+        return 'Info';
       }
       if (severity === StatusCategoryType.Critical || severity === StatusCategoryType.Error) {
-        return StatusType.Error;
+        return 'Error';
       }
     }
-    return StatusType.Warning;
+    return 'Warning';
   };
 
   if (status) {
