@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon } from '@konveyor/lib-ui';
 import { TextContent, Text, List, ListItem, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
@@ -53,7 +53,7 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
                   }
                 >
                   <FlexItem>
-                    <StatusIcon status={getVMConcernStatusType(concern) || StatusType.Warning} />
+                    <StatusIcon status={getVMConcernStatusType(concern) || 'Warning'} />
                   </FlexItem>
                   <FlexItem>
                     <strong>{concern.label}:</strong> {concern.assessment}
