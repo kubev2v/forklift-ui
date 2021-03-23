@@ -301,6 +301,9 @@ export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
+export const someVMHasConcern = (vms: IVMwareVM[], concernLabel: string): boolean =>
+  vms.some((vm) => vm.concerns.some((concern) => concern.label === concernLabel));
+
 export interface IGenerateMappingsArgs {
   forms: PlanWizardFormState;
   generateName?: string;

@@ -164,7 +164,8 @@ const PlanWizard: React.FunctionComponent = () => {
   if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
   if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
   if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
-  if (forms.storageMapping.isValid) stepIdReached = StepId.Review;
+  if (forms.storageMapping.isValid) stepIdReached = StepId.Type;
+  if (forms.type.isValid) stepIdReached = StepId.Review;
 
   const isFirstRender = React.useRef(true);
 
@@ -315,7 +316,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm form={forms.type} />
+          <TypeForm form={forms.type} selectedVMs={forms.selectVMs.values.selectedVMs} />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,
