@@ -288,7 +288,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               />
             </FlexItem>
             <FlexItem>
-              <CreatePlanButton variant="secondary" label="Create plan" />
+              <CreatePlanButton variant="secondary" />
             </FlexItem>
           </Flex>
         </LevelItem>
