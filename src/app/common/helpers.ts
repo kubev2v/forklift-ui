@@ -27,29 +27,27 @@ export const getMostSeriousCondition = (conditions: IStatusCondition[]): string 
   if (findConditionByCategory(conditions, StatusCategoryType.Error)) {
     return StatusCategoryType.Error;
   }
-  if (
-    findConditionByCategory(conditions, StatusCategoryType.Warn) &&
-    !hasCondition(conditions, PlanStatusType.Ready)
-  ) {
+  if (findConditionByCategory(conditions, StatusCategoryType.Warn)) {
     return StatusCategoryType.Warn;
   }
-  const requiredCondition = findConditionByCategory(conditions, StatusCategoryType.Required);
   if (
-    requiredCondition &&
-    requiredCondition.status !== 'True' &&
-    !hasCondition(conditions, PlanStatusType.Ready)
+    conditions.find((condition) => condition.reason === 'Started' || condition.reason === 'Running')
   ) {
-    return StatusCategoryType.Required;
+    return 'Pending';
   }
   if (
-    findConditionByCategory(conditions, StatusCategoryType.Advisory) &&
-    !hasCondition(conditions, PlanStatusType.Ready)
+    hasCondition(conditions, PlanStatusType.Ready) ||
+    conditions.find((condition) => condition.reason === 'Completed')
   ) {
-    return StatusCategoryType.Advisory;
-  }
-  if (hasCondition(conditions, PlanStatusType.Ready)) {
     return PlanStatusType.Ready;
   }
+  if (findConditionByCategory(conditions, StatusCategoryType.Required)) {
+    return StatusCategoryType.Required;
+  }
+  if (findConditionByCategory(conditions, StatusCategoryType.Advisory)) {
+    return StatusCategoryType.Advisory;
+  }
+
   return 'Unknown';
 };
 
