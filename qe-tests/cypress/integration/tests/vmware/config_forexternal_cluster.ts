@@ -19,20 +19,20 @@ export const loginData: LoginData = {
   url: url,
 };
 
-export const target_ocpData: OcpVirtData = {
+export const targetOcpData: OcpVirtData = {
   type: 'OpenShift Virtualization',
-  name: 'mgn01',
-  url: 'https://api.mgn01.cnv-qe.rhcloud.com:6443',
-  saToken: 'sha256~QM4Ak3TvLuvyB52QR-3nSMZCTVCr7ujQ_TU6BJyt4tA',
+  name: 'mgn05',
+  url: 'https://api.mgn05.cnv-qe.rhcloud.com:6443',
+  saToken: 'sha256~L-klfv9mqOe5UTXMwCeUhNu6w7zZyDnFzrjK0x2U5M8',
 };
 
-export const source_vmwareData: VmwareProviderData = {
+export const sourceVmwareData: VmwareProviderData = {
   type: providerType.vmware,
   name: 'qe-vmware',
-  hostname: '10.8.58.136',
+  hostname: 'xx.yy.zz.aa',
   username: 'administrator@vsphere.local',
-  password: 'Tux4Linux!',
-  cert: '7E:E7:4C:5C:3C:0E:51:D2:D7:8B:89:F1:DF:0A:9E:A5:D6:13:98:F6',
+  password: 'bestpasswordever',
+  cert: '11:22:33:44:55:66:77:88:99:00:11:22:33:44:55:66:77:88:99:F6',
 };
 
 export const networkMappingPeer: MappingPeer[] = [
@@ -52,27 +52,27 @@ export const storageMappingPeer: MappingPeer[] = [
 export const networkMappingData: MappingData = {
   name: 'network-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
-  tProviderName: 'mgn01',
+  tProviderName: 'mgn05',
   mappingPeer: networkMappingPeer,
 };
 
 export const storageMappingData: MappingData = {
   name: 'storage-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
-  tProviderName: 'mgn01',
+  tProviderName: 'mgn05',
   mappingPeer: storageMappingPeer,
 };
 export const planData: PlanData = {
   name: 'testplan',
-  sProvider: source_vmwareData.name,
-  tProvider: 'mgn01',
+  sProvider: sourceVmwareData.name,
+  tProvider: 'mgn05',
   namespace: 'default',
   vmwareSourceFqdn: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
   vmwareSourceVmList: ['v2v-rhel7-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
-  providerData: source_vmwareData,
-  targetProvider: target_ocpData,
+  providerData: sourceVmwareData,
+  targetProvider: targetOcpData,
   networkMappingData: networkMappingData,
   storageMappingData: storageMappingData,
 };
