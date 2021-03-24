@@ -4,10 +4,9 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import { IVMwareVM } from '@app/queries/types';
 import { someVMHasConcern } from './helpers';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon } from '@konveyor/lib-ui';
 
 const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
-const warmWarningConcerns = ['VM snapshot detected'];
 
 interface ITypeFormProps {
   form: PlanWizardFormState['type'];
@@ -21,16 +20,6 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   const warmCriticalConcernsFound = warmCriticalConcerns.filter((label) =>
     someVMHasConcern(selectedVMs, label)
   );
-  const warmWarningConcernsFound = warmWarningConcerns.filter((label) =>
-    someVMHasConcern(selectedVMs, label)
-  );
-  const warmWarnStatus: StatusType =
-    warmCriticalConcernsFound.length > 0
-      ? 'Error'
-      : warmWarningConcernsFound.length > 0
-      ? 'Warning'
-      : 'Ok';
-
   const isAnalysingVms = selectedVMs.some((vm) => vm.revisionValidated !== vm.revision);
 
   return (
@@ -65,19 +54,14 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon status="Loading" label="Analysing warm migration compatibility" />
               </div>
-            ) : warmWarnStatus !== 'Ok' ? (
+            ) : warmCriticalConcernsFound.length > 0 ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon
-                  status={warmWarnStatus}
-                  label={
-                    <>
-                      Warm migration {warmWarnStatus === 'Error' ? 'will' : 'might'} fail for one or
-                      more VMs because of the following conditions:
-                    </>
-                  }
+                  status="Error"
+                  label="Warm migration will fail for one or more VMs because of the following conditions:"
                 />
                 <List className={`${spacing.mtSm} ${spacing.mlMd}`}>
-                  {[...warmCriticalConcernsFound, ...warmWarningConcernsFound].map((label) => (
+                  {warmCriticalConcernsFound.map((label) => (
                     <ListItem key={label}>{label}</ListItem>
                   ))}
                 </List>
