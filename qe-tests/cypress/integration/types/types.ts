@@ -45,6 +45,7 @@ export type PlanData = {
   useExistingNetworkMapping: boolean;
   useExistingStorageMapping: boolean;
   providerData: ProviderData;
+  targetProvider?: ProviderData;
   networkMappingData: MappingData;
   storageMappingData: MappingData;
 };
