@@ -40,7 +40,9 @@ describe('<VMwareProvidersTable />', () => {
       })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('row', { name: /vcenter-3 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Ready/ })
+      screen.getByRole('row', {
+        name: /vcenter-3 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Loading... Pending/,
+      })
     ).toBeInTheDocument();
   });
 
@@ -52,9 +54,8 @@ describe('<VMwareProvidersTable />', () => {
     );
 
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(2); // NOTE: no link for non-ready vcenter-2 provider
+    expect(links).toHaveLength(1); // NOTE: no link for non-ready vcenter-2 or vcenter-3 providers
     expect(links[0]).toHaveAttribute('href', '/providers/vsphere/vcenter-1');
-    expect(links[1]).toHaveAttribute('href', '/providers/vsphere/vcenter-3');
   });
 
   it('renders status condition', async () => {
