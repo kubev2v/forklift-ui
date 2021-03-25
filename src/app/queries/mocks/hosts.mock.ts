@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     parent: { kind: 'Cluster', id: 'domain-c26' },
     revision: 1,
     name: 'esx12.v2v.bos.redhat.com',
-    selfLink: '/namespaces/openshift-migration/providers/vsphere/test/hosts/host-44',
+    selfLink: '/providers/vsphere/test/hosts/host-44',
     inMaintenance: false,
     managementServerIp: '10.19.2.12',
     thumbprint: 'D3:47:18:B1:11:39:87:25:F4:52:B2:04:EC:85:88:FA:9D:78:73:11',
@@ -201,7 +201,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ...host1,
     id: 'host-29',
     name: 'esx13.v2v.bos.redhat.com',
-    selfLink: '/namespaces/openshift-migration/providers/vsphere/test/hosts/host-29',
+    selfLink: '/providers/vsphere/test/hosts/host-29',
   };
 
   MOCK_HOSTS = [host1, host2];
