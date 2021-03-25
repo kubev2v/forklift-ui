@@ -18,7 +18,7 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
       label: 'Failed',
     };
   }
-  if (!vmStatus.warm || vmStatus.warm.precopies.length === 0) {
+  if (!vmStatus.warm || (vmStatus.warm.precopies || []).length === 0) {
     return {
       state: 'Starting',
       status: 'Loading',
@@ -26,14 +26,14 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
     };
   }
   const { precopies, nextPrecopyAt } = vmStatus.warm;
-  if (precopies.some((copy) => !!copy.start && !copy.end)) {
+  if ((precopies || []).some((copy) => !!copy.start && !copy.end)) {
     return {
       state: 'Copying',
       status: 'Loading',
       label: 'Performing incremental data copy',
     };
   }
-  if (precopies.every((copy) => !!copy.start && !!copy.end)) {
+  if ((precopies || []).every((copy) => !!copy.start && !!copy.end)) {
     return {
       state: 'Idle',
       status: 'Paused',
