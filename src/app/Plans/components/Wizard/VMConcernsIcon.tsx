@@ -11,7 +11,7 @@ const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
   if (vm.revisionValidated !== vm.revision) {
-    return <StatusIcon status="Loading" label="Analyzing" />;
+    return <StatusIcon status="Loading" label="Analysing" />;
   }
   const worstConcern = getMostSevereVMConcern(vm);
   const statusType = getVMConcernStatusType(worstConcern);

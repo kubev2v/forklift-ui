@@ -25,7 +25,6 @@ import {
   IOpenShiftProvider,
   IPlan,
   IVMwareProvider,
-  IVMwareVM,
   Mapping,
   MappingType,
   PlanType,
@@ -36,7 +35,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, useEditingPlanPrefillEffect } from './helpers';
+import { generateMappings, getSelectedVMsFromIds, useEditingPlanPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
   useMappingsQuery,
@@ -45,6 +44,7 @@ import {
   usePatchPlanMutation,
   usePlansQuery,
   useCreateMappingMutations,
+  useVMwareVMsQuery,
 } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -102,7 +102,7 @@ const usePlanWizardFormState = (
       isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({
-      selectedVMs: useFormField<IVMwareVM[]>([], yup.array<IVMwareVM>().required()),
+      selectedVMIds: useFormField<string[]>([], yup.array<string>().required()),
     }),
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
@@ -143,6 +143,8 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
+  const vmsQuery = useVMwareVMsQuery(forms.general.values.sourceProvider);
+
   const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
     forms,
     planBeingEdited,
@@ -164,7 +166,8 @@ const PlanWizard: React.FunctionComponent = () => {
   if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
   if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
   if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
-  if (forms.storageMapping.isValid) stepIdReached = StepId.Review;
+  if (forms.storageMapping.isValid) stepIdReached = StepId.Type;
+  if (forms.type.isValid) stepIdReached = StepId.Review;
 
   const isFirstRender = React.useRef(true);
 
@@ -226,6 +229,8 @@ const PlanWizard: React.FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutationStatus]);
 
+  const selectedVMs = getSelectedVMsFromIds(forms.selectVMs.values.selectedVMIds, vmsQuery);
+
   const steps = [
     {
       id: StepId.General,
@@ -264,6 +269,7 @@ const PlanWizard: React.FunctionComponent = () => {
                 form={forms.selectVMs}
                 selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
                 sourceProvider={forms.general.values.sourceProvider}
+                selectedVMs={selectedVMs}
               />
             </WizardStepContainer>
           ),
@@ -283,7 +289,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
-            selectedVMs={forms.selectVMs.values.selectedVMs}
+            selectedVMs={selectedVMs}
             planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
@@ -302,7 +308,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
-            selectedVMs={forms.selectVMs.values.selectedVMs}
+            selectedVMs={selectedVMs}
             planBeingEdited={planBeingEdited}
           />
         </WizardStepContainer>
@@ -315,7 +321,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm form={forms.type} />
+          <TypeForm form={forms.type} selectedVMs={selectedVMs} />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,
@@ -331,6 +337,7 @@ const PlanWizard: React.FunctionComponent = () => {
             allMutationResults={allMutationResults}
             allMutationErrorTitles={allMutationErrorTitles}
             planBeingEdited={planBeingEdited}
+            selectedVMs={selectedVMs}
           />
         </WizardStepContainer>
       ),
