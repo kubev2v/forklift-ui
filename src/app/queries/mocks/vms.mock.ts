@@ -52,6 +52,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           assessment:
             'Distributed resource scheduling is not currently supported by OpenShift Virtualization. The VM can be migrated but it will not have this feature in the target environment.',
         },
+        {
+          category: 'Information',
+          label: 'VM snapshot detected',
+          assessment: 'Warm migration may not be possible for this VM',
+        },
       ],
       revisionValidated: 1,
     },
@@ -113,7 +118,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           datastore: { kind: 'Datastore', id: '1' },
         },
       ],
-      concerns: [{ category: 'Critical', label: 'Example', assessment: 'Something is really bad' }],
+      concerns: [
+        { category: 'Critical', label: 'Example', assessment: 'Something is really bad' },
+        {
+          category: 'Warning',
+          label: 'Changed Block Tracking (CBT) not enabled',
+          assessment:
+            'Changed Block Tracking (CBT) has not been enabled on this VM. This feature is a prerequisite for VM warm migration.',
+        },
+      ],
       revisionValidated: 1,
     },
     {
