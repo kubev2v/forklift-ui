@@ -16,11 +16,14 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
 }: IStatusConditionProps) => {
   const getStatusType = (severity: string): StatusType => {
     if (status) {
-      if (severity === PlanStatusType.Ready) {
+      if (severity === PlanStatusType.Ready || severity === StatusCategoryType.Required) {
         return 'Ok';
       }
       if (severity === StatusCategoryType.Advisory) {
         return 'Info';
+      }
+      if (severity === 'Pending') {
+        return 'Loading';
       }
       if (severity === StatusCategoryType.Critical || severity === StatusCategoryType.Error) {
         return 'Error';
