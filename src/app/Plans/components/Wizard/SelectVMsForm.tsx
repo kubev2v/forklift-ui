@@ -42,19 +42,21 @@ interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
   selectedTreeNodes: VMwareTree[];
   sourceProvider: IVMwareProvider | null;
+  selectedVMs: IVMwareVM[];
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   form,
   selectedTreeNodes,
   sourceProvider,
+  selectedVMs,
 }: ISelectVMsFormProps) => {
   const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
   const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
-  const selectedVMsOnMount = React.useRef(form.values.selectedVMs);
+  const selectedVMsOnMount = React.useRef(selectedVMs);
   const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
     const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
     const availableVMs = [
@@ -172,10 +174,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { isItemSelected, toggleItemSelected, selectAll } = useSelectionState<IVMwareVM>({
-    items: sortedItems,
-    isEqual: (a, b) => a.selfLink === b.selfLink,
-    externalState: [form.fields.selectedVMs.value, form.fields.selectedVMs.setValue],
+  const { isItemSelected, toggleItemSelected, selectAll } = useSelectionState<string>({
+    items: sortedItems.map((vm) => vm.id),
+    externalState: [form.fields.selectedVMIds.value, form.fields.selectedVMIds.setValue],
   });
 
   const {
@@ -216,7 +217,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
     rows.push({
       meta: { vm },
-      selected: isItemSelected(vm),
+      selected: isItemSelected(vm.id),
       isOpen: isExpanded,
       cells: [
         {
@@ -297,7 +298,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
                 if (rowIndex === -1) {
                   selectAll(isSelected);
                 } else {
-                  toggleItemSelected(rowData.meta.vm, isSelected);
+                  toggleItemSelected(rowData.meta.vm.id, isSelected);
                 }
               }}
               onCollapse={(_event, _rowKey, _isOpen, rowData) => {
@@ -317,7 +318,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
                 <Text
                   component="small"
                   className={spacing.mlLg}
-                >{`${form.values.selectedVMs.length} selected`}</Text>
+                >{`${form.values.selectedVMIds.length} selected`}</Text>
               </TextContent>
             </LevelItem>
             <LevelItem>

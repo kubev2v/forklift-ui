@@ -12,7 +12,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { IPlan, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
+import { IPlan, IVMwareVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -27,6 +27,7 @@ interface IReviewProps {
   )[];
   allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;
+  selectedVMs: IVMwareVM[];
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({
@@ -34,6 +35,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   allMutationResults,
   allMutationErrorTitles,
   planBeingEdited,
+  selectedVMs,
 }: IReviewProps) => {
   usePausedPollingEffect();
 
@@ -70,14 +72,14 @@ const Review: React.FunctionComponent<IReviewProps> = ({
             headerContent={<div>Selected VMs</div>}
             bodyContent={
               <List>
-                {forms.selectVMs.values.selectedVMs.map((vm, index) => (
+                {selectedVMs.map((vm, index) => (
                   <li key={index}>{vm.name}</li>
                 ))}
               </List>
             }
           >
             <Button variant="link" isInline>
-              {forms.selectVMs.values.selectedVMs.length}
+              {selectedVMs.length}
             </Button>
           </Popover>
         </GridItem>
@@ -89,6 +91,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9}>
           <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
         </GridItem>
+        <GridItem md={3}>Migration type</GridItem>
+        <GridItem md={9}>{forms.type.values.type}</GridItem>
       </Grid>
       <ResolvedQueries
         results={allMutationResults}
