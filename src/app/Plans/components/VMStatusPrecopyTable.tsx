@@ -23,7 +23,7 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
   status,
   isCanceled,
 }: IVMStatusPrecopyTableProps) => {
-  if (!status.warm || status.warm.precopies.length === 0) {
+  if (!status.warm || status.warm.precopies?.length === 0) {
     return (
       <TextContent>
         <Text component="p">Preparing to start incremental copies</Text>
@@ -31,7 +31,7 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
     );
   }
 
-  const sortedPrecopies = status.warm.precopies.sort((a, b) => {
+  const sortedPrecopies = (status.warm.precopies || []).sort((a, b) => {
     // Most recent first
     if (a.start < b.start) return 1;
     if (a.start > b.start) return -1;
