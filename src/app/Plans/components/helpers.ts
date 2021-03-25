@@ -50,7 +50,7 @@ export const getWarmPlanState = (
     if (migration.spec.cutover && pipelineHasStarted) {
       return 'Cutover';
     }
-    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies.length || 0) > 0)) {
+    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {
       return 'Copying';
     }
     return 'Starting';

@@ -117,7 +117,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             getTotalCopiedRatio(vmStatus).completed,
             getPipelineSummaryTitle(vmStatus),
           ]
-        : [vmStatus.warm?.precopies.length || 0, getWarmVMCopyState(vmStatus).state]),
+        : [vmStatus.warm?.precopies?.length || 0, getWarmVMCopyState(vmStatus).state]),
     ];
   };
 
@@ -281,7 +281,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               { title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} /> },
             ]
           : [
-              vmStatus.warm?.precopies.length || 0,
+              vmStatus.warm?.precopies?.length || 0,
               { title: <VMWarmCopyStatus vmStatus={vmStatus} /> },
             ]),
       ],

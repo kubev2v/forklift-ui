@@ -301,6 +301,9 @@ export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
+export const someVMHasConcern = (vms: IVMwareVM[], concernLabel: string): boolean =>
+  vms.some((vm) => vm.concerns.some((concern) => concern.label === concernLabel));
+
 export interface IGenerateMappingsArgs {
   forms: PlanWizardFormState;
   generateName?: string;
@@ -369,19 +372,24 @@ export const generatePlan = (
       network: networkMappingRef,
       storage: storageMappingRef,
     },
-    vms: forms.selectVMs.values.selectedVMs.map((vm) => ({ id: vm.id })),
+    vms: forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
     warm: forms.type.values.type === 'Warm',
   },
 });
+
+export const getSelectedVMsFromIds = (
+  vmIds: string[],
+  vmsQuery: QueryResult<IVMwareVM[]>
+): IVMwareVM[] =>
+  vmIds.map((id) => vmsQuery.data?.find((vm) => vm.id === id)).filter((vm) => !!vm) as IVMwareVM[];
 
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
   vmsQuery: QueryResult<IVMwareVM[]>
 ): IVMwareVM[] => {
   if (!planBeingEdited) return [];
-  return planBeingEdited.spec.vms
-    .map(({ id }) => vmsQuery.data?.find((vm) => vm.id === id))
-    .filter((vm) => !!vm) as IVMwareVM[];
+  const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
+  return getSelectedVMsFromIds(vmIds, vmsQuery);
 };
 
 interface IEditingPrefillResults {
@@ -476,7 +484,7 @@ export const useEditingPlanPrefillEffect = (
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
       forms.filterVMs.fields.isPrefilled.setInitialValue(true);
 
-      forms.selectVMs.fields.selectedVMs.setInitialValue(selectedVMs);
+      forms.selectVMs.fields.selectedVMIds.setInitialValue(selectedVMs.map((vm) => vm.id));
 
       forms.networkMapping.fields.builderItems.setInitialValue(
         getBuilderItemsWithMissingSources(

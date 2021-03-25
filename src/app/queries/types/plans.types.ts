@@ -39,7 +39,7 @@ export interface IVMStatus {
     failures: number;
     successes: number;
     nextPrecopyAt?: string; // ISO timestamp
-    precopies: {
+    precopies?: {
       start: string;
       end?: string;
     }[];
