@@ -23,8 +23,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           id: '',
           parent: null,
           name: 'Fake_DC',
-          selfLink:
-            '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-2760',
+          selfLink: '/providers/vsphere/test4/datacenters/datacenter-2760',
         },
         children: null,
       },
@@ -34,8 +33,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           id: '',
           parent: null,
           name: 'V2V-DC',
-          selfLink:
-            '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-21',
+          selfLink: '/providers/vsphere/test4/datacenters/datacenter-21',
         },
         children: [
           {
@@ -47,8 +45,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-h23',
               },
               name: 'V2V_Cluster',
-              selfLink:
-                '/namespaces/openshift-migration/providers/vsphere/test4/clusters/domain-c26',
+              selfLink: '/providers/vsphere/test4/clusters/domain-c26',
             },
             children: [
               {
@@ -60,7 +57,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                     id: 'domain-c26',
                   },
                   name: 'esx13.v2v.bos.redhat.com',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test4/hosts/host-29',
+                  selfLink: '/providers/vsphere/test4/hosts/host-29',
                 },
                 children: [
                   {
@@ -69,8 +66,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-1630',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont-test-migration',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                      selfLink: '/providers/vsphere/test/vms/vm-1630',
                     },
                     children: null,
                   },
@@ -80,8 +76,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-2844',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont%2ftest',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                      selfLink: '/providers/vsphere/test/vms/vm-2844',
                     },
                     children: null,
                   },
@@ -91,8 +86,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-1008',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont-test-migration-centos',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
+                      selfLink: '/providers/vsphere/test/vms/vm-1008',
                     },
                     children: null,
                   },
@@ -102,8 +96,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-2685',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'pemcg-discovery01',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2685',
+                      selfLink: '/providers/vsphere/test/vms/vm-2685',
                     },
                     children: null,
                   },
@@ -113,7 +106,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-431',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'pemcg-iscsi-target',
-                      selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-431',
+                      selfLink: '/providers/vsphere/test/vms/vm-431',
                     },
                     children: null,
                   },
@@ -130,8 +123,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-h23',
               },
               name: 'Fake_Cluster',
-              selfLink:
-                '/namespaces/openshift-migration/providers/vsphere/test4/clusters/domain-c2758',
+              selfLink: '/providers/vsphere/test4/clusters/domain-c2758',
             },
             children: null,
           },
@@ -144,8 +136,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-h23',
               },
               name: 'jortel',
-              selfLink:
-                '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-h2800',
+              selfLink: '/providers/vsphere/test4/folders/group-h2800',
             },
             children: null,
           },
@@ -167,8 +158,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: 'group-d1',
           },
           name: 'Fake_DC',
-          selfLink:
-            '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-2760',
+          selfLink: '/providers/vsphere/test4/datacenters/datacenter-2760',
         },
         children: null,
       },
@@ -181,8 +171,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: 'group-d1',
           },
           name: 'V2V-DC',
-          selfLink:
-            '/namespaces/openshift-migration/providers/vsphere/test4/datacenters/datacenter-21',
+          selfLink: '/providers/vsphere/test4/datacenters/datacenter-21',
         },
         children: [
           {
@@ -191,7 +180,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               id: 'vm-1630',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'fdupont-test-migration',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+              selfLink: '/providers/vsphere/test/vms/vm-1630',
             },
             children: null,
           },
@@ -201,7 +190,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               id: 'vm-2844',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'fdupont%2ftest',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+              selfLink: '/providers/vsphere/test/vms/vm-2844',
             },
             children: null,
           },
@@ -211,7 +200,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               id: 'vm-1008',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'fdupont-test-migration-centos',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
+              selfLink: '/providers/vsphere/test/vms/vm-1008',
             },
             children: null,
           },
@@ -221,7 +210,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               id: 'vm-2685',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'pemcg-discovery01',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2685',
+              selfLink: '/providers/vsphere/test/vms/vm-2685',
             },
             children: null,
           },
@@ -231,7 +220,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               id: 'vm-431',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'pemcg-iscsi-target',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-431',
+              selfLink: '/providers/vsphere/test/vms/vm-431',
             },
             children: null,
           },
@@ -244,8 +233,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'Workloads',
-              selfLink:
-                '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v1001',
+              selfLink: '/providers/vsphere/test4/folders/group-v1001',
             },
             children: [
               {
@@ -254,7 +242,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1630',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                  selfLink: '/providers/vsphere/test/vms/vm-1630',
                 },
                 children: null,
               },
@@ -264,7 +252,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                  selfLink: '/providers/vsphere/test/vms/vm-2844',
                 },
                 children: null,
               },
@@ -274,7 +262,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1008',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration-centos',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
+                  selfLink: '/providers/vsphere/test/vms/vm-1008',
                 },
                 children: null,
               },
@@ -284,7 +272,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-2685',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'pemcg-discovery01',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2685',
+                  selfLink: '/providers/vsphere/test/vms/vm-2685',
                 },
                 children: null,
               },
@@ -297,8 +285,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                     id: 'group-v1001',
                   },
                   name: 'Linux',
-                  selfLink:
-                    '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v2831',
+                  selfLink: '/providers/vsphere/test4/folders/group-v2831',
                 },
                 children: [
                   {
@@ -307,8 +294,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-1630',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont-test-migration',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                      selfLink: '/providers/vsphere/test/vms/vm-1630',
                     },
                     children: null,
                   },
@@ -318,8 +304,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-2844',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont%2ftest',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                      selfLink: '/providers/vsphere/test/vms/vm-2844',
                     },
                     children: null,
                   },
@@ -334,8 +319,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                     id: 'group-v1001',
                   },
                   name: 'jortel',
-                  selfLink:
-                    '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v2835',
+                  selfLink: '/providers/vsphere/test4/folders/group-v2835',
                 },
                 children: [
                   {
@@ -344,8 +328,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       id: 'vm-1630',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont-test-migration',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                      selfLink: '/providers/vsphere/test/vms/vm-1630',
                     },
                     children: null,
                   },
@@ -358,8 +341,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                         id: 'group-v2835',
                       },
                       name: 'Test',
-                      selfLink:
-                        '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v2837',
+                      selfLink: '/providers/vsphere/test4/folders/group-v2837',
                     },
                     children: [
                       {
@@ -371,8 +353,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                             id: 'group-v2837',
                           },
                           name: 'jortel',
-                          selfLink:
-                            '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v2838',
+                          selfLink: '/providers/vsphere/test4/folders/group-v2838',
                         },
                         children: null,
                       },
@@ -391,8 +372,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'v2v dev',
-              selfLink:
-                '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v162',
+              selfLink: '/providers/vsphere/test4/folders/group-v162',
             },
             children: [
               {
@@ -401,7 +381,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1630',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                  selfLink: '/providers/vsphere/test/vms/vm-1630',
                 },
                 children: null,
               },
@@ -411,7 +391,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                  selfLink: '/providers/vsphere/test/vms/vm-2844',
                 },
                 children: null,
               },
@@ -421,7 +401,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1008',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration-centos',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
+                  selfLink: '/providers/vsphere/test/vms/vm-1008',
                 },
                 children: null,
               },
@@ -436,7 +416,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'Templates',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v72',
+              selfLink: '/providers/vsphere/test4/folders/group-v72',
             },
             children: [
               {
@@ -445,7 +425,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1630',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                  selfLink: '/providers/vsphere/test/vms/vm-1630',
                 },
                 children: null,
               },
@@ -455,7 +435,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                  selfLink: '/providers/vsphere/test/vms/vm-2844',
                 },
                 children: null,
               },
@@ -465,7 +445,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1008',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration-centos',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1008',
+                  selfLink: '/providers/vsphere/test/vms/vm-1008',
                 },
                 children: null,
               },
@@ -480,7 +460,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'V2V',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v39',
+              selfLink: '/providers/vsphere/test4/folders/group-v39',
             },
             children: [
               {
@@ -489,7 +469,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1630',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                  selfLink: '/providers/vsphere/test/vms/vm-1630',
                 },
                 children: null,
               },
@@ -499,7 +479,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-2844',
+                  selfLink: '/providers/vsphere/test/vms/vm-2844',
                 },
                 children: null,
               },
@@ -514,7 +494,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'Infrastructure',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v38',
+              selfLink: '/providers/vsphere/test4/folders/group-v38',
             },
             children: [
               {
@@ -523,7 +503,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   id: 'vm-1630',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
-                  selfLink: '/namespaces/openshift-migration/providers/vsphere/test/vms/vm-1630',
+                  selfLink: '/providers/vsphere/test/vms/vm-1630',
                 },
                 children: null,
               },
@@ -538,7 +518,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                 id: 'group-v22',
               },
               name: 'Discovered virtual machine',
-              selfLink: '/namespaces/openshift-migration/providers/vsphere/test4/folders/group-v28',
+              selfLink: '/providers/vsphere/test4/folders/group-v28',
             },
             children: null,
           },
