@@ -44,12 +44,35 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       status: {
         conditions: [
           {
-            type: 'Ready',
-            status: 'True',
             category: 'Required',
+            lastTransitionTime: '2021-03-18T21:01:10Z',
+            message: 'Connection test, succeeded.',
+            reason: 'Tested',
+            status: 'True',
+            type: 'ConnectionTested',
+          },
+          {
+            category: 'Advisory',
+            lastTransitionTime: '2021-02-08T19:36:55Z',
+            message: 'Validation has been completed.',
+            reason: 'Completed',
+            status: 'True',
+            type: 'Validated',
+          },
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-23T16:58:23Z',
+            message: 'The inventory has been loaded.',
+            reason: 'Completed',
+            status: 'True',
+            type: 'InventoryCreated',
+          },
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-23T16:58:23Z',
             message: 'The provider is ready.',
-            lastTransitionTime: '2020-08-21T18:36:41.468Z',
-            reason: '',
+            status: 'True',
+            type: 'Ready',
           },
         ],
         observedGeneration: 1,
@@ -100,6 +123,35 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...vmwareProvider1.object.metadata,
         name: 'vcenter-3',
+      },
+      status: {
+        conditions: [
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-18T21:01:10Z',
+            message: 'Connection test, succeeded.',
+            reason: 'Tested',
+            status: 'True',
+            type: 'ConnectionTested',
+          },
+          {
+            category: 'Advisory',
+            lastTransitionTime: '2021-02-08T19:36:55Z',
+            message: 'Validation has been completed.',
+            reason: 'Completed',
+            status: 'True',
+            type: 'Validated',
+          },
+          {
+            category: 'Advisory',
+            lastTransitionTime: '2021-03-23T16:58:23Z',
+            message: 'Loading the inventory.',
+            reason: 'Started',
+            status: 'True',
+            type: 'InventoryLoading',
+          },
+        ],
+        observedGeneration: 1,
       },
     },
   };
