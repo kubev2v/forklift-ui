@@ -1,3 +1,11 @@
 .headerBrandLogo svg {
   vertical-align: middle;
 }
+
+.brand-forklift .pf-c-about-modal-box__brand-image {
+  height: 256px;
+}
+
+.brand-forklift .pf-c-about-modal-box__content {
+  margin-top: 0;
+}
