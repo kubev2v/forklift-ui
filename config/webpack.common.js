@@ -9,7 +9,14 @@ const helpers = require('./helpers');
 console.log('\nEnvironment:');
 console.log(`  NODE_ENV=${process.env.NODE_ENV}`);
 console.log(`  DATA_SOURCE=${process.env.DATA_SOURCE}`);
-console.log(`  BRAND_TYPE=${process.env.BRAND_TYPE}\n`);
+console.log(`  BRAND_TYPE=${process.env.BRAND_TYPE}`);
+console.log(`  FORKLIFT_CONTROLLER_GIT_COMMIT=${process.env.FORKLIFT_CONTROLLER_GIT_COMMIT}`);
+console.log(`  FORKLIFT_MUST_GATHER_GIT_COMMIT=${process.env.FORKLIFT_MUST_GATHER_GIT_COMMIT}`);
+console.log(`  FORKLIFT_OPERATOR_GIT_COMMIT=${process.env.FORKLIFT_OPERATOR_GIT_COMMIT}`);
+console.log(`  FORKLIFT_UI_GIT_COMMIT=${process.env.FORKLIFT_UI_GIT_COMMIT}`);
+console.log(`  FORKLIFT_VALIDATION_GIT_COMMIT=${process.env.FORKLIFT_VALIDATION_GIT_COMMIT}\n`);
+
+const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
 
 module.exports = (env) => {
   return {
@@ -167,6 +174,11 @@ module.exports = (env) => {
         DATA_SOURCE: 'remote',
         BRAND_TYPE: 'Konveyor',
         NODE_ENV: 'production',
+        FORKLIFT_CONTROLLER_GIT_COMMIT: '-',
+        FORKLIFT_MUST_GATHER_GIT_COMMIT: '-',
+        FORKLIFT_OPERATOR_GIT_COMMIT: '-',
+        FORKLIFT_UI_GIT_COMMIT: commitHash,
+        FORKLIFT_VALIDATION_GIT_COMMIT: '-',
       }),
     ],
     resolve: {
