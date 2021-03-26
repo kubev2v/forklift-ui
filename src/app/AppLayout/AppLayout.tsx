@@ -18,6 +18,8 @@ import logoRedHat from './logoRedHat.svg';
 import logoKonveyor from './logoKonveyor.svg';
 import { APP_BRAND, BrandType } from '@app/global-flags';
 import './AppLayout.css';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import HelpDropdown from './HelpDropdown';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -50,6 +52,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={
         <PageHeaderTools>
+          <HelpDropdown className={spacing.mrMd} />
           <span
             className="headerBrandLogo"
             dangerouslySetInnerHTML={{
