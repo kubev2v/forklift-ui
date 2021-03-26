@@ -9,3 +9,7 @@
 .brand-forklift .pf-c-about-modal-box__content {
   margin-top: 0;
 }
+
+.brand-redhat .pf-c-about-modal-box__brand {
+  display: none;
+}
