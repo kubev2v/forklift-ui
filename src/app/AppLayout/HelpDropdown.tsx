@@ -18,7 +18,6 @@ const HelpDropdown: React.FunctionComponent<IHelpDropdownProps> = ({
       <Dropdown
         isPlain
         className={className}
-        onSelect={() => console.log('onSelect')}
         toggle={
           <DropdownToggle
             id="toggle-id"
