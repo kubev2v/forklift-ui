@@ -16,8 +16,6 @@ console.log(`  FORKLIFT_OPERATOR_GIT_COMMIT=${process.env.FORKLIFT_OPERATOR_GIT_
 console.log(`  FORKLIFT_UI_GIT_COMMIT=${process.env.FORKLIFT_UI_GIT_COMMIT}`);
 console.log(`  FORKLIFT_VALIDATION_GIT_COMMIT=${process.env.FORKLIFT_VALIDATION_GIT_COMMIT}\n`);
 
-const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
-
 module.exports = (env) => {
   return {
     entry: {
@@ -177,7 +175,7 @@ module.exports = (env) => {
         FORKLIFT_CONTROLLER_GIT_COMMIT: '-',
         FORKLIFT_MUST_GATHER_GIT_COMMIT: '-',
         FORKLIFT_OPERATOR_GIT_COMMIT: '-',
-        FORKLIFT_UI_GIT_COMMIT: commitHash,
+        FORKLIFT_UI_GIT_COMMIT: '-',
         FORKLIFT_VALIDATION_GIT_COMMIT: '-',
       }),
     ],
