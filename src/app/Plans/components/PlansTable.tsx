@@ -194,7 +194,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
-    let isPending = false;
     let title = '';
     let variant: ProgressVariant | undefined;
 
@@ -223,10 +222,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       buttonType = 'Restart';
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
-    } else if (!plan.status) {
-      isPending = true;
-    } else {
-      console.log('Migration plan Status Error:', plan);
+    } else if (plan.status?.migration?.started) {
+      console.warn('Migration plan unexpected status:', plan);
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -240,10 +237,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const warmState = getWarmPlanState(plan, latestMigration);
     // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
-    // TODO what's the difference between isBeingStarted and isPending?
     const isBeingStarted =
-      !!latestMigration &&
-      ((plan.status?.migration?.vms?.length || 0) === 0 || warmState === 'Starting');
+      (!!latestMigration && !plan.status?.migration?.started) ||
+      (plan.status?.migration?.started && (plan.status?.migration?.vms?.length || 0) === 0) ||
+      warmState === 'Starting';
 
     rows.push({
       meta: { plan },
@@ -261,7 +258,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         plan.spec.warm ? 'Warm' : 'Cold',
         {
-          title: isPending ? (
+          title: isBeingStarted ? (
             'Running - preparing for migration'
           ) : warmState === 'Starting' ? (
             'Running - preparing for incremental data copies'
@@ -315,7 +312,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </FlexItem>
               </Flex>
             </>
-          ) : !isPending ? (
+          ) : !isBeingStarted ? (
             <PlanActionsDropdown plan={plan} />
           ) : null,
         },

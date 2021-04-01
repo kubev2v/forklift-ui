@@ -30,7 +30,12 @@ export const getWarmPlanState = (
 ): WarmPlanState | null => {
   if (!plan || !plan.spec.warm) return null;
   if (!migration) return 'NotStarted';
-  if (!!migration && (plan.status?.migration?.vms?.length || 0) === 0) return 'Starting';
+  if (
+    (!!migration && !plan.status?.migration?.started) ||
+    (plan.status?.migration?.started && (plan.status?.migration?.vms?.length || 0) === 0)
+  ) {
+    return 'Starting';
+  }
   const conditions = plan.status?.conditions || [];
   if (
     (hasCondition(conditions, PlanStatusType.Canceled) ||
