@@ -55,7 +55,12 @@ import './PlansTable.css';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutateFunction, MutationResult } from 'react-query';
-import { getPlanStatusTitle, getWarmPlanState } from './helpers';
+import {
+  canPlanBeStarted,
+  getPlanStatusTitle,
+  getWarmPlanState,
+  isPlanBeingStarted,
+} from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 
@@ -199,13 +204,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const conditions = plan.status?.conditions || [];
     const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
-    const canBeStarted =
-      hasCondition(conditions, PlanStatusType.Ready) &&
-      !hasCondition(conditions, PlanStatusType.Executing) &&
-      (!plan.status?.migration?.started ||
-        plan.status?.migration?.vms?.some(
-          (vm) => !hasCondition(vm.conditions || [], PlanStatusType.Succeeded)
-        ));
 
     // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
     // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
@@ -233,7 +231,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       console.warn('Migration plan unexpected status:', plan);
     }
 
-    if (buttonType !== 'Start' && canBeStarted) {
+    if (buttonType !== 'Start' && canPlanBeStarted(plan)) {
       buttonType = 'Restart';
     }
 
@@ -246,13 +244,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
 
-    const warmState = getWarmPlanState(plan, latestMigration);
+    const warmState = getWarmPlanState(plan, latestMigration, migrationsQuery);
     // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
-    const isBeingStarted =
-      (!!latestMigration && !plan.status?.migration?.started) ||
-      (plan.status?.migration?.started && (plan.status?.migration?.vms?.length || 0) === 0) ||
-      // latestMigration doesn't match the latest migration object in the plan's history?
-      warmState === 'Starting';
+    const isBeingStarted = isPlanBeingStarted(plan, latestMigration, migrationsQuery);
 
     rows.push({
       meta: { plan },
