@@ -84,7 +84,8 @@ export const useMockableMutation = <
     config
   );
 };
-export const getInventoryApiUrl = (relativePath: string): string => `/inventory-api${relativePath}`;
+export const getInventoryApiUrl = (relativePath: string): string =>
+  `/inventory-api/${relativePath}`;
 
 export const getAggregateQueryStatus = (
   queryResults: (QueryResult<unknown> | MutationResult<unknown>)[]
