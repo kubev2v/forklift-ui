@@ -251,6 +251,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const isBeingStarted =
       (!!latestMigration && !plan.status?.migration?.started) ||
       (plan.status?.migration?.started && (plan.status?.migration?.vms?.length || 0) === 0) ||
+      // latestMigration doesn't match the latest migration object in the plan's history?
       warmState === 'Starting';
 
     rows.push({
