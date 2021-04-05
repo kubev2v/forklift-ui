@@ -22,7 +22,6 @@ import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import { ProviderType } from '@app/common/constants';
-import { usePausedPollingEffect } from '@app/common/context';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
@@ -36,8 +35,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
   planBeingEdited,
 }: IGeneralFormProps) => {
-  usePausedPollingEffect();
-
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
