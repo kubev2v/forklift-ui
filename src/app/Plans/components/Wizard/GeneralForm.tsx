@@ -69,6 +69,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(form.values.targetProvider);
 
   const onTargetNamespaceChange = (targetNamespace: string) => {
+    form.fields.targetNamespace.setValue(targetNamespace);
+    form.fields.targetNamespace.setIsTouched(true);
+    setIsNamespaceSelectOpen(false);
     if (targetNamespace !== form.values.targetNamespace) {
       const providerDefaultNetworkName =
         form.values.targetProvider?.object.metadata.annotations?.[
@@ -136,17 +139,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select a namespace"
               isOpen={isNamespaceSelectOpen}
               onToggle={setIsNamespaceSelectOpen}
-              onSelect={(_event, selection) => {
-                form.fields.targetNamespace.setValue(selection as string);
-                setIsNamespaceSelectOpen(false);
-                onTargetNamespaceChange(selection as string);
-              }}
+              onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
               onFilter={(event) => getFilteredOptions(event.target.value)}
-              onClear={() => {
-                form.fields.targetNamespace.setValue('');
-                setIsNamespaceSelectOpen(false);
-                onTargetNamespaceChange('');
-              }}
+              onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
