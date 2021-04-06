@@ -11,6 +11,7 @@ import {
   ProgressVariant,
   Spinner,
   Text,
+  Tooltip,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -275,14 +276,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ) : warmState === 'StartingCutover' ? (
             'Running - preparing for cutover'
           ) : (
-            <Progress
-              title={title}
-              value={statusValue}
-              label={statusMessage}
-              valueText={statusMessage}
-              variant={variant}
-              measureLocation={ProgressMeasureLocation.top}
-            />
+            <Tooltip content="Click the plan name to see migration details.">
+              <Progress
+                title={title}
+                value={statusValue}
+                label={statusMessage}
+                valueText={statusMessage}
+                variant={variant}
+                measureLocation={ProgressMeasureLocation.top}
+              />
+            </Tooltip>
           ),
         },
         {
