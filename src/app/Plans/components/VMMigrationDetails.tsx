@@ -44,7 +44,12 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { IVMStatus, IVMwareVM } from '@app/queries/types';
-import { useCancelVMsMutation, useLatestMigrationQuery, usePlansQuery } from '@app/queries';
+import {
+  findLatestMigration,
+  useCancelVMsMutation,
+  useMigrationsQuery,
+  usePlansQuery,
+} from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
@@ -98,8 +103,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
-  const latestMigration = useLatestMigrationQuery(plan || null);
-  const warmPlanState = getWarmPlanState(plan || null, latestMigration);
+  const migrationsQuery = useMigrationsQuery();
+  const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
+  const warmPlanState = getWarmPlanState(plan || null, latestMigration, migrationsQuery);
   const isShowingPrecopyView =
     !!plan?.spec.warm &&
     (warmPlanState === 'Starting' ||
