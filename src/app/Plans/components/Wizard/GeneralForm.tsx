@@ -45,7 +45,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
     const filteredNamespaces = !searchText
       ? namespaceOptions
-      : namespaceOptions.filter((option) => !!option.toLowerCase().match(searchText.toLowerCase()));
+      : namespaceOptions.filter((option) => {
+          try {
+            return !!option.toLowerCase().match(searchText.toLowerCase());
+          } catch (e) {
+            return false;
+          }
+        });
     return [
       <SelectGroup key="group" label="Select or type to create a namespace">
         {filteredNamespaces.map((option) => (
@@ -136,6 +142,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 onTargetNamespaceChange(selection as string);
               }}
               onFilter={(event) => getFilteredOptions(event.target.value)}
+              onClear={() => {
+                form.fields.targetNamespace.setValue('');
+                setIsNamespaceSelectOpen(false);
+                onTargetNamespaceChange('');
+              }}
               selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
@@ -153,13 +164,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                     The migration transfer network for this migration plan is:{' '}
                     <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
                     <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
-                      <button
+                      <Button
+                        variant="plain"
                         aria-label="More info for migration transfer network field"
                         onClick={(e) => e.preventDefault()}
                         className="pf-c-form__group-label-help"
                       >
                         <HelpIcon noVerticalAlign />
-                      </button>
+                      </Button>
                     </Popover>
                   </Text>
                 </TextContent>
