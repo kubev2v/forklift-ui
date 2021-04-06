@@ -107,7 +107,11 @@ export const getMappingFromBuilderItems = ({
     apiVersion: CLUSTER_API_VERSION,
     kind: mappingType === MappingType.Network ? 'NetworkMap' : 'StorageMap',
     metadata: {
-      ...(mappingName ? { name: mappingName } : { generateName: generateName || '' }),
+      ...(generateName
+        ? { generateName }
+        : mappingName
+        ? { name: mappingName }
+        : { generateName: '' }),
       namespace: META.namespace,
       ...(owner
         ? {
