@@ -247,9 +247,9 @@ const PlanWizard: React.FunctionComponent = () => {
       steps: [
         {
           id: StepId.FilterVMs,
-          name: 'Filter VMs',
+          name: 'Filter',
           component: (
-            <WizardStepContainer title="Filter VMs">
+            <WizardStepContainer title="Filter by VM location">
               <FilterVMsForm
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}

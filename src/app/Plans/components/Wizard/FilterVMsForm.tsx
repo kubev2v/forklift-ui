@@ -70,7 +70,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
-        <Text component="p">Filter the list of VMs that can be selected for migration.</Text>
+        <Text component="p">
+          Refine the list of VMs selectable for migration by clusters and hosts or by folder.
+        </Text>
       </TextContent>
       <Tabs
         activeKey={form.values.treeType}
