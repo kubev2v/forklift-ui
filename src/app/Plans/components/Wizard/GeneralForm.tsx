@@ -45,7 +45,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
     const filteredNamespaces = !searchText
       ? namespaceOptions
-      : namespaceOptions.filter((option) => !!option.toLowerCase().match(searchText.toLowerCase()));
+      : namespaceOptions.filter((option) => {
+          try {
+            return !!option.toLowerCase().match(searchText.toLowerCase());
+          } catch (e) {
+            return false;
+          }
+        });
     return [
       <SelectGroup key="group" label="Select or type to create a namespace">
         {filteredNamespaces.map((option) => (
@@ -63,6 +69,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(form.values.targetProvider);
 
   const onTargetNamespaceChange = (targetNamespace: string) => {
+    form.fields.targetNamespace.setValue(targetNamespace);
+    form.fields.targetNamespace.setIsTouched(true);
+    setIsNamespaceSelectOpen(false);
     if (targetNamespace !== form.values.targetNamespace) {
       const providerDefaultNetworkName =
         form.values.targetProvider?.object.metadata.annotations?.[
@@ -130,12 +139,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select a namespace"
               isOpen={isNamespaceSelectOpen}
               onToggle={setIsNamespaceSelectOpen}
-              onSelect={(_event, selection) => {
-                form.fields.targetNamespace.setValue(selection as string);
-                setIsNamespaceSelectOpen(false);
-                onTargetNamespaceChange(selection as string);
-              }}
+              onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
               onFilter={(event) => getFilteredOptions(event.target.value)}
+              onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}
               variant="typeahead"
               isCreatable
@@ -146,35 +152,36 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             >
               {getFilteredOptions()}
             </Select>
-            {form.values.targetNamespace ? (
-              <>
-                <TextContent className={spacing.mtMd}>
-                  <Text component="p">
-                    The migration transfer network for this migration plan is:{' '}
-                    <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
-                    <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
-                      <button
-                        aria-label="More info for migration transfer network field"
-                        onClick={(e) => e.preventDefault()}
-                        className="pf-c-form__group-label-help"
-                      >
-                        <HelpIcon noVerticalAlign />
-                      </button>
-                    </Popover>
-                  </Text>
-                </TextContent>
-                <Button
-                  variant="link"
-                  isInline
-                  onClick={toggleSelectNetworkModal}
-                  className={spacing.mtXs}
-                >
-                  Select a different network
-                </Button>
-              </>
-            ) : null}
           </ResolvedQueries>
         </FormGroup>
+        {form.values.targetNamespace ? (
+          <div>
+            <TextContent>
+              <Text component="p">
+                The migration transfer network for this migration plan is:{' '}
+                <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
+                <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
+                  <Button
+                    variant="plain"
+                    aria-label="More info for migration transfer network field"
+                    onClick={(e) => e.preventDefault()}
+                    className="pf-c-form__group-label-help"
+                  >
+                    <HelpIcon noVerticalAlign />
+                  </Button>
+                </Popover>
+              </Text>
+            </TextContent>
+            <Button
+              variant="link"
+              isInline
+              onClick={toggleSelectNetworkModal}
+              className={spacing.mtXs}
+            >
+              Select a different network
+            </Button>
+          </div>
+        ) : null}
       </Form>
       {isSelectNetworkModalOpen ? (
         <SelectOpenShiftNetworkModal
