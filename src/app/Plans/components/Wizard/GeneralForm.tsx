@@ -152,36 +152,36 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             >
               {getFilteredOptions()}
             </Select>
-            {form.values.targetNamespace ? (
-              <>
-                <TextContent className={spacing.mtMd}>
-                  <Text component="p">
-                    The migration transfer network for this migration plan is:{' '}
-                    <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
-                    <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
-                      <Button
-                        variant="plain"
-                        aria-label="More info for migration transfer network field"
-                        onClick={(e) => e.preventDefault()}
-                        className="pf-c-form__group-label-help"
-                      >
-                        <HelpIcon noVerticalAlign />
-                      </Button>
-                    </Popover>
-                  </Text>
-                </TextContent>
-                <Button
-                  variant="link"
-                  isInline
-                  onClick={toggleSelectNetworkModal}
-                  className={spacing.mtXs}
-                >
-                  Select a different network
-                </Button>
-              </>
-            ) : null}
           </ResolvedQueries>
         </FormGroup>
+        {form.values.targetNamespace ? (
+          <div>
+            <TextContent>
+              <Text component="p">
+                The migration transfer network for this migration plan is:{' '}
+                <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
+                <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
+                  <Button
+                    variant="plain"
+                    aria-label="More info for migration transfer network field"
+                    onClick={(e) => e.preventDefault()}
+                    className="pf-c-form__group-label-help"
+                  >
+                    <HelpIcon noVerticalAlign />
+                  </Button>
+                </Popover>
+              </Text>
+            </TextContent>
+            <Button
+              variant="link"
+              isInline
+              onClick={toggleSelectNetworkModal}
+              className={spacing.mtXs}
+            >
+              Select a different network
+            </Button>
+          </div>
+        ) : null}
       </Form>
       {isSelectNetworkModalOpen ? (
         <SelectOpenShiftNetworkModal
