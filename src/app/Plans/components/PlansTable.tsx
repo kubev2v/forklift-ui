@@ -55,7 +55,12 @@ import './PlansTable.css';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { MutateFunction, MutationResult } from 'react-query';
-import { getPlanStatusTitle, getWarmPlanState } from './helpers';
+import {
+  canPlanBeStarted,
+  getPlanStatusTitle,
+  getWarmPlanState,
+  isPlanBeingStarted,
+} from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 
@@ -194,7 +199,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   currentPageItems.forEach((plan: IPlan) => {
     let buttonType: ActionButtonType | null = null;
-    let isPending = false;
     let title = '';
     let variant: ProgressVariant | undefined;
 
@@ -223,10 +227,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       buttonType = 'Restart';
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
-    } else if (!plan.status) {
-      isPending = true;
-    } else {
-      console.log('Migration plan Status Error:', plan);
+    } else if (plan.status?.migration?.started) {
+      console.warn('Migration plan unexpected status:', plan);
+    }
+
+    if (buttonType !== 'Start' && canPlanBeStarted(plan)) {
+      buttonType = 'Restart';
     }
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
@@ -238,12 +244,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
 
-    const warmState = getWarmPlanState(plan, latestMigration);
+    const warmState = getWarmPlanState(plan, latestMigration, migrationsQuery);
     // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
-    // TODO what's the difference between isBeingStarted and isPending?
-    const isBeingStarted =
-      !!latestMigration &&
-      ((plan.status?.migration?.vms?.length || 0) === 0 || warmState === 'Starting');
+    const isBeingStarted = isPlanBeingStarted(plan, latestMigration, migrationsQuery);
 
     rows.push({
       meta: { plan },
@@ -261,7 +264,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         },
         plan.spec.warm ? 'Warm' : 'Cold',
         {
-          title: isPending ? (
+          title: isBeingStarted ? (
             'Running - preparing for migration'
           ) : warmState === 'Starting' ? (
             'Running - preparing for incremental data copies'
@@ -315,7 +318,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </FlexItem>
               </Flex>
             </>
-          ) : !isPending ? (
+          ) : !isBeingStarted ? (
             <PlanActionsDropdown plan={plan} />
           ) : null,
         },
