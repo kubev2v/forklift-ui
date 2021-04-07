@@ -21,7 +21,7 @@ import { MOCK_MIGRATIONS } from './mocks/migrations.mock';
 const migrationResource = new ForkliftResource(ForkliftResourceKind.Migration, META.namespace);
 
 export const useCreateMigrationMutation = (
-  onSuccess?: () => void
+  onSuccess?: (migration: IMigration) => void
 ): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
@@ -49,11 +49,11 @@ export const useCreateMigrationMutation = (
       return await client.create(migrationResource, migration);
     },
     {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         queryCache.invalidateQueries('plans');
         queryCache.invalidateQueries('migrations');
         pollFasterAfterMutation();
-        onSuccess && onSuccess();
+        onSuccess && onSuccess(data);
       },
     }
   );
