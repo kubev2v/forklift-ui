@@ -34,6 +34,7 @@ import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/Resolved
 import { IKubeList } from '@app/client/types';
 import { useEditProviderPrefillEffect } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
 
 interface IAddEditProviderModalProps {
   onClose: (navToProviderType?: ProviderType | null) => void;
@@ -190,14 +191,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   formGroupProps={{
                     labelIcon: (
                       <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for name field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="vmware-name-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -214,16 +216,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   isRequired
                   fieldId="vmware-username"
                 />
-                <ValidatedTextInput
+                <ValidatedPasswordInput
                   field={vmwareForm.fields.password}
-                  type="password"
                   label="Password"
                   isRequired
                   fieldId="vmware-password"
                 />
                 <ValidatedTextInput
                   field={vmwareForm.fields.fingerprint}
-                  label="Certificate SHA1 Fingerprint"
+                  label="SHA-1 Fingerprint"
                   isRequired
                   fieldId="vmware-fingerprint"
                   formGroupProps={{
@@ -239,14 +240,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                           </div>
                         }
                       >
-                        <button
-                          aria-label="More info for SHA1 Fingerprint field"
+                        <Button
+                          variant="plain"
+                          aria-label="More info for SHA-1 Fingerprint field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="vmware-fingerprint"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -266,14 +268,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   formGroupProps={{
                     labelIcon: (
                       <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for name field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="openshift-name-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -294,21 +297,21 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                           </>
                         }
                       >
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for URL field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="openshift-cluster-url-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
                 />
-                <ValidatedTextInput
+                <ValidatedPasswordInput
                   field={openshiftForm.fields.saToken}
-                  type="password"
                   label="Service account token"
                   isRequired
                   fieldId="openshift-sa-token"
@@ -328,14 +331,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                           </>
                         }
                       >
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for service account field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="service-account-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
