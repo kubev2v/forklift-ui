@@ -84,9 +84,12 @@ const ProvidersPage: React.FunctionComponent = () => {
     null
   );
 
-  const toggleModalAndResetEdit = () => {
+  const toggleModalAndResetEdit = (navToProviderType?: ProviderType | null) => {
     setProviderBeingEdited(null);
     toggleAddEditModal();
+    if (navToProviderType) {
+      history.push(`/providers/${navToProviderType}`);
+    }
   };
 
   const openEditProviderModal = (provider: IProviderObject) => {
@@ -102,7 +105,7 @@ const ProvidersPage: React.FunctionComponent = () => {
             <Title headingLevel="h1">Providers</Title>
           </LevelItem>
           <LevelItem>
-            <Button variant="secondary" onClick={toggleModalAndResetEdit}>
+            <Button variant="secondary" onClick={() => toggleModalAndResetEdit()}>
               Add provider
             </Button>
           </LevelItem>
@@ -137,7 +140,7 @@ const ProvidersPage: React.FunctionComponent = () => {
                     No providers
                   </Title>
                   <EmptyStateBody>Add source and target providers for migrations.</EmptyStateBody>
-                  <Button onClick={toggleModalAndResetEdit} variant="primary">
+                  <Button onClick={() => toggleModalAndResetEdit()} variant="primary">
                     Add provider
                   </Button>
                 </EmptyState>
