@@ -34,6 +34,7 @@ import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/Resolved
 import { IKubeList } from '@app/client/types';
 import { useEditProviderPrefillEffect } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
 
 interface IAddEditProviderModalProps {
   onClose: (navToProviderType?: ProviderType | null) => void;
@@ -190,14 +191,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   formGroupProps={{
                     labelIcon: (
                       <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for name field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="vmware-name-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -214,9 +216,8 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   isRequired
                   fieldId="vmware-username"
                 />
-                <ValidatedTextInput
+                <ValidatedPasswordInput
                   field={vmwareForm.fields.password}
-                  type="password"
                   label="Password"
                   isRequired
                   fieldId="vmware-password"
@@ -239,14 +240,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                           </div>
                         }
                       >
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for SHA1 Fingerprint field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="vmware-fingerprint"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -266,14 +268,15 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                   formGroupProps={{
                     labelIcon: (
                       <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for name field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="openshift-name-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
@@ -294,51 +297,35 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                           </>
                         }
                       >
-                        <button
+                        <Button
+                          variant="plain"
                           aria-label="More info for URL field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="openshift-cluster-url-info"
                           className="pf-c-form__group-label-help"
                         >
                           <HelpIcon noVerticalAlign />
-                        </button>
+                        </Button>
                       </Popover>
                     ),
                   }}
                 />
-                <ValidatedTextInput
+
+                <ValidatedPasswordInput
                   field={openshiftForm.fields.saToken}
-                  type="password"
                   label="Service account token"
                   isRequired
                   fieldId="openshift-sa-token"
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover
-                        bodyContent={
-                          <>
-                            To obtain SA token, run the following command:
-                            <br />
-                            <i>
-                              $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
-                            </i>
-                            <br />
-                            <br />
-                            <b>** Be sure to use the namespace in which you created the SA.</b>
-                          </>
-                        }
-                      >
-                        <button
-                          aria-label="More info for service account field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="service-account-info"
-                          className="pf-c-form__group-label-help"
-                        >
-                          <HelpIcon noVerticalAlign />
-                        </button>
-                      </Popover>
-                    ),
-                  }}
+                  helpContent={
+                    <>
+                      To obtain SA token, run the following command:
+                      <br />
+                      <i>$ oc serviceaccounts get-token serviceaccount_name -n namespace_name</i>
+                      <br />
+                      <br />
+                      <b>** Be sure to use the namespace in which you created the SA.</b>
+                    </>
+                  }
                 />
               </>
             ) : null}
