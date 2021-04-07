@@ -283,7 +283,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           ? [
               formatTimestamp(vmStatus.started),
               formatTimestamp(vmStatus.completed),
-              `${Math.round(ratio.completed / 1024)} / ${Math.round(ratio.total / 1024)} GB`,
+              `${(ratio.completed / 1024).toFixed(2)} / ${(ratio.total / 1024).toFixed(2)} GB`,
               { title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} /> },
             ]
           : [
