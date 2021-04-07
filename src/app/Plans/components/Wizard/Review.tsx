@@ -18,6 +18,7 @@ import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
+import { useNamespacesQuery } from '@app/queries/namespaces';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
@@ -40,6 +41,13 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   usePausedPollingEffect();
 
   const { networkMapping, storageMapping } = generateMappings({ forms });
+
+  const namespacesQuery = useNamespacesQuery(forms.general.values.targetProvider);
+  const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
+  const isNewNamespace = !namespaceOptions.find(
+    (namespace) => namespace === forms.general.values.targetNamespace
+  );
+
   return (
     <Form>
       <TextContent>
@@ -63,7 +71,16 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={3}>Target provider</GridItem>
         <GridItem md={9}>{forms.general.values.targetProvider?.name}</GridItem>
         <GridItem md={3}>Target namespace</GridItem>
-        <GridItem md={9}>{forms.general.values.targetNamespace}</GridItem>
+        <GridItem md={9}>
+          {forms.general.values.targetNamespace}
+          {isNewNamespace ? (
+            <TextContent>
+              <Text component="small">
+                This is a new namespace that will be created when the plan is started.
+              </Text>
+            </TextContent>
+          ) : null}
+        </GridItem>
         <GridItem md={3}>Migration transfer network</GridItem>
         <GridItem md={9}>{forms.general.values.migrationNetwork || POD_NETWORK.name}</GridItem>
         <GridItem md={3}>Selected VMs</GridItem>

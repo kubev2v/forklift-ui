@@ -25,6 +25,7 @@ import { ProviderType } from '@app/common/constants';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
+import { usePausedPollingEffect } from '@app/common/context';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -40,6 +41,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
 
   const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
+  usePausedPollingEffect(isNamespaceSelectOpen);
 
   const getFilteredOptions = (searchText?: string) => {
     const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];

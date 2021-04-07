@@ -65,11 +65,15 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
 
 export const usePollingContext = (): IPollingContext => React.useContext(PollingContext);
 
-export const usePausedPollingEffect = (): void => {
-  // Pauses polling when a component mounts, resumes when it unmounts
+export const usePausedPollingEffect = (shouldPause = true): void => {
+  // Pauses polling when a component mounts, resumes when it unmounts. If shouldPause changes while mounted, polling pauses/resumes to match.
   const { pausePolling, resumePolling } = usePollingContext();
   React.useEffect(() => {
-    pausePolling();
+    if (shouldPause) {
+      pausePolling();
+    } else {
+      resumePolling();
+    }
     return resumePolling;
-  }, [pausePolling, resumePolling]);
+  }, [pausePolling, resumePolling, shouldPause]);
 };
