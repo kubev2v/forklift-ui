@@ -36,7 +36,7 @@ import { useEditProviderPrefillEffect } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 interface IAddEditProviderModalProps {
-  onClose: () => void;
+  onClose: (navToProviderType?: ProviderType | null) => void;
   providerBeingEdited: IProviderObject | null;
 }
 
@@ -143,7 +143,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               id="modal-cancel-button"
               key="cancel"
               variant="link"
-              onClick={onClose}
+              onClick={() => onClose()}
               isDisabled={mutateProviderResult.isLoading}
             >
               Cancel

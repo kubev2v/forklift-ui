@@ -67,7 +67,7 @@ export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
 
 export const useCreateProviderMutation = (
   providerType: ProviderType | null,
-  onSuccess: () => void
+  onSuccess: (navToProviderType?: ProviderType | null) => void
 ): MutationResultPair<
   IKubeResponse<IProviderObject> | undefined,
   KubeClientError,
@@ -187,7 +187,7 @@ export const useCreateProviderMutation = (
       queryCache.invalidateQueries('cluster-providers');
       queryCache.invalidateQueries('inventory-providers');
       pollFasterAfterMutation();
-      onSuccess();
+      onSuccess(providerType);
     },
   });
 };
