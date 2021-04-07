@@ -146,7 +146,7 @@ describe('<AddEditProviderModal />', () => {
     await waitFor(() => {
       const name = screen.getByRole('textbox', { name: /name/i });
       const url = screen.getByRole('textbox', { name: /url/i });
-      const saToken = screen.getByLabelText(/Service account token/);
+      const saToken = screen.getByLabelText(/^Service account token/);
 
       userEvent.type(name, 'providername');
       userEvent.type(url, 'http://host.example.com');
@@ -176,7 +176,7 @@ describe('<AddEditProviderModal />', () => {
     await waitFor(() => {
       const name = screen.getByRole('textbox', { name: /name/i });
       const url = screen.getByRole('textbox', { name: /url/i });
-      const saToken = screen.getByLabelText(/Service account token/);
+      const saToken = screen.getByLabelText(/^Service account token/);
 
       userEvent.type(name, 'providername');
       userEvent.type(url, 'host');
