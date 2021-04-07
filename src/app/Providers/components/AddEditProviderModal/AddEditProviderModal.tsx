@@ -310,22 +310,39 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     ),
                   }}
                 />
-
                 <ValidatedPasswordInput
                   field={openshiftForm.fields.saToken}
                   label="Service account token"
                   isRequired
                   fieldId="openshift-sa-token"
-                  helpContent={
-                    <>
-                      To obtain SA token, run the following command:
-                      <br />
-                      <i>$ oc serviceaccounts get-token serviceaccount_name -n namespace_name</i>
-                      <br />
-                      <br />
-                      <b>** Be sure to use the namespace in which you created the SA.</b>
-                    </>
-                  }
+                  formGroupProps={{
+                    labelIcon: (
+                      <Popover
+                        bodyContent={
+                          <>
+                            To obtain SA token, run the following command:
+                            <br />
+                            <i>
+                              $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
+                            </i>
+                            <br />
+                            <br />
+                            <b>** Be sure to use the namespace in which you created the SA.</b>
+                          </>
+                        }
+                      >
+                        <Button
+                          variant="plain"
+                          aria-label="More info for service account field"
+                          onClick={(e) => e.preventDefault()}
+                          aria-describedby="service-account-info"
+                          className="pf-c-form__group-label-help"
+                        >
+                          <HelpIcon noVerticalAlign />
+                        </Button>
+                      </Popover>
+                    ),
+                  }}
                 />
               </>
             ) : null}
