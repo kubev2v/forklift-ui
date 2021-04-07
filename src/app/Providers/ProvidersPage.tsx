@@ -67,7 +67,9 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const availableProviderTypes = Array.from(
     new Set(clusterProviders.map((provider) => provider.spec.type))
-  ).filter((type) => !!type) as ProviderType[];
+  )
+    .filter((type) => !!type)
+    .sort() as ProviderType[];
 
   const activeProviderType = match?.params.providerType
     ? ProviderType[match?.params.providerType]
