@@ -56,7 +56,7 @@ export const HostsPage: React.FunctionComponent = () => {
         </Level>
         <Level className={spacing.mtLg}>
           <LevelItem>
-            <Title headingLevel="h1">Hosts - {match?.params.providerName}</Title>
+            <Title headingLevel="h1">Hosts</Title>
           </LevelItem>
         </Level>
       </PageSection>
