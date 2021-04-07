@@ -10,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
 
 import {
   useHasSufficientProvidersQuery,
@@ -26,12 +27,19 @@ import {
   QuerySpinnerMode,
   ResolvedQueries,
 } from '@app/common/components/ResolvedQuery';
+import { IMigration } from '@app/queries/types/migrations.types';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
-  const [createMigration, createMigrationResult] = useCreateMigrationMutation();
+
+  const history = useHistory();
+  const onMigrationStarted = (migration: IMigration) => {
+    history.push(`/plans/${migration.spec.plan.name}`);
+  };
+  const [createMigration, createMigrationResult] = useCreateMigrationMutation(onMigrationStarted);
+
   const [setCutover, setCutoverResult] = useSetCutoverMutation();
 
   return (
