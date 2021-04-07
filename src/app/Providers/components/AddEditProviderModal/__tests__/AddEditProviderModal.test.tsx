@@ -54,7 +54,7 @@ describe('<AddEditProviderModal />', () => {
       const username = screen.getByRole('textbox', { name: /username/i });
       const password = screen.getByLabelText(/^Password/);
       const certFingerprint = screen.getByRole('textbox', {
-        name: /certificate sha1 fingerprint/i,
+        name: /sha-1 fingerprint/i,
       });
 
       userEvent.type(name, 'providername');
@@ -93,7 +93,7 @@ describe('<AddEditProviderModal />', () => {
       const username = screen.getByRole('textbox', { name: /username/i });
       const password = screen.getByLabelText(/^Password/);
       const certFingerprint = screen.getByRole('textbox', {
-        name: /certificate sha1 fingerprint/i,
+        name: /sha-1 fingerprint/i,
       });
 
       userEvent.type(name, 'providername');
