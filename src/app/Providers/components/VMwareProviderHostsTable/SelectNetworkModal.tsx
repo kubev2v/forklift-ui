@@ -20,6 +20,7 @@ import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -171,8 +172,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
             content="Credentials are not needed when selecting the provider’s default management network."
             position="left"
           >
-            <ValidatedTextInput
-              type="password"
+            <ValidatedPasswordInput
               field={form.fields.adminPassword}
               label="ESXi host admin password"
               isRequired

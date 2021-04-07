@@ -42,18 +42,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   setBuilderItems,
   isWizardMode = false,
 }: IMappingBuilderProps) => {
-  const messageSelectBoth = 'You must select a source and target before adding another mapping.';
-  const messageExhausted = `All source ${
-    mappingType === MappingType.Network ? 'networks' : 'datastores'
-  } have been mapped.`;
-
-  const getTooltipContent = () => {
-    if (builderItems.length === availableSources.length) {
-      return messageExhausted;
-    }
-    return messageSelectBoth;
-  };
-
   const reset = () => setBuilderItems([{ source: null, target: null, highlight: false }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
   const addEmptyItem = () =>
@@ -169,28 +157,26 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
           justifyContent={{ default: 'justifyContentCenter' }}
           spaceItems={{ default: 'spaceItemsMd' }}
         >
-          <ConditionalTooltip
-            isTooltipEnabled={
-              !builderItems.every((item) => item.source && item.target) ||
-              builderItems.length === availableSources.length
-            }
-            content={getTooltipContent()}
-            position="bottom"
-          >
-            <div>
-              <Button
-                isDisabled={
-                  !builderItems.every((item) => item.source && item.target) ||
-                  builderItems.length === availableSources.length
-                }
-                variant="secondary"
-                icon={<PlusCircleIcon />}
-                onClick={addEmptyItem}
-              >
-                Add
-              </Button>
-            </div>
-          </ConditionalTooltip>
+          {builderItems.every((item) => item.source && item.target) ? (
+            <ConditionalTooltip
+              isTooltipEnabled={builderItems.length === availableSources.length}
+              content={`All source ${
+                mappingType === MappingType.Network ? 'networks' : 'datastores'
+              } have been mapped.`}
+              position="bottom"
+            >
+              <div>
+                <Button
+                  isDisabled={builderItems.length === availableSources.length}
+                  variant="secondary"
+                  icon={<PlusCircleIcon />}
+                  onClick={addEmptyItem}
+                >
+                  Add
+                </Button>
+              </div>
+            </ConditionalTooltip>
+          ) : null}
           <Button variant="secondary" onClick={reset} isDisabled={isReset}>
             Remove all
           </Button>
