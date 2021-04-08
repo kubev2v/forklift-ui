@@ -225,11 +225,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     } else if (hasCondition(conditions, PlanStatusType.Canceled)) {
       title = PlanStatusDisplayType.Canceled;
     } else if (hasCondition(conditions, PlanStatusType.Failed)) {
-      buttonType = 'Restart';
       title = PlanStatusDisplayType.Failed;
       variant = ProgressVariant.danger;
     } else if (plan.status?.migration?.started) {
-      console.warn('Migration plan unexpected status:', plan);
+      if (canPlanBeStarted(plan)) {
+        title = 'Finished - Incomplete';
+        variant = ProgressVariant.warning;
+      } else {
+        console.warn('Migration plan unexpected status:', plan);
+      }
     }
 
     if (buttonType !== 'Start' && canPlanBeStarted(plan)) {
