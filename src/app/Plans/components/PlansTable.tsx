@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  Button,
   Flex,
   FlexItem,
   Level,
@@ -9,7 +8,6 @@ import {
   Progress,
   ProgressMeasureLocation,
   ProgressVariant,
-  Spinner,
   Text,
   Tooltip,
 } from '@patternfly/react-core';
@@ -30,7 +28,6 @@ import {
   Th,
   Tr,
 } from '@patternfly/react-table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -47,15 +44,11 @@ import TableEmptyState from '@app/common/components/TableEmptyState';
 import {
   findLatestMigration,
   findProvidersByRefs,
-  ISetCutoverArgs,
   useInventoryProvidersQuery,
   useMigrationsQuery,
 } from '@app/queries';
 
 import './PlansTable.css';
-import { IKubeResponse, KubeClientError } from '@app/client/types';
-import { IMigration } from '@app/queries/types/migrations.types';
-import { MutateFunction, MutationResult } from 'react-query';
 import {
   canPlanBeStarted,
   getPlanStatusTitle,
@@ -64,21 +57,18 @@ import {
 } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
+import MigrateOrCutoverButton from './MigrateOrCutoverButton';
+
+export type PlanActionButtonType = 'Start' | 'Restart' | 'Cutover';
 
 interface IPlansTableProps {
   plans: IPlan[];
-  createMigration: MutateFunction<IKubeResponse<IMigration>, KubeClientError, IPlan>;
-  createMigrationResult: MutationResult<IKubeResponse<IMigration>, KubeClientError>;
-  setCutover: MutateFunction<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs, unknown>;
-  setCutoverResult: MutationResult<IKubeResponse<IMigration>, KubeClientError>;
+  errorContainerRef: React.RefObject<HTMLDivElement>;
 }
 
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
-  createMigration,
-  createMigrationResult,
-  setCutover,
-  setCutoverResult,
+  errorContainerRef,
 }: IPlansTableProps) => {
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
@@ -196,10 +186,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const rows: IRow[] = [];
 
-  type ActionButtonType = 'Start' | 'Restart' | 'Cutover';
-
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonType: ActionButtonType | null = null;
+    let buttonType: PlanActionButtonType | null = null;
     let title = '';
     let variant: ProgressVariant | undefined;
 
@@ -302,23 +290,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 flexWrap={{ default: 'nowrap' }}
               >
                 <FlexItem align={{ default: 'alignRight' }}>
-                  {isBeingStarted ? (
-                    <Spinner size="md" className={spacing.mxLg} />
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        if (buttonType === 'Start' || buttonType === 'Restart') {
-                          createMigration(plan);
-                        } else if (buttonType === 'Cutover') {
-                          setCutover({ plan, cutover: new Date().toISOString() });
-                        }
-                      }}
-                      isDisabled={createMigrationResult.isLoading || setCutoverResult.isLoading}
-                    >
-                      {buttonType}
-                    </Button>
-                  )}
+                  <MigrateOrCutoverButton
+                    plan={plan}
+                    buttonType={buttonType}
+                    isBeingStarted={isBeingStarted}
+                    errorContainerRef={errorContainerRef}
+                  />
                 </FlexItem>
                 <FlexItem>
                   <PlanActionsDropdown plan={plan} />
