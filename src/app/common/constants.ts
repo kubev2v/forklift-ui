@@ -121,7 +121,7 @@ export const vmwareHostnameSchema = yup
 
 export const vmwareFingerprintSchema = yup
   .string()
-  .label('SHA-1 Fingerprint')
+  .label('SHA-1 fingerprint')
   .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
     message:
       'Fingerprint must consist of 16 or 20 pairs of hexadecimal characters separated by colons, e.g. XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
