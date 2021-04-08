@@ -9,7 +9,6 @@ import {
   ProgressMeasureLocation,
   ProgressVariant,
   Text,
-  Tooltip,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -58,6 +57,7 @@ import {
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
+import PlanStatusNavLink from './PlanStatusNavLink';
 
 export type PlanActionButtonType = 'Start' | 'Restart' | 'Cutover';
 
@@ -258,17 +258,21 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         plan.spec.warm ? 'Warm' : 'Cold',
         {
           title: isBeingStarted ? (
-            'Running - preparing for migration'
+            <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
           ) : warmState === 'Starting' ? (
-            'Running - preparing for incremental data copies'
+            <PlanStatusNavLink plan={plan}>
+              Running - preparing for incremental data copies
+            </PlanStatusNavLink>
           ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
             <StatusCondition status={plan.status} />
           ) : warmState === 'Copying' ? (
-            'Running - performing incremental data copies'
+            <PlanStatusNavLink plan={plan}>
+              Running - performing incremental data copies
+            </PlanStatusNavLink>
           ) : warmState === 'StartingCutover' ? (
-            'Running - preparing for cutover'
+            <PlanStatusNavLink plan={plan}>Running - preparing for cutover</PlanStatusNavLink>
           ) : (
-            <Tooltip content="Click the plan name to see migration details.">
+            <PlanStatusNavLink plan={plan} isInline={false}>
               <Progress
                 title={title}
                 value={statusValue}
@@ -277,7 +281,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 variant={variant}
                 measureLocation={ProgressMeasureLocation.top}
               />
-            </Tooltip>
+            </PlanStatusNavLink>
           ),
         },
         {
