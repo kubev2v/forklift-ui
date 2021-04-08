@@ -224,7 +224,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 />
                 <ValidatedTextInput
                   field={vmwareForm.fields.fingerprint}
-                  label="SHA-1 Fingerprint"
+                  label="SHA-1 fingerprint"
                   isRequired
                   fieldId="vmware-fingerprint"
                   formGroupProps={{
@@ -242,7 +242,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                       >
                         <Button
                           variant="plain"
-                          aria-label="More info for SHA-1 Fingerprint field"
+                          aria-label="More info for SHA-1 fingerprint field"
                           onClick={(e) => e.preventDefault()}
                           aria-describedby="vmware-fingerprint"
                           className="pf-c-form__group-label-help"
