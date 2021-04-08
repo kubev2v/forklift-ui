@@ -96,6 +96,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     phase: 'Mock VM Phase',
     started: '2020-10-10T14:04:10Z',
     completed: '2020-10-10T15:58:43Z',
+    conditions: [
+      {
+        category: 'Advisory',
+        durable: true,
+        lastTransitionTime: '2020-10-10T15:58:43Z',
+        message: 'The VM migration has SUCCEEDED.',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
   };
 
   const vmStatus4: IVMStatus = {
@@ -210,6 +220,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           reason: 'Valid',
           status: 'True',
           type: 'Executing',
+        },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
         },
       ],
       observedGeneration: 2,
@@ -332,6 +350,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           status: 'True',
           type: 'Failed',
         },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
       ],
       observedGeneration: 2,
       migration: {
@@ -392,6 +418,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           reason: 'Valid',
           status: 'True',
           type: 'Succeeded',
+        },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
         },
       ],
       observedGeneration: 2,
@@ -468,6 +502,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           reason: 'Valid',
           status: 'True',
           type: 'Failed',
+        },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
         },
       ],
       observedGeneration: 2,
@@ -649,6 +691,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           status: 'True',
           type: 'Executing',
         },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
       ],
       observedGeneration: 2,
       migration: {
@@ -716,6 +766,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           status: 'True',
           type: 'Failed',
         },
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
       ],
       observedGeneration: 2,
       migration: {
@@ -741,5 +799,44 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9];
+  const plan10: IPlan = {
+    ...plan1,
+    metadata: { ...plan1.metadata, name: 'plantest-10' },
+    spec: { ...plan1.spec, description: 'finished with some canceled VMs' },
+    status: {
+      conditions: [
+        {
+          category: 'Info',
+          lastTransitionTime: '2020-09-18T16:04:10Z',
+          message: 'Ready for migration',
+          reason: 'Valid',
+          status: 'True',
+          type: 'Ready',
+        },
+      ],
+      observedGeneration: 2,
+      migration: {
+        active: '',
+        started: '2020-10-10T14:04:10Z',
+        completed: '2020-10-10T15:04:10Z',
+        vms: [vmStatus1WithCancel, vmStatus3],
+        history: [
+          {
+            conditions: [],
+            migration: {
+              name: 'plan-9-mock-migration',
+              namespace: META.namespace,
+            },
+            plan: {
+              name: 'plantest-10',
+              namespace: 'openshift-migration',
+            },
+            provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
+          },
+        ],
+      },
+    },
+  };
+
+  MOCK_PLANS = [plan1, plan2, plan3, plan4, plan5, plan6, plan7, plan8, plan9, plan10];
 }
