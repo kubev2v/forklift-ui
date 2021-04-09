@@ -10,37 +10,23 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { useHistory } from 'react-router-dom';
 
 import {
   useHasSufficientProvidersQuery,
   usePlansQuery,
-  useCreateMigrationMutation,
   useClusterProvidersQuery,
-  useSetCutoverMutation,
 } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
 import CreatePlanButton from './components/CreatePlanButton';
-import {
-  ResolvedQuery,
-  QuerySpinnerMode,
-  ResolvedQueries,
-} from '@app/common/components/ResolvedQuery';
-import { IMigration } from '@app/queries/types/migrations.types';
+import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
 
-  const history = useHistory();
-  const onMigrationStarted = (migration: IMigration) => {
-    history.push(`/plans/${migration.spec.plan.name}`);
-  };
-  const [createMigration, createMigrationResult] = useCreateMigrationMutation(onMigrationStarted);
-
-  const [setCutover, setCutoverResult] = useSetCutoverMutation();
+  const errorContainerRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -48,20 +34,7 @@ const PlansPage: React.FunctionComponent = () => {
         <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
-        <ResolvedQuery
-          result={createMigrationResult}
-          errorTitle="Error starting migration"
-          errorsInline={false}
-          spinnerMode={QuerySpinnerMode.None}
-          className={spacing.mbMd}
-        />
-        <ResolvedQuery
-          result={setCutoverResult}
-          errorTitle="Error setting cutover time"
-          errorsInline={false}
-          spinnerMode={QuerySpinnerMode.None}
-          className={spacing.mbMd}
-        />
+        <div ref={errorContainerRef} />
         <ResolvedQueries
           results={[sufficientProvidersQuery.result, clusterProvidersQuery, plansQuery]}
           errorTitles={[
@@ -87,10 +60,7 @@ const PlansPage: React.FunctionComponent = () => {
               ) : (
                 <PlansTable
                   plans={plansQuery.data?.items || []}
-                  createMigration={createMigration}
-                  createMigrationResult={createMigrationResult}
-                  setCutover={setCutover}
-                  setCutoverResult={setCutoverResult}
+                  errorContainerRef={errorContainerRef}
                 />
               )}
             </CardBody>
