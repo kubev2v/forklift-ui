@@ -398,9 +398,8 @@ const PlanWizard: React.FunctionComponent = () => {
               </LevelItem>
             </Level>
           </PageSection>
-          <PageSection variant="light" className={spacing.p_0}>
+          <PageSection variant="light" type="wizard">
             <Wizard
-              className="pf-c-page__main-wizard" // Should be replaced with a prop when supported: https://github.com/patternfly/patternfly-react/issues/4937
               steps={steps}
               onSubmit={(event) => event.preventDefault()}
               onSave={onSave}
