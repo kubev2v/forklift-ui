@@ -142,7 +142,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               isOpen={isNamespaceSelectOpen}
               onToggle={setIsNamespaceSelectOpen}
               onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
-              onFilter={(event) => getFilteredOptions(event.target.value)}
+              onFilter={(event) => getFilteredOptions(event?.target.value || '')} // TODO use the value param of onFilter instead once https://github.com/patternfly/patternfly-react/pull/5631 is released. Until then polling will reset filter results.
               onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}
               variant="typeahead"
