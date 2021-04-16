@@ -145,7 +145,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 setIsNamespaceSelectOpen(isOpen);
                 if (isOpen) {
                   setTimeout(() => {
-                    document.getElementById('target-namespace-group')?.scrollIntoView();
+                    document
+                      .getElementById('target-namespace-group')
+                      ?.scrollIntoView({ behavior: 'smooth' });
                   }, 0);
                 }
               }}
