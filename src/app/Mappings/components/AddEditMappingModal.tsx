@@ -191,6 +191,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     providerType={ProviderType.vsphere}
                     field={form.fields.sourceProvider}
                     notReadyTooltipPosition="right"
+                    menuAppendTo="parent"
+                    maxHeight="40vh"
                   />
                 </GridItem>
                 <GridItem sm={1} />
@@ -199,6 +201,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     label="Target provider"
                     providerType={ProviderType.openshift}
                     field={form.fields.targetProvider}
+                    menuAppendTo="parent"
+                    maxHeight="40vh"
                   />
                 </GridItem>
                 <GridItem sm={1} />

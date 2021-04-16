@@ -20,7 +20,6 @@ import {
   POD_NETWORK,
 } from '@app/queries/types';
 
-import './SelectOpenShiftNetworkModal.css';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
@@ -125,7 +124,6 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
             fieldId="network"
             validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
             {...getFormGroupProps(form.fields.selectedNetworkName)}
-            className="extraSelectMargin"
           >
             <SimpleSelect
               id="network"
@@ -138,6 +136,8 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
                 )
               }
               placeholderText="Select a network..."
+              menuAppendTo="parent"
+              maxHeight="40vh"
             />
           </FormGroup>
         </Form>

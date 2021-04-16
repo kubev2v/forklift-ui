@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { MappingSource } from '@app/queries/types';
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import SimpleSelect, {
+  ISimpleSelectProps,
+  OptionWithValue,
+} from '@app/common/components/SimpleSelect';
 import { IMappingBuilderItem } from './MappingBuilder';
 import TruncatedText from '@app/common/components/TruncatedText';
 
-interface IMappingSourceSelectProps {
+interface IMappingSourceSelectProps extends Partial<ISimpleSelectProps> {
   id: string;
   builderItems: IMappingBuilderItem[];
   itemIndex: number;
@@ -18,6 +21,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
   itemIndex,
   setBuilderItems,
   availableSources,
+  ...props
 }: IMappingSourceSelectProps) => {
   const setSource = (source: MappingSource) => {
     const newItems = [...builderItems];
@@ -57,6 +61,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
       }}
       typeAheadAriaLabel="Select source..."
       placeholderText="Select source..."
+      {...props}
     />
   );
 };
