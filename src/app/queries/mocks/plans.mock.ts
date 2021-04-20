@@ -602,6 +602,30 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
+  const warmVmCanceled: IVMStatus = {
+    ...warmVmPrecopying,
+    completed: '2021-03-16T19:12:48Z',
+    conditions: [
+      {
+        type: 'Canceled',
+        category: 'Information',
+        status: 'True',
+        message: 'Canceled by user',
+        lastTransitionTime: '2020-10-10T17:34:10Z',
+      },
+    ],
+    warm: {
+      consecutiveFailures: 0,
+      failures: 0,
+      precopies: [
+        {
+          start: '2021-03-16T17:28:48Z',
+        },
+      ],
+      successes: 0,
+    },
+  };
+
   const warmVmWithConsecutiveFailures: IVMStatus = {
     ...vmStatus2,
     pipeline: warmVmPrecopying.pipeline,
@@ -704,7 +728,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
-        vms: [warmVmPrecopying, warmVmWithConsecutiveFailures, warmVmIdle],
+        vms: [warmVmCanceled, warmVmWithConsecutiveFailures, warmVmIdle],
         history: [
           {
             conditions: [],
