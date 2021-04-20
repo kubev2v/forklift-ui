@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     name: 'esx12.v2v.bos.redhat.com',
     selfLink: '/providers/vsphere/test/hosts/host-44',
     inMaintenance: false,
-    managementServerIp: '10.19.2.12',
+    managementServerIp: '10.19.2.10',
     thumbprint: 'D3:47:18:B1:11:39:87:25:F4:52:B2:04:EC:85:88:FA:9D:78:73:11',
     cpuSockets: 2,
     cpuCores: 16,
