@@ -3,6 +3,7 @@ import { IVMStatus } from '@app/queries/types';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { Button, Popover } from '@patternfly/react-core';
 import { getMinutesUntil } from '@app/common/helpers';
+import CanceledIcon from '@app/common/components/CanceledIcon';
 
 interface IWarmVMCopyState {
   state: 'Starting' | 'Copying' | 'Idle' | 'Failed' | 'Warning';
@@ -51,10 +52,12 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
 
 interface IVMWarmCopyStatusProps {
   vmStatus: IVMStatus;
+  isCanceled: boolean;
 }
 
 const VMWarmCopyStatus: React.FunctionComponent<IVMWarmCopyStatusProps> = ({
   vmStatus,
+  isCanceled,
 }: IVMWarmCopyStatusProps) => {
   if (vmStatus.error) {
     return (
@@ -64,6 +67,9 @@ const VMWarmCopyStatus: React.FunctionComponent<IVMWarmCopyStatusProps> = ({
         </Button>
       </Popover>
     );
+  }
+  if (isCanceled) {
+    return <CanceledIcon />;
   }
   const { status, label } = getWarmVMCopyState(vmStatus);
   return <StatusIcon status={status} label={label} />;

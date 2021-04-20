@@ -288,7 +288,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             ]
           : [
               vmStatus.warm?.precopies?.length || 0,
-              { title: <VMWarmCopyStatus vmStatus={vmStatus} /> },
+              { title: <VMWarmCopyStatus vmStatus={vmStatus} isCanceled={isCanceled} /> },
             ]),
       ],
     });
