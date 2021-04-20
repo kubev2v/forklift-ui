@@ -16,9 +16,9 @@ export const findSelectedNetworkAdapter = (
   hostConfig: IHostConfig | null
 ): IHostNetworkAdapter | null => {
   const managementNetwork =
-  host.networkAdapters.find((adapter) =>
-    new Netmask(adapter.ipAddress, adapter.subnetMask).contains(host.managementServerIp)
-  ) || null;
+    host.networkAdapters.find((adapter) =>
+      new Netmask(adapter.ipAddress, adapter.subnetMask).contains(host.managementServerIp)
+    ) || null;
   if (!hostConfig) return managementNetwork;
   return (
     host.networkAdapters.find((adapter) => adapter.ipAddress === hostConfig?.spec.ipAddress) ||
