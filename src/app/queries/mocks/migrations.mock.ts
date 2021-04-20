@@ -20,7 +20,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     status: MOCK_PLANS[index].status?.migration,
   }));
 
-  // plantest-03 (plan index 2) and plantest-10 (plan index 9) have canceled VMs
+  // Plans with canceled VMs:
+  //   plantest-03 (plan index 2, running plan index 1)
+  //   plantest-07 (plan index 6, running plan index 4)
+  //   plantest-10 (plan index 9, running plan index 7)
   const cancelSpec = [
     {
       id: 'vm-1630',
@@ -28,8 +31,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   ];
   MOCK_MIGRATIONS[1].spec.cancel = cancelSpec;
+  MOCK_MIGRATIONS[4].spec.cancel = cancelSpec;
   MOCK_MIGRATIONS[7].spec.cancel = cancelSpec;
 
-  // plantest-8 (plan index 7) is in cutover
+  // plantest-8 (plan index 7, running plan index 5) is in cutover
   MOCK_MIGRATIONS[5].spec.cutover = '2021-03-16T18:31:30Z';
 }
