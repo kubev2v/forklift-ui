@@ -53,6 +53,8 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import TypeForm from './TypeForm';
 
+import './PlanWizard.css';
+
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
   const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
