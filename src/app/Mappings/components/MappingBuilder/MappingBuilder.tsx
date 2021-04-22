@@ -112,6 +112,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                   itemIndex={itemIndex}
                   setBuilderItems={setBuilderItems}
                   availableSources={availableSources}
+                  // Maybe use these instead of extraSelectMargin if we can get it to be dynamic to always fit the screen
+                  //menuAppendTo="parent"
+                  //maxHeight="200px"
                 />
               )}
             </GridItem>
@@ -133,6 +136,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 setBuilderItems={setBuilderItems}
                 availableTargets={availableTargets}
                 mappingType={mappingType}
+                // Maybe use these instead of extraSelectMargin if we can get it to be dynamic to always fit the screen
+                //menuAppendTo="parent"
+                //maxHeight="200px"
               />
             </GridItem>
             {isWizardMode ? null : (

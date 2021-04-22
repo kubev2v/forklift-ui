@@ -13,7 +13,6 @@ import {
 } from './helpers';
 import { PlanWizardFormState } from './PlanWizard';
 
-import './FilterVMsForm.css';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 

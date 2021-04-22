@@ -1,7 +1,10 @@
 import * as React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StatusIcon } from '@konveyor/lib-ui';
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import SimpleSelect, {
+  ISimpleSelectProps,
+  OptionWithValue,
+} from '@app/common/components/SimpleSelect';
 import {
   IAnnotatedStorageClass,
   IOpenShiftNetwork,
@@ -14,7 +17,7 @@ import { getMappingTargetName } from '../MappingDetailView/helpers';
 import TruncatedText from '@app/common/components/TruncatedText';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
-interface IMappingTargetSelectProps {
+interface IMappingTargetSelectProps extends Partial<ISimpleSelectProps> {
   id: string;
   builderItems: IMappingBuilderItem[];
   itemIndex: number;
@@ -30,6 +33,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   setBuilderItems,
   availableTargets,
   mappingType,
+  ...props
 }: IMappingTargetSelectProps) => {
   const setTarget = React.useCallback(
     (target: MappingTarget) => {
@@ -124,6 +128,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
       }}
       typeAheadAriaLabel="Select target..."
       placeholderText="Select target..."
+      {...props}
     />
   );
 };

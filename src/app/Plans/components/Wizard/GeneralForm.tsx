@@ -129,6 +129,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           label="Target namespace"
           isRequired
           fieldId="target-namespace"
+          id="target-namespace-group"
           {...getFormGroupProps(form.fields.targetNamespace)}
         >
           <ResolvedQueries
@@ -140,9 +141,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <Select
               placeholderText="Select a namespace"
               isOpen={isNamespaceSelectOpen}
-              onToggle={setIsNamespaceSelectOpen}
+              onToggle={(isOpen) => {
+                setIsNamespaceSelectOpen(isOpen);
+                if (isOpen) {
+                  setTimeout(() => {
+                    document
+                      .getElementById('target-namespace-group')
+                      ?.scrollIntoView({ behavior: 'smooth' });
+                  }, 0);
+                }
+              }}
               onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
-              onFilter={(event) => getFilteredOptions(event.target.value)}
+              onFilter={(_event, value) => getFilteredOptions(value)}
               onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}
               variant="typeahead"

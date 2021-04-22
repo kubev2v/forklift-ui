@@ -7,11 +7,11 @@ import { PlanStatusType, ProviderType } from '../constants';
 import { hasCondition } from '../helpers';
 import ConditionalTooltip from './ConditionalTooltip';
 import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
-import SimpleSelect, { OptionWithValue } from './SimpleSelect';
+import SimpleSelect, { ISimpleSelectProps, OptionWithValue } from './SimpleSelect';
 
 import { isSameResource } from '@app/queries/helpers';
 
-interface IProviderSelectProps<T extends InventoryProvider> {
+interface IProviderSelectProps<T extends InventoryProvider> extends Partial<ISimpleSelectProps> {
   label: string;
   providerType: ProviderType;
   field: IValidatedFormField<T | null>;
@@ -23,6 +23,7 @@ const ProviderSelect = <T extends InventoryProvider>({
   providerType,
   field,
   notReadyTooltipPosition = 'left',
+  ...props
 }: React.PropsWithChildren<IProviderSelectProps<T>>): JSX.Element | null => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -90,6 +91,7 @@ const ProviderSelect = <T extends InventoryProvider>({
             }
           }}
           placeholderText="Select a provider..."
+          {...props}
         />
       </FormGroup>
     </ResolvedQueries>

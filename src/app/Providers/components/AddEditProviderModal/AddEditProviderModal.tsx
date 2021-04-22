@@ -26,7 +26,6 @@ import {
   useClusterProvidersQuery,
 } from '@app/queries';
 
-import './AddEditProviderModal.css';
 import { IProviderObject } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -162,7 +161,6 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               label="Type"
               isRequired
               fieldId="provider-type"
-              className={!providerType ? 'extraSelectMargin' : ''}
               {...getFormGroupProps(providerTypeField)}
             >
               <SimpleSelect
@@ -176,6 +174,8 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 }}
                 placeholderText="Select a provider type..."
                 isDisabled={!!providerBeingEdited}
+                menuAppendTo="parent"
+                maxHeight="40vh"
               />
             </FormGroup>
             {providerType === ProviderType.vsphere ? (
