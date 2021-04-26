@@ -8,13 +8,15 @@ interface IForkliftAboutModalProps {
   onClose: () => void;
 }
 
+const truncateSha = (hash: string) => hash.slice(0, 7);
+
 const versions = [
   ['Toolkit operator version', ENV.FORKLIFT_OPERATOR_VERSION],
-  ['Git commit (forklift-controller)', ENV.FORKLIFT_CONTROLLER_GIT_COMMIT],
-  ['Git commit (forklift-must-gather)', ENV.FORKLIFT_MUST_GATHER_GIT_COMMIT],
-  ['Git commit (forklift-operator)', ENV.FORKLIFT_OPERATOR_GIT_COMMIT],
-  ['Git commit (forklift-ui)', ENV.FORKLIFT_UI_GIT_COMMIT],
-  ['Git commit (forklift-validation)', ENV.FORKLIFT_VALIDATION_GIT_COMMIT],
+  ['Git commit (forklift-controller)', truncateSha(ENV.FORKLIFT_CONTROLLER_GIT_COMMIT)],
+  ['Git commit (forklift-must-gather)', truncateSha(ENV.FORKLIFT_MUST_GATHER_GIT_COMMIT)],
+  ['Git commit (forklift-operator)', truncateSha(ENV.FORKLIFT_OPERATOR_GIT_COMMIT)],
+  ['Git commit (forklift-ui)', truncateSha(ENV.FORKLIFT_UI_GIT_COMMIT)],
+  ['Git commit (forklift-validation)', truncateSha(ENV.FORKLIFT_VALIDATION_GIT_COMMIT)],
   ['OpenShift version', ENV.FORKLIFT_CLUSTER_VERSION],
 ];
 
