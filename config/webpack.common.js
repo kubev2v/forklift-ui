@@ -6,17 +6,8 @@ const webpack = require('webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
 
-console.log('\nEnvironment:');
-console.log(`  NODE_ENV=${process.env.NODE_ENV}`);
-console.log(`  DATA_SOURCE=${process.env.DATA_SOURCE}`);
-console.log(`  BRAND_TYPE=${process.env.BRAND_TYPE}`);
-console.log(`  FORKLIFT_OPERATOR_VERSION=${process.env.FORKLIFT_OPERATOR_VERSION}`);
-console.log(`  FORKLIFT_CONTROLLER_GIT_COMMIT=${process.env.FORKLIFT_CONTROLLER_GIT_COMMIT}`);
-console.log(`  FORKLIFT_MUST_GATHER_GIT_COMMIT=${process.env.FORKLIFT_MUST_GATHER_GIT_COMMIT}`);
-console.log(`  FORKLIFT_OPERATOR_GIT_COMMIT=${process.env.FORKLIFT_OPERATOR_GIT_COMMIT}`);
-console.log(`  FORKLIFT_UI_GIT_COMMIT=${process.env.FORKLIFT_UI_GIT_COMMIT}`);
-console.log(`  FORKLIFT_VALIDATION_GIT_COMMIT=${process.env.FORKLIFT_VALIDATION_GIT_COMMIT}`);
-console.log(`  FORKLIFT_CLUSTER_VERSION=${process.env.FORKLIFT_CLUSTER_VERSION}\n`);
+console.log('\nEnvironment at build time:');
+console.log(helpers.getEnv());
 
 module.exports = (env) => {
   return {
@@ -150,16 +141,17 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         ...(env === 'development' || process.env.DATA_SOURCE === 'mock'
           ? {
-              // In dev and mock-prod modes, populate window._meta at build time
+              // In dev and mock-prod modes, populate window._meta and window._env at build time
               filename: 'index.html',
               template: path.resolve(__dirname, '../src/index.html.ejs'),
               templateParameters: {
                 _meta: helpers.sanitizeAndEncodeMeta(helpers.getDevMeta()),
+                _env: helpers.getEncodedEnv(),
                 _app_title: helpers.getAppTitle(),
               },
             }
           : {
-              // In real prod mode, populate window._env at run time with express
+              // In real prod mode, populate window._meta and window._env at run time with express
               filename: 'index.html.ejs',
               template: `!!raw-loader!${path.resolve(__dirname, '../src/index.html.ejs')}`,
             }),
@@ -174,13 +166,6 @@ module.exports = (env) => {
         DATA_SOURCE: 'remote',
         BRAND_TYPE: 'Konveyor',
         NODE_ENV: 'production',
-        FORKLIFT_OPERATOR_VERSION: '-',
-        FORKLIFT_CONTROLLER_GIT_COMMIT: '-',
-        FORKLIFT_MUST_GATHER_GIT_COMMIT: '-',
-        FORKLIFT_OPERATOR_GIT_COMMIT: '-',
-        FORKLIFT_UI_GIT_COMMIT: '-',
-        FORKLIFT_VALIDATION_GIT_COMMIT: '-',
-        FORKLIFT_CLUSTER_VERSION: '-',
       }),
     ],
     resolve: {

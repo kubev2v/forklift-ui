@@ -31,4 +31,22 @@ const sanitizeAndEncodeMeta = (meta) =>
 const getAppTitle = () =>
   process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
-module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle };
+const FORKLIFT_ENV = [
+  'NODE_ENV',
+  'DATA_SOURCE',
+  'BRAND_TYPE',
+  'FORKLIFT_OPERATOR_VERSION',
+  'FORKLIFT_CONTROLLER_GIT_COMMIT',
+  'FORKLIFT_MUST_GATHER_GIT_COMMIT',
+  'FORKLIFT_OPERATOR_GIT_COMMIT',
+  'FORKLIFT_UI_GIT_COMMIT',
+  'FORKLIFT_VALIDATION_GIT_COMMIT',
+  'FORKLIFT_CLUSTER_VERSION',
+];
+
+const getEnv = () =>
+  FORKLIFT_ENV.reduce((newObj, varName) => ({ ...newObj, [varName]: process.env[varName] }), {});
+
+const getEncodedEnv = () => Buffer.from(JSON.stringify(getEnv())).toString('base64');
+
+module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle, getEnv, getEncodedEnv };

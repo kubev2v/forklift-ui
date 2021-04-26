@@ -18,8 +18,10 @@ if (process.env['DATA_SOURCE'] === 'mock') {
   metaStr = fs.readFileSync(metaFile, 'utf8');
 }
 
-console.log(`\nUsing meta values:\n${metaStr}\n\n`);
+console.log('\nEnvironment at run time:');
+console.log(helpers.getEnv());
 
+console.log(`\nValues from meta.json:\n${metaStr}\n\n`);
 const meta = JSON.parse(metaStr);
 
 const app = express();
@@ -135,11 +137,12 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
 app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {
-    // In dev and mock-prod modes, window._meta was populated at build time
+    // In dev and mock-prod modes, window._meta and window._env were populated at build time
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   } else {
     res.render('index.html.ejs', {
       _meta: helpers.sanitizeAndEncodeMeta(meta),
+      _env: helpers.getEncodedEnv(),
       _app_title: helpers.getAppTitle(),
     });
   }
