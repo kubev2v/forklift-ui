@@ -8,7 +8,7 @@ interface IForkliftAboutModalProps {
   onClose: () => void;
 }
 
-const truncateSha = (hash: string) => hash.slice(0, 7);
+const truncateSha = (hash?: string) => hash?.slice(0, 7) || '-';
 
 const versions = [
   ['Toolkit operator version', ENV.FORKLIFT_OPERATOR_VERSION],
