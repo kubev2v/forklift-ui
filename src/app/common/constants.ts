@@ -80,7 +80,7 @@ export const META: IMetaVars =
         inventoryPayloadApi: '/mock/api',
       };
 
-export const ENV: IEnvVars = window['_env'];
+export const ENV: IEnvVars = window['_env'] || {};
 
 export const dnsLabelNameSchema = yup
   .string()
