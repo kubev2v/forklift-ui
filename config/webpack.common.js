@@ -7,7 +7,7 @@ const BG_IMAGES_DIRNAME = 'bgimages';
 const helpers = require('./helpers');
 
 console.log('\nEnvironment at build time:');
-helpers.logEnv();
+console.log(helpers.getEnv());
 
 module.exports = (env) => {
   return {

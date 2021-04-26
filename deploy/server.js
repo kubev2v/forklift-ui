@@ -19,9 +19,9 @@ if (process.env['DATA_SOURCE'] === 'mock') {
 }
 
 console.log('\nEnvironment at run time:');
-helpers.logEnv();
+console.log(helpers.getEnv());
 
-console.log(`\nUsing meta values:\n${metaStr}\n\n`);
+console.log(`\nValues from meta.json:\n${metaStr}\n\n`);
 const meta = JSON.parse(metaStr);
 
 const app = express();

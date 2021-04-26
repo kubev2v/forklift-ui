@@ -44,12 +44,9 @@ const FORKLIFT_ENV = [
   'FORKLIFT_CLUSTER_VERSION',
 ];
 
-const logEnv = () =>
-  FORKLIFT_ENV.forEach((varName) => console.log(` ${varName}=${process.env[varName]}`));
-
 const getEnv = () =>
   FORKLIFT_ENV.reduce((newObj, varName) => ({ ...newObj, [varName]: process.env[varName] }), {});
 
 const getEncodedEnv = () => Buffer.from(JSON.stringify(getEnv())).toString('base64');
 
-module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle, logEnv, getEnv, getEncodedEnv };
+module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle, getEnv, getEncodedEnv };
