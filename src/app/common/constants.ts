@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-import { IMetaVars } from './types';
+import { IEnvVars, IMetaVars } from './types';
 
 export const APP_TITLE =
   process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
@@ -79,6 +79,8 @@ export const META: IMetaVars =
         inventoryApi: '/mock/api',
         inventoryPayloadApi: '/mock/api',
       };
+
+export const ENV: IEnvVars = window['_env'];
 
 export const dnsLabelNameSchema = yup
   .string()

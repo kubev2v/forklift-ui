@@ -1,4 +1,4 @@
-import { APP_TITLE } from '@app/common/constants';
+import { APP_TITLE, ENV } from '@app/common/constants';
 import { APP_BRAND, BrandType } from '@app/global-flags';
 import { AboutModal, TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import * as React from 'react';
@@ -9,13 +9,13 @@ interface IForkliftAboutModalProps {
 }
 
 const versions = [
-  ['Toolkit operator version', process.env.FORKLIFT_OPERATOR_VERSION],
-  ['Git commit (forklift-controller)', process.env.FORKLIFT_CONTROLLER_GIT_COMMIT],
-  ['Git commit (forklift-must-gather)', process.env.FORKLIFT_MUST_GATHER_GIT_COMMIT],
-  ['Git commit (forklift-operator)', process.env.FORKLIFT_OPERATOR_GIT_COMMIT],
-  ['Git commit (forklift-ui)', process.env.FORKLIFT_UI_GIT_COMMIT],
-  ['Git commit (forklift-validation)', process.env.FORKLIFT_VALIDATION_GIT_COMMIT],
-  ['OpenShift version', process.env.FORKLIFT_CLUSTER_VERSION],
+  ['Toolkit operator version', ENV.FORKLIFT_OPERATOR_VERSION],
+  ['Git commit (forklift-controller)', ENV.FORKLIFT_CONTROLLER_GIT_COMMIT],
+  ['Git commit (forklift-must-gather)', ENV.FORKLIFT_MUST_GATHER_GIT_COMMIT],
+  ['Git commit (forklift-operator)', ENV.FORKLIFT_OPERATOR_GIT_COMMIT],
+  ['Git commit (forklift-ui)', ENV.FORKLIFT_UI_GIT_COMMIT],
+  ['Git commit (forklift-validation)', ENV.FORKLIFT_VALIDATION_GIT_COMMIT],
+  ['OpenShift version', ENV.FORKLIFT_CLUSTER_VERSION],
 ];
 
 const ForkliftAboutModal: React.FunctionComponent<IForkliftAboutModalProps> = ({
