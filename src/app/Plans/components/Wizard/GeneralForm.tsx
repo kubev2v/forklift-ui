@@ -26,6 +26,7 @@ import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftN
 import { HelpIcon } from '@patternfly/react-icons';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 import { usePausedPollingEffect } from '@app/common/context';
+import { isSameResource } from '@app/queries/helpers';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -75,10 +76,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     form.fields.targetNamespace.setIsTouched(true);
     setIsNamespaceSelectOpen(false);
     if (targetNamespace !== form.values.targetNamespace) {
+      const targetProviderCR = clusterProvidersQuery.data?.items.find((provider) =>
+        isSameResource(form.values.targetProvider, provider.metadata)
+      );
       const providerDefaultNetworkName =
-        form.values.targetProvider?.object.metadata.annotations?.[
-          'forklift.konveyor.io/defaultTransferNetwork'
-        ] || null;
+        targetProviderCR?.metadata.annotations?.['forklift.konveyor.io/defaultTransferNetwork'] ||
+        null;
       const matchingNetwork = openshiftNetworksQuery.data?.find(
         (network) =>
           network.name === providerDefaultNetworkName && network.namespace === targetNamespace
