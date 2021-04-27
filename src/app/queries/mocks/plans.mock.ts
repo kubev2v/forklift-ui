@@ -188,6 +188,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      transferNetwork: null,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -273,7 +274,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
-      transferNetwork: 'ocp-network-2',
+      transferNetwork: {
+        name: 'ocp-network-2',
+        namespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      },
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -333,6 +337,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      transferNetwork: null,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -402,6 +407,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[0]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      transferNetwork: null,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -555,6 +561,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         destination: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.openshift[1]),
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
+      transferNetwork: null,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),

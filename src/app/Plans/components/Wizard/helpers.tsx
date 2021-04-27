@@ -367,7 +367,14 @@ export const generatePlan = (
       destination: nameAndNamespace(forms.general.values.targetProvider),
     },
     targetNamespace: forms.general.values.targetNamespace,
-    transferNetwork: forms.general.values.migrationNetwork || '',
+    // Note: This assumes we will only ever allow migration networks that are in the target namespace.
+    //       We may want to store migrationNetwork name/namespace in form state instead of just name.
+    transferNetwork: forms.general.values.migrationNetwork
+      ? {
+          name: forms.general.values.migrationNetwork,
+          namespace: forms.general.values.targetNamespace,
+        }
+      : null,
     map: {
       network: networkMappingRef,
       storage: storageMappingRef,
@@ -478,7 +485,7 @@ export const useEditingPlanPrefillEffect = (
       forms.general.fields.targetProvider.setInitialValue(targetProvider);
       forms.general.fields.targetNamespace.setInitialValue(planBeingEdited.spec.targetNamespace);
       forms.general.fields.migrationNetwork.setInitialValue(
-        planBeingEdited.spec.transferNetwork || null
+        planBeingEdited.spec.transferNetwork?.name || null
       );
 
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);

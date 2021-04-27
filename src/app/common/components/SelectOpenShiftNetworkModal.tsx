@@ -25,6 +25,7 @@ import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
+import { isSameResource } from '@app/queries/helpers';
 
 interface ISelectOpenShiftNetworkModalProps {
   targetProvider: IOpenShiftProvider | null;
@@ -97,7 +98,8 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
               variant="primary"
               isDisabled={!form.isDirty || !form.isValid || mutationResult?.isLoading}
               onClick={() => {
-                onSubmit(selectedNetworkOption?.value || null);
+                const isPodNetwork = isSameResource(selectedNetworkOption?.value, POD_NETWORK);
+                onSubmit((!isPodNetwork && selectedNetworkOption?.value) || null);
               }}
             >
               Select
