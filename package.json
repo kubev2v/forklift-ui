@@ -49,7 +49,6 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/simple-oauth2": "^4.1.0",
     "@types/victory": "^33.1.4",
-    "@types/yup": "^0.29.7",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
     "concurrently": "^5.3.0",
@@ -92,7 +91,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "@konveyor/lib-ui": "^3.0.0",
+    "@konveyor/lib-ui": "^4.0.0",
     "@patternfly/react-core": "^4.115.1",
     "@patternfly/react-icons": "^4.10.1",
     "@patternfly/react-styles": "^4.10.1",
@@ -112,6 +111,6 @@
     "react-dom": "^16.13.1",
     "react-query": "^2.23.0",
     "react-router-last-location": "^2.0.1",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   }
 }
