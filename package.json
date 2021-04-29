@@ -70,6 +70,7 @@
     "prop-types": "^15.6.1",
     "raw-loader": "^4.0.1",
     "react-docgen-typescript-loader": "^3.7.2",
+    "react-hot-loader": "^4.13.0",
     "react-query-devtools": "^2.6.3",
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.5",
@@ -91,6 +92,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
+    "@hot-loader/react-dom": "^17.0.1",
     "@konveyor/lib-ui": "^4.0.1",
     "@patternfly/react-core": "^4.115.1",
     "@patternfly/react-icons": "^4.10.1",
@@ -107,8 +109,8 @@
     "netmask": "^2.0.1",
     "node-fetch": "^2.6.1",
     "q": "^1.5.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-query": "^2.23.0",
     "react-router-last-location": "^2.0.1",
     "yup": "^0.32.9"
