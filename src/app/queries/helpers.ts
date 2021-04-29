@@ -115,7 +115,7 @@ export const sortIndexedData = <TItem, TIndexed>(
     ? Object.keys(data || {}).reduce(
         (newObj, key) => ({
           ...newObj,
-          [key]: (data || {})[key].sort((a: TItem, b: TItem) =>
+          [key]: (data || { [key]: [] })[key].sort((a: TItem, b: TItem) =>
             getSortValue(a) < getSortValue(b) ? -1 : 1
           ),
         }),
