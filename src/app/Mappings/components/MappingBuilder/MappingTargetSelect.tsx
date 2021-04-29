@@ -38,7 +38,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
   const setTarget = React.useCallback(
     (target: MappingTarget) => {
       const newItems = [...builderItems];
-      newItems[itemIndex] = { ...builderItems[itemIndex], target, highlight: false };
+      newItems[itemIndex] = { ...builderItems[itemIndex], target };
       setBuilderItems(newItems);
     },
     [builderItems, itemIndex, setBuilderItems]

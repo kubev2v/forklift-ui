@@ -57,7 +57,7 @@ const useMappingFormState = (
       yup.mixed<IOpenShiftProvider>().label('Target provider').required()
     ),
     builderItems: useFormField<IMappingBuilderItem[]>(
-      [{ source: null, target: null, highlight: false }],
+      [{ source: null, target: null }],
       mappingBuilderItemsSchema
     ),
   });
@@ -101,7 +101,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   // If you change providers, reset the mapping selections.
   React.useEffect(() => {
     if (isDonePrefilling) {
-      form.fields.builderItems.setValue([{ source: null, target: null, highlight: false }]);
+      form.fields.builderItems.setValue([{ source: null, target: null }]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
