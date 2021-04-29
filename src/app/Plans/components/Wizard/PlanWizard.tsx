@@ -60,7 +60,7 @@ const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => 
   const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
   return useFormState({
     isCreateMappingSelected: useFormField(false, yup.boolean().required()),
-    selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping>()),
+    selectedExistingMapping: useFormField<Mapping | null>(null, yup.mixed<Mapping | null>()),
     builderItems: useFormField<IMappingBuilderItem[]>([], mappingBuilderItemsSchema),
     isSaveNewMapping,
     newMappingName: useFormField(
@@ -104,12 +104,12 @@ const usePlanWizardFormState = (
       isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({
-      selectedVMIds: useFormField<string[]>([], yup.array<string>().required()),
+      selectedVMIds: useFormField<string[]>([], yup.array(yup.string().default('')).required()),
     }),
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
     type: useFormState({
-      type: useFormField<PlanType>('Cold', yup.string().oneOf(['Cold', 'Warm']).required()),
+      type: useFormField<PlanType>('Cold', yup.mixed().oneOf(['Cold', 'Warm']).required()),
     }),
   };
 
