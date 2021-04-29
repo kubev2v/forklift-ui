@@ -15,6 +15,7 @@ import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
 import LoginHandlerComponent from './common/LoginHandlerComponent';
 import RedirectToLogin from './common/RedirectToLogin';
+import { NotFound } from './NotFound';
 
 let routeFocusTimer: number;
 
@@ -168,6 +169,11 @@ const RouteWithTitleUpdates = ({
   return <Route render={routeWithTitle} />;
 };
 
+const PageNotFound = ({ title }: { title: string }) => {
+  useDocumentTitle(title);
+  return <Route component={NotFound} />;
+};
+
 const flattenedRoutes: IAppRoute[] = routes.reduce(
   (flattened, route) => [...flattened, ...(route.routes ? route.routes : [route])],
   [] as IAppRoute[]
@@ -194,7 +200,7 @@ export const AppRoutes = (): React.ReactElement => {
             isAsync={isAsync}
           />
         ))}
-        <Redirect to="/" />
+        <PageNotFound title="404 Page Not Found" />
       </Switch>
     </LastLocationProvider>
   );
