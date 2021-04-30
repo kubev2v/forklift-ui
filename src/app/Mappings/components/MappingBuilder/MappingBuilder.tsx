@@ -15,7 +15,6 @@ import './MappingBuilder.css';
 export interface IMappingBuilderItem {
   source: MappingSource | null;
   target: MappingTarget | null;
-  highlight: boolean; // Highlight items that were automatically added for missing sources in the wizard
 }
 
 export const mappingBuilderItemsSchema = yup
@@ -42,10 +41,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   setBuilderItems,
   isWizardMode = false,
 }: IMappingBuilderProps) => {
-  const reset = () => setBuilderItems([{ source: null, target: null, highlight: false }]);
+  const reset = () => setBuilderItems([{ source: null, target: null }]);
   const isReset = builderItems.length === 1 && !builderItems[0].source && !builderItems[0].target;
-  const addEmptyItem = () =>
-    setBuilderItems([...builderItems, { source: null, target: null, highlight: false }]);
+  const addEmptyItem = () => setBuilderItems([...builderItems, { source: null, target: null }]);
   const removeItem = (itemIndex: number) => {
     if (builderItems.length > 1) {
       setBuilderItems(builderItems.filter((_item, index) => index !== itemIndex));
@@ -123,12 +121,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <LineArrow />
               </Bullseye>
             </GridItem>
-            <GridItem
-              span={5}
-              className={`mapping-builder-box ${spacing.pSm} ${
-                isWizardMode && item.highlight ? 'highlighted' : ''
-              }`}
-            >
+            <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               <MappingTargetSelect
                 id={`mapping-target-for-${key}`}
                 builderItems={builderItems}

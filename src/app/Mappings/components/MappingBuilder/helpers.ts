@@ -34,7 +34,7 @@ export const getBuilderItemsFromMappingItems = (
           const source = getMappingSourceById(allSources, item.source.id);
           const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
           if (source) {
-            return { source, target, highlight: false };
+            return { source, target };
           }
           return null;
         })
@@ -180,7 +180,6 @@ export const getBuilderItemsWithMissingSources = (
       (source): IMappingBuilderItem => ({
         source,
         target: null,
-        highlight: builderItems.length > 0,
       })
     ),
   ];

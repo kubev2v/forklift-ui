@@ -12,7 +12,7 @@ console.log(helpers.getEnv());
 module.exports = (env) => {
   return {
     entry: {
-      app: path.resolve(__dirname, '../src/index.tsx'),
+      app: ['react-hot-loader/patch', path.resolve(__dirname, '../src/index.tsx')],
     },
     module: {
       rules: [
@@ -169,6 +169,9 @@ module.exports = (env) => {
       }),
     ],
     resolve: {
+      alias: {
+        'react-dom': '@hot-loader/react-dom',
+      },
       extensions: ['.js', '.ts', '.tsx', '.jsx'],
       plugins: [
         new TsconfigPathsPlugin({
@@ -177,6 +180,7 @@ module.exports = (env) => {
       ],
       symlinks: false,
       cacheWithContext: false,
+      fallback: { crypto: false },
     },
   };
 };
