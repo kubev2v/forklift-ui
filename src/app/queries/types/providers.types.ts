@@ -40,13 +40,26 @@ export interface IVMwareProvider extends ICommonProvider {
   datastoreCount: number;
 }
 
+// TODO: placeholders - verify this with real inventory data
+// TODO create interfaces for datacenters, networks, hosts, vms?
+// TODO rename existing generic types to VMware prefixes
+export interface IRHVProvider extends ICommonProvider {
+  datacenterCount: number;
+  storageDomainCount: number;
+  clusterCount: number;
+  hostCount: number;
+  vmCount: number;
+  networkCount: number;
+}
+
 export interface IOpenShiftProvider extends ICommonProvider {
   vmCount: number;
   networkCount: number;
   namespaceCount: number;
 }
 
-export type InventoryProvider = IVMwareProvider | IOpenShiftProvider;
+export type InventoryProvider = IVMwareProvider | IRHVProvider | IOpenShiftProvider;
+export type SourceInventoryProvider = IVMwareProvider | IRHVProvider;
 
 export interface IProvidersByType {
   [ProviderType.vsphere]: IVMwareProvider[];
