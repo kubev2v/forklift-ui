@@ -23,7 +23,7 @@ export class ForkliftResource extends NamespacedResource {
 
     this._gvk = {
       group: 'forklift.konveyor.io',
-      version: 'v1alpha1',
+      version: 'v1beta1',
       kindPlural: kind,
     };
   }

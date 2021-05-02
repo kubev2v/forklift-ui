@@ -177,7 +177,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-01',
+        '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-01',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -263,7 +263,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-02',
+        '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-02',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -326,7 +326,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825023',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-03',
+        '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-03',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -396,7 +396,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-04',
+        '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-04',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
@@ -550,7 +550,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       generation: 2,
       resourceVersion: '30825024',
       selfLink:
-        '/apis/forklift.konveyor.io/v1alpha1/namespaces/openshift-migration/plans/plantest-06',
+        '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-06',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
       creationTimestamp: '2020-08-27T19:40:49Z',
     },
