@@ -50,10 +50,12 @@ export const getWarmPlanState = (
     const pipelineHasStarted = plan.status?.migration?.vms?.some((vm) =>
       vm.pipeline.some((step) => !!step.started)
     );
-    if (migration.spec.cutover && !pipelineHasStarted) {
+    const cutoverTimePassed =
+      migration?.spec.cutover && new Date(migration.spec.cutover).getTime() < new Date().getTime();
+    if (cutoverTimePassed && !pipelineHasStarted) {
       return 'StartingCutover';
     }
-    if (migration.spec.cutover && pipelineHasStarted) {
+    if (cutoverTimePassed && pipelineHasStarted) {
       return 'Cutover';
     }
     if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {

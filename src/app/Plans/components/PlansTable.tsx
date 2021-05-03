@@ -196,6 +196,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
     // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
+    // TODO note, buttonType and title will only be used if <Progress> is shown in the row below, so their values don't matter for pre-cutover.
     if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
       buttonType = 'Start';
     } else if (hasCondition(conditions, PlanStatusType.Executing)) {
