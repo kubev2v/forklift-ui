@@ -5,7 +5,7 @@ import { IEnvVars, IMetaVars } from './types';
 export const APP_TITLE =
   process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
-export const CLUSTER_API_VERSION = 'forklift.konveyor.io/v1alpha1';
+export const CLUSTER_API_VERSION = 'forklift.konveyor.io/v1beta1';
 
 export const CLOUD_MA_LINK = {
   href: 'https://cloud.redhat.com/migrations/migration-analytics',
