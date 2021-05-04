@@ -1,6 +1,5 @@
 import { PlanData } from '../types/types';
 import {
-  applyAction,
   clickByText,
   click,
   inputText,
