@@ -8,6 +8,7 @@ import {
   PageSection,
   Title,
   Wizard,
+  WizardStep,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
@@ -246,7 +247,7 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const selectedVMs = getSelectedVMsFromIds(forms.selectVMs.values.selectedVMIds, vmsQuery);
 
-  const steps = [
+  const steps: WizardStep[] = [
     {
       id: StepId.General,
       name: 'General',

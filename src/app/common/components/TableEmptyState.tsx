@@ -10,6 +10,7 @@ import {
   Button,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 export interface ITableEmptyStateProps {
   icon?: EmptyStateIconProps['icon'];
@@ -21,8 +22,8 @@ export interface ITableEmptyStateProps {
 
 const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
   icon = SearchIcon,
-  titleText = 'No results found',
-  bodyText = 'No results match the filter criteria. Remove filters or clear all filters to show results.',
+  titleText,
+  bodyText,
   onClearFiltersClick,
   isHiddenActions = false,
 }: ITableEmptyStateProps) => (
@@ -30,10 +31,14 @@ const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
     <FlexItem>
       <EmptyState variant="small">
         <EmptyStateIcon icon={icon} />
-        <Title headingLevel="h5" size="lg">
-          {titleText}
-        </Title>
-        <EmptyStateBody>{bodyText}</EmptyStateBody>
+        {titleText ? (
+          <Title headingLevel="h5" size="lg">
+            {titleText}
+          </Title>
+        ) : null}
+        {bodyText ? (
+          <EmptyStateBody className={!titleText ? spacing.mt_0 : ''}>{bodyText}</EmptyStateBody>
+        ) : null}
         {onClearFiltersClick && !isHiddenActions && (
           <Button variant="link" onClick={onClearFiltersClick}>
             Clear all filters
