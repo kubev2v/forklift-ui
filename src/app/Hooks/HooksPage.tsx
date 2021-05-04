@@ -24,8 +24,6 @@ import { IHook } from '@app/queries/types';
 import AddEditHookModal from './components/AddEditHookModal';
 
 const HooksPage: React.FunctionComponent = () => {
-  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const clusterProvidersQuery = useClusterProvidersQuery();
   const hooksQuery = useHooksQuery();
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -48,7 +46,7 @@ const HooksPage: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <ResolvedQueries
-          results={[sufficientProvidersQuery.result, clusterProvidersQuery, hooksQuery]}
+          results={[hooksQuery]}
           errorTitles={[
             'Error loading hooks',
             'Error loading hooks from cluster',
