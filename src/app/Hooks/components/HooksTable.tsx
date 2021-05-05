@@ -12,6 +12,7 @@ import {
   cellWidth,
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IHook } from '@app/queries/types';
@@ -122,7 +123,11 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
             </FlexItem>
             <FlexItem>
               <div>
-                <Button variant="secondary" onClick={() => openCreateHookModal()}>
+                <Button
+                  className={spacing.mtMd}
+                  variant="secondary"
+                  onClick={() => openCreateHookModal()}
+                >
                   Create hook
                 </Button>
               </div>
