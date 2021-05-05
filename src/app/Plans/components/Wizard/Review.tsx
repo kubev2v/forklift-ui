@@ -59,57 +59,87 @@ const Review: React.FunctionComponent<IReviewProps> = ({
       <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
         <GridItem md={12}></GridItem>
         <GridItem md={3}>Plan name</GridItem>
-        <GridItem md={9}>{forms.general.values.planName}</GridItem>
+        <GridItem md={9} id="review-plan-name">
+          {forms.general.values.planName}
+        </GridItem>
         {forms.general.values.planDescription ? (
           <>
-            <GridItem md={3}>Plan description</GridItem>
-            <GridItem md={9}>{forms.general.values.planDescription}</GridItem>
+            <GridItem md={3} id="plan-description-label">
+              Plan description
+            </GridItem>
+            <GridItem md={9} id="review-plan-description" aria-labelledby="plan-description-label">
+              {forms.general.values.planDescription}
+            </GridItem>
           </>
         ) : null}
-        <GridItem md={3}>Source provider</GridItem>
-        <GridItem md={9}>{forms.general.values.sourceProvider?.name}</GridItem>
-        <GridItem md={3}>Target provider</GridItem>
-        <GridItem md={9}>{forms.general.values.targetProvider?.name}</GridItem>
-        <GridItem md={3}>Target namespace</GridItem>
+        <GridItem md={3} id="source-provider-label">
+          Source provider
+        </GridItem>
+        <GridItem md={9} id="review-source-provider" aria-labelledby="source-provider-label">
+          {forms.general.values.sourceProvider?.name}
+        </GridItem>
+        <GridItem md={3} id="target-provider-label">
+          Target provider
+        </GridItem>
+        <GridItem md={9} id="review-target-provider" aria-labelledby="target-provider-label">
+          {forms.general.values.targetProvider?.name}
+        </GridItem>
+        <GridItem md={3} id="target-namespace-label">
+          Target namespace
+        </GridItem>
         <GridItem md={9}>
-          {forms.general.values.targetNamespace}
+          <span id="review-target-namespace" aria-labelledby="target-namespace-label">
+            {forms.general.values.targetNamespace}
+          </span>
           {isNewNamespace ? (
             <TextContent>
-              <Text component="small">
+              <Text component="small" id="review-new-target-namespace-message">
                 This is a new namespace that will be created when the plan is started.
               </Text>
             </TextContent>
           ) : null}
         </GridItem>
-        <GridItem md={3}>Migration transfer network</GridItem>
-        <GridItem md={9}>{forms.general.values.migrationNetwork || POD_NETWORK.name}</GridItem>
+        <GridItem md={3} id="transfer-network-label">
+          Migration transfer network
+        </GridItem>
+        <GridItem md={9} id="review-transfer-network" aria-labelledby="transfer-network-label">
+          {forms.general.values.migrationNetwork || POD_NETWORK.name}
+        </GridItem>
         <GridItem md={3}>Selected VMs</GridItem>
         <GridItem md={9}>
           <Popover
             headerContent={<div>Selected VMs</div>}
             bodyContent={
-              <List>
+              <List id="review-selected-vms-list">
                 {selectedVMs.map((vm, index) => (
                   <li key={index}>{vm.name}</li>
                 ))}
               </List>
             }
           >
-            <Button variant="link" isInline>
+            <Button variant="link" isInline id="review-selected-vms-count">
               {selectedVMs.length}
             </Button>
           </Popover>
         </GridItem>
-        <GridItem md={3}>Network mapping</GridItem>
-        <GridItem md={9}>
+        <GridItem md={3} id="network-mapping-label">
+          Network mapping
+        </GridItem>
+        <GridItem md={9} id="review-network-mapping" aria-labelledby="network-mapping-label">
           <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
         </GridItem>
-        <GridItem md={3}>Storage mapping</GridItem>
-        <GridItem md={9}>
+        <GridItem md={3} id="storage-mapping-label">
+          Storage mapping
+        </GridItem>
+        <GridItem md={9} id="review-storage-mapping" aria-labelledby="storage-mapping-label">
           <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
         </GridItem>
-        <GridItem md={3}>Migration type</GridItem>
-        <GridItem md={9}>{forms.type.values.type}</GridItem>
+        <GridItem md={3} id="migration-type-label">
+          Migration type
+        </GridItem>
+        <GridItem md={9} id="review-migration-type" aria-labelledby="migration-type-label">
+          {forms.type.values.type}
+        </GridItem>
       </Grid>
       <ResolvedQueries
         results={allMutationResults}
