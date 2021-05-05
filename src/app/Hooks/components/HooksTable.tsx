@@ -66,6 +66,7 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
     hook.metadata.name,
     hook.spec.url,
     hook.spec.branch,
+    // TODO: Depending on approach of using pass-by-reference behavior or not, remember to add sort (or not)
     '', // plans column,
     '', // Action column
   ];
@@ -86,15 +87,14 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
     },
   ];
 
-  const rows: IRow[] = [];
-
-  currentPageItems.forEach((hook: IHook) => {
-    rows.push({
+  const rows: IRow[] = currentPageItems.map((hook: IHook) => {
+    return {
       meta: { hook },
       cells: [
         hook.metadata.name,
         hook.spec.url,
         hook.spec.branch,
+        // TODO: This add plans
         0,
         {
           title: (
@@ -102,7 +102,7 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
           ),
         },
       ],
-    });
+    };
   });
 
   return (
