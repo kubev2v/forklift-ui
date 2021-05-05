@@ -123,7 +123,7 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
             <FlexItem>
               <div>
                 <Button variant="secondary" onClick={() => openCreateHookModal()}>
-                  Create Hook
+                  Create hook
                 </Button>
               </div>
             </FlexItem>
