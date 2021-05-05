@@ -47,11 +47,7 @@ const HooksPage: React.FunctionComponent = () => {
       <PageSection>
         <ResolvedQueries
           results={[hooksQuery]}
-          errorTitles={[
-            'Error loading hooks',
-            'Error loading hooks from cluster',
-            'Error loading plans',
-          ]}
+          errorTitles={['Error loading hooks']}
           errorsInline={false}
         >
           <Card>
