@@ -12,11 +12,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
-import {
-  useHasSufficientProvidersQuery,
-  useHooksQuery,
-  useClusterProvidersQuery,
-} from '@app/queries';
+import { useHooksQuery } from '@app/queries';
 
 import HooksTable from './components/HooksTable';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
