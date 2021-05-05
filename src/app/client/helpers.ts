@@ -39,6 +39,7 @@ export enum ForkliftResourceKind {
   Migration = 'migrations',
   Host = 'hosts',
   Provisioners = 'provisioners',
+  Hook = 'hooks',
 }
 
 export const secretResource = new CoreNamespacedResource(
