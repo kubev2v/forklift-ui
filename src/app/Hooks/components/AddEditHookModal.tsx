@@ -1,49 +1,25 @@
 import * as React from 'react';
-import * as yup from 'yup';
 import { Modal, Button, Form, Flex, Stack } from '@patternfly/react-core';
-import { useFormState, useFormField, IFormField } from '@konveyor/lib-ui';
+import { useFormState } from '@konveyor/lib-ui';
 
-import { urlSchema } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
-import {
-  getHookNameSchema,
-  useCreateHookMutation,
-  usePatchHookMutation,
-  useHooksQuery,
-} from '@app/queries';
+import { useCreateHookMutation, usePatchHookMutation, useHooksQuery } from '@app/queries';
 
 import { IHook } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { IKubeList } from '@app/client/types';
-import { useEditHookPrefillEffect } from './helpers';
+import { useEditHookPrefillEffect, useHookDefinitionFields } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import HookDefinitionInputs from './HookDefinitionInputs';
 
-export interface IHookDefinitionFields {
-  name: IFormField<string>;
-  url: IFormField<string>;
-  branch: IFormField<string>;
-}
-
-export const useHookDefinitionFields = (
-  clusterHooksQuery: QueryResult<IKubeList<IHook>>,
+const useHookFormState = (
+  hooksQuery: QueryResult<IKubeList<IHook>>,
   hookBeingEdited: IHook | null
-): IHookDefinitionFields => ({
-  name: useFormField(
-    '',
-    getHookNameSchema(clusterHooksQuery, hookBeingEdited).label('Name').required()
-  ),
-  url: useFormField('', urlSchema.required()),
-  branch: useFormField('', yup.string().required()),
-});
+) =>
+  useFormState(useHookDefinitionFields(hooksQuery, hookBeingEdited?.metadata.name || null, true));
 
-const useHookDefinitionFormState = (
-  clusterHooksQuery: QueryResult<IKubeList<IHook>>,
-  hookBeingEdited: IHook | null
-) => useFormState(useHookDefinitionFields(clusterHooksQuery, hookBeingEdited));
-
-export type HookDefinitionFormState = ReturnType<typeof useHookDefinitionFormState>;
+export type HookFormState = ReturnType<typeof useHookFormState>;
 
 interface IAddEditHookModalProps {
   onClose: () => void;
@@ -58,7 +34,7 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
 
   const hooksQuery = useHooksQuery();
 
-  const hookForm = useHookDefinitionFormState(hooksQuery, hookBeingEdited);
+  const hookForm = useHookFormState(hooksQuery, hookBeingEdited);
 
   const { isDonePrefilling } = useEditHookPrefillEffect(hookForm, hookBeingEdited);
 
@@ -112,7 +88,10 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
           <LoadingEmptyState />
         ) : (
           <Form>
-            <HookDefinitionInputs fields={hookForm.fields} hookBeingEdited={hookBeingEdited} />
+            <HookDefinitionInputs
+              fields={hookForm.fields}
+              editingHookName={hookBeingEdited?.metadata.name || null}
+            />
           </Form>
         )}
       </ResolvedQuery>

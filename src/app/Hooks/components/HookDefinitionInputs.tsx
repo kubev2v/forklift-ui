@@ -1,29 +1,38 @@
-import { IHook } from '@app/queries/types';
+import * as React from 'react';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
 import { Popover, Button } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
-import * as React from 'react';
-import { HookDefinitionFormState } from './AddEditHookModal';
+import { HookFormState } from './AddEditHookModal';
 
 interface IHookDefinitionInputsProps {
-  fields: HookDefinitionFormState['fields'];
-  hookBeingEdited: IHook | null;
+  fields: HookFormState['fields']; // Can come from either HookFormState or PlanHookInstanceFormState since they share these fields!
+  editingHookName: string | null;
+  hideName?: boolean;
+  children?: React.ReactNode; // Fields to render after the name field... convenient for what we need, may need to refactor if we change field order
 }
 
 const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> = ({
   fields,
-  hookBeingEdited,
+  editingHookName,
+  hideName = false,
+  children = null,
 }: IHookDefinitionInputsProps) => (
   <>
-    <ValidatedTextInput field={fields.name} label="Hook name" isRequired fieldId="hook-name" />
+    {!hideName ? (
+      <ValidatedTextInput
+        field={fields.name}
+        label="Hook name"
+        isRequired
+        fieldId="hook-name"
+        inputProps={{ isDisabled: !!editingHookName }}
+      />
+    ) : null}
+    {children}
     <ValidatedTextInput
       field={fields.url}
       label="Git repository URL"
       isRequired
       fieldId="hook-url"
-      inputProps={{
-        isDisabled: !!hookBeingEdited,
-      }}
       formGroupProps={{
         labelIcon: (
           <Popover bodyContent="This is the Git repository where the Ansible playbook is located.">

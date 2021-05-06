@@ -24,6 +24,8 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   // TODO show the AddEditHookModal from Gilles' PR with a isWizardMode flag or something, to add the extra fields?
 
+  // TODO disable add button if both a pre and post hook are already added
+
   return (
     <>
       <TextContent className={spacing.mbMd}>
@@ -50,7 +52,10 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
         </>
       )}
       {isAddEditModalOpen ? (
-        <PlanAddEditHookModal onClose={toggleAddEditModal} hookBeingEdited={null} />
+        <PlanAddEditHookModal
+          onClose={toggleAddEditModal}
+          instanceBeingEdited={null} // TODO
+        />
       ) : null}
     </>
   );

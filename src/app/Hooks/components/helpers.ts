@@ -1,9 +1,35 @@
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import * as yup from 'yup';
+import { CLUSTER_API_VERSION, META, urlSchema } from '@app/common/constants';
 import { IHook } from '@app/queries/types';
+import { IFormField, useFormField } from '@konveyor/lib-ui';
 import React from 'react';
-import { HookDefinitionFormState } from './AddEditHookModal';
+import { HookFormState } from './AddEditHookModal';
+import { IKubeList } from '@app/client/types';
+import { QueryResult } from 'react-query';
+import { getHookNameSchema } from '@app/queries';
 
-export const generateHook = (form: HookDefinitionFormState): IHook => ({
+export type HookStep = 'PreHook' | 'PostHook';
+
+export interface IHookDefinitionFields {
+  name: IFormField<string>;
+  url: IFormField<string>;
+  branch: IFormField<string>;
+}
+
+export const useHookDefinitionFields = (
+  hooksQuery: QueryResult<IKubeList<IHook>>,
+  editingHookName: string | null,
+  isNameRequired: boolean
+): IHookDefinitionFields => {
+  const nameSchema = getHookNameSchema(hooksQuery, editingHookName).label('Hook name');
+  return {
+    name: useFormField('', isNameRequired ? nameSchema.required() : nameSchema),
+    url: useFormField('', urlSchema.required()),
+    branch: useFormField('', yup.string().required()),
+  };
+};
+
+export const generateHook = (form: HookFormState): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
@@ -21,7 +47,7 @@ interface IEditHookPrefillEffect {
 }
 
 export const useEditHookPrefillEffect = (
-  form: HookDefinitionFormState,
+  form: HookFormState,
   hookBeingEdited: IHook | null
 ): IEditHookPrefillEffect => {
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);

@@ -111,11 +111,10 @@ export const useDeleteHookMutation = (
 
 export const getHookNameSchema = (
   hooksQuery: QueryResult<IKubeList<IHook>>,
-  hookBeingEdited: IHook | null
+  editingHookName: string | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A hook with this name already exists', (value) => {
-    if (hookBeingEdited && (hookBeingEdited.metadata as IMetaObjectMeta).name === value)
-      return true;
+    if (editingHookName && editingHookName === value) return true;
     if (
       hooksQuery.data?.items.find(
         (hook) => hook && (hook.metadata as IMetaObjectMeta).name === value
@@ -124,3 +123,9 @@ export const getHookNameSchema = (
       return false;
     return true;
   });
+
+// TODO add the shared annotation explicitly to IHook and check logic for shared/private hooks everywhere
+export const filterSharedHooks = (hooks?: IHook[]): IHook[] =>
+  (hooks || []).filter(
+    (hook) => hook.metadata.annotations?.['forklift.konveyor.io/shared'] !== 'false'
+  ) || null;
