@@ -1,7 +1,7 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedFetch } from './fetchHelpers';
-import { sortResultsByName, useMockableQuery, getInventoryApiUrl } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import { MOCK_VMWARE_VMS } from './mocks/vms.mock';
 import { IVMwareProvider } from './types';
 import { IVMwareVM } from './types/vms.types';
@@ -20,7 +20,10 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
     },
     MOCK_VMWARE_VMS
   );
-  return sortResultsByName(result);
+  return {
+    ...result,
+    data: sortByName((result.data || []).filter((vm) => !vm.isTemplate)),
+  };
 };
 
 export const findVMById = (id: string, vmsQuery: QueryResult<IVMwareVM[]>): IVMwareVM | null =>
