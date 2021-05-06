@@ -17,6 +17,8 @@ import {
   SelectOptionObject,
   SelectOption,
   SelectGroup,
+  TextContent,
+  Text,
 } from '@patternfly/react-core';
 import { IKubeList } from '@app/client/types';
 import { QueryResult } from 'react-query';
@@ -24,6 +26,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import HookDefinitionInputs from '@app/Hooks/components/HookDefinitionInputs';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { isSameResource } from '@app/queries/helpers';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const usePlanHookInstanceFormState = (
   hooksQuery: QueryResult<IKubeList<IHook>>,
@@ -180,6 +183,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                         ]
                       : []
                   }
+                  menuAppendTo="parent"
                 >
                   <SelectOption key={newHookOption.toString()} value={newHookOption} />
                   <SelectGroup
@@ -192,34 +196,46 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                 </Select>
               </FormGroup>
             ) : null}
-            <HookDefinitionInputs
-              fields={instanceForm.fields}
-              editingHookName={instanceBeingEdited?.name || null}
-              hideName={!!instanceForm.values.selectedExistingHook}
-            >
-              <FormGroup
-                label="Step when the hook will be run"
-                isRequired
-                fieldId="hook-step-select"
-                {...getFormGroupProps(instanceForm.fields.step)}
-              >
-                <SimpleSelect
-                  id="hook-step-select"
-                  toggleId="hook-step-select-toggle"
-                  aria-label="Step when the hook will be run"
-                  options={stepOptions}
-                  value={[
-                    stepOptions.find((option) => option.value === instanceForm.fields.step.value),
-                  ]}
-                  onChange={(selection) =>
-                    instanceForm.fields.step.setValue(
-                      (selection as OptionWithValue<HookStep>).value
-                    )
-                  }
-                  placeholderText="Select..."
-                />
-              </FormGroup>
-            </HookDefinitionInputs>
+            {instanceForm.values.isCreateHookSelected ||
+            instanceForm.values.selectedExistingHook ? (
+              <>
+                <HookDefinitionInputs
+                  fields={instanceForm.fields}
+                  editingHookName={instanceBeingEdited?.name || null}
+                  hideName={!!instanceForm.values.selectedExistingHook}
+                >
+                  <FormGroup
+                    label="Step when the hook will be run"
+                    isRequired
+                    fieldId="hook-step-select"
+                    {...getFormGroupProps(instanceForm.fields.step)}
+                  >
+                    <SimpleSelect
+                      id="hook-step-select"
+                      toggleId="hook-step-select-toggle"
+                      aria-label="Step when the hook will be run"
+                      options={stepOptions}
+                      value={[
+                        stepOptions.find(
+                          (option) => option.value === instanceForm.fields.step.value
+                        ),
+                      ]}
+                      onChange={(selection) =>
+                        instanceForm.fields.step.setValue(
+                          (selection as OptionWithValue<HookStep>).value
+                        )
+                      }
+                      placeholderText="Select..."
+                    />
+                  </FormGroup>
+                  <TextContent>
+                    <Text component="h3" className={spacing.mtMd}>
+                      Hook definition
+                    </Text>
+                  </TextContent>
+                </HookDefinitionInputs>
+              </>
+            ) : null}
           </Form>
         )}
       </ResolvedQuery>
