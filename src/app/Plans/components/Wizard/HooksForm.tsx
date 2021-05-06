@@ -12,6 +12,8 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 
+import './HooksForm.css';
+
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
 }
