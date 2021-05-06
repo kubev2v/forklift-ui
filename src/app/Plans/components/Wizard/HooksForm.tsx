@@ -10,21 +10,22 @@ import {
   EmptyStateIcon,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import PlanAddEditHookModal from './PlanAddEditHookModal';
-import { IHook } from '@app/queries/types';
+import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
 }
 
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFormProps) => {
-  const hooks: IHook[] = []; // TODO load from a query based on what's in the plan? or prefilled form state?
-  // TODO handle the fact that we'll be listing hook CRs that don't exist yet? I guess we can just store the whole object in form state?
-
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
-  // TODO show the AddEditHookModal from Gilles' PR with a isWizardMode flag or something, to add the extra fields?
 
-  // TODO disable add button if both a pre and post hook are already added
+  // TODO disable the Add button if both a pre and post hook are already added
+
+  const onSaveInstance = (newHookInstance: PlanHookInstance) => {
+    // TODO update the existing one instead of adding one if we are editing, once edit is working
+    form.fields.instances.setValue([...form.values.instances, newHookInstance]);
+    toggleAddEditModal();
+  };
 
   return (
     <>
@@ -33,7 +34,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
           Hooks are contained in Ansible playbooks that can be run before or after the migration.
         </Text>
       </TextContent>
-      {hooks.length === 0 ? (
+      {form.values.instances.length === 0 ? (
         <EmptyState className={spacing.my_2xl}>
           <EmptyStateIcon icon={PlusCircleIcon} />
           <EmptyStateBody className={spacing.mt_0}>
@@ -54,6 +55,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
       {isAddEditModalOpen ? (
         <PlanAddEditHookModal
           onClose={toggleAddEditModal}
+          onSave={onSaveInstance}
           instanceBeingEdited={null} // TODO
         />
       ) : null}

@@ -49,11 +49,13 @@ export type PlanHookInstance = PlanHookInstanceFormState['values'];
 
 interface IPlanAddEditHookModalProps {
   onClose: () => void;
+  onSave: (instance: PlanHookInstance) => void;
   instanceBeingEdited: PlanHookInstance | null;
 }
 
 const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
   onClose,
+  onSave,
   instanceBeingEdited,
 }: IPlanAddEditHookModalProps) => {
   usePausedPollingEffect();
@@ -111,9 +113,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
               key="confirm"
               variant="primary"
               isDisabled={!instanceForm.isDirty || !instanceForm.isValid}
-              // TODO: Add it to the wizard's form state here and close the modal
-              // onClick={() => {
-              // }}
+              onClick={() => onSave(instanceForm.values)}
             >
               {!instanceBeingEdited ? 'Add' : 'Save'}
             </Button>

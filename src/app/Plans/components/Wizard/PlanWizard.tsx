@@ -20,8 +20,10 @@ import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMsForm from './FilterVMsForm';
 import SelectVMsForm from './SelectVMsForm';
-import Review from './Review';
 import MappingForm from './MappingForm';
+import TypeForm from './TypeForm';
+import HooksForm from './HooksForm';
+import Review from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
@@ -52,10 +54,9 @@ import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import TypeForm from './TypeForm';
+import { PlanHookInstance } from './PlanAddEditHookModal';
 
 import './PlanWizard.css';
-import HooksForm from './HooksForm';
 
 const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -117,7 +118,7 @@ const usePlanWizardFormState = (
       type: useFormField<PlanType>('Cold', yup.mixed().oneOf(['Cold', 'Warm']).required()),
     }),
     hooks: useFormState({
-      helloWorld: useFormField('', yup.string().required()), // TODO replace me
+      instances: useFormField<PlanHookInstance[]>([], yup.array<PlanHookInstance>()),
     }),
   };
 
