@@ -30,10 +30,15 @@ const usePlanHookInstanceFormState = (
   editingHookName: string | null
 ) => {
   const isCreateHookSelected = useFormField(false, yup.boolean().required());
+  const selectedExistingHook = useFormField<IHook | null>(null, yup.mixed<IHook | null>());
   return useFormState({
     isCreateHookSelected,
-    selectedExistingHook: useFormField<IHook | null>(null, yup.mixed<IHook | null>()),
-    ...useHookDefinitionFields(hooksQuery, editingHookName, isCreateHookSelected.value),
+    selectedExistingHook,
+    ...useHookDefinitionFields(
+      hooksQuery,
+      editingHookName || selectedExistingHook.value?.metadata.name || null,
+      isCreateHookSelected.value
+    ),
     step: useFormField<HookStep | null>(
       null,
       yup.mixed<HookStep | null>().label('Step').required()
