@@ -130,55 +130,57 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
         ) : (
           <Form>
             {!instanceBeingEdited ? (
-              <FlexItem>
-                {/* TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T> */}
-                <FormGroup isRequired fieldId="existing-hook-select">
-                  <Select
-                    id="existing-hook-select"
-                    aria-label="Add an existing hook or create a new one"
-                    placeholderText="Select..."
-                    isGrouped
-                    isOpen={isExistingHookSelectOpen}
-                    onToggle={setIsExistingHookSelectOpen}
-                    onSelect={(_event, selection: SelectOptionObject) => {
-                      const sel = selection as OptionWithValue<IHook | 'new'>;
-                      if (sel.value === 'new') {
-                        instanceForm.fields.isCreateHookSelected.setValue(true);
-                        instanceForm.fields.selectedExistingHook.setValue(null);
-                        populateFromExistingHook(null);
-                      } else {
-                        instanceForm.fields.isCreateHookSelected.setValue(false);
-                        instanceForm.fields.selectedExistingHook.setValue(sel.value);
-                        populateFromExistingHook(sel.value);
-                      }
-                      setIsExistingHookSelectOpen(false);
-                    }}
-                    selections={
-                      instanceForm.values.isCreateHookSelected
-                        ? [newHookOption]
-                        : instanceForm.values.selectedExistingHook
-                        ? [
-                            hookOptions.find((option) =>
-                              isSameResource(
-                                option.value.metadata,
-                                instanceForm.values.selectedExistingHook?.metadata
-                              )
-                            ),
-                          ]
-                        : []
+              // TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T>
+              <FormGroup
+                label="Add an existing hook or create a new one"
+                isRequired
+                fieldId="existing-hook-select"
+              >
+                <Select
+                  id="existing-hook-select"
+                  aria-label="Add an existing hook or create a new one"
+                  placeholderText="Select..."
+                  isGrouped
+                  isOpen={isExistingHookSelectOpen}
+                  onToggle={setIsExistingHookSelectOpen}
+                  onSelect={(_event, selection: SelectOptionObject) => {
+                    const sel = selection as OptionWithValue<IHook | 'new'>;
+                    if (sel.value === 'new') {
+                      instanceForm.fields.isCreateHookSelected.setValue(true);
+                      instanceForm.fields.selectedExistingHook.setValue(null);
+                      populateFromExistingHook(null);
+                    } else {
+                      instanceForm.fields.isCreateHookSelected.setValue(false);
+                      instanceForm.fields.selectedExistingHook.setValue(sel.value);
+                      populateFromExistingHook(sel.value);
                     }
+                    setIsExistingHookSelectOpen(false);
+                  }}
+                  selections={
+                    instanceForm.values.isCreateHookSelected
+                      ? [newHookOption]
+                      : instanceForm.values.selectedExistingHook
+                      ? [
+                          hookOptions.find((option) =>
+                            isSameResource(
+                              option.value.metadata,
+                              instanceForm.values.selectedExistingHook?.metadata
+                            )
+                          ),
+                        ]
+                      : []
+                  }
+                >
+                  <SelectOption key={newHookOption.toString()} value={newHookOption} />
+                  <SelectGroup
+                    label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
                   >
-                    <SelectOption key={newHookOption.toString()} value={newHookOption} />
-                    <SelectGroup
-                      label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
-                    >
-                      {hookOptions.map((option) => (
-                        <SelectOption key={option.toString()} value={option} {...option.props} />
-                      ))}
-                    </SelectGroup>
-                  </Select>
-                </FormGroup>
-              </FlexItem>
+                    {hookOptions.map((option) => (
+                      <SelectOption key={option.toString()} value={option} {...option.props} />
+                    ))}
+                  </SelectGroup>
+                </Select>
+              </FormGroup>
             ) : null}
             <HookDefinitionInputs
               fields={instanceForm.fields}

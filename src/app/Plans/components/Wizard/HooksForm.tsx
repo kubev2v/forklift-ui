@@ -50,6 +50,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
             Add hook
           </Button>
           <h1>TODO: table here</h1>
+          <p>{JSON.stringify(form.values.instances, undefined, 4)}</p>
         </>
       )}
       {isAddEditModalOpen ? (
