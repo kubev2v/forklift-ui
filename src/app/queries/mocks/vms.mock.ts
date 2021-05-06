@@ -59,6 +59,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         },
       ],
       revisionValidated: 1,
+      isTemplate: false,
     },
     {
       id: 'vm-2844',
@@ -89,6 +90,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         { category: 'Information', label: 'Example', assessment: 'You should know something' },
       ],
       revisionValidated: 1,
+      isTemplate: false,
     },
     {
       id: 'vm-1008',
@@ -128,6 +130,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         },
       ],
       revisionValidated: 1,
+      isTemplate: false,
     },
     {
       id: 'vm-2685',
@@ -156,6 +159,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ],
       concerns: [{ category: 'Warning', label: 'Example', assessment: 'Something is wrong' }],
       revisionValidated: 1,
+      isTemplate: false,
     },
     {
       id: 'vm-431',
@@ -191,6 +195,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ],
       concerns: [],
       revisionValidated: 1,
+      isTemplate: false,
     },
   ];
+
+  MOCK_VMWARE_VMS.push({
+    ...MOCK_VMWARE_VMS[0],
+    id: 'vm-template-test',
+    name: 'vm-template-test',
+    selfLink: '/providers/vsphere/test/vms/vm-template-test',
+    uuid: 'vm-template-test',
+    isTemplate: true,
+  });
 }
