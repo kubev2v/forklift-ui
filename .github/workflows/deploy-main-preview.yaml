@@ -1,12 +1,14 @@
-name: Deploy main branch preview
+name: Deploy main/release branch preview
 on:
   push:
     branches:
       - main
+      - release*
 
 jobs:
   test-and-release:
     name: Deploy preview to Surge
+    if: ${{ github.repository == 'konveyor/forklift-ui' }}
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -23,5 +25,9 @@ jobs:
         run: npm run build:mock
       - name: Install Surge
         run: npm install -g surge
+      - name: Extract branch name for Surge URL
+        shell: bash
+        run: echo "##[set-output name=branch_slug;]$(echo ${GITHUB_REF#refs/heads/}- | tr . _ | sed -r 's/^main-$//g')"
+        id: extract_branch
       - name: Deploy to Surge
-        run: surge ./dist/ konveyor-forklift-ui-preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
+        run: surge ./dist/ konveyor-forklift-ui-${{ steps.extract_branch.outputs.branch_slug }}preview.surge.sh --token ${{ secrets.SURGE_TOKEN }}
