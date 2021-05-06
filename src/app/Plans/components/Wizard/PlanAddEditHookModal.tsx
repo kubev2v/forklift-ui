@@ -81,7 +81,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   const populateFromExistingHook = (hook: IHook | null) => {
     instanceForm.fields.name.setValue(hook?.metadata.name || '');
     instanceForm.fields.url.setValue(hook?.spec.url || '');
-    instanceForm.fields.branch.setValue(hook?.spec.url || '');
+    instanceForm.fields.branch.setValue(hook?.spec.branch || '');
   };
 
   const isDonePrefilling = true; // TODO
