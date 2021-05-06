@@ -32,5 +32,6 @@ export interface IVMwareVM {
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
   concerns: IVMwareVMConcern[];
-  revisionValidated: number; // TODO verify this in real data
+  revisionValidated: number;
+  isTemplate: boolean;
 }
