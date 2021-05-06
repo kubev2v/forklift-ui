@@ -82,6 +82,12 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
     instanceForm.fields.name.setValue(hook?.metadata.name || '');
     instanceForm.fields.url.setValue(hook?.spec.url || '');
     instanceForm.fields.branch.setValue(hook?.spec.branch || '');
+    if (hook) {
+      instanceForm.fields.name.setIsTouched(true);
+      instanceForm.fields.step.setIsTouched(true);
+      instanceForm.fields.url.setIsTouched(true);
+      instanceForm.fields.branch.setIsTouched(true);
+    }
   };
 
   const isDonePrefilling = true; // TODO
