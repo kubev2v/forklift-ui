@@ -8,7 +8,7 @@ on:
 jobs:
   test-and-release:
     name: Deploy preview to Surge
-    if: github.repository == "konveyor/forklift-ui"
+    if: ${{ github.repository == 'konveyor/forklift-ui' }}
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
