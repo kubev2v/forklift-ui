@@ -73,6 +73,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   {
                     kind: 'VM',
                     object: {
+                      id: 'vm-template-test',
+                      parent: { kind: 'Folder', id: 'group-v22' },
+                      name: 'vm-template-test',
+                      selfLink: '/providers/vsphere/test/vms/vm-template-test',
+                    },
+                    children: null,
+                  },
+                  {
+                    kind: 'VM',
+                    object: {
                       id: 'vm-2844',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont%2ftest',
@@ -187,6 +197,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           {
             kind: 'VM',
             object: {
+              id: 'vm-template-test',
+              parent: { kind: 'Folder', id: 'group-v22' },
+              name: 'vm-template-test',
+              selfLink: '/providers/vsphere/test/vms/vm-template-test',
+            },
+            children: null,
+          },
+          {
+            kind: 'VM',
+            object: {
               id: 'vm-2844',
               parent: { kind: 'Folder', id: 'group-v22' },
               name: 'fdupont%2ftest',
@@ -249,6 +269,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'VM',
                 object: {
+                  id: 'vm-template-test',
+                  parent: { kind: 'Folder', id: 'group-v22' },
+                  name: 'vm-template-test',
+                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
+                },
+                children: null,
+              },
+              {
+                kind: 'VM',
+                object: {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
@@ -301,6 +331,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   {
                     kind: 'VM',
                     object: {
+                      id: 'vm-template-test',
+                      parent: { kind: 'Folder', id: 'group-v22' },
+                      name: 'vm-template-test',
+                      selfLink: '/providers/vsphere/test/vms/vm-template-test',
+                    },
+                    children: null,
+                  },
+                  {
+                    kind: 'VM',
+                    object: {
                       id: 'vm-2844',
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont%2ftest',
@@ -329,6 +369,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                       parent: { kind: 'Folder', id: 'group-v22' },
                       name: 'fdupont-test-migration',
                       selfLink: '/providers/vsphere/test/vms/vm-1630',
+                    },
+                    children: null,
+                  },
+                  {
+                    kind: 'VM',
+                    object: {
+                      id: 'vm-template-test',
+                      parent: { kind: 'Folder', id: 'group-v22' },
+                      name: 'vm-template-test',
+                      selfLink: '/providers/vsphere/test/vms/vm-template-test',
                     },
                     children: null,
                   },
@@ -388,6 +438,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'VM',
                 object: {
+                  id: 'vm-template-test',
+                  parent: { kind: 'Folder', id: 'group-v22' },
+                  name: 'vm-template-test',
+                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
+                },
+                children: null,
+              },
+              {
+                kind: 'VM',
+                object: {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
@@ -426,6 +486,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
                   selfLink: '/providers/vsphere/test/vms/vm-1630',
+                },
+                children: null,
+              },
+              {
+                kind: 'VM',
+                object: {
+                  id: 'vm-template-test',
+                  parent: { kind: 'Folder', id: 'group-v22' },
+                  name: 'vm-template-test',
+                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
                 },
                 children: null,
               },
@@ -476,6 +546,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'VM',
                 object: {
+                  id: 'vm-template-test',
+                  parent: { kind: 'Folder', id: 'group-v22' },
+                  name: 'vm-template-test',
+                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
+                },
+                children: null,
+              },
+              {
+                kind: 'VM',
+                object: {
                   id: 'vm-2844',
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont%2ftest',
@@ -504,6 +584,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   parent: { kind: 'Folder', id: 'group-v22' },
                   name: 'fdupont-test-migration',
                   selfLink: '/providers/vsphere/test/vms/vm-1630',
+                },
+                children: null,
+              },
+              {
+                kind: 'VM',
+                object: {
+                  id: 'vm-template-test',
+                  parent: { kind: 'Folder', id: 'group-v22' },
+                  name: 'vm-template-test',
+                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
                 },
                 children: null,
               },
