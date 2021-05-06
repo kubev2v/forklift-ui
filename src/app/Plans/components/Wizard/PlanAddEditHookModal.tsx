@@ -13,7 +13,6 @@ import {
   Button,
   Form,
   FormGroup,
-  FlexItem,
   Select,
   SelectOptionObject,
   SelectOption,
@@ -37,7 +36,7 @@ const usePlanHookInstanceFormState = (
     ...useHookDefinitionFields(hooksQuery, editingHookName, isCreateHookSelected.value),
     step: useFormField<HookStep | null>(
       null,
-      yup.mixed().oneOf(['PreHook', 'PostHook']).required()
+      yup.mixed<HookStep | null>().label('Step').required()
     ),
     // TODO do we need service account name? what about environment variables? see variants of mockups...
     // TODO do we need an isPrefilled here? prefill hook?
