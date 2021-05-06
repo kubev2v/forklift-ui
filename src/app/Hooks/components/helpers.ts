@@ -1,9 +1,9 @@
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { IHook } from '@app/queries/types';
 import React from 'react';
-import { HookFormState } from './AddEditHookModal';
+import { HookDefinitionFormState } from './AddEditHookModal';
 
-export const generateHook = (form: HookFormState): IHook => ({
+export const generateHook = (form: HookDefinitionFormState): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
@@ -21,7 +21,7 @@ interface IEditHookPrefillEffect {
 }
 
 export const useEditHookPrefillEffect = (
-  form: HookFormState,
+  form: HookDefinitionFormState,
   hookBeingEdited: IHook | null
 ): IEditHookPrefillEffect => {
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);

@@ -10,11 +10,8 @@ import {
   EmptyStateIcon,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-
-/// TODO replace this!
-interface IHook {
-  hello: string;
-}
+import PlanAddEditHookModal from './PlanAddEditHookModal';
+import { IHook } from '@app/queries/types';
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
@@ -52,6 +49,9 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
           <h1>TODO: table here</h1>
         </>
       )}
+      {isAddEditModalOpen ? (
+        <PlanAddEditHookModal onClose={toggleAddEditModal} hookBeingEdited={null} />
+      ) : null}
     </>
   );
 };
