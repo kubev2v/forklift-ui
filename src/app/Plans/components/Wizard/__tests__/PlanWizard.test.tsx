@@ -135,6 +135,12 @@ describe('<AddEditProviderModal />', () => {
     await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
 
+    expect(
+      screen.getByRole('heading', { name: /Add hooks to the plan \(optional\)/ })
+    ).toBeInTheDocument();
+    await waitFor(() => expect(nextButton).toBeEnabled());
+    userEvent.click(nextButton);
+
     // Review step
     expect(screen.getByRole('heading', { name: /Review the migration plan/ })).toBeInTheDocument();
     expect(screen.getByText(/my 2nd plan/i)).toBeInTheDocument();
