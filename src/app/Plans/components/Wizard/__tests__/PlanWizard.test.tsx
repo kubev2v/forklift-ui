@@ -125,7 +125,7 @@ describe('<AddEditProviderModal />', () => {
     expect(screen.getByRole('heading', { name: /Storage mapping/ })).toBeInTheDocument();
     expect(screen.getByText(/vmware-datastore-1/i)).toBeInTheDocument();
     const storageTarget = screen.getByRole('textbox', { name: /select target.../i });
-    expect(storageTarget).toHaveValue('standard (default)');
+    expect(storageTarget).toHaveValue('large');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
     await waitFor(() => expect(nextButton).toBeEnabled());
     userEvent.click(nextButton);
@@ -150,7 +150,7 @@ describe('<AddEditProviderModal />', () => {
     expect(screen.getByText(/ocp-network-2/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /1/i })).toBeEnabled();
     expect(networkTarget).toHaveValue('openshift-migration / ocp-network-1');
-    expect(storageTarget).toHaveValue('standard (default)');
+    expect(storageTarget).toHaveValue('large');
 
     expect(screen.getByRole('button', { name: /Finish/i })).toBeEnabled();
   });
