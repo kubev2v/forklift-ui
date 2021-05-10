@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             id: MOCK_VMWARE_DATASTORES[0].id,
           },
           destination: {
-            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][0].name,
+            storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][1].name,
           },
         },
       ],

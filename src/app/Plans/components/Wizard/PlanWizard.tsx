@@ -154,7 +154,7 @@ const PlanWizard: React.FunctionComponent = () => {
   );
 
   enum StepId {
-    General = 1,
+    General = 0,
     FilterVMs,
     SelectVMs,
     NetworkMapping,
@@ -163,13 +163,17 @@ const PlanWizard: React.FunctionComponent = () => {
     Review,
   }
 
-  let stepIdReached = StepId.General;
-  if (forms.general.isValid) stepIdReached = StepId.FilterVMs;
-  if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
-  if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
-  if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
-  if (forms.storageMapping.isValid) stepIdReached = StepId.Type;
-  if (forms.type.isValid) stepIdReached = StepId.Review;
+  const stepForms = [
+    forms.general,
+    forms.filterVMs,
+    forms.selectVMs,
+    forms.networkMapping,
+    forms.storageMapping,
+    forms.type,
+  ];
+  const firstInvalidFormIndex = stepForms.findIndex((form) => !form.isValid);
+  const stepIdReached: StepId =
+    firstInvalidFormIndex === -1 ? StepId.Review : firstInvalidFormIndex;
 
   const isFirstRender = React.useRef(true);
 
