@@ -154,7 +154,7 @@ const PlanWizard: React.FunctionComponent = () => {
   );
 
   enum StepId {
-    General = 1,
+    General = 0,
     FilterVMs,
     SelectVMs,
     NetworkMapping,
