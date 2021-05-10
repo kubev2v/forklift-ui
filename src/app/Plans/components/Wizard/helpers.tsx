@@ -473,7 +473,7 @@ export const useEditingPlanPrefillEffect = (
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
       );
-      const storageMapping = networkMappingsQuery.data?.items.find((mapping) =>
+      const storageMapping = storageMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.storage)
       );
 
