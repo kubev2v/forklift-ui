@@ -1,44 +1,30 @@
 import * as React from 'react';
-import * as yup from 'yup';
-import { Modal, Button, Form, Flex, Stack, Popover } from '@patternfly/react-core';
-import { useFormState, useFormField, ValidatedTextInput } from '@konveyor/lib-ui';
+import { Modal, Button, Form, Flex, Stack } from '@patternfly/react-core';
+import { useFormState } from '@konveyor/lib-ui';
 
-import { urlSchema } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
-import {
-  getHookNameSchema,
-  useCreateHookMutation,
-  usePatchHookMutation,
-  useHooksQuery,
-} from '@app/queries';
+import { useCreateHookMutation, usePatchHookMutation, useHooksQuery } from '@app/queries';
 
 import { IHook } from '@app/queries/types';
 import { QueryResult } from 'react-query';
-import { HelpIcon } from '@patternfly/react-icons';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { IKubeList } from '@app/client/types';
-import { useEditHookPrefillEffect } from './helpers';
+import { useEditHookPrefillEffect, useHookDefinitionFields } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import HookDefinitionInputs from './HookDefinitionInputs';
+
+const useHookFormState = (
+  hooksQuery: QueryResult<IKubeList<IHook>>,
+  hookBeingEdited: IHook | null
+) =>
+  useFormState(useHookDefinitionFields(hooksQuery, hookBeingEdited?.metadata.name || null, true));
+
+export type HookFormState = ReturnType<typeof useHookFormState>;
 
 interface IAddEditHookModalProps {
   onClose: () => void;
   hookBeingEdited: IHook | null;
 }
-
-const useHookFormState = (
-  clusterHooksQuery: QueryResult<IKubeList<IHook>>,
-  hookBeingEdited: IHook | null
-) =>
-  useFormState({
-    name: useFormField(
-      '',
-      getHookNameSchema(clusterHooksQuery, hookBeingEdited).label('Name').required()
-    ),
-    url: useFormField('', urlSchema.required()),
-    branch: useFormField('', yup.string().required()),
-  });
-
-export type HookFormState = ReturnType<typeof useHookFormState>;
 
 const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
   onClose,
@@ -51,9 +37,6 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
   const hookForm = useHookFormState(hooksQuery, hookBeingEdited);
 
   const { isDonePrefilling } = useEditHookPrefillEffect(hookForm, hookBeingEdited);
-
-  const isFormValid = false;
-  const isFormDirty = false;
 
   const [createHook, createHookResult] = useCreateHookMutation();
   const [patchHook, patchHookResult] = usePatchHookMutation();
@@ -79,7 +62,7 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
               id="modal-confirm-button"
               key="confirm"
               variant="primary"
-              isDisabled={!isFormDirty || !isFormValid || mutateHookResult.isLoading}
+              isDisabled={!hookForm.isDirty || !hookForm.isValid || mutateHookResult.isLoading}
               // TODO: To be addressed when hook backend is ready
               // onClick={() => {
               //   mutateHook(hookForm.values);
@@ -105,41 +88,9 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
           <LoadingEmptyState />
         ) : (
           <Form>
-            <ValidatedTextInput
-              field={hookForm.fields.name}
-              label="Hook name"
-              isRequired
-              fieldId="hook-name"
-            />
-            <ValidatedTextInput
-              field={hookForm.fields.url}
-              label="Git repository URL"
-              isRequired
-              fieldId="hook-url"
-              inputProps={{
-                isDisabled: !!hookBeingEdited,
-              }}
-              formGroupProps={{
-                labelIcon: (
-                  <Popover bodyContent="This is the Git repository where the Ansible playbook is located.">
-                    <Button
-                      variant="plain"
-                      aria-label="More info for url field"
-                      onClick={(e) => e.preventDefault()}
-                      aria-describedby="hook-url-info"
-                      className="pf-c-form__group-label-help"
-                    >
-                      <HelpIcon noVerticalAlign />
-                    </Button>
-                  </Popover>
-                ),
-              }}
-            />
-            <ValidatedTextInput
-              field={hookForm.fields.branch}
-              label="Branch"
-              isRequired
-              fieldId="hook-branch"
+            <HookDefinitionInputs
+              fields={hookForm.fields}
+              editingHookName={hookBeingEdited?.metadata.name || null}
             />
           </Form>
         )}

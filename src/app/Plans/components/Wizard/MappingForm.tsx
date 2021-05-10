@@ -184,6 +184,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         <Flex direction={{ default: 'column' }} className={spacing.mbMd}>
           {!form.values.isPrefilled ? (
             <FlexItem>
+              {/* TODO: candidate for new shared component with PlanAddEditHookModal: SelectNewOrExisting<T> */}
               <FormGroup isRequired fieldId="mappingSelect">
                 <Select
                   id="mappingSelect"

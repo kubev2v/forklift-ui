@@ -8,6 +8,7 @@ import {
   PageSection,
   Title,
   Wizard,
+  WizardStep,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
@@ -19,8 +20,10 @@ import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMsForm from './FilterVMsForm';
 import SelectVMsForm from './SelectVMsForm';
-import Review from './Review';
 import MappingForm from './MappingForm';
+import TypeForm from './TypeForm';
+import HooksForm from './HooksForm';
+import Review from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
@@ -51,7 +54,7 @@ import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import TypeForm from './TypeForm';
+import { PlanHookInstance } from './PlanAddEditHookModal';
 
 import './PlanWizard.css';
 
@@ -100,16 +103,22 @@ const usePlanWizardFormState = (
     }),
     filterVMs: useFormState({
       treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
-      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required()),
+      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required().min(1)),
       isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({
-      selectedVMIds: useFormField<string[]>([], yup.array(yup.string().default('')).required()),
+      selectedVMIds: useFormField<string[]>(
+        [],
+        yup.array(yup.string().default('')).required().min(1)
+      ),
     }),
     networkMapping: useMappingFormState(networkMappingsQuery),
     storageMapping: useMappingFormState(storageMappingsQuery),
     type: useFormState({
       type: useFormField<PlanType>('Cold', yup.mixed().oneOf(['Cold', 'Warm']).required()),
+    }),
+    hooks: useFormState({
+      instances: useFormField<PlanHookInstance[]>([], yup.array<PlanHookInstance>()),
     }),
   };
 
@@ -154,26 +163,32 @@ const PlanWizard: React.FunctionComponent = () => {
   );
 
   enum StepId {
-    General = 1,
+    General = 0,
     FilterVMs,
     SelectVMs,
     NetworkMapping,
     StorageMapping,
     Type,
+    Hooks,
     Review,
   }
 
-  let stepIdReached = StepId.General;
-  if (forms.general.isValid) stepIdReached = StepId.FilterVMs;
-  if (forms.filterVMs.isValid) stepIdReached = StepId.SelectVMs;
-  if (forms.selectVMs.isValid) stepIdReached = StepId.NetworkMapping;
-  if (forms.networkMapping.isValid) stepIdReached = StepId.StorageMapping;
-  if (forms.storageMapping.isValid) stepIdReached = StepId.Type;
-  if (forms.type.isValid) stepIdReached = StepId.Review;
+  const stepForms = [
+    forms.general,
+    forms.filterVMs,
+    forms.selectVMs,
+    forms.networkMapping,
+    forms.storageMapping,
+    forms.type,
+    forms.hooks,
+  ];
+  const firstInvalidFormIndex = stepForms.findIndex((form) => !form.isValid);
+  const stepIdReached: StepId =
+    firstInvalidFormIndex === -1 ? StepId.Review : firstInvalidFormIndex;
 
   const isFirstRender = React.useRef(true);
 
-  // When providers change, reset all other forms
+  // When providers change, reset all forms containing provider-specific options
   React.useEffect(() => {
     if (!isFirstRender.current && isDonePrefilling) {
       forms.filterVMs.reset();
@@ -233,7 +248,7 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const selectedVMs = getSelectedVMsFromIds(forms.selectVMs.values.selectedVMIds, vmsQuery);
 
-  const steps = [
+  const steps: WizardStep[] = [
     {
       id: StepId.General,
       name: 'General',
@@ -328,6 +343,17 @@ const PlanWizard: React.FunctionComponent = () => {
       ),
       enableNext: forms.type.isValid,
       canJumpTo: stepIdReached >= StepId.Type,
+    },
+    {
+      id: StepId.Hooks,
+      name: 'Hooks',
+      component: (
+        <WizardStepContainer title="Add hooks to the plan (optional)">
+          <HooksForm form={forms.hooks} />
+        </WizardStepContainer>
+      ),
+      enableNext: forms.hooks.isValid,
+      canJumpTo: stepIdReached >= StepId.Hooks,
     },
     {
       id: StepId.Review,

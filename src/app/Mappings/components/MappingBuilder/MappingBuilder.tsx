@@ -20,6 +20,7 @@ export interface IMappingBuilderItem {
 export const mappingBuilderItemsSchema = yup
   .array<IMappingBuilderItem>()
   .required()
+  .min(1)
   .test('no-empty-selections', 'All sources must be mapped to a target.', (builderItems) =>
     builderItems ? builderItems.every((item) => item.source && item.target) : false
   );

@@ -1,0 +1,3 @@
+#existing-hook-select .pf-c-select__menu-group .pf-c-select__menu-item {
+  padding-left: var(--pf-global--spacer--xl);
+}
