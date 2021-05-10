@@ -90,6 +90,7 @@ export const useCreatePlanMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        queryCache.invalidateQueries('mappings');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
@@ -128,6 +129,7 @@ export const usePatchPlanMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        queryCache.invalidateQueries('mappings');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
@@ -145,6 +147,7 @@ export const useDeletePlanMutation = (
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
+        queryCache.invalidateQueries('mappings');
         onSuccess && onSuccess();
       },
     }
