@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
-import { Popover, Button } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
+import { FormGroup, Radio } from '@patternfly/react-core';
 import { HookFormState } from './AddEditHookModal';
 
 interface IHookDefinitionInputsProps {
@@ -28,29 +27,40 @@ const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> 
       />
     ) : null}
     {children}
-    <ValidatedTextInput
-      field={fields.url}
-      label="Git repository URL"
-      isRequired
-      fieldId="hook-url"
-      formGroupProps={{
-        labelIcon: (
-          <Popover bodyContent="This is the Git repository where the Ansible playbook is located.">
-            <Button
-              variant="plain"
-              aria-label="More info for url field"
-              onClick={(e) => e.preventDefault()}
-              aria-describedby="hook-url-info"
-              className="pf-c-form__group-label-help"
-            >
-              <HelpIcon noVerticalAlign />
-            </Button>
-          </Popover>
-        ),
-      }}
-    />
-    <ValidatedTextInput field={fields.branch} label="Branch" isRequired fieldId="hook-branch" />
+    <FormGroup isRequired label="Hook definition" fieldId="hook-definition">
+      <Radio
+        id="hook-definition-ansible"
+        name="hook-definition"
+        label="Ansible playbook"
+        isChecked={fields.type.value === 'playbook'}
+        onChange={(checked) => {
+          if (checked) {
+            fields.type.setValue('playbook');
+          }
+        }}
+        body={fields.type.value === 'playbook' ? 'TODO' : null}
+      />
+      <Radio
+        id="hook-definition-image"
+        name="hook-definition"
+        label="Custom container image"
+        isChecked={fields.type.value === 'image'}
+        onChange={(checked) => {
+          if (checked) {
+            fields.type.setValue('image');
+          }
+        }}
+        body={fields.type.value === 'image' ? 'TODO' : null}
+      />
+    </FormGroup>
+    {/*<ValidatedTextInput field={fields.branch} label="Branch" isRequired fieldId="hook-branch" />*/}
   </>
 );
 
+// TODO add serviceAccount field
+
 export default HookDefinitionInputs;
+/*
+validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
+            {...getFormGroupProps(form.fields.selectedNetworkName)}
+            */

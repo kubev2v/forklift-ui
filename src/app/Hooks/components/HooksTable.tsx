@@ -15,7 +15,7 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { IHook } from '@app/queries/types';
+import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import TableEmptyState from '@app/common/components/TableEmptyState';
@@ -39,36 +39,24 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by name...',
       getItemValue: (item) => {
-        return item.metadata.name;
+        return (item.metadata as IMetaObjectMeta).name;
       },
     },
     {
-      key: 'url',
-      title: 'URL',
+      key: 'type',
+      title: 'Type',
       type: FilterType.search,
-      placeholderText: 'Filter by URL...',
+      placeholderText: 'Filter by Type...',
       getItemValue: (item) => {
-        return item.spec.url;
-      },
-    },
-    {
-      key: 'branch',
-      title: 'Branch',
-      type: FilterType.search,
-      placeholderText: 'Filter by branch...',
-      getItemValue: (item) => {
-        return item.spec.branch;
+        return item.spec.playbook ? 'Ansible playbook' : 'Custom container image';
       },
     },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(hooks, filterCategories);
   const getSortValues = (hook: IHook) => [
-    hook.metadata.name,
-    hook.spec.url,
-    hook.spec.branch,
-    // TODO: Depending on approach of using pass-by-reference behavior or not, remember to add sort (or not)
-    '', // plans column,
+    (hook.metadata as IMetaObjectMeta).name,
+    hook.spec.playbook ? 'Ansible playbook' : 'Custom container image',
     '', // Action column
   ];
 
@@ -78,9 +66,7 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
 
   const columns: ICell[] = [
     { title: 'Name', transforms: [sortable, wrappable] },
-    { title: 'Git repository URL', transforms: [sortable, wrappable] },
-    { title: 'Branch', transforms: [sortable] },
-    { title: 'Plans', transforms: [cellWidth(20)] },
+    { title: 'Type', transforms: [sortable] },
     {
       title: '',
       transforms: [cellWidth(10)],
@@ -92,11 +78,8 @@ const HooksTable: React.FunctionComponent<IHooksTableProps> = ({
     return {
       meta: { hook },
       cells: [
-        hook.metadata.name,
-        hook.spec.url,
-        hook.spec.branch,
-        // TODO: This add plans
-        0,
+        (hook.metadata as IMetaObjectMeta).name,
+        hook.spec.playbook ? 'Ansible playbook' : 'Custom container image',
         {
           title: (
             <HookActionsDropdown hook={hook} openEditHookModal={() => openEditHookModal(hook)} />

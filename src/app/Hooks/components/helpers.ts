@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { CLUSTER_API_VERSION, META, urlSchema } from '@app/common/constants';
-import { IHook } from '@app/queries/types';
+import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { IFormField, useFormField } from '@konveyor/lib-ui';
 import React from 'react';
 import { HookFormState } from './AddEditHookModal';
@@ -12,8 +12,10 @@ export type HookStep = 'PreHook' | 'PostHook';
 
 export interface IHookDefinitionFields {
   name: IFormField<string>;
-  url: IFormField<string>;
-  branch: IFormField<string>;
+  type: IFormField<'playbook' | 'image'>;
+  playbook: IFormField<string>;
+  image: IFormField<string>;
+  serviceAccount: IFormField<string>;
 }
 
 export const useHookDefinitionFields = (
@@ -22,23 +24,27 @@ export const useHookDefinitionFields = (
   isNameRequired: boolean
 ): IHookDefinitionFields => {
   const nameSchema = getHookNameSchema(hooksQuery, editingHookName).label('Hook name');
+  const type = useFormField('image', yup.mixed<'playbook' | 'image'>().required());
   return {
     name: useFormField('', isNameRequired ? nameSchema.required() : nameSchema),
-    url: useFormField('', urlSchema.required()),
-    branch: useFormField('', yup.string().required()),
+    type,
+    playbook: useFormField('', type.value === 'playbook' ? yup.string().required() : yup.string()),
+    image: useFormField('', type.value === 'image' ? yup.string().required() : yup.string()),
+    serviceAccount: useFormField('', yup.string()),
   };
 };
 
-export const generateHook = (form: HookFormState): IHook => ({
+export const generateHook = (values: HookFormState['values'], generateName: boolean): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
-    name: form.values.name,
+    ...(generateName ? { generateName: `${values.name}-` } : { name: values.name }),
     namespace: META.namespace,
   },
   spec: {
-    url: form.values.url,
-    branch: form.values.branch,
+    ...(values.type === 'playbook' ? { playbook: values.playbook || '' } : {}),
+    ...(values.type === 'image' ? { image: values.image || '' } : {}),
+    ...(values.serviceAccount ? { serviceAccount: values.serviceAccount } : {}),
   },
 });
 
@@ -57,9 +63,10 @@ export const useEditHookPrefillEffect = (
       setIsStartedPrefilling(true);
       const { fields } = form;
 
-      fields.name.setInitialValue(hookBeingEdited.metadata.name);
-      fields.url.setInitialValue(hookBeingEdited.spec.url);
-      fields.branch.setInitialValue(hookBeingEdited.spec.branch);
+      fields.name.setInitialValue((hookBeingEdited.metadata as IMetaObjectMeta).name);
+      fields.playbook.setInitialValue(hookBeingEdited.spec.playbook || '');
+      fields.image.setInitialValue(hookBeingEdited.spec.image || '');
+      fields.serviceAccount.setInitialValue(hookBeingEdited.spec.serviceAccount || '');
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {

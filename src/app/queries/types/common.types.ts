@@ -1,4 +1,6 @@
 // TODO: lib-ui candidate
+
+// TODO this is a confusing name
 export interface IMetaTypeMeta {
   apiVersion: string;
   kind: string;

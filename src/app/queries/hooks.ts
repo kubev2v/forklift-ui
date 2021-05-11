@@ -49,7 +49,10 @@ export const useCreateHookMutation = (
         form.values.name
       );
 
-      const hookResponse = await client.create<IHook>(hookResource, generateHook(form));
+      const hookResponse = await client.create<IHook>(
+        hookResource,
+        generateHook(form.values, false) // TODO use generateName=true if this is a plan-owned hook instance?
+      );
       return hookResponse;
     },
     {
@@ -74,10 +77,10 @@ export const usePatchHookMutation = (
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IHook>, KubeClientError, IPatchHookArgs>(
     async ({ hookBeingEdited, form }) => {
-      const updatedHook = generateHook(form);
+      const updatedHook = generateHook(form.values, false);
       const hookResponse = await client.patch<IHook>(
         hookResource,
-        hookBeingEdited.metadata.name,
+        (hookBeingEdited.metadata as IMetaObjectMeta).name,
         updatedHook
       );
 
@@ -99,7 +102,7 @@ export const useDeleteHookMutation = (
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IHook>(
-    (hook: IHook) => client.delete(hookResource, hook.metadata.name),
+    (hook: IHook) => client.delete(hookResource, (hook.metadata as IMetaObjectMeta).name),
     {
       onSuccess: () => {
         queryCache.invalidateQueries('hooks');

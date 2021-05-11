@@ -4,7 +4,7 @@ import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 import { HookStep, useHookDefinitionFields } from '@app/Hooks/components/helpers';
 import { filterSharedHooks, useHooksQuery } from '@app/queries';
-import { IHook } from '@app/queries/types';
+import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { getFormGroupProps, useFormField, useFormState } from '@konveyor/lib-ui';
 import {
   Modal,
@@ -39,7 +39,10 @@ const usePlanHookInstanceFormState = (
     selectedExistingHook,
     ...useHookDefinitionFields(
       hooksQuery,
-      editingHookName || selectedExistingHook.value?.metadata.name || null,
+      editingHookName ||
+        (selectedExistingHook.value &&
+          (selectedExistingHook.value.metadata as IMetaObjectMeta).name) ||
+        null,
       isCreateHookSelected.value
     ),
     step: useFormField<HookStep | null>(
@@ -80,23 +83,32 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   const hookOptions = Object.values(filteredHooks).map(
     (hook) =>
       ({
-        toString: () => hook.metadata.name,
+        toString: () => (hook.metadata as IMetaObjectMeta).name,
         value: hook,
       } as OptionWithValue<IHook>)
   );
 
   const populateFromExistingHook = (hook: IHook | null) => {
-    instanceForm.fields.name.setValue(hook?.metadata.name || '');
-    instanceForm.fields.url.setValue(hook?.spec.url || '');
-    instanceForm.fields.branch.setValue(hook?.spec.branch || '');
+    instanceForm.fields.name.setValue((hook && (hook.metadata as IMetaObjectMeta).name) || '');
+    instanceForm.fields.type.setValue(hook?.spec.playbook ? 'playbook' : 'image');
+    instanceForm.fields.playbook.setValue(hook?.spec.playbook || '');
+    instanceForm.fields.image.setValue(hook?.spec.image || '');
     if (hook) {
       instanceForm.fields.name.setIsTouched(true);
+      instanceForm.fields.type.setIsTouched(true);
       instanceForm.fields.step.setIsTouched(true);
-      instanceForm.fields.url.setIsTouched(true);
-      instanceForm.fields.branch.setIsTouched(true);
+      instanceForm.fields.playbook.setIsTouched(true);
+      instanceForm.fields.image.setIsTouched(true);
     }
   };
 
+  /*
+  // TODO make a useEditHookInstancePrefillEffect that calls this internally
+  useEditHookPrefillEffect(
+    instanceForm,
+    instanceBeingEdited ? generateHook(instanceBeingEdited, false) : null
+  );
+  */
   const isDonePrefilling = true; // TODO
 
   // TODO disable step options that already have a hook instance that isn't the one being edited!
@@ -228,11 +240,6 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                       placeholderText="Select..."
                     />
                   </FormGroup>
-                  <TextContent>
-                    <Text component="h3" className={spacing.mtMd}>
-                      Hook definition
-                    </Text>
-                  </TextContent>
                 </HookDefinitionInputs>
               </>
             ) : null}

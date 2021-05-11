@@ -5,7 +5,7 @@ import { useFormState } from '@konveyor/lib-ui';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useCreateHookMutation, usePatchHookMutation, useHooksQuery } from '@app/queries';
 
-import { IHook } from '@app/queries/types';
+import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { QueryResult } from 'react-query';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { IKubeList } from '@app/client/types';
@@ -17,7 +17,13 @@ const useHookFormState = (
   hooksQuery: QueryResult<IKubeList<IHook>>,
   hookBeingEdited: IHook | null
 ) =>
-  useFormState(useHookDefinitionFields(hooksQuery, hookBeingEdited?.metadata.name || null, true));
+  useFormState(
+    useHookDefinitionFields(
+      hooksQuery,
+      (hookBeingEdited && (hookBeingEdited.metadata as IMetaObjectMeta).name) || null,
+      true
+    )
+  );
 
 export type HookFormState = ReturnType<typeof useHookFormState>;
 
@@ -90,7 +96,9 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
           <Form>
             <HookDefinitionInputs
               fields={hookForm.fields}
-              editingHookName={hookBeingEdited?.metadata.name || null}
+              editingHookName={
+                (hookBeingEdited && (hookBeingEdited.metadata as IMetaObjectMeta).name) || null
+              }
             />
           </Form>
         )}
