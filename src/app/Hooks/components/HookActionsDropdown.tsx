@@ -2,9 +2,8 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 
 import { useDeleteHookMutation } from '@app/queries';
-import { IHook } from '@app/queries/types';
+import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import ConfirmModal from '@app/common/components/ConfirmModal';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IHookActionsDropdownProps {
   hook: IHook;
@@ -19,10 +18,6 @@ const HookActionsDropdown: React.FunctionComponent<IHookActionsDropdownProps> = 
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [deleteHook, deleteHookResult] = useDeleteHookMutation(toggleDeleteModal);
 
-  // TODO: This is just a placeholder to be edited when backend for hooks is added
-  const hasRunningMigration = false;
-  const isEditDeleteDisabled = !hook.spec.url || hasRunningMigration;
-
   return (
     <>
       <Dropdown
@@ -31,50 +26,27 @@ const HookActionsDropdown: React.FunctionComponent<IHookActionsDropdownProps> = 
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          <ConditionalTooltip
+          <DropdownItem
             key="edit"
-            isTooltipEnabled={isEditDeleteDisabled}
-            content={
-              !hook.spec.url
-                ? 'The hook cannot be edited'
-                : hasRunningMigration
-                ? 'This hook cannot be edited because it has running migrations'
-                : ''
-            }
+            aria-label="Edit"
+            onClick={() => {
+              setKebabIsOpen(false);
+              openEditHookModal(hook);
+            }}
           >
-            <DropdownItem
-              aria-label="Edit"
-              onClick={() => {
-                setKebabIsOpen(false);
-                openEditHookModal(hook);
-              }}
-              isDisabled={isEditDeleteDisabled}
-            >
-              Edit
-            </DropdownItem>
-          </ConditionalTooltip>,
-          <ConditionalTooltip
-            key="delete"
-            isTooltipEnabled={isEditDeleteDisabled}
-            content={
-              !hook.spec.url
-                ? 'The hook cannot be deleted'
-                : hasRunningMigration
-                ? 'This hook cannot be removed because it has running migrations'
-                : ''
-            }
+            Edit
+          </DropdownItem>,
+          <DropdownItem
+            key="remove"
+            aria-label="Remove"
+            onClick={() => {
+              setKebabIsOpen(false);
+              toggleDeleteModal();
+            }}
+            isDisabled={deleteHookResult.isLoading}
           >
-            <DropdownItem
-              aria-label="Remove"
-              onClick={() => {
-                setKebabIsOpen(false);
-                toggleDeleteModal();
-              }}
-              isDisabled={deleteHookResult.isLoading || isEditDeleteDisabled}
-            >
-              Remove
-            </DropdownItem>
-          </ConditionalTooltip>,
+            Remove
+          </DropdownItem>,
         ]}
         position={DropdownPosition.right}
       />
@@ -88,7 +60,7 @@ const HookActionsDropdown: React.FunctionComponent<IHookActionsDropdownProps> = 
         body={
           <>
             Are you sure you want to remove hook &quot;
-            <strong>{hook.metadata.name}</strong>&quot;?
+            <strong>{(hook.metadata as IMetaObjectMeta).name}</strong>&quot;?
           </>
         }
         errorText="Error removing provider"
