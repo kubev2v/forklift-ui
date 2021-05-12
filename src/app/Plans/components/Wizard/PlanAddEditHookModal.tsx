@@ -150,7 +150,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
             {!instanceBeingEdited ? (
               // TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T>
               <FormGroup
-                label="Add an existing hook or create a new one"
+                label="Start with an existing hook template or create a new hook"
                 isRequired
                 fieldId="existing-hook-select"
               >
@@ -192,7 +192,11 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                 >
                   <SelectOption key={newHookOption.toString()} value={newHookOption} />
                   <SelectGroup
-                    label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
+                    label={
+                      hookOptions.length > 0
+                        ? 'Existing hook templates'
+                        : 'No existing hook templates'
+                    }
                   >
                     {hookOptions.map((option) => (
                       <SelectOption key={option.toString()} value={option} {...option.props} />

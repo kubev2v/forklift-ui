@@ -6,7 +6,6 @@ import {
   FormGroup,
   List,
   ListItem,
-  ListVariant,
   Popover,
   Radio,
 } from '@patternfly/react-core';
