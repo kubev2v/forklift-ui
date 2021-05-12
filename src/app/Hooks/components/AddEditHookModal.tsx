@@ -52,7 +52,7 @@ const AddEditHookModal: React.FunctionComponent<IAddEditHookModalProps> = ({
   return (
     <Modal
       className="AddEditHookModal"
-      variant="small"
+      variant="medium"
       title={`${!hookBeingEdited ? 'Create' : 'Edit'} hook`}
       isOpen
       onClose={onClose}

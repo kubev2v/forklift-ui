@@ -4,7 +4,7 @@ export interface IHook extends IMetaTypeMeta {
   metadata: IMetaObjectGenerateName | IMetaObjectMeta;
   spec: {
     deadline?: number;
-    image?: string;
+    image: string;
     playbook?: string;
     serviceAccount?: string;
   };

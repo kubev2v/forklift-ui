@@ -2,7 +2,11 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
-import { HookStep, useHookDefinitionFields } from '@app/Hooks/components/helpers';
+import {
+  HookStep,
+  populateHookFields,
+  useHookDefinitionFields,
+} from '@app/Hooks/components/helpers';
 import { filterSharedHooks, useHooksQuery } from '@app/queries';
 import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { getFormGroupProps, useFormField, useFormState } from '@konveyor/lib-ui';
@@ -17,8 +21,6 @@ import {
   SelectOptionObject,
   SelectOption,
   SelectGroup,
-  TextContent,
-  Text,
 } from '@patternfly/react-core';
 import { IKubeList } from '@app/client/types';
 import { QueryResult } from 'react-query';
@@ -26,7 +28,6 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import HookDefinitionInputs from '@app/Hooks/components/HookDefinitionInputs';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { isSameResource } from '@app/queries/helpers';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const usePlanHookInstanceFormState = (
   hooksQuery: QueryResult<IKubeList<IHook>>,
@@ -49,7 +50,6 @@ const usePlanHookInstanceFormState = (
       null,
       yup.mixed<HookStep | null>().label('Step').required()
     ),
-    // TODO do we need service account name? what about environment variables? see variants of mockups...
     // TODO do we need an isPrefilled here? prefill hook?
   });
 };
@@ -89,16 +89,9 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   );
 
   const populateFromExistingHook = (hook: IHook | null) => {
-    instanceForm.fields.name.setValue((hook && (hook.metadata as IMetaObjectMeta).name) || '');
-    instanceForm.fields.type.setValue(hook?.spec.playbook ? 'playbook' : 'image');
-    instanceForm.fields.playbook.setValue(hook?.spec.playbook || '');
-    instanceForm.fields.image.setValue(hook?.spec.image || '');
+    populateHookFields(instanceForm.fields, hook, 'setValue', !!hook);
     if (hook) {
-      instanceForm.fields.name.setIsTouched(true);
-      instanceForm.fields.type.setIsTouched(true);
-      instanceForm.fields.step.setIsTouched(true);
-      instanceForm.fields.playbook.setIsTouched(true);
-      instanceForm.fields.image.setIsTouched(true);
+      instanceForm.fields.step.setIsTouched(true); // Call out the only empty required field
     }
   };
 
@@ -126,7 +119,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   return (
     <Modal
       className="AddEditHookModal"
-      variant="small"
+      variant="medium"
       title={`${!instanceBeingEdited ? 'Add' : 'Edit'} hook`}
       isOpen
       onClose={onClose}
