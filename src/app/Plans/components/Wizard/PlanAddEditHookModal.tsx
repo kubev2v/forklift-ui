@@ -28,6 +28,7 @@ import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import HookDefinitionInputs from '@app/Hooks/components/HookDefinitionInputs';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { isSameResource } from '@app/queries/helpers';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 const usePlanHookInstanceFormState = (
   hooksQuery: QueryResult<IKubeList<IHook>>,
@@ -61,12 +62,18 @@ interface IPlanAddEditHookModalProps {
   onClose: () => void;
   onSave: (instance: PlanHookInstance) => void;
   instanceBeingEdited: PlanHookInstance | null;
+  isWarmMigration: boolean;
+  hasPreHook: boolean;
+  hasPostHook: boolean;
 }
 
 const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
   onClose,
   onSave,
   instanceBeingEdited,
+  isWarmMigration,
+  hasPreHook,
+  hasPostHook,
 }: IPlanAddEditHookModalProps) => {
   usePausedPollingEffect();
 
@@ -104,15 +111,43 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   */
   const isDonePrefilling = true; // TODO
 
+  const migrationOrCutover = !isWarmMigration ? 'migration' : 'cutover';
+
   // TODO disable step options that already have a hook instance that isn't the one being edited!
   const stepOptions: OptionWithValue<HookStep>[] = [
     {
-      toString: () => 'Pre-migration',
+      toString: () => `Pre-${migrationOrCutover}`,
       value: 'PreHook',
+      props: {
+        isDisabled: hasPreHook,
+        className: hasPreHook ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={hasPreHook}
+            content={`Only one pre-${migrationOrCutover} hook is allowed.`}
+            position="left"
+          >
+            <div>{`Pre-${migrationOrCutover}`}</div>
+          </ConditionalTooltip>
+        ),
+      },
     },
     {
-      toString: () => 'Post-migration',
+      toString: () => `Post-${migrationOrCutover}`,
       value: 'PostHook',
+      props: {
+        isDisabled: hasPostHook,
+        className: hasPostHook ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={hasPostHook}
+            content={`Only one post-${migrationOrCutover} hook is allowed.`}
+            position="left"
+          >
+            <div>{`Post-${migrationOrCutover}`}</div>
+          </ConditionalTooltip>
+        ),
+      },
     },
   ];
 

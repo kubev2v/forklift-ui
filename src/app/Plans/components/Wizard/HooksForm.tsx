@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { PlusCircleIcon } from '@patternfly/react-icons';
-import { PlanWizardFormState } from './PlanWizard';
+import { EditIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import {
   TextContent,
   Text,
@@ -8,26 +7,43 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Tooltip,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+
+import { PlanWizardFormState } from './PlanWizard';
 import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 
 import './HooksForm.css';
+import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
+  isWarmMigration: boolean;
 }
 
-const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFormProps) => {
+const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
+  form,
+  isWarmMigration,
+}: IHooksFormProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
-
-  // TODO disable the Add button if both a pre and post hook are already added
 
   const onSaveInstance = (newHookInstance: PlanHookInstance) => {
     // TODO update the existing one instead of adding one if we are editing, once edit is working
     form.fields.instances.setValue([...form.values.instances, newHookInstance]);
     toggleAddEditModal();
   };
+
+  const sortedInstances = [...form.values.instances].sort((a, b) => {
+    if (a.step === 'PreHook' && b.step === 'PostHook') return -1;
+    if (a.step === 'PostHook' && b.step === 'PreHook') return 1;
+    return 0;
+  });
+
+  const hasPreHook = !!sortedInstances.find((instance) => instance.step === 'PreHook');
+  const hasPostHook = !!sortedInstances.find((instance) => instance.step === 'PostHook');
+  const migrationOrCutover = !isWarmMigration ? 'migration' : 'cutover';
 
   return (
     <>
@@ -48,11 +64,53 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
         </EmptyState>
       ) : (
         <>
-          <Button variant="secondary" onClick={toggleAddEditModal}>
-            Add hook
-          </Button>
-          <h1>TODO: table here</h1>
-          <p>{JSON.stringify(form.values.instances, undefined, 4)}</p>
+          <ConditionalTooltip
+            isTooltipEnabled={hasPreHook && hasPostHook}
+            content={`Only one pre-${migrationOrCutover} hook and one post-${migrationOrCutover} hook are allowed.`}
+          >
+            <span>
+              <Button
+                variant="secondary"
+                onClick={toggleAddEditModal}
+                isDisabled={hasPreHook && hasPostHook}
+              >
+                Add hook
+              </Button>
+            </span>
+          </ConditionalTooltip>
+          <TableComposable>
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Type</Th>
+                <Th>Migration step</Th>
+                <Th aria-label="Actions"></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {sortedInstances.map((instance) => (
+                <Tr key={instance.name}>
+                  <Td>{instance.name}</Td>
+                  <Td>
+                    {instance.type === 'playbook' ? 'Ansible playbook' : 'Custom container image'}
+                  </Td>
+                  <Td>
+                    {instance.step === 'PreHook'
+                      ? `Pre-${migrationOrCutover}`
+                      : `Post-${migrationOrCutover}`}
+                  </Td>
+                  <Td modifier="fitContent">
+                    <Button variant="plain" aria-label="Edit" onClick={() => alert('TODO')}>
+                      <EditIcon />
+                    </Button>
+                    <Button variant="plain" aria-label="Remove" onClick={() => alert('TODO')}>
+                      <TrashIcon />
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </TableComposable>
         </>
       )}
       {isAddEditModalOpen ? (
@@ -60,6 +118,9 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({ form }: IHooksFor
           onClose={toggleAddEditModal}
           onSave={onSaveInstance}
           instanceBeingEdited={null} // TODO
+          isWarmMigration={isWarmMigration}
+          hasPreHook={hasPreHook}
+          hasPostHook={hasPostHook}
         />
       ) : null}
     </>

@@ -25,6 +25,8 @@ export const useHookDefinitionFields = (
   isNameRequired: boolean
 ): IHookDefinitionFields => {
   const type = useFormField('image', yup.mixed<'playbook' | 'image'>().required());
+  // TODO make sure you can't name it the same as another instance in form state?
+  // TODO how do we handle prefilling from generated names of owned hook CRs, and making sure we patch the right owned hook CRs?
   const nameSchema = getHookNameSchema(hooksQuery, editingHookName).label('Hook name');
   // TODO validate yaml
   const playbookSchema = yup.string().label('Ansible playbook');

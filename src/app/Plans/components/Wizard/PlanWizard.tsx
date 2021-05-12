@@ -349,7 +349,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Hooks',
       component: (
         <WizardStepContainer title="Add hooks to the plan (optional)">
-          <HooksForm form={forms.hooks} />
+          <HooksForm form={forms.hooks} isWarmMigration={forms.type.values.type === 'Warm'} />
         </WizardStepContainer>
       ),
       enableNext: forms.hooks.isValid,
