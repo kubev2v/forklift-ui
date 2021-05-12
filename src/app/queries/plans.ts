@@ -85,6 +85,9 @@ export const useCreatePlanMutation = (
         ]);
       }
 
+      // TODO handle hooks!
+      //  - create an owned hook CR for each hook instance in form state, with generated name that is parseable back to the given name
+
       return planResponse;
     },
     {
@@ -124,6 +127,9 @@ export const usePatchPlanMutation = (
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapping),
         client.patch<IPlan>(planResource, planBeingEdited.metadata.name, updatedPlan),
       ]);
+      // TODO handle hooks!
+      //  - figure out which hook instances in form state match up with which owned hook CRs, patch them
+      //  - remove any owned hook CRs that do not match hook instances in form state (those were removed)
       return planResponse;
     },
     {

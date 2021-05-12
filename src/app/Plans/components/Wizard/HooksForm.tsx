@@ -17,6 +17,8 @@ import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 
 import './HooksForm.css';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import ConfirmModal from '@app/common/components/ConfirmModal';
+import { IMetaObjectMeta } from '@app/queries/types';
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
@@ -44,6 +46,11 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   const hasPreHook = !!sortedInstances.find((instance) => instance.step === 'PreHook');
   const hasPostHook = !!sortedInstances.find((instance) => instance.step === 'PostHook');
   const migrationOrCutover = !isWarmMigration ? 'migration' : 'cutover';
+
+  const [isRemoveModalOpen, toggleRemoveModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [instanceBeingRemoved, setInstanceBeingRemoved] = React.useState<PlanHookInstance | null>(
+    null
+  );
 
   return (
     <>
@@ -89,6 +96,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
             </Thead>
             <Tbody>
               {sortedInstances.map((instance) => (
+                // TODO check for pattern of generated hook name, parse it to show the original given name
                 <Tr key={instance.name}>
                   <Td>{instance.name}</Td>
                   <Td>
@@ -103,7 +111,14 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
                     <Button variant="plain" aria-label="Edit" onClick={() => alert('TODO')}>
                       <EditIcon />
                     </Button>
-                    <Button variant="plain" aria-label="Remove" onClick={() => alert('TODO')}>
+                    <Button
+                      variant="plain"
+                      aria-label="Remove"
+                      onClick={() => {
+                        setInstanceBeingRemoved(instance);
+                        toggleRemoveModal();
+                      }}
+                    >
                       <TrashIcon />
                     </Button>
                   </Td>
@@ -123,6 +138,24 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
           hasPostHook={hasPostHook}
         />
       ) : null}
+      <ConfirmModal
+        isOpen={isRemoveModalOpen}
+        toggleOpen={toggleRemoveModal}
+        mutateFn={() => {
+          form.fields.instances.setValue(
+            form.values.instances.filter((i) => i !== instanceBeingRemoved)
+          );
+          toggleRemoveModal();
+        }}
+        title="Remove hook"
+        confirmButtonText="Remove"
+        body={
+          <>
+            Are you sure you want to remove the hook &quot;
+            <strong>{instanceBeingRemoved?.name}</strong>&quot; from the migration plan?
+          </>
+        }
+      />
     </>
   );
 };

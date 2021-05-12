@@ -184,6 +184,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
           <Form>
             {!instanceBeingEdited ? (
               // TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T>
+              // TODO hide this entire field when editing an instance
               <FormGroup
                 label="Start with an existing hook template or create a new hook"
                 isRequired
@@ -246,7 +247,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                 <HookDefinitionInputs
                   fields={instanceForm.fields}
                   editingHookName={instanceBeingEdited?.name || null}
-                  hideName={!!instanceForm.values.selectedExistingHook}
+                  hideName={!!instanceForm.values.selectedExistingHook} // TODO also hide name when editing an instance
                 >
                   <FormGroup
                     label="Step when the hook will be run"

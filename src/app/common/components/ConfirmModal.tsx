@@ -9,12 +9,12 @@ interface IConfirmModalProps {
   isOpen: boolean;
   toggleOpen: () => void;
   mutateFn: () => void;
-  mutateResult: MutationResult<unknown>;
+  mutateResult?: MutationResult<unknown>;
   title: string;
   body: React.ReactNode;
   confirmButtonText: string;
   cancelButtonText?: string;
-  errorText: string;
+  errorText?: string;
 }
 
 const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
@@ -26,10 +26,10 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
   body,
   confirmButtonText,
   cancelButtonText = 'Cancel',
-  errorText,
+  errorText = 'Error performing action',
 }: IConfirmModalProps) => {
   React.useEffect(() => {
-    if (!isOpen) mutateResult.reset();
+    if (!isOpen) mutateResult?.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
@@ -41,18 +41,20 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
       onClose={toggleOpen}
       footer={
         <Stack hasGutter>
-          <ResolvedQuery
-            result={mutateResult}
-            errorTitle={errorText}
-            spinnerMode={QuerySpinnerMode.Inline}
-          />
+          {mutateResult ? (
+            <ResolvedQuery
+              result={mutateResult}
+              errorTitle={errorText}
+              spinnerMode={QuerySpinnerMode.Inline}
+            />
+          ) : null}
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
             <Button
               id="modal-confirm-button"
               key="confirm"
               variant="primary"
               onClick={mutateFn}
-              isDisabled={mutateResult.isLoading}
+              isDisabled={mutateResult?.isLoading}
             >
               {confirmButtonText}
             </Button>
@@ -61,7 +63,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
               key="cancel"
               variant="link"
               onClick={toggleOpen}
-              isDisabled={mutateResult.isLoading}
+              isDisabled={mutateResult?.isLoading}
             >
               {cancelButtonText}
             </Button>
