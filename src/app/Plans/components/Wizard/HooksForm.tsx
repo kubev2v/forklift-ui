@@ -7,7 +7,6 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  Tooltip,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
@@ -18,7 +17,6 @@ import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 import './HooksForm.css';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import ConfirmModal from '@app/common/components/ConfirmModal';
-import { IMetaObjectMeta } from '@app/queries/types';
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
