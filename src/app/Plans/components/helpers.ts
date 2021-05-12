@@ -77,7 +77,8 @@ export const canPlanBeStarted = (plan: IPlan): boolean => {
   const conditions = plan.status?.conditions || [];
   if (
     !hasCondition(conditions, PlanStatusType.Ready) ||
-    hasCondition(conditions, PlanStatusType.Executing)
+    hasCondition(conditions, PlanStatusType.Executing) ||
+    hasCondition(conditions, PlanStatusType.Succeeded)
   ) {
     return false;
   }
