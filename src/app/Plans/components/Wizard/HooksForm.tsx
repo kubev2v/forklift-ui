@@ -93,7 +93,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
             <Tbody>
               {sortedInstances.map((instance) => (
                 // TODO check for pattern of generated hook name, parse it to show the original given name
-                <Tr key={instance.name}>
+                <Tr key={`${instance.step}-${instance.name}`}>
                   <Td>{instance.name}</Td>
                   <Td>
                     {instance.type === 'playbook' ? 'Ansible playbook' : 'Custom container image'}
