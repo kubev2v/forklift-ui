@@ -14,8 +14,7 @@ export interface IHookDefinitionFields {
   name: IFormField<string>;
   type: IFormField<'playbook' | 'image'>;
   playbook: IFormField<string>;
-  ansibleImage: IFormField<string>;
-  customImage: IFormField<string>;
+  image: IFormField<string>;
   serviceAccount: IFormField<string>;
 }
 
@@ -30,8 +29,7 @@ export const useHookDefinitionFields = (
   const nameSchema = getHookNameSchema(hooksQuery, editingHookName).label('Hook name');
   // TODO validate yaml
   const playbookSchema = yup.string().label('Ansible playbook');
-  const ansibleImageSchema = yup.string().label('Ansible runtime image');
-  const customImageSchema = yup.string().label('Custom container image');
+  const imageSchema = yup.string().label('Custom container image');
   const requiredMessage = 'Hook definition fields are required';
   return {
     name: useFormField('', isNameRequired ? nameSchema.required() : nameSchema),
@@ -40,13 +38,9 @@ export const useHookDefinitionFields = (
       '',
       type.value === 'playbook' ? playbookSchema.required(requiredMessage) : playbookSchema
     ),
-    ansibleImage: useFormField(
-      'quay.io/konveyor/hook-runner:latest',
-      type.value === 'playbook' ? ansibleImageSchema.required(requiredMessage) : ansibleImageSchema
-    ),
-    customImage: useFormField(
+    image: useFormField(
       '',
-      type.value === 'image' ? customImageSchema.required(requiredMessage) : customImageSchema
+      type.value === 'image' ? imageSchema.required(requiredMessage) : imageSchema
     ),
     serviceAccount: useFormField('', yup.string().label('Service account name')),
   };
@@ -61,8 +55,8 @@ export const generateHook = (values: HookFormState['values'], generateName: bool
   },
   spec: {
     ...(values.type === 'playbook'
-      ? { playbook: btoa(values.playbook), image: values.ansibleImage }
-      : { image: values.customImage }),
+      ? { playbook: btoa(values.playbook), image: 'quay.io/konveyor/hook-runner:latest' }
+      : { image: values.image }),
     ...(values.serviceAccount ? { serviceAccount: values.serviceAccount } : {}),
   },
 });
@@ -76,20 +70,18 @@ export const populateHookFields = (
   fields.name[setFn]((hook && (hook.metadata as IMetaObjectMeta).name) || '');
   fields.type[setFn](hook?.spec.playbook ? 'playbook' : 'image');
   fields.playbook[setFn](atob(hook?.spec.playbook || ''));
-  if (hook?.spec.playbook) {
-    fields.ansibleImage[setFn](hook?.spec.image || '');
+  if (!hook?.spec.playbook) {
+    fields.image[setFn](hook?.spec.image || '');
   } else {
-    fields.customImage[setFn](hook?.spec.image || '');
+    fields.image[setFn](hook?.spec.image || '');
   }
   fields.serviceAccount[setFn](hook?.spec.serviceAccount || '');
   if (isTouched) {
     fields.name.setIsTouched(true);
     fields.type.setIsTouched(true);
     fields.playbook.setIsTouched(true);
-    if (hook?.spec.playbook) {
-      fields.ansibleImage.setIsTouched(true);
-    } else {
-      fields.customImage.setIsTouched(true);
+    if (!hook?.spec.playbook) {
+      fields.image.setIsTouched(true);
     }
   }
 };

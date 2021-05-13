@@ -105,17 +105,6 @@ const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> 
                 validated={fields.playbook.isValid ? 'default' : 'error'}
               />
             </FormGroup>
-            <ValidatedTextInput
-              field={fields.ansibleImage}
-              label="Ansible runtime image"
-              fieldId="ansible-image"
-              formGroupProps={{
-                helperText: !fields.ansibleImage.isDirty
-                  ? 'This is the default Ansible runtime image. You can change it to a custom image with your own modules.'
-                  : null,
-                className: spacing.mtMd,
-              }}
-            />
           </div>
         ) : null}
         <Radio
@@ -132,9 +121,9 @@ const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> 
         />
         {fields.type.value === 'image' ? (
           <ValidatedTextInput
-            field={fields.customImage}
+            field={fields.image}
             isRequired
-            fieldId="custom-image"
+            fieldId="image"
             formGroupProps={{
               className: spacing.mlLg,
             }}
@@ -150,10 +139,4 @@ const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> 
   );
 };
 
-// TODO add serviceAccount field
-
 export default HookDefinitionInputs;
-/*
-validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
-            {...getFormGroupProps(form.fields.selectedNetworkName)}
-            */
