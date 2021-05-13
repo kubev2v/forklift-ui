@@ -5,6 +5,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import {
   HookStep,
   populateHookFields,
+  useEditPlanHookInstancePrefillEffect,
   useHookDefinitionFields,
 } from '@app/Hooks/components/helpers';
 import { filterSharedHooks, useHooksQuery } from '@app/queries';
@@ -22,8 +23,6 @@ import {
   SelectOption,
   SelectGroup,
 } from '@patternfly/react-core';
-import { IKubeList } from '@app/client/types';
-import { QueryResult } from 'react-query';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import HookDefinitionInputs from '@app/Hooks/components/HookDefinitionInputs';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
@@ -31,7 +30,7 @@ import { isSameResource } from '@app/queries/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 const usePlanHookInstanceFormState = (
-  hooksQuery: QueryResult<IKubeList<IHook>>,
+  existingHookNames: string[],
   editingHookName: string | null
 ) => {
   const isCreateHookSelected = useFormField(false, yup.boolean().required());
@@ -40,7 +39,7 @@ const usePlanHookInstanceFormState = (
     isCreateHookSelected,
     selectedExistingHook,
     ...useHookDefinitionFields(
-      hooksQuery,
+      existingHookNames,
       editingHookName ||
         (selectedExistingHook.value &&
           (selectedExistingHook.value.metadata as IMetaObjectMeta).name) ||
@@ -51,7 +50,6 @@ const usePlanHookInstanceFormState = (
       null,
       yup.mixed<HookStep | null>().label('Step').required()
     ),
-    // TODO do we need an isPrefilled here? prefill hook?
   });
 };
 
@@ -65,6 +63,7 @@ interface IPlanAddEditHookModalProps {
   isWarmMigration: boolean;
   hasPreHook: boolean;
   hasPostHook: boolean;
+  existingInstanceNames: string[];
 }
 
 const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
@@ -74,12 +73,20 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   isWarmMigration,
   hasPreHook,
   hasPostHook,
+  existingInstanceNames,
 }: IPlanAddEditHookModalProps) => {
   usePausedPollingEffect();
 
   const hooksQuery = useHooksQuery();
 
-  const instanceForm = usePlanHookInstanceFormState(hooksQuery, instanceBeingEdited?.name || null);
+  const existingHookNames = [
+    ...existingInstanceNames,
+    ...(hooksQuery.data?.items.map((hook) => (hook.metadata as IMetaObjectMeta).name) || []),
+  ];
+  const instanceForm = usePlanHookInstanceFormState(
+    existingHookNames,
+    instanceBeingEdited?.name || null
+  );
 
   const [isExistingHookSelectOpen, setIsExistingHookSelectOpen] = React.useState(false);
   const newHookOption = {
@@ -102,28 +109,26 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
     }
   };
 
-  /*
-  // TODO make a useEditHookInstancePrefillEffect that calls this internally
-  useEditHookPrefillEffect(
+  const { isDonePrefilling } = useEditPlanHookInstancePrefillEffect(
     instanceForm,
-    instanceBeingEdited ? generateHook(instanceBeingEdited, false) : null
+    instanceBeingEdited
   );
-  */
-  const isDonePrefilling = true; // TODO
 
   const migrationOrCutover = !isWarmMigration ? 'migration' : 'cutover';
 
-  // TODO disable step options that already have a hook instance that isn't the one being edited!
+  const preHookDisabled = hasPreHook && instanceBeingEdited?.step !== 'PreHook';
+  const postHookDisabled = hasPostHook && instanceBeingEdited?.step !== 'PostHook';
+
   const stepOptions: OptionWithValue<HookStep>[] = [
     {
       toString: () => `Pre-${migrationOrCutover}`,
       value: 'PreHook',
       props: {
-        isDisabled: hasPreHook,
-        className: hasPreHook ? 'disabled-with-pointer-events' : '',
+        isDisabled: preHookDisabled,
+        className: preHookDisabled ? 'disabled-with-pointer-events' : '',
         children: (
           <ConditionalTooltip
-            isTooltipEnabled={hasPreHook}
+            isTooltipEnabled={preHookDisabled}
             content={`Only one pre-${migrationOrCutover} hook is allowed.`}
             position="left"
           >
@@ -136,11 +141,11 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
       toString: () => `Post-${migrationOrCutover}`,
       value: 'PostHook',
       props: {
-        isDisabled: hasPostHook,
-        className: hasPostHook ? 'disabled-with-pointer-events' : '',
+        isDisabled: postHookDisabled,
+        className: postHookDisabled ? 'disabled-with-pointer-events' : '',
         children: (
           <ConditionalTooltip
-            isTooltipEnabled={hasPostHook}
+            isTooltipEnabled={postHookDisabled}
             content={`Only one post-${migrationOrCutover} hook is allowed.`}
             position="left"
           >
@@ -165,7 +170,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
               id="modal-confirm-button"
               key="confirm"
               variant="primary"
-              isDisabled={!instanceForm.isDirty || !instanceForm.isValid}
+              isDisabled={!instanceForm.isValid || (!instanceBeingEdited && !instanceForm.isDirty)}
               onClick={() => onSave(instanceForm.values)}
             >
               {!instanceBeingEdited ? 'Add' : 'Save'}
@@ -184,7 +189,6 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
           <Form>
             {!instanceBeingEdited ? (
               // TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T>
-              // TODO hide this entire field when editing an instance
               <FormGroup
                 label="Add an existing hook or create a new one"
                 isRequired
@@ -238,12 +242,13 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
               </FormGroup>
             ) : null}
             {instanceForm.values.isCreateHookSelected ||
-            instanceForm.values.selectedExistingHook ? (
+            instanceForm.values.selectedExistingHook ||
+            !!instanceBeingEdited ? (
               <>
                 <HookDefinitionInputs
                   fields={instanceForm.fields}
                   editingHookName={instanceBeingEdited?.name || null}
-                  hideName={!!instanceForm.values.selectedExistingHook} // TODO also hide name when editing an instance
+                  hideName={!!instanceForm.values.selectedExistingHook}
                 >
                   <FormGroup
                     label="Step when the hook will be run"

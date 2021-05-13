@@ -113,17 +113,12 @@ export const useDeleteHookMutation = (
 };
 
 export const getHookNameSchema = (
-  hooksQuery: QueryResult<IKubeList<IHook>>,
+  existingHookNames: string[],
   editingHookName: string | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A hook with this name already exists', (value) => {
     if (editingHookName && editingHookName === value) return true;
-    if (
-      hooksQuery.data?.items.find(
-        (hook) => hook && (hook.metadata as IMetaObjectMeta).name === value
-      )
-    )
-      return false;
+    if (existingHookNames.find((hookName) => hookName === value)) return false;
     return true;
   });
 

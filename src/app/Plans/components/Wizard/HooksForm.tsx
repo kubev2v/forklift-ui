@@ -29,12 +29,6 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
 }: IHooksFormProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  const onSaveInstance = (newHookInstance: PlanHookInstance) => {
-    // TODO update the existing one instead of adding one if we are editing, once edit is working
-    form.fields.instances.setValue([...form.values.instances, newHookInstance]);
-    toggleAddEditModal();
-  };
-
   const sortedInstances = [...form.values.instances].sort((a, b) => {
     if (a.step === 'PreHook' && b.step === 'PostHook') return -1;
     if (a.step === 'PostHook' && b.step === 'PreHook') return 1;
@@ -47,6 +41,10 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
 
   const [isRemoveModalOpen, toggleRemoveModal] = React.useReducer((isOpen) => !isOpen, false);
   const [instanceBeingRemoved, setInstanceBeingRemoved] = React.useState<PlanHookInstance | null>(
+    null
+  );
+
+  const [instanceBeingEdited, setInstanceBeingEdited] = React.useState<PlanHookInstance | null>(
     null
   );
 
@@ -106,7 +104,14 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
                       : `Post-${migrationOrCutover}`}
                   </Td>
                   <Td modifier="fitContent">
-                    <Button variant="plain" aria-label="Edit" onClick={() => alert('TODO')}>
+                    <Button
+                      variant="plain"
+                      aria-label="Edit"
+                      onClick={() => {
+                        setInstanceBeingEdited(instance);
+                        toggleAddEditModal();
+                      }}
+                    >
                       <EditIcon />
                     </Button>
                     <Button
@@ -128,12 +133,22 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
       )}
       {isAddEditModalOpen ? (
         <PlanAddEditHookModal
-          onClose={toggleAddEditModal}
-          onSave={onSaveInstance}
-          instanceBeingEdited={null} // TODO
+          onClose={() => {
+            toggleAddEditModal();
+            setInstanceBeingEdited(null);
+          }}
+          onSave={(newHookInstance: PlanHookInstance) => {
+            const otherInstances = form.values.instances.filter(
+              (instance) => instance !== instanceBeingEdited
+            );
+            form.fields.instances.setValue([...otherInstances, newHookInstance]);
+            toggleAddEditModal();
+          }}
+          instanceBeingEdited={instanceBeingEdited}
           isWarmMigration={isWarmMigration}
           hasPreHook={hasPreHook}
           hasPostHook={hasPostHook}
+          existingInstanceNames={form.values.instances.map((instance) => instance.name)}
         />
       ) : null}
       <ConfirmModal

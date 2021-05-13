@@ -19,7 +19,7 @@ const useHookFormState = (
 ) =>
   useFormState(
     useHookDefinitionFields(
-      hooksQuery,
+      hooksQuery.data?.items.map((hook) => (hook.metadata as IMetaObjectMeta).name) || [],
       (hookBeingEdited && (hookBeingEdited.metadata as IMetaObjectMeta).name) || null,
       true
     )

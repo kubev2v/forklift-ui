@@ -7,6 +7,10 @@ import { HookFormState } from './AddEditHookModal';
 import { IKubeList } from '@app/client/types';
 import { QueryResult } from 'react-query';
 import { getHookNameSchema } from '@app/queries';
+import {
+  PlanHookInstance,
+  PlanHookInstanceFormState,
+} from '@app/Plans/components/Wizard/PlanAddEditHookModal';
 
 export type HookStep = 'PreHook' | 'PostHook';
 
@@ -19,14 +23,13 @@ export interface IHookDefinitionFields {
 }
 
 export const useHookDefinitionFields = (
-  hooksQuery: QueryResult<IKubeList<IHook>>,
+  existingHookNames: string[],
   editingHookName: string | null,
   isNameRequired: boolean
 ): IHookDefinitionFields => {
   const type = useFormField('image', yup.mixed<'playbook' | 'image'>().required());
-  // TODO make sure you can't name it the same as another instance in form state?
   // TODO how do we handle prefilling from generated names of owned hook CRs, and making sure we patch the right owned hook CRs?
-  const nameSchema = getHookNameSchema(hooksQuery, editingHookName).label('Hook name');
+  const nameSchema = getHookNameSchema(existingHookNames, editingHookName).label('Hook name');
   // TODO validate yaml
   const playbookSchema = yup.string().label('Ansible playbook');
   const imageSchema = yup.string().label('Custom container image');
@@ -107,4 +110,29 @@ export const useEditHookPrefillEffect = (
     }
   }, [isStartedPrefilling, form, hookBeingEdited]);
   return { isDonePrefilling };
+};
+
+export const useEditPlanHookInstancePrefillEffect = (
+  form: PlanHookInstanceFormState,
+  instanceBeingEdited: PlanHookInstance | null
+): IEditHookPrefillEffect => {
+  const { isDonePrefilling: isDonePrefillingDefinitionFields } = useEditHookPrefillEffect(
+    form,
+    instanceBeingEdited ? generateHook(instanceBeingEdited, false) : null
+  );
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
+  const [isDonePrefillingInstanceFields, setIsDonePrefillingInstanceFields] = React.useState(
+    !instanceBeingEdited
+  );
+  React.useEffect(() => {
+    if (!isStartedPrefilling && instanceBeingEdited) {
+      setIsStartedPrefilling(true);
+      form.fields.step.setInitialValue(instanceBeingEdited.step);
+      // Wait for effects to run based on field changes first
+      window.setTimeout(() => {
+        setIsDonePrefillingInstanceFields(true);
+      }, 0);
+    }
+  }, [isStartedPrefilling, form, instanceBeingEdited]);
+  return { isDonePrefilling: isDonePrefillingDefinitionFields && isDonePrefillingInstanceFields };
 };
