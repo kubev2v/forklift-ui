@@ -23,6 +23,9 @@ interface IHooksFormProps {
   isWarmMigration: boolean;
 }
 
+// TODO validate yaml, add Definition column to show either "View yaml" in popover or container image URL
+// TODO remove name field entirely, for instances (not for hooks page? also remove hooks page maybe?) - maybe separate PR
+
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
   isWarmMigration,

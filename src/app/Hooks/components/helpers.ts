@@ -4,9 +4,7 @@ import { IHook, IMetaObjectMeta } from '@app/queries/types';
 import { IFormField, useFormField } from '@konveyor/lib-ui';
 import React from 'react';
 import { HookFormState } from './AddEditHookModal';
-import { IKubeList } from '@app/client/types';
-import { QueryResult } from 'react-query';
-import { getHookNameSchema } from '@app/queries';
+import { getHookNameSchema, playbookSchema } from '@app/queries';
 import {
   PlanHookInstance,
   PlanHookInstanceFormState,
@@ -30,8 +28,6 @@ export const useHookDefinitionFields = (
   const type = useFormField('image', yup.mixed<'playbook' | 'image'>().required());
   // TODO how do we handle prefilling from generated names of owned hook CRs, and making sure we patch the right owned hook CRs?
   const nameSchema = getHookNameSchema(existingHookNames, editingHookName).label('Hook name');
-  // TODO validate yaml
-  const playbookSchema = yup.string().label('Ansible playbook');
   const imageSchema = yup.string().label('Custom container image');
   const requiredMessage = 'Hook definition fields are required';
   return {

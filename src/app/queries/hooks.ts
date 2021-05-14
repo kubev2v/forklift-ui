@@ -1,5 +1,6 @@
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import * as yup from 'yup';
+import yaml from 'js-yaml';
 
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
@@ -119,6 +120,23 @@ export const getHookNameSchema = (
   dnsLabelNameSchema.test('unique-name', 'A hook with this name already exists', (value) => {
     if (editingHookName && editingHookName === value) return true;
     if (existingHookNames.find((hookName) => hookName === value)) return false;
+    return true;
+  });
+
+export const playbookSchema = yup
+  .string()
+  .label('Ansible playbook')
+  .test('valid-yaml', 'Playbook must be valid YAML', (value, context) => {
+    try {
+      yaml.load(value);
+    } catch (e) {
+      if (e.reason && e.mark) {
+        return context.createError({
+          message: `Invalid YAML: ${e.reason} (${e.mark.line + 1}:${e.mark.column + 1})`,
+        });
+      }
+      return false;
+    }
     return true;
   });
 

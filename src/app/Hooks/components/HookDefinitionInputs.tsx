@@ -13,6 +13,8 @@ import { HookFormState } from './AddEditHookModal';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { HelpIcon } from '@patternfly/react-icons';
 
+import './HookDefinitionInputs.css';
+
 interface IHookDefinitionInputsProps {
   fields: HookFormState['fields']; // Can come from either HookFormState or PlanHookInstanceFormState since they share these fields!
   editingHookName: string | null;
