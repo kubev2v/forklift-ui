@@ -44,6 +44,7 @@ import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
 import { PlanHookInstance } from './PlanAddEditHookModal';
 import { IKubeList } from '@app/client/types';
+import { getObjectRef } from '@app/common/helpers';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -581,15 +582,17 @@ export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): bool
 export const generateHook = (
   instance: PlanHookInstance,
   existingHook: IHook | null,
-  planName: string
+  generateName?: string,
+  owner?: IPlan
 ): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
     ...(existingHook
       ? { name: (existingHook.metadata as IMetaObjectMeta).name }
-      : { generateName: `${planName}-hook-` }),
+      : { generateName: generateName || '' }),
     namespace: META.namespace,
+    ...(owner ? { ownerReferences: [getObjectRef(owner)] } : {}),
   },
   spec: {
     ...(instance.type === 'playbook'

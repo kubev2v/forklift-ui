@@ -16,7 +16,7 @@ import { IPlan, Mapping, MappingType } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
-import { generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
+import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -64,6 +64,15 @@ export const useCreatePlanMutation = (
         ])
       ).map((response) => nameAndNamespace(response?.data.metadata));
 
+      const newHooks = forms.hooks.values.instances.map((instance) =>
+        generateHook(instance, null, `${forms.general.values.planName}-hook-`)
+      );
+
+      // TODO handle hooks in the API!
+      // - create hook CRs for newHooks and collect their refs (see above for mappings)
+      // - below when creating plan, also reference the new hooks in each VM on the plan (modify generatePlan to take hooks)
+      // - patch the hooks with ownerReferences to the new plan (see below how mappings are patched, call generateHook again but with the planResponse?.data)
+
       // Create plan referencing new mappings
       const planResponse = await client.create<IPlan>(
         planResource,
@@ -84,9 +93,6 @@ export const useCreatePlanMutation = (
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapWithOwnerRef),
         ]);
       }
-
-      // TODO handle hooks!
-      //  - create an owned hook CR for each hook instance in form state, with generated name that is parseable back to the given name
 
       return planResponse;
     },
@@ -127,9 +133,14 @@ export const usePatchPlanMutation = (
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapping),
         client.patch<IPlan>(planResource, planBeingEdited.metadata.name, updatedPlan),
       ]);
-      // TODO handle hooks!
-      //  - figure out which hook instances in form state match up with which owned hook CRs, patch them
-      //  - remove any owned hook CRs that do not match hook instances in form state (those were removed)
+
+      // TODO handle hooks in the API
+      //  - for each instance in forms.hooks.values.instances:
+      //    - if there is a prefilledFromHook property in the instance, patch that existing hook using generateHook
+      //    - if not, create a new hook using generateHook
+      //  - for each hook reference in the plan (plan.spec.vms[].hooks[].hook) find any that don't match instances in the form data
+      //    - those were removed in the wizard, so delete the matching hook CRs
+
       return planResponse;
     },
     {
