@@ -17,7 +17,6 @@ export interface IHookDefinitionFields {
   type: IFormField<'playbook' | 'image'>;
   playbook: IFormField<string>;
   image: IFormField<string>;
-  serviceAccount: IFormField<string>;
 }
 
 export const useHookDefinitionFields = (
@@ -41,7 +40,6 @@ export const useHookDefinitionFields = (
       '',
       type.value === 'image' ? imageSchema.required(requiredMessage) : imageSchema
     ),
-    serviceAccount: useFormField('', yup.string().label('Service account name')),
   };
 };
 
@@ -56,7 +54,6 @@ export const generateHook = (values: HookFormState['values'], generateName: bool
     ...(values.type === 'playbook'
       ? { playbook: btoa(values.playbook), image: 'quay.io/konveyor/hook-runner:latest' }
       : { image: values.image }),
-    ...(values.serviceAccount ? { serviceAccount: values.serviceAccount } : {}),
   },
 });
 
@@ -74,7 +71,6 @@ export const populateHookFields = (
   } else {
     fields.image[setFn](hook?.spec.image || '');
   }
-  fields.serviceAccount[setFn](hook?.spec.serviceAccount || '');
   if (isTouched) {
     fields.name.setIsTouched(true);
     fields.type.setIsTouched(true);

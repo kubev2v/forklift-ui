@@ -35,6 +35,8 @@ interface IHooksFormProps {
 // TODO we'd also remove all notion of owned hooks / shared hooks, forklift.konveyor.io/shared etc
 // TODO either way we'll need a way to identify the existing hook name/namespace of each instance if editing a plan
 
+// TODO REMOVE THE ENTIRE HOOKS PAGE -- No hook name in state, but add a name/namespace ref to the owned hook if editing a plan
+
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
   isWarmMigration,

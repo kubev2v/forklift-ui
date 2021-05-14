@@ -132,11 +132,6 @@ const HookDefinitionInputs: React.FunctionComponent<IHookDefinitionInputsProps> 
           />
         ) : null}
       </FormGroup>
-      <ValidatedTextInput
-        field={fields.serviceAccount}
-        label="Service account name"
-        fieldId="service-account"
-      />
     </>
   );
 };
