@@ -44,7 +44,7 @@ const usePlanHookInstanceFormState = (
         (selectedExistingHook.value &&
           (selectedExistingHook.value.metadata as IMetaObjectMeta).name) ||
         null,
-      isCreateHookSelected.value
+      false
     ),
     step: useFormField<HookStep | null>(
       null,
@@ -248,7 +248,7 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
                 <HookDefinitionInputs
                   fields={instanceForm.fields}
                   editingHookName={instanceBeingEdited?.name || null}
-                  hideName={!!instanceForm.values.selectedExistingHook}
+                  hideName
                 >
                   <FormGroup
                     label="Step when the hook will be run"

@@ -30,8 +30,10 @@ interface IHooksFormProps {
   isWarmMigration: boolean;
 }
 
-// TODO validate yaml, add Definition column to show either "View yaml" in popover or container image URL
-// TODO remove name field entirely, for instances (not for hooks page? also remove hooks page maybe?) - maybe separate PR
+// TODO remove name field entirely, for instances (not for hooks page? also remove hooks page maybe?)
+// TODO if we remove the hooks page we'll need to remove the create/existing selection, it'll always be create mode
+// TODO we'd also remove all notion of owned hooks / shared hooks, forklift.konveyor.io/shared etc
+// TODO either way we'll need a way to identify the existing hook name/namespace of each instance if editing a plan
 
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
@@ -94,18 +96,20 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
           <TableComposable>
             <Thead>
               <Tr>
-                <Th>Name</Th>
+                <Th>Migration step</Th>
                 <Th>Type</Th>
                 <Th>Definition</Th>
-                <Th>Migration step</Th>
                 <Th aria-label="Actions"></Th>
               </Tr>
             </Thead>
             <Tbody>
-              {sortedInstances.map((instance) => (
-                // TODO check for pattern of generated hook name, parse it to show the original given name
-                <Tr key={`${instance.step}-${instance.name}`}>
-                  <Td>{instance.name}</Td>
+              {sortedInstances.map((instance, i) => (
+                <Tr key={`${instance.step}-${i}`}>
+                  <Td>
+                    {instance.step === 'PreHook'
+                      ? `Pre-${migrationOrCutover}`
+                      : `Post-${migrationOrCutover}`}
+                  </Td>
                   <Td>
                     {instance.type === 'playbook' ? 'Ansible playbook' : 'Custom container image'}
                   </Td>
@@ -128,11 +132,6 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
                     ) : (
                       instance.image
                     )}
-                  </Td>
-                  <Td>
-                    {instance.step === 'PreHook'
-                      ? `Pre-${migrationOrCutover}`
-                      : `Post-${migrationOrCutover}`}
                   </Td>
                   <Td modifier="fitContent">
                     <Button
