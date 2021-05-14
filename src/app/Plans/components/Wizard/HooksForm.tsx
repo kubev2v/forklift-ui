@@ -30,8 +30,6 @@ interface IHooksFormProps {
   isWarmMigration: boolean;
 }
 
-// TODO we'll need a way to identify the existing hook name/namespace of each instance if editing a plan
-
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
   isWarmMigration,

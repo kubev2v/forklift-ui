@@ -46,9 +46,16 @@ export interface IVMStatus {
   };
 }
 
+export type HookStep = 'PreHook' | 'PostHook';
+
+export interface IPlanVMHook {
+  hook: INameNamespaceRef;
+  step: HookStep;
+}
+
 export interface IPlanVM {
   id: string;
-  // hook?: ??? // TODO add this when we add hooks
+  hooks?: IPlanVMHook[];
 }
 
 export interface IMigrationHistoryItem {

@@ -26,8 +26,7 @@ import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSele
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { HelpIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-
-export type HookStep = 'PreHook' | 'PostHook';
+import { HookStep, IHook } from '@app/queries/types';
 
 const usePlanHookInstanceFormState = () => {
   const type = useFormField('playbook', yup.mixed<'playbook' | 'image'>().required());
@@ -47,6 +46,7 @@ const usePlanHookInstanceFormState = () => {
       '',
       type.value === 'image' ? imageSchema.required(requiredMessage) : imageSchema
     ),
+    prefilledFromHook: useFormField<IHook | null>(null, yup.mixed()),
   });
 };
 

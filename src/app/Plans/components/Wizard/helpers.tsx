@@ -38,10 +38,12 @@ import {
   useVMwareTreeQuery,
   useVMwareVMsQuery,
   useMappingsQuery,
+  useHooksQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
 import { PlanHookInstance } from './PlanAddEditHookModal';
+import { IKubeList } from '@app/client/types';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -438,6 +440,8 @@ export const useEditingPlanPrefillEffect = (
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
 
+  const hooksQuery = useHooksQuery();
+
   const queries = [
     providersQuery,
     vmsQuery,
@@ -447,6 +451,7 @@ export const useEditingPlanPrefillEffect = (
     ...storageMappingResourceQueries.queries,
     networkMappingsQuery,
     storageMappingsQuery,
+    hooksQuery,
   ];
   const errorTitles = [
     'Error loading providers',
@@ -459,6 +464,7 @@ export const useEditingPlanPrefillEffect = (
     'Error loading target storage classes',
     'Error loading network mappings',
     'Error loading storage mappings',
+    'Error loading hooks',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
@@ -528,7 +534,11 @@ export const useEditingPlanPrefillEffect = (
       );
       forms.storageMapping.fields.isPrefilled.setInitialValue(true);
 
-      forms.type.fields.type.setValue(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
+      forms.type.fields.type.setInitialValue(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
+
+      forms.hooks.fields.instances.setInitialValue(
+        getPlanHookFormInstances(planBeingEdited, hooksQuery)
+      );
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
@@ -549,6 +559,7 @@ export const useEditingPlanPrefillEffect = (
     vmTreeQuery,
     networkMappingsQuery,
     storageMappingsQuery,
+    hooksQuery,
   ]);
 
   return {
@@ -586,3 +597,41 @@ export const generateHook = (
       : { image: instance.image }),
   },
 });
+
+export const getPlanHookFormInstances = (
+  plan: IPlan,
+  hooksQuery: QueryResult<IKubeList<IHook>>
+): PlanHookInstance[] => {
+  if (plan.spec.vms.length === 0) return [];
+  const planHookRefs = plan.spec.vms[0].hooks || [];
+  const hooksAllMatch = plan.spec.vms.every(
+    (vm) =>
+      (vm.hooks || []).length === planHookRefs.length &&
+      (vm.hooks || []).every(
+        (planHookRef) => !!planHookRefs.find((ref) => isSameResource(ref.hook, planHookRef.hook))
+      )
+  );
+  if (!hooksAllMatch) {
+    alert(`
+      WARNING: This plan is not using the same hooks on all VMs.
+      The API supports arbitrary hooks for each VM, but the UI only supports one set of hooks for all VMs.
+      The hooks from the first VM in the plan will be used, and other hooks will be lost.
+    `);
+  }
+  const instances: PlanHookInstance[] = [];
+  planHookRefs.forEach((planHookRef) => {
+    const matchingHook = (hooksQuery.data?.items || []).find((hook) =>
+      isSameResource(hook.metadata, planHookRef.hook)
+    );
+    if (matchingHook) {
+      instances.push({
+        step: planHookRef.step,
+        type: matchingHook.spec.playbook ? 'playbook' : 'image',
+        playbook: atob(matchingHook.spec.playbook || ''),
+        image: matchingHook.spec.playbook ? '' : matchingHook.spec.image || '',
+        prefilledFromHook: matchingHook,
+      });
+    }
+  });
+  return instances;
+};
