@@ -8,7 +8,6 @@ import { APP_TITLE } from '@app/common/constants';
 import WelcomePage from '@app/Welcome/WelcomePage';
 import ProvidersPage from '@app/Providers/ProvidersPage';
 import PlansPage from '@app/Plans/PlansPage';
-import HooksPage from '@app/Hooks/HooksPage';
 import NetworkMappingsPage from '@app/Mappings/NetworkMappingsPage';
 import StorageMappingsPage from '@app/Mappings/StorageMappingsPage';
 import { HostsPage } from './Providers/HostsPage';
@@ -130,14 +129,6 @@ export const routes: AppRouteConfig[] = [
         isProtected: true,
       },
     ],
-  },
-  {
-    component: HooksPage,
-    exact: true,
-    label: 'Hooks',
-    path: '/hooks',
-    title: `${APP_TITLE} | Hooks`,
-    isProtected: true,
   },
 ];
 

@@ -1,16 +1,13 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
+import { playbookSchema } from '@app/queries';
 import {
-  HookStep,
-  populateHookFields,
-  useEditPlanHookInstancePrefillEffect,
-  useHookDefinitionFields,
-} from '@app/Hooks/components/helpers';
-import { filterSharedHooks, useHooksQuery } from '@app/queries';
-import { IHook, IMetaObjectMeta } from '@app/queries/types';
-import { getFormGroupProps, useFormField, useFormState } from '@konveyor/lib-ui';
+  getFormGroupProps,
+  useFormField,
+  useFormState,
+  ValidatedTextInput,
+} from '@konveyor/lib-ui';
 import {
   Modal,
   Stack,
@@ -18,43 +15,67 @@ import {
   Button,
   Form,
   FormGroup,
-  Select,
-  SelectOptionObject,
-  SelectOption,
-  SelectGroup,
+  FileUpload,
+  List,
+  ListItem,
+  Popover,
+  Radio,
 } from '@patternfly/react-core';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import HookDefinitionInputs from '@app/Hooks/components/HookDefinitionInputs';
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import { isSameResource } from '@app/queries/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { HelpIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-const usePlanHookInstanceFormState = (
-  existingHookNames: string[],
-  editingHookName: string | null
-) => {
-  const isCreateHookSelected = useFormField(false, yup.boolean().required());
-  const selectedExistingHook = useFormField<IHook | null>(null, yup.mixed<IHook | null>());
+export type HookStep = 'PreHook' | 'PostHook';
+
+const usePlanHookInstanceFormState = () => {
+  const type = useFormField('playbook', yup.mixed<'playbook' | 'image'>().required());
+  const imageSchema = yup.string().label('Custom container image');
+  const requiredMessage = 'Hook definition is a required field';
   return useFormState({
-    isCreateHookSelected,
-    selectedExistingHook,
-    ...useHookDefinitionFields(
-      existingHookNames,
-      editingHookName ||
-        (selectedExistingHook.value &&
-          (selectedExistingHook.value.metadata as IMetaObjectMeta).name) ||
-        null,
-      false
-    ),
     step: useFormField<HookStep | null>(
       null,
       yup.mixed<HookStep | null>().label('Step').required()
+    ),
+    type,
+    playbook: useFormField(
+      '',
+      type.value === 'playbook' ? playbookSchema.required(requiredMessage) : playbookSchema
+    ),
+    image: useFormField(
+      '',
+      type.value === 'image' ? imageSchema.required(requiredMessage) : imageSchema
     ),
   });
 };
 
 export type PlanHookInstanceFormState = ReturnType<typeof usePlanHookInstanceFormState>;
 export type PlanHookInstance = PlanHookInstanceFormState['values'];
+
+const useEditPlanHookInstancePrefillEffect = (
+  form: PlanHookInstanceFormState,
+  instanceBeingEdited: PlanHookInstance | null
+) => {
+  const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!instanceBeingEdited);
+  React.useEffect(() => {
+    if (!isStartedPrefilling && instanceBeingEdited) {
+      setIsStartedPrefilling(true);
+      form.fields.type.setInitialValue(instanceBeingEdited.type);
+      form.fields.step.setInitialValue(instanceBeingEdited.step);
+      form.fields.playbook.setInitialValue(instanceBeingEdited.playbook);
+      if (instanceBeingEdited.type === 'image') {
+        form.fields.image.setInitialValue(instanceBeingEdited.image);
+      }
+      // Wait for effects to run based on field changes first
+      window.setTimeout(() => {
+        setIsDonePrefilling(true);
+      }, 0);
+    }
+  }, [isStartedPrefilling, form, instanceBeingEdited]);
+  return { isDonePrefilling };
+};
 
 interface IPlanAddEditHookModalProps {
   onClose: () => void;
@@ -63,7 +84,6 @@ interface IPlanAddEditHookModalProps {
   isWarmMigration: boolean;
   hasPreHook: boolean;
   hasPostHook: boolean;
-  existingInstanceNames: string[];
 }
 
 const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
@@ -73,41 +93,10 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
   isWarmMigration,
   hasPreHook,
   hasPostHook,
-  existingInstanceNames,
 }: IPlanAddEditHookModalProps) => {
   usePausedPollingEffect();
 
-  const hooksQuery = useHooksQuery();
-
-  const existingHookNames = [
-    ...existingInstanceNames,
-    ...(hooksQuery.data?.items.map((hook) => (hook.metadata as IMetaObjectMeta).name) || []),
-  ];
-  const instanceForm = usePlanHookInstanceFormState(
-    existingHookNames,
-    instanceBeingEdited?.name || null
-  );
-
-  const [isExistingHookSelectOpen, setIsExistingHookSelectOpen] = React.useState(false);
-  const newHookOption = {
-    toString: () => 'Create a new hook',
-    value: 'new',
-  };
-  const filteredHooks = filterSharedHooks(hooksQuery.data?.items);
-  const hookOptions = Object.values(filteredHooks).map(
-    (hook) =>
-      ({
-        toString: () => (hook.metadata as IMetaObjectMeta).name,
-        value: hook,
-      } as OptionWithValue<IHook>)
-  );
-
-  const populateFromExistingHook = (hook: IHook | null) => {
-    populateHookFields(instanceForm.fields, hook, 'setValue', !!hook);
-    if (hook) {
-      instanceForm.fields.step.setIsTouched(true); // Call out the only empty required field
-    }
-  };
+  const instanceForm = usePlanHookInstanceFormState();
 
   const { isDonePrefilling } = useEditPlanHookInstancePrefillEffect(
     instanceForm,
@@ -156,6 +145,9 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
     },
   ];
 
+  // We don't need to persist the playbook filename, so it's not lifted to form state.
+  const [playbookFilename, setPlaybookFilename] = React.useState('');
+
   return (
     <Modal
       className="AddEditHookModal"
@@ -182,104 +174,123 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
         </Stack>
       }
     >
-      <ResolvedQuery result={hooksQuery} errorTitle="Error loading hooks">
-        {!isDonePrefilling ? (
-          <LoadingEmptyState />
-        ) : (
-          <Form>
-            {!instanceBeingEdited ? (
-              // TODO: candidate for new shared component with MappingForm: SelectNewOrExisting<T>
-              <FormGroup
-                label="Add an existing hook or create a new one"
-                isRequired
-                fieldId="existing-hook-select"
+      {!isDonePrefilling ? (
+        <LoadingEmptyState />
+      ) : (
+        <Form>
+          <FormGroup
+            label="Step when the hook will be run"
+            isRequired
+            fieldId="hook-step-select"
+            {...getFormGroupProps(instanceForm.fields.step)}
+          >
+            <SimpleSelect
+              id="hook-step-select"
+              toggleId="hook-step-select-toggle"
+              aria-label="Step when the hook will be run"
+              options={stepOptions}
+              value={[
+                stepOptions.find((option) => option.value === instanceForm.fields.step.value),
+              ]}
+              onChange={(selection) =>
+                instanceForm.fields.step.setValue((selection as OptionWithValue<HookStep>).value)
+              }
+              placeholderText="Select..."
+            />
+          </FormGroup>
+          <FormGroup
+            isRequired
+            label="Hook definition"
+            fieldId="hook-definition"
+            labelIcon={
+              <Popover
+                bodyContent={
+                  <>
+                    There are two options for adding a hook definition:
+                    <List component="ol">
+                      <ListItem>
+                        Add an ansible playbook file to be run. A default hook runner image is
+                        provided, or you may choose your own.
+                      </ListItem>
+                      <ListItem>
+                        Specify only a custom image which will run your defined entrypoint when
+                        loaded.
+                      </ListItem>
+                    </List>
+                  </>
+                }
               >
-                <Select
-                  id="existing-hook-select"
-                  aria-label="Add an existing hook or create a new one"
-                  placeholderText="Select..."
-                  isGrouped
-                  isOpen={isExistingHookSelectOpen}
-                  onToggle={setIsExistingHookSelectOpen}
-                  onSelect={(_event, selection: SelectOptionObject) => {
-                    const sel = selection as OptionWithValue<IHook | 'new'>;
-                    if (sel.value === 'new') {
-                      instanceForm.fields.isCreateHookSelected.setValue(true);
-                      instanceForm.fields.selectedExistingHook.setValue(null);
-                      populateFromExistingHook(null);
-                    } else {
-                      instanceForm.fields.isCreateHookSelected.setValue(false);
-                      instanceForm.fields.selectedExistingHook.setValue(sel.value);
-                      populateFromExistingHook(sel.value);
-                    }
-                    setIsExistingHookSelectOpen(false);
-                  }}
-                  selections={
-                    instanceForm.values.isCreateHookSelected
-                      ? [newHookOption]
-                      : instanceForm.values.selectedExistingHook
-                      ? [
-                          hookOptions.find((option) =>
-                            isSameResource(
-                              option.value.metadata,
-                              instanceForm.values.selectedExistingHook?.metadata
-                            )
-                          ),
-                        ]
-                      : []
-                  }
-                  menuAppendTo="parent"
+                <Button
+                  variant="plain"
+                  aria-label="More info for hook definition field"
+                  onClick={(e) => e.preventDefault()}
+                  className="pf-c-form__group-label-help"
                 >
-                  <SelectOption key={newHookOption.toString()} value={newHookOption} />
-                  <SelectGroup
-                    label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
-                  >
-                    {hookOptions.map((option) => (
-                      <SelectOption key={option.toString()} value={option} {...option.props} />
-                    ))}
-                  </SelectGroup>
-                </Select>
-              </FormGroup>
-            ) : null}
-            {instanceForm.values.isCreateHookSelected ||
-            instanceForm.values.selectedExistingHook ||
-            !!instanceBeingEdited ? (
-              <>
-                <HookDefinitionInputs
-                  fields={instanceForm.fields}
-                  editingHookName={instanceBeingEdited?.name || null}
-                  hideName
+                  <HelpIcon noVerticalAlign />
+                </Button>
+              </Popover>
+            }
+          >
+            <Radio
+              id="hook-definition-ansible"
+              name="hook-definition"
+              label="Ansible playbook"
+              isChecked={instanceForm.values.type === 'playbook'}
+              onChange={(checked) => {
+                if (checked) {
+                  instanceForm.fields.type.setValue('playbook');
+                }
+              }}
+              className={spacing.mbSm}
+            />
+            {instanceForm.values.type === 'playbook' ? (
+              <div className={`${spacing.mlLg} ${spacing.mbMd}`}>
+                <FormGroup
+                  label="Upload your Ansible playbook file or paste its contents below."
+                  fieldId="playbook-yaml"
+                  {...getFormGroupProps(instanceForm.fields.playbook)}
                 >
-                  <FormGroup
-                    label="Step when the hook will be run"
-                    isRequired
-                    fieldId="hook-step-select"
-                    {...getFormGroupProps(instanceForm.fields.step)}
-                  >
-                    <SimpleSelect
-                      id="hook-step-select"
-                      toggleId="hook-step-select-toggle"
-                      aria-label="Step when the hook will be run"
-                      options={stepOptions}
-                      value={[
-                        stepOptions.find(
-                          (option) => option.value === instanceForm.fields.step.value
-                        ),
-                      ]}
-                      onChange={(selection) =>
-                        instanceForm.fields.step.setValue(
-                          (selection as OptionWithValue<HookStep>).value
-                        )
-                      }
-                      placeholderText="Select..."
-                    />
-                  </FormGroup>
-                </HookDefinitionInputs>
-              </>
+                  <FileUpload
+                    id="playbook-yaml"
+                    type="text"
+                    value={instanceForm.values.playbook}
+                    filename={playbookFilename}
+                    onChange={(value, filename) => {
+                      instanceForm.fields.playbook.setValue(value as string);
+                      instanceForm.fields.playbook.setIsTouched(true);
+                      setPlaybookFilename(filename);
+                    }}
+                    onBlur={() => instanceForm.fields.playbook.setIsTouched(true)}
+                    validated={instanceForm.fields.playbook.isValid ? 'default' : 'error'}
+                  />
+                </FormGroup>
+              </div>
             ) : null}
-          </Form>
-        )}
-      </ResolvedQuery>
+            <Radio
+              id="hook-definition-image"
+              name="hook-definition"
+              label="Custom container image"
+              isChecked={instanceForm.values.type === 'image'}
+              onChange={(checked) => {
+                if (checked) {
+                  instanceForm.fields.type.setValue('image');
+                }
+              }}
+              className={spacing.mbXs}
+            />
+            {instanceForm.values.type === 'image' ? (
+              <ValidatedTextInput
+                field={instanceForm.fields.image}
+                isRequired
+                fieldId="image"
+                formGroupProps={{
+                  className: spacing.mlLg,
+                }}
+              />
+            ) : null}
+          </FormGroup>
+        </Form>
+      )}
     </Modal>
   );
 };

@@ -30,12 +30,7 @@ interface IHooksFormProps {
   isWarmMigration: boolean;
 }
 
-// TODO remove name field entirely, for instances (not for hooks page? also remove hooks page maybe?)
-// TODO if we remove the hooks page we'll need to remove the create/existing selection, it'll always be create mode
-// TODO we'd also remove all notion of owned hooks / shared hooks, forklift.konveyor.io/shared etc
-// TODO either way we'll need a way to identify the existing hook name/namespace of each instance if editing a plan
-
-// TODO REMOVE THE ENTIRE HOOKS PAGE -- No hook name in state, but add a name/namespace ref to the owned hook if editing a plan
+// TODO we'll need a way to identify the existing hook name/namespace of each instance if editing a plan
 
 const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
@@ -180,7 +175,6 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
           isWarmMigration={isWarmMigration}
           hasPreHook={hasPreHook}
           hasPostHook={hasPostHook}
-          existingInstanceNames={form.values.instances.map((instance) => instance.name)}
         />
       ) : null}
       <ConfirmModal
@@ -196,8 +190,9 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
         confirmButtonText="Remove"
         body={
           <>
-            Are you sure you want to remove the hook &quot;
-            <strong>{instanceBeingRemoved?.name}</strong>&quot; from the migration plan?
+            Are you sure you want to remove the{' '}
+            {instanceBeingRemoved?.step === 'PreHook' ? 'pre' : 'post'}-{migrationOrCutover} hook
+            from the migration plan?
           </>
         }
       />

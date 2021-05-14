@@ -2,6 +2,8 @@ import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
+  IHook,
+  IMetaObjectMeta,
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
@@ -39,6 +41,7 @@ import {
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
+import { PlanHookInstance } from './PlanAddEditHookModal';
 
 // Helper for filterAndConvertVMwareTree
 const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
@@ -563,3 +566,23 @@ export const concernMatchesFilter = (concern: IVMwareVMConcern, filterText?: str
 
 export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): boolean =>
   !!filterText && vm.concerns.some((concern) => concernMatchesFilter(concern, filterText));
+
+export const generateHook = (
+  instance: PlanHookInstance,
+  existingHook: IHook | null,
+  planName: string
+): IHook => ({
+  apiVersion: CLUSTER_API_VERSION,
+  kind: 'Hook',
+  metadata: {
+    ...(existingHook
+      ? { name: (existingHook.metadata as IMetaObjectMeta).name }
+      : { generateName: `${planName}-hook-` }),
+    namespace: META.namespace,
+  },
+  spec: {
+    ...(instance.type === 'playbook'
+      ? { playbook: btoa(instance.playbook), image: 'quay.io/konveyor/hook-runner:latest' }
+      : { image: instance.image }),
+  },
+});

@@ -10,3 +10,7 @@
   max-height: 40vh;
   overflow-y: auto;
 }
+
+textarea#playbook-yaml {
+  font-family: monospace;
+}

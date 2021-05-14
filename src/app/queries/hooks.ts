@@ -2,9 +2,9 @@ import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import * as yup from 'yup';
 import yaml from 'js-yaml';
 
-import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
+import { ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-import { dnsLabelNameSchema, META } from '@app/common/constants';
+import { META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import {
   mockKubeList,
@@ -15,8 +15,8 @@ import {
 import { MOCK_HOOKS } from './mocks/hooks.mock';
 import { IHook, IMetaObjectMeta } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
-import { HookFormState } from '@app/Hooks/components/AddEditHookModal';
-import { generateHook } from '@app/Hooks/components/helpers';
+import { generateHook } from '@app/Plans/components/Wizard/helpers';
+import { PlanHookInstance } from '@app/Plans/components/Wizard/PlanAddEditHookModal';
 
 const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namespace);
 
@@ -35,24 +35,19 @@ export const useHooksQuery = (): QueryResult<IKubeList<IHook>> => {
   return sortKubeResultsByName(result);
 };
 
+// TODO we probably don't need the dedicated useCreateHookMutation? only will patch as part of patching a plan
 export const useCreateHookMutation = (
+  planName: string,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IHook>, KubeClientError, HookFormState, unknown> => {
+): MutationResultPair<IKubeResponse<IHook>, KubeClientError, PlanHookInstance, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
-  return useMockableMutation<IKubeResponse<IHook>, KubeClientError, HookFormState>(
-    async (form) => {
-      await checkIfResourceExists(
-        client,
-        ForkliftResourceKind.Hook,
-        hookResource,
-        form.values.name
-      );
-
+  return useMockableMutation<IKubeResponse<IHook>, KubeClientError, PlanHookInstance>(
+    async (instance) => {
       const hookResponse = await client.create<IHook>(
         hookResource,
-        generateHook(form.values, false) // TODO use generateName=true if this is a plan-owned hook instance?
+        generateHook(instance, null, planName)
       );
       return hookResponse;
     },
@@ -65,20 +60,23 @@ export const useCreateHookMutation = (
     }
   );
 };
+
 interface IPatchHookArgs {
   hookBeingEdited: IHook;
-  form: HookFormState;
+  hookFormInstance: PlanHookInstance;
 }
 
+// TODO we probably don't need the dedicated usePatchHookMutation? only will patch as part of patching a plan
 export const usePatchHookMutation = (
+  planName: string,
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IHook>, KubeClientError, IPatchHookArgs, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IHook>, KubeClientError, IPatchHookArgs>(
-    async ({ hookBeingEdited, form }) => {
-      const updatedHook = generateHook(form.values, false);
+    async ({ hookBeingEdited, hookFormInstance }) => {
+      const updatedHook = generateHook(hookFormInstance, hookBeingEdited, planName);
       const hookResponse = await client.patch<IHook>(
         hookResource,
         (hookBeingEdited.metadata as IMetaObjectMeta).name,
@@ -97,6 +95,7 @@ export const usePatchHookMutation = (
   );
 };
 
+// TODO we probably don't need the dedicated useDeleteHookMutation? only will patch as part of patching a plan
 export const useDeleteHookMutation = (
   onSuccess?: () => void
 ): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IHook, unknown> => {
@@ -113,22 +112,12 @@ export const useDeleteHookMutation = (
   );
 };
 
-export const getHookNameSchema = (
-  existingHookNames: string[],
-  editingHookName: string | null
-): yup.StringSchema =>
-  dnsLabelNameSchema.test('unique-name', 'A hook with this name already exists', (value) => {
-    if (editingHookName && editingHookName === value) return true;
-    if (existingHookNames.find((hookName) => hookName === value)) return false;
-    return true;
-  });
-
 export const playbookSchema = yup
   .string()
   .label('Ansible playbook')
   .test('valid-yaml', 'Playbook must be valid YAML', (value, context) => {
     try {
-      yaml.load(value);
+      yaml.load(value || '');
     } catch (e) {
       if (e.reason && e.mark) {
         return context.createError({
@@ -139,9 +128,3 @@ export const playbookSchema = yup
     }
     return true;
   });
-
-// TODO add the shared annotation explicitly to IHook and check logic for shared/private hooks everywhere
-export const filterSharedHooks = (hooks?: IHook[]): IHook[] =>
-  (hooks || []).filter(
-    (hook) => hook.metadata.annotations?.['forklift.konveyor.io/shared'] !== 'false'
-  ) || null;
