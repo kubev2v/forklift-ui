@@ -20,8 +20,8 @@ import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import a11yLight from 'react-syntax-highlighter/dist/esm/styles/hljs/a11y-light';
+import yaml from 'react-syntax-highlighter/dist/cjs/languages/hljs/yaml';
+import a11yLight from 'react-syntax-highlighter/dist/cjs/styles/hljs/a11y-light';
 
 SyntaxHighlighter.registerLanguage('yaml', yaml);
 
