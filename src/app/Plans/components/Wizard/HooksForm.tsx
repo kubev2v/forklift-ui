@@ -7,6 +7,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
@@ -17,6 +18,12 @@ import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
 import './HooksForm.css';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import ConfirmModal from '@app/common/components/ConfirmModal';
+
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
+import a11yLight from 'react-syntax-highlighter/dist/esm/styles/hljs/a11y-light';
+
+SyntaxHighlighter.registerLanguage('yaml', yaml);
 
 interface IHooksFormProps {
   form: PlanWizardFormState['hooks'];
@@ -89,6 +96,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
               <Tr>
                 <Th>Name</Th>
                 <Th>Type</Th>
+                <Th>Definition</Th>
                 <Th>Migration step</Th>
                 <Th aria-label="Actions"></Th>
               </Tr>
@@ -100,6 +108,26 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
                   <Td>{instance.name}</Td>
                   <Td>
                     {instance.type === 'playbook' ? 'Ansible playbook' : 'Custom container image'}
+                  </Td>
+                  <Td>
+                    {instance.type === 'playbook' ? (
+                      <Popover
+                        className="playbook-yaml-popover"
+                        aria-label="Playbook YAML contents"
+                        bodyContent={
+                          <SyntaxHighlighter language="yaml" style={a11yLight}>
+                            {instance.playbook}
+                          </SyntaxHighlighter>
+                        }
+                        enableFlip
+                      >
+                        <Button variant="link" isInline>
+                          View YAML
+                        </Button>
+                      </Popover>
+                    ) : (
+                      instance.image
+                    )}
                   </Td>
                   <Td>
                     {instance.step === 'PreHook'
