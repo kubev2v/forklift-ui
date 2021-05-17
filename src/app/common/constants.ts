@@ -19,6 +19,7 @@ export const PRODUCT_DOCO_LINK = {
 
 export enum ProviderType {
   vsphere = 'vsphere',
+  ovirt = 'ovirt',
   openshift = 'openshift',
 }
 
@@ -56,10 +57,11 @@ export enum StepType {
 
 export const PROVIDER_TYPE_NAMES = {
   [ProviderType.vsphere]: 'VMware',
+  [ProviderType.ovirt]: 'Red Hat Virtualization',
   [ProviderType.openshift]: 'OpenShift Virtualization',
 };
 
-export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
+export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere, ProviderType.ovirt];
 export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
 export const META: IMetaVars =

@@ -4,6 +4,7 @@ import VMwareProvidersTable from './VMware/VMwareProvidersTable';
 import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
 import { IProviderObject, IProvidersByType } from '@app/queries/types';
 import { correlateProviders } from './helpers';
+import RHVProvidersTable from './RHV/RHVProvidersTable';
 
 interface IProvidersTableProps {
   inventoryProvidersByType: IProvidersByType;
@@ -23,6 +24,17 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
           clusterProviders,
           inventoryProvidersByType.vsphere || [],
           ProviderType.vsphere
+        )}
+      />
+    );
+  }
+  if (activeProviderType === ProviderType.ovirt) {
+    return (
+      <RHVProvidersTable
+        providers={correlateProviders(
+          clusterProviders,
+          inventoryProvidersByType.ovirt || [],
+          ProviderType.ovirt
         )}
       />
     );
