@@ -4,6 +4,7 @@ import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
 import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
+import { MOCK_HOOKS } from './hooks.mock';
 
 export let MOCK_PLANS: IPlan[];
 
@@ -282,7 +283,21 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
       },
-      vms: [vm1],
+      vms: [
+        {
+          ...vm1,
+          hooks: [
+            {
+              hook: nameAndNamespace(MOCK_HOOKS[0].metadata),
+              step: 'PreHook',
+            },
+            {
+              hook: nameAndNamespace(MOCK_HOOKS[1].metadata),
+              step: 'PostHook',
+            },
+          ],
+        },
+      ],
       warm: false,
     },
     status: {

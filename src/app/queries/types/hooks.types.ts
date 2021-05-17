@@ -1,10 +1,11 @@
-import { ICR } from './common.types';
+import { IMetaObjectGenerateName, IMetaObjectMeta, IMetaTypeMeta } from './common.types';
 
-export interface IHook extends ICR {
-  apiVersion: string;
-  kind: string;
+export interface IHook extends IMetaTypeMeta {
+  metadata: IMetaObjectGenerateName | IMetaObjectMeta;
   spec: {
-    url: string;
-    branch: string;
+    deadline?: number;
+    image: string;
+    playbook?: string;
+    serviceAccount?: string;
   };
 }

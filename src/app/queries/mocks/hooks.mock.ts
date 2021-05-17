@@ -4,7 +4,7 @@ import { CLUSTER_API_VERSION } from '@app/common/constants';
 export let MOCK_HOOKS: IHook[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
-  const hook1 = {
+  const hook1: IHook = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Hook',
     metadata: {
@@ -18,12 +18,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       creationTimestamp: '2021-05-04T19:40:49Z',
     },
     spec: {
-      url: 'https://git.example.com/hooks/hooktest-01',
-      branch: 'main',
+      image: 'quay.io/konveyor/hook-runner:latest',
+      playbook:
+        'LS0tCi0gbmFtZTogTWFpbgogIGhvc3RzOiBsb2NhbGhvc3QKICB0YXNrczoKICAtIG5hbWU6IExvYWQgUGxhbgogICAgaW5jbHVkZV92YXJzOgogICAgICBmaWxlOiBwbGFuLnltbAogICAgICBuYW1lOiBwbGFuCiAgLSBuYW1lOiBMb2FkIFdvcmtsb2FkCiAgICBpbmNsdWRlX3ZhcnM6CiAgICAgIGZpbGU6IHdvcmtsb2FkLnltbAogICAgICBuYW1lOiB3b3JrbG9hZAoK',
     },
   };
 
-  const hook2 = {
+  const hook2: IHook = {
     apiVersion: CLUSTER_API_VERSION,
     kind: 'Hook',
     metadata: {
@@ -37,8 +38,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       creationTimestamp: '2021-05-04T19:40:50Z',
     },
     spec: {
-      url: 'https://git.example.com/hooks/hooktest-02',
-      branch: 'feature',
+      image: 'quay.io/konveyor/some-custom-image:latest',
     },
   };
 
