@@ -32,16 +32,18 @@ describe('<SourceProvidersTable />', () => {
 
     expect(screen.getByRole('grid', { name: /VMware providers table/ })).toBeInTheDocument();
     expect(
-      screen.getByRole('row', { name: /vcenter-1 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Ready/ })
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole('row', {
-        name: /vcenter-2 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Critical/,
+        name: /vcenter-1 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Ready/,
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('row', {
-        name: /vcenter-3 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Loading... Pending/,
+        name: /vcenter-2 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Critical/,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('row', {
+        name: /vcenter-3 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Loading... Pending/,
       })
     ).toBeInTheDocument();
   });
