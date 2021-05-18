@@ -8,31 +8,51 @@ import {
   classNames as classNamesTransform,
   ICell,
   IRow,
+  fitContent,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { ICorrelatedProvider, IRHVProvider } from '@app/queries/types';
+import {
+  ICorrelatedProvider,
+  IRHVProvider,
+  IVMwareProvider,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
 import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 
-import { PlanStatusType, ProviderType } from '@app/common/constants';
+import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
-interface IRHVProvidersTableProps {
-  providers: ICorrelatedProvider<IRHVProvider>[];
+interface ISourceProvidersTableProps<T extends SourceInventoryProvider> {
+  providers: ICorrelatedProvider<T>[];
+  providerType: ProviderType;
 }
 
-// TODO is this similar enough to VMware that we should abstract it into a SourceProvidersTable?
-
-const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
+const SourceProvidersTable = <T extends SourceInventoryProvider>({
   providers,
-}: IRHVProvidersTableProps) => {
-  const getSortValues = (provider: ICorrelatedProvider<IRHVProvider>) => {
-    const { clusterCount, hostCount, vmCount, networkCount, storageDomainCount } =
-      provider.inventory || {};
+  providerType,
+}: React.PropsWithChildren<ISourceProvidersTableProps<T>>): JSX.Element | null => {
+  let storageTitle = '';
+  if (providerType === ProviderType.vsphere) storageTitle = 'Datastores';
+  if (providerType === ProviderType.ovirt) storageTitle = 'Storage domains';
+
+  const getStorageCount = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    if (!provider.inventory) return 0;
+    if (providerType === ProviderType.vsphere) {
+      return (provider.inventory as IVMwareProvider).datastoreCount;
+    }
+    if (providerType === ProviderType.ovirt) {
+      return (provider.inventory as IRHVProvider).storageDomainCount;
+    }
+    return 0;
+  };
+
+  const getSortValues = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount } = provider.inventory || {};
     return [
       // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // '',
@@ -42,7 +62,7 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
       numStr(hostCount),
       numStr(vmCount),
       numStr(networkCount),
-      numStr(storageDomainCount),
+      numStr(getStorageCount(provider)),
       provider.status ? getMostSeriousCondition(provider.status?.conditions) : '',
       '',
     ];
@@ -60,7 +80,7 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
     areAllSelected,
     selectAll,
     isItemSelected,
-  } = useSelectionState<IRHVProvider>({ items: sortedItems });
+  } = useSelectionState<ICorrelatedProvider<SourceInventoryProvider>>({ items: sortedItems });
 
   const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
     .map((provider) => `${provider.namespace}/${provider.name}`)
@@ -91,23 +111,16 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
     { title: 'Hosts', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Networks', transforms: [sortable] },
-    { title: 'Storage domains', transforms: [sortable] },
+    { title: storageTitle, transforms: [sortable, fitContent] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: ICorrelatedProvider<IRHVProvider>) => {
-    const { clusterCount, hostCount, vmCount, networkCount, storageDomainCount } =
-      provider.inventory || {};
+  currentPageItems.forEach((provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount } = provider.inventory || {};
     // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isSelected = isItemSelected(provider);
-
-    const hostsCell = (
-      <>
-        <OutlinedHddIcon key="hosts-icon" /> {hostCount}
-      </>
-    );
 
     rows.push({
       meta: { provider },
@@ -129,24 +142,35 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
         provider.metadata.name,
         provider.spec.url,
         numStr(clusterCount),
-        hostCount !== undefined
-          ? {
+        (() => {
+          if (hostCount === undefined) return '';
+          if (providerType === ProviderType.vsphere) {
+            const hostCountWithIcon = (
+              <>
+                <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+              </>
+            );
+            return {
               title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
-                // TODO make the HostsPage work for RHV as well
-                <Link to={`/providers/rhv/${provider.metadata.name}`}>{hostsCell}</Link>
+                <Link to={`/providers/vsphere/${provider.metadata.name}`}>{hostCountWithIcon}</Link>
               ) : (
-                hostsCell
+                hostCountWithIcon
               ),
-            }
-          : '',
+            };
+          }
+          if (providerType === ProviderType.ovirt) {
+            return hostCount;
+          }
+          return null;
+        })(),
         numStr(vmCount),
         numStr(networkCount),
-        numStr(storageDomainCount),
+        numStr(getStorageCount(provider)),
         {
           title: <StatusCondition status={provider.status} />,
         },
         {
-          title: <ProviderActionsDropdown provider={provider} providerType={ProviderType.ovirt} />,
+          title: <ProviderActionsDropdown provider={provider} providerType={providerType} />,
         },
       ],
     });
@@ -172,7 +196,7 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
         </LevelItem>
       </Level>
       <Table
-        aria-label="Red Hat Virtualization providers table"
+        aria-label={`${PROVIDER_TYPE_NAMES[providerType]} providers table`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}
@@ -190,4 +214,4 @@ const RHVProvidersTable: React.FunctionComponent<IRHVProvidersTableProps> = ({
   );
 };
 
-export default RHVProvidersTable;
+export default SourceProvidersTable;

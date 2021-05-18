@@ -5,7 +5,7 @@ import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 
-import VMwareProvidersTable from '../VMwareProvidersTable';
+import SourceProvidersTable from '../SourceProvidersTable';
 import {
   MOCK_CLUSTER_PROVIDERS,
   MOCK_INVENTORY_PROVIDERS,
@@ -13,7 +13,7 @@ import {
 import { correlateProviders } from '../../helpers';
 import { ProviderType } from '@app/common/constants';
 
-describe('<VMwareProvidersTable />', () => {
+describe('<SourceProvidersTable />', () => {
   const history = createMemoryHistory();
   const props = {
     providers: correlateProviders(
@@ -26,7 +26,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders vsphere table', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
       </Router>
     );
 
@@ -49,7 +49,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders Hosts links', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
       </Router>
     );
 
@@ -61,7 +61,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders status condition', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
       </Router>
     );
 
@@ -75,7 +75,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders action menu', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
       </Router>
     );
 

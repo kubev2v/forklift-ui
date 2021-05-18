@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       spec: {
         type: ProviderType.vsphere,
-        url: 'vcenter.v2v.bos.redhat.com',
+        url: 'https://vcenter.v2v.bos.redhat.com/sdk',
         secret: {
           namespace: 'openshift-migration',
           name: 'boston',
