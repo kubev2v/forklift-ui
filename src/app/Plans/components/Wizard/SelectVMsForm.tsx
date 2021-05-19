@@ -53,12 +53,8 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   sourceProvider,
   selectedVMs,
 }: ISelectVMsFormProps) => {
-  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(
-    sourceProvider,
-    VMwareTreeType.Host,
-    false
-  );
-  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM, false);
+  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
+  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
   const vmsQuery = useVMwareVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
@@ -78,12 +74,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const [treePathInfoByVM, setTreePathInfoByVM] = React.useState<IVMTreePathInfoByVM | null>(null);
   React.useEffect(() => {
-    if (
-      !treePathInfoByVM &&
-      (availableVMs || []).length > 0 &&
-      hostTreeQuery.data &&
-      vmTreeQuery.data
-    ) {
+    if ((availableVMs || []).length > 0 && hostTreeQuery.data && vmTreeQuery.data) {
       setTreePathInfoByVM(
         getVMTreePathInfoByVM(
           availableVMs?.map((vm) => vm.selfLink) || [],
@@ -92,7 +83,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         )
       );
     }
-  }, [treePathInfoByVM, availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
+  }, [availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
   const getVMTreeInfo = (vm: IVMwareVM): IVMTreePathInfo => {
     if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
     return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
