@@ -9,18 +9,16 @@ import { useAuthorizedFetch } from './fetchHelpers';
 
 export const useVMwareTreeQuery = <T extends VMwareTree>(
   provider: IVMwareProvider | null,
-  treeType: VMwareTreeType,
-  isRefetchEnabled = true
+  treeType: VMwareTreeType
 ): QueryResult<T> => {
   const apiSlug = treeType === VMwareTreeType.Host ? '/tree/host' : '/tree/vm';
-  const refetchInterval = usePollingContext().refetchInterval;
   const result = useMockableQuery<T>(
     {
       queryKey: ['vmware-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
         enabled: !!provider,
-        refetchInterval: isRefetchEnabled ? refetchInterval : false,
+        refetchInterval: usePollingContext().refetchInterval,
       },
     },
     (treeType === VMwareTreeType.Host ? MOCK_VMWARE_HOST_TREE : MOCK_VMWARE_VM_TREE) as T
