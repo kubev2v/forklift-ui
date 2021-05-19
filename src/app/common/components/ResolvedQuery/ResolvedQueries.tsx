@@ -23,6 +23,7 @@ export interface IResolvedQueriesProps {
   errorTitles: string[];
   errorsInline?: boolean;
   spinnerMode?: QuerySpinnerMode;
+  emptyStateBody?: React.ReactNode;
   spinnerProps?: Partial<SpinnerProps>;
   alertProps?: Partial<AlertProps>;
   className?: string;
@@ -35,6 +36,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
   errorTitles,
   errorsInline = true,
   spinnerMode = QuerySpinnerMode.EmptyState,
+  emptyStateBody = null,
   spinnerProps = {},
   alertProps = {},
   className = '',
@@ -48,7 +50,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
   if (spinnerMode === QuerySpinnerMode.Inline) {
     spinner = <Spinner size="lg" className={className} {...spinnerProps} />;
   } else if (spinnerMode === QuerySpinnerMode.EmptyState) {
-    spinner = <LoadingEmptyState spinnerProps={spinnerProps} />;
+    spinner = <LoadingEmptyState spinnerProps={spinnerProps} body={emptyStateBody} />;
   }
 
   return (
