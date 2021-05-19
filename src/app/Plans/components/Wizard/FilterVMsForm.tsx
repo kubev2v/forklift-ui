@@ -93,7 +93,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
         errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
-        emptyStateBody="For large environments, loading may take a few minutes."
+        emptyStateBody="For large environments, this may take several seconds."
       >
         <TreeView
           data={filterAndConvertVMwareTree(
