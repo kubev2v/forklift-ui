@@ -259,6 +259,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         'Error loading VMware VM tree data',
         'Error loading VMs',
       ]}
+      emptyStateBody="For large environments, loading may take a few minutes."
     >
       {availableVMs.length === 0 ? (
         <TableEmptyState
