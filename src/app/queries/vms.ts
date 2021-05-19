@@ -27,7 +27,7 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
   );
   return {
     ...result,
-    data: sortedData,
+    data: result.data ? sortedData : undefined,
   };
 };
 

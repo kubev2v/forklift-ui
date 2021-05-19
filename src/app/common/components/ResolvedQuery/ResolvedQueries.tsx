@@ -27,6 +27,7 @@ export interface IResolvedQueriesProps {
   spinnerProps?: Partial<SpinnerProps>;
   alertProps?: Partial<AlertProps>;
   className?: string;
+  forceLoadingState?: boolean;
   children?: React.ReactNode;
 }
 
@@ -40,6 +41,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
   spinnerProps = {},
   alertProps = {},
   className = '',
+  forceLoadingState = false,
   children = null,
 }: IResolvedQueriesProps) => {
   const status = getAggregateQueryStatus(results);
@@ -55,7 +57,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
 
   return (
     <>
-      {status === QueryStatus.Loading ? (
+      {status === QueryStatus.Loading || forceLoadingState ? (
         spinner
       ) : status === QueryStatus.Error ? (
         <div>
