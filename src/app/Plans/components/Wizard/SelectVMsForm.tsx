@@ -65,6 +65,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const selectedVMsOnMount = React.useRef(selectedVMs);
   const availableVMs = React.useMemo(() => {
     if (!vmsQuery.data) return [];
+    console.log('running memoized availableVMs func');
     const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
     return [
       ...selectedVMsOnMount.current,
