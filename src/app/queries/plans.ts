@@ -12,7 +12,7 @@ import {
   useMockableQuery,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
-import { IPlan, Mapping, MappingType } from './types';
+import { IHook, IPlan, Mapping, MappingType } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
@@ -21,6 +21,7 @@ import { generateHook, generateMappings, generatePlan } from '@app/Plans/compone
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
 const storageMapResource = getMappingResource(MappingType.Storage).resource;
+const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namespace);
 
 export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
@@ -64,19 +65,24 @@ export const useCreatePlanMutation = (
         ])
       ).map((response) => nameAndNamespace(response?.data.metadata));
 
-      const newHooks = forms.hooks.values.instances.map((instance) =>
-        generateHook(instance, null, `${forms.general.values.planName}-hook-`)
-      );
+      const planHooks = forms.hooks.values.instances.map((instance) => ({
+        cr: generateHook(instance, null, `${forms.general.values.planName}-hook-`),
+        step: instance.step,
+      }));
 
-      // TODO handle hooks in the API!
-      // - create hook CRs for newHooks and collect their refs (see above for mappings)
-      // - below when creating plan, also reference the new hooks in each VM on the plan (modify generatePlan to take hooks)
-      // - patch the hooks with ownerReferences to the new plan (see below how mappings are patched, call generateHook again but with the planResponse?.data)
+      // Create hooks CRs with generated names and collect their refs
+      const newHooksRef = planHooks.map(async (newHook) => {
+        const response = await client.create<IHook>(hookResource, newHook.cr);
+        return { ref: nameAndNamespace(response.data.metadata), step: newHook.step };
+      });
 
-      // Create plan referencing new mappings
+      const hooksRef = await Promise.all(newHooksRef);
+      console.log(hooksRef);
+
+      // Create plan referencing new mappings and patch plan's VMs with new hooks
       const planResponse = await client.create<IPlan>(
         planResource,
-        generatePlan(forms, networkMappingRef, storageMappingRef)
+        generatePlan(forms, networkMappingRef, storageMappingRef, hooksRef)
       );
 
       // Patch mappings with ownerReferences to new plan
@@ -94,12 +100,23 @@ export const useCreatePlanMutation = (
         ]);
       }
 
+      // TODO - Patch hooks with ownerReferences to the new plan
+      // (call generateHook again but with the planResponse?.data)
+      // const hooks: hookWithOwnerRef[] = generateHook({
+      //   forms,
+      //   owner: planResponse?.data,
+      // });
+      // if (hookWithOwnerRef) {
+      //   await Promise.all([client.patch<IHook>(hookResource, hookRef.name, hookWithOwnerRef)]);
+      // }
+
       return planResponse;
     },
     {
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
         queryCache.invalidateQueries('mappings');
+        queryCache.invalidateQueries('hooks');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
