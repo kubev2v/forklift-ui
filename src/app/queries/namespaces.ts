@@ -1,6 +1,6 @@
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { getInventoryApiUrl, sortResultsByName, useMockableQuery } from './helpers';
+import { getInventoryApiUrl, useResultsSortedByName, useMockableQuery } from './helpers';
 import { IOpenShiftProvider } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
 import { IOpenShiftNamespace } from './types/namespaces.types';
@@ -20,5 +20,5 @@ export const useNamespacesQuery = (
     },
     MOCK_OPENSHIFT_NAMESPACES
   );
-  return sortResultsByName(result);
+  return useResultsSortedByName(result);
 };

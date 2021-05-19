@@ -1,6 +1,7 @@
+import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { getInventoryApiUrl, sortTreeResultsByName, useMockableQuery } from './helpers';
+import { getInventoryApiUrl, sortTreeItemsByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
 import { IVMwareProvider } from './types';
 import { VMwareTree, VMwareTreeType } from './types/tree.types';
@@ -24,5 +25,9 @@ export const useVMwareTreeQuery = <T extends VMwareTree>(
     },
     (treeType === VMwareTreeType.Host ? MOCK_VMWARE_HOST_TREE : MOCK_VMWARE_VM_TREE) as T
   );
-  return sortTreeResultsByName(result);
+  const sortedData = React.useMemo(() => sortTreeItemsByName(result.data), [result.data]);
+  return {
+    ...result,
+    data: sortedData,
+  };
 };

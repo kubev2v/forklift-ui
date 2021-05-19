@@ -1,6 +1,6 @@
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
-import { getInventoryApiUrl, sortResultsByName, useMockableQuery } from './helpers';
+import { getInventoryApiUrl, useResultsSortedByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_DATASTORES } from './mocks/datastores.mock';
 import { IVMwareDatastore, IVMwareProvider, MappingType } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
@@ -22,5 +22,5 @@ export const useDatastoresQuery = (
     },
     MOCK_VMWARE_DATASTORES
   );
-  return sortResultsByName(result);
+  return useResultsSortedByName(result);
 };
