@@ -6,7 +6,7 @@ import { ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList } from '@app/client/types';
 import { META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
-import { mockKubeList, sortKubeResultsByName, useMockableQuery } from './helpers';
+import { mockKubeList, useKubeResultsSortedByName, useMockableQuery } from './helpers';
 import { MOCK_HOOKS } from './mocks/hooks.mock';
 import { IHook } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
@@ -25,7 +25,7 @@ export const useHooksQuery = (): QueryResult<IKubeList<IHook>> => {
     },
     mockKubeList(MOCK_HOOKS, 'Hook')
   );
-  return sortKubeResultsByName(result);
+  return useKubeResultsSortedByName(result);
 };
 
 export const playbookSchema = yup

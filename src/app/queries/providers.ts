@@ -6,11 +6,11 @@ import { usePollingContext } from '@app/common/context';
 import {
   useMockableQuery,
   getInventoryApiUrl,
-  sortIndexedResultsByName,
   useMockableMutation,
   isSameResource,
   nameAndNamespace,
   mockKubeList,
+  useIndexedResultsSortedByName,
 } from './helpers';
 import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
 import {
@@ -62,7 +62,7 @@ export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
     MOCK_INVENTORY_PROVIDERS
   );
 
-  return sortIndexedResultsByName<InventoryProvider, IProvidersByType>(result);
+  return useIndexedResultsSortedByName(result);
 };
 
 export const useCreateProviderMutation = (

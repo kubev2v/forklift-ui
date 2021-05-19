@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedFetch } from './fetchHelpers';
@@ -20,9 +21,13 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
     },
     MOCK_VMWARE_VMS
   );
+  const sortedData = React.useMemo(
+    () => sortByName((result.data || []).filter((vm) => !vm.isTemplate)),
+    [result.data]
+  );
   return {
     ...result,
-    data: sortByName((result.data || []).filter((vm) => !vm.isTemplate)),
+    data: result.data ? sortedData : undefined,
   };
 };
 

@@ -3,11 +3,11 @@ import { usePollingContext } from '@app/common/context';
 import {
   useMockableQuery,
   getInventoryApiUrl,
-  sortResultsByName,
   isSameResource,
   useMockableMutation,
   nameAndNamespace,
   mockKubeList,
+  useResultsSortedByName,
 } from './helpers';
 import { MOCK_HOSTS, MOCK_HOST_CONFIGS } from './mocks/hosts.mock';
 import { IHost, IHostConfig, INameNamespaceRef, ISecret, IVMwareProvider } from './types';
@@ -35,7 +35,7 @@ export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHo
     },
     MOCK_HOSTS
   );
-  return sortResultsByName<IHost>(result);
+  return useResultsSortedByName(result);
 };
 
 export const useHostConfigsQuery = (): QueryResult<IKubeList<IHostConfig>> => {
