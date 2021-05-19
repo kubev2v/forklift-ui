@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { KubeClientError, IKubeList } from '@app/client/types';
 import { CLUSTER_API_VERSION, PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
@@ -133,34 +134,38 @@ export const sortByName = <T extends IHasName>(data?: T[]): T[] => {
   return (data || []).sort((a: T, b: T) => (getName(a) < getName(b) ? -1 : 1));
 };
 
+export const useResultsSortedByName = <T extends IHasName>(
+  result: QueryResult<T[]>
+): QueryResult<T[]> => ({
+  ...result,
+  data: React.useMemo(() => sortByName(result.data), [result.data]),
+});
+
 export const sortIndexedDataByName = <TItem extends { name: string }, TIndexed>(
   data: TIndexed | undefined
 ): TIndexed | undefined => sortIndexedData<TItem, TIndexed>(data, (item: TItem) => item.name);
 
-export const sortResultsByName = <T extends IHasName>(
-  result: QueryResult<T[]>
-): QueryResult<T[]> => ({
-  ...result,
-  data: sortByName(result.data),
-});
-
-export const sortKubeResultsByName = <T>(
-  result: QueryResult<IKubeList<T>>
-): QueryResult<IKubeList<T>> => ({
-  ...result,
-  data: result.data
-    ? {
-        ...result.data,
-        items: sortByName(result.data.items || []),
-      }
-    : undefined,
-});
-
-export const sortIndexedResultsByName = <TItem extends { name: string }, TIndexed>(
+export const useIndexedResultsSortedByName = <TIndexed>(
   result: QueryResult<TIndexed>
 ): QueryResult<TIndexed> => ({
   ...result,
-  data: sortIndexedDataByName<TItem, TIndexed>(result.data),
+  data: React.useMemo(() => sortIndexedDataByName(result.data), [result.data]),
+});
+
+export const useKubeResultsSortedByName = <T>(
+  result: QueryResult<IKubeList<T>>
+): QueryResult<IKubeList<T>> => ({
+  ...result,
+  data: React.useMemo(
+    () =>
+      result.data
+        ? {
+            ...result.data,
+            items: sortByName(result.data.items || []),
+          }
+        : undefined,
+    [result.data]
+  ),
 });
 
 export const sortTreeItemsByName = <T extends VMwareTree>(tree?: T): T | undefined =>
@@ -176,13 +181,6 @@ export const sortTreeItemsByName = <T extends VMwareTree>(tree?: T): T | undefin
           }),
       }
     : undefined;
-
-export const sortTreeResultsByName = <T extends VMwareTree>(
-  result: QueryResult<T>
-): QueryResult<T> => ({
-  ...result,
-  data: sortTreeItemsByName(result.data),
-});
 
 export const nameAndNamespace = (
   ref: Partial<INameNamespaceRef> | null | undefined
