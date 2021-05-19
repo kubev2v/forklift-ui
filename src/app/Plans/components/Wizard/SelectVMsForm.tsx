@@ -29,6 +29,8 @@ import {
   getMostSevereVMConcern,
   getVMConcernStatusLabel,
   getVMTreePathInfoByVM,
+  IVMTreePathInfo,
+  IVMTreePathInfoByVM,
   vmMatchesConcernFilter,
 } from './helpers';
 import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
@@ -57,21 +59,35 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
   const selectedVMsOnMount = React.useRef(selectedVMs);
-  const { availableVMs, treePathInfoByVM } = React.useMemo(() => {
-    const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
-    const availableVMs = [
-      ...selectedVMsOnMount.current,
-      ...filteredVMs.filter(
-        (vm) => !selectedVMsOnMount.current.some((selectedVM) => vm.id === selectedVM.id)
-      ),
-    ];
-    const treePathInfoByVM = getVMTreePathInfoByVM(
-      availableVMs,
-      hostTreeQuery.data || null,
-      vmTreeQuery.data || null
-    );
-    return { availableVMs, treePathInfoByVM };
-  }, [selectedTreeNodes, vmsQuery.data, hostTreeQuery.data, vmTreeQuery.data]);
+  const [availableVMs, setAvailableVMs] = React.useState<IVMwareVM[] | null>(null);
+  React.useEffect(() => {
+    if (vmsQuery.data) {
+      const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
+      setAvailableVMs([
+        ...selectedVMsOnMount.current,
+        ...filteredVMs.filter(
+          (vm) => !selectedVMsOnMount.current.some((selectedVM) => vm.id === selectedVM.id)
+        ),
+      ]);
+    }
+  }, [vmsQuery.data, selectedTreeNodes]);
+
+  const [treePathInfoByVM, setTreePathInfoByVM] = React.useState<IVMTreePathInfoByVM | null>(null);
+  React.useEffect(() => {
+    if ((availableVMs || []).length > 0 && hostTreeQuery.data && vmTreeQuery.data) {
+      setTreePathInfoByVM(
+        getVMTreePathInfoByVM(
+          availableVMs?.map((vm) => vm.selfLink) || [],
+          hostTreeQuery.data,
+          vmTreeQuery.data
+        )
+      );
+    }
+  }, [availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
+  const getVMTreeInfo = (vm: IVMwareVM): IVMTreePathInfo => {
+    if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
+    return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
+  };
 
   const filterCategories: FilterCategory<IVMwareVM>[] = [
     {
@@ -114,7 +130,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by datacenter ...',
       getItemValue: (item) => {
-        const { datacenter } = treePathInfoByVM[item.selfLink];
+        const { datacenter } = getVMTreeInfo(item);
         return datacenter ? datacenter.name : '';
       },
     },
@@ -124,7 +140,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by cluster ...',
       getItemValue: (item) => {
-        const { cluster } = treePathInfoByVM[item.selfLink];
+        const { cluster } = getVMTreeInfo(item);
         return cluster ? cluster.name : '';
       },
     },
@@ -134,7 +150,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by hostname...',
       getItemValue: (item) => {
-        const { host } = treePathInfoByVM[item.selfLink];
+        const { host } = getVMTreeInfo(item);
         return host ? host.name : '';
       },
     },
@@ -144,19 +160,19 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by folder path ...',
       getItemValue: (item) => {
-        const { folderPathStr } = treePathInfoByVM[item.selfLink];
+        const { folderPathStr } = getVMTreeInfo(item);
         return folderPathStr ? folderPathStr : '';
       },
     },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    availableVMs,
+    availableVMs || [],
     filterCategories
   );
 
   const getSortValues = (vm: IVMwareVM) => {
-    const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
+    const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     return [
       '', // Expand control column
       '', // Checkbox column
@@ -214,7 +230,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   currentPageItems.forEach((vm: IVMwareVM) => {
     const isExpanded = isVMExpanded(vm);
-    const { datacenter, cluster, host, folderPathStr } = treePathInfoByVM[vm.selfLink];
+    const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     rows.push({
       meta: { vm },
       selected: isItemSelected(vm.id),
@@ -260,8 +276,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         'Error loading VMs',
       ]}
       emptyStateBody="For large environments, loading may take a few minutes."
+      forceLoadingState={!availableVMs}
     >
-      {availableVMs.length === 0 ? (
+      {(availableVMs || []).length === 0 ? (
         <TableEmptyState
           titleText="No VMs found"
           bodyText="No results match your filter. Go back and make a different selection."

@@ -15,7 +15,7 @@ import {
   getAggregateQueryStatus,
   getFirstQueryError,
   mockKubeList,
-  sortKubeResultsByName,
+  useKubeResultsSortedByName,
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
@@ -53,7 +53,7 @@ export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeLis
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')
       : mockKubeList(MOCK_STORAGE_MAPPINGS, 'StorageMapList')
   );
-  return sortKubeResultsByName(result);
+  return useKubeResultsSortedByName(result);
 };
 
 export const useCreateMappingMutation = (

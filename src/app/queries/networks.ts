@@ -1,7 +1,7 @@
 import { usePollingContext } from '@app/common/context';
 import { ProviderType } from '@app/common/constants';
 import { QueryResult } from 'react-query';
-import { useMockableQuery, getInventoryApiUrl, sortResultsByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, useResultsSortedByName } from './helpers';
 import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './mocks/networks.mock';
 import {
   IOpenShiftNetwork,
@@ -32,7 +32,7 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
     },
     mockNetworks
   );
-  return sortResultsByName<T>(result);
+  return useResultsSortedByName(result);
 };
 
 export const useVMwareNetworksQuery = (

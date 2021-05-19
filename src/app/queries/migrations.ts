@@ -6,7 +6,7 @@ import {
   isSameResource,
   mockKubeList,
   nameAndNamespace,
-  sortKubeResultsByName,
+  useKubeResultsSortedByName,
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
@@ -71,7 +71,7 @@ export const useMigrationsQuery = (): QueryResult<IKubeList<IMigration>> => {
     },
     mockKubeList(MOCK_MIGRATIONS, 'Migration')
   );
-  return sortKubeResultsByName(result);
+  return useKubeResultsSortedByName(result);
 };
 
 export const findLatestMigration = (

@@ -7,7 +7,7 @@ import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import {
   mockKubeList,
   nameAndNamespace,
-  sortKubeResultsByName,
+  useKubeResultsSortedByName,
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
@@ -34,7 +34,7 @@ export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
-  return sortKubeResultsByName(result);
+  return useKubeResultsSortedByName(result);
 };
 
 export const useCreatePlanMutation = (

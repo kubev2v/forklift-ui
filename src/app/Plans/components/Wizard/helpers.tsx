@@ -174,7 +174,7 @@ export interface IVMTreePathInfo {
 
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
 export const findVMTreePathInfo = (
-  vm: IVMwareVM,
+  vmSelfLink: string,
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
 ): IVMTreePathInfo => {
@@ -187,8 +187,8 @@ export const findVMTreePathInfo = (
       folderPathStr: null,
     };
   }
-  const hostTreePath = findVMTreePath(hostTree, vm.selfLink);
-  const vmTreePath = findVMTreePath(vmTree, vm.selfLink);
+  const hostTreePath = findVMTreePath(hostTree, vmSelfLink);
+  const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
   const folders =
     (vmTreePath
       ?.filter((node) => !!node && node.kind === 'Folder')
@@ -207,17 +207,19 @@ export interface IVMTreePathInfoByVM {
 }
 
 export const getVMTreePathInfoByVM = (
-  vms: IVMwareVM[],
+  vmSelfLinks: string[],
   hostTree: IVMwareHostTree | null,
   vmTree: IVMwareVMTree | null
-): IVMTreePathInfoByVM =>
-  vms.reduce(
-    (newObj, vm) => ({
+): IVMTreePathInfoByVM | null => {
+  if (vmSelfLinks.length === 0) return null;
+  return vmSelfLinks.reduce(
+    (newObj, vmSelfLink) => ({
       ...newObj,
-      [vm.selfLink]: findVMTreePathInfo(vm, hostTree, vmTree),
+      [vmSelfLink]: findVMTreePathInfo(vmSelfLink, hostTree, vmTree),
     }),
     {}
   );
+};
 
 export const findMatchingNodeAndDescendants = (
   tree: VMwareTree | null,
