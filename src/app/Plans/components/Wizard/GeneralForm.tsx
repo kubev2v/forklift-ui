@@ -15,8 +15,13 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan, POD_NETWORK } from '@app/queries/types';
-import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
+import { IPlan, POD_NETWORK, VMwareTreeType } from '@app/queries/types';
+import {
+  useClusterProvidersQuery,
+  useInventoryProvidersQuery,
+  useVMwareTreeQuery,
+  useVMwareVMsQuery,
+} from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -89,6 +94,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       form.fields.migrationNetwork.setInitialValue(matchingNetwork?.name || null);
     }
   };
+
+  // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
+  useVMwareVMsQuery(form.values.sourceProvider);
+  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.Host);
+  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.VM);
 
   return (
     <ResolvedQueries
