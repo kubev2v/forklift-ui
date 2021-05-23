@@ -19,6 +19,7 @@ import {
   trTag,
   SEC,
   planSuccessMessage,
+  planCanceledMessage,
   // CreateNewNetworkMapping,
 } from '../types/constants';
 
@@ -145,6 +146,28 @@ export class Plan {
       });
   }
 
+  protected waitForCanceled(name: string): void {
+    cy.get(tdTag)
+      .contains(name)
+      .parent(tdTag)
+      .parent(trTag)
+      .within(() => {
+        cy.get(dataLabel.status).contains(planCanceledMessage, { timeout: 3600 * SEC });
+      });
+  }
+
+  protected plan_details(name: string): void {
+    //cy.get('table tbody tr td').eq(name).click();
+    cy.get(tdTag).contains(name).parent(tdTag).parent(trTag).click();
+  }
+
+  protected cancel(name: string): void {
+    this.plan_details(name);
+    const selector = `pf-c-table__check`;
+    click(selector);
+    clickByText(button, 'Cancel');
+  }
+
   // protected populate(planData: PlanData): void {}
 
   create(planData: PlanData): void {
@@ -177,6 +200,26 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     this.run(name);
+    this.waitForSuccess(name);
+  }
+
+  restart(name: string): void {
+    cy.get(tdTag)
+      .contains(name)
+      .parent(tdTag)
+      .parent(trTag)
+      .within(() => {
+        clickByText(button, 'Restart');
+      });
+  }
+
+  cancel_and_restart(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    this.run(name);
+    this.cancel(name);
+    this.waitForCanceled(name);
+    this.restart(name);
     this.waitForSuccess(name);
   }
 }
