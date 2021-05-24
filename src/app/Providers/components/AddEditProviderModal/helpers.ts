@@ -2,7 +2,6 @@ import { useSecretQuery } from '@app/queries';
 import * as React from 'react';
 import { IProviderObject } from '@app/queries/types';
 import { AddProviderFormState } from './AddEditProviderModal';
-import { ProviderType } from '@app/common/constants';
 import { ovirtUrlToHostname, vmwareUrlToHostname } from '@app/client/helpers';
 
 interface IEditProviderPrefillEffect {
@@ -29,23 +28,23 @@ export const useEditProviderPrefillEffect = (
       const { fields } = forms[providerType];
       fields.providerType.setInitialValue(providerType);
       fields.name.setInitialValue(providerBeingEdited.metadata.name);
-      if (providerType === ProviderType.vsphere || providerType === ProviderType.ovirt) {
+      if (providerType === 'vsphere' || providerType === 'ovirt') {
         const sourceFields = fields as typeof forms.vsphere.fields | typeof forms.ovirt.fields;
         sourceFields.username.setInitialValue(atob(secret?.data.user || ''));
         sourceFields.password.setInitialValue(atob(secret?.data.password || ''));
       }
-      if (providerType === ProviderType.vsphere) {
+      if (providerType === 'vsphere') {
         const vmwareFields = forms.vsphere.fields;
         vmwareFields.hostname.setInitialValue(
           vmwareUrlToHostname(providerBeingEdited.spec.url || '')
         );
         vmwareFields.fingerprint.setInitialValue(atob(secret?.data.thumbprint || ''));
       }
-      if (providerType === ProviderType.ovirt) {
+      if (providerType === 'ovirt') {
         const rhvFields = forms.ovirt.fields;
         rhvFields.hostname.setInitialValue(ovirtUrlToHostname(providerBeingEdited.spec.url || ''));
       }
-      if (providerType === ProviderType.openshift) {
+      if (providerType === 'openshift') {
         const openshiftFields = forms.openshift.fields;
         openshiftFields.url.setInitialValue(providerBeingEdited.spec.url || '');
         openshiftFields.saToken.setInitialValue(atob(secret?.data.token || ''));

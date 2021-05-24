@@ -2,7 +2,12 @@ import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
 import SourceProvidersTable from './Source/SourceProvidersTable';
 import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
-import { IProviderObject, IProvidersByType } from '@app/queries/types';
+import {
+  IProviderObject,
+  IProvidersByType,
+  IRHVProvider,
+  IVMwareProvider,
+} from '@app/queries/types';
 import { correlateProviders } from './helpers';
 
 interface IProvidersTableProps {
@@ -16,33 +21,19 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   clusterProviders,
   activeProviderType,
 }) => {
-  // We should be able to have the same <SourceProvidersTable> return for both vsphere and ovirt,
-  // but TS couldn't properly infer the generic type for `correlateProviders`.
-  if (activeProviderType === ProviderType.vsphere) {
+  if (activeProviderType === 'vsphere' || activeProviderType === 'ovirt') {
     return (
       <SourceProvidersTable
-        providers={correlateProviders(
+        providers={correlateProviders<IVMwareProvider | IRHVProvider>(
           clusterProviders,
-          inventoryProvidersByType.vsphere || [],
+          inventoryProvidersByType[activeProviderType] || [],
           activeProviderType
         )}
         providerType={activeProviderType}
       />
     );
   }
-  if (activeProviderType === ProviderType.ovirt) {
-    return (
-      <SourceProvidersTable
-        providers={correlateProviders(
-          clusterProviders,
-          inventoryProvidersByType.ovirt || [],
-          activeProviderType
-        )}
-        providerType={activeProviderType}
-      />
-    );
-  }
-  if (activeProviderType === ProviderType.openshift) {
+  if (activeProviderType === 'openshift') {
     return (
       <OpenShiftProvidersTable
         providers={correlateProviders(

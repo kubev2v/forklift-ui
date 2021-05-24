@@ -39,7 +39,6 @@ import {
   QuerySpinnerMode,
 } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
-import { ProviderType } from '@app/common/constants';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -220,7 +219,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 <GridItem md={6}>
                   <ProviderSelect
                     label="Source provider"
-                    providerType={ProviderType.vsphere}
+                    providerType="vsphere"
                     field={form.fields.sourceProvider}
                     notReadyTooltipPosition="right"
                     menuAppendTo="parent"
@@ -230,7 +229,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 <GridItem md={6}>
                   <ProviderSelect
                     label="Target provider"
-                    providerType={ProviderType.openshift}
+                    providerType="openshift"
                     field={form.fields.targetProvider}
                     menuAppendTo="parent"
                     maxHeight="40vh"

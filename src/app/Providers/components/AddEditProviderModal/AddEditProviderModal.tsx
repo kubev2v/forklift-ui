@@ -14,6 +14,7 @@ import {
   hostnameSchema,
   PRODUCT_DOCO_LINK,
   ProviderType,
+  PROVIDER_TYPES,
   PROVIDER_TYPE_NAMES,
   urlSchema,
   usernameSchema,
@@ -40,7 +41,7 @@ interface IAddEditProviderModalProps {
   providerBeingEdited: IProviderObject | null;
 }
 
-const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
+const PROVIDER_TYPE_OPTIONS = PROVIDER_TYPES.map((type) => ({
   toString: () => PROVIDER_TYPE_NAMES[type],
   value: type,
 })) as OptionWithValue<ProviderType>[];
@@ -51,7 +52,11 @@ const useAddProviderFormState = (
 ) => {
   const providerTypeField = useFormField<ProviderType | null>(
     null,
-    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
+    yup
+      .mixed()
+      .label('Provider type')
+      .oneOf([...PROVIDER_TYPES]) // Spread necessary because readonly array isn't assignable to mutable any[]
+      .required()
   );
 
   const commonProviderFields = {
@@ -70,13 +75,13 @@ const useAddProviderFormState = (
   };
 
   return {
-    [ProviderType.vsphere]: useFormState({
+    vsphere: useFormState({
       ...sourceProviderFields,
       fingerprint: useFormField('', fingerprintSchema.required()),
       fingerprintFilename: useFormField('', yup.string()),
     }),
-    [ProviderType.ovirt]: useFormState(sourceProviderFields),
-    [ProviderType.openshift]: useFormState({
+    ovirt: useFormState(sourceProviderFields),
+    openshift: useFormState({
       ...commonProviderFields,
       url: useFormField('', urlSchema.label('URL').required()),
       saToken: useFormField('', yup.string().label('Service account token').required()),
@@ -85,9 +90,9 @@ const useAddProviderFormState = (
 };
 
 export type AddProviderFormState = ReturnType<typeof useAddProviderFormState>; // ✨ Magic
-export type VMwareProviderFormValues = AddProviderFormState[ProviderType.vsphere]['values'];
-export type RHVProviderFormValues = AddProviderFormState[ProviderType.ovirt]['values'];
-export type OpenshiftProviderFormValues = AddProviderFormState[ProviderType.openshift]['values'];
+export type VMwareProviderFormValues = AddProviderFormState['vsphere']['values'];
+export type RHVProviderFormValues = AddProviderFormState['ovirt']['values'];
+export type OpenshiftProviderFormValues = AddProviderFormState['openshift']['values'];
 export type AddProviderFormValues =
   | VMwareProviderFormValues
   | RHVProviderFormValues

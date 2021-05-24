@@ -21,7 +21,7 @@ import { MappingType } from '@app/queries/types';
 import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 
 import './OpenShiftProvidersTable.css';
-import { PlanStatusType, ProviderType } from '@app/common/constants';
+import { PlanStatusType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
@@ -120,9 +120,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           title: <StatusCondition status={provider.status} />,
         },
         {
-          title: (
-            <ProviderActionsDropdown provider={provider} providerType={ProviderType.openshift} />
-          ),
+          title: <ProviderActionsDropdown provider={provider} providerType="openshift" />,
         },
       ],
     });

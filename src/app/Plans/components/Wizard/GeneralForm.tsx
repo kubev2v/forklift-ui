@@ -26,7 +26,6 @@ import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
-import { ProviderType } from '@app/common/constants';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useOpenShiftNetworksQuery } from '@app/queries/networks';
@@ -130,12 +129,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </Title>
         <ProviderSelect
           label="Source provider"
-          providerType={ProviderType.vsphere}
+          providerType="vsphere"
           field={form.fields.sourceProvider}
         />
         <ProviderSelect
           label="Target provider"
-          providerType={ProviderType.openshift}
+          providerType="openshift"
           field={form.fields.targetProvider}
         />
         <FormGroup

@@ -20,7 +20,9 @@ export const useNetworksQuery = <T extends IVMwareNetwork | IOpenShiftNetwork>(
   mockNetworks: T[]
 ): QueryResult<T[]> => {
   const apiSlug =
-    providerType === ProviderType.vsphere ? '/networks' : '/networkattachmentdefinitions';
+    providerType === 'vsphere' || providerType === 'ovirt'
+      ? '/networks'
+      : '/networkattachmentdefinitions';
   const result = useMockableQuery<T[]>(
     {
       queryKey: ['networks', providerType, provider?.name],
@@ -39,10 +41,12 @@ export const useVMwareNetworksQuery = (
   provider: IVMwareProvider | null,
   mappingType?: MappingType
 ): QueryResult<IVMwareNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.vsphere, mappingType || null, MOCK_VMWARE_NETWORKS);
+  useNetworksQuery(provider, 'vsphere', mappingType || null, MOCK_VMWARE_NETWORKS);
+
+// TODO add useRHVNetworksQuery or consolidate to useSourceNetworksQuery. Maybe we need 'source' | 'target' instead of providerType for logic above.
 
 export const useOpenShiftNetworksQuery = (
   provider: IOpenShiftProvider | null,
   mappingType?: MappingType
 ): QueryResult<IOpenShiftNetwork[]> =>
-  useNetworksQuery(provider, ProviderType.openshift, mappingType || null, MOCK_OPENSHIFT_NETWORKS);
+  useNetworksQuery(provider, 'openshift', mappingType || null, MOCK_OPENSHIFT_NETWORKS);

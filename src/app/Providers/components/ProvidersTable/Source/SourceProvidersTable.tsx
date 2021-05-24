@@ -37,15 +37,15 @@ const SourceProvidersTable = <T extends SourceInventoryProvider>({
   providerType,
 }: React.PropsWithChildren<ISourceProvidersTableProps<T>>): JSX.Element | null => {
   let storageTitle = '';
-  if (providerType === ProviderType.vsphere) storageTitle = 'Datastores';
-  if (providerType === ProviderType.ovirt) storageTitle = 'Storage domains';
+  if (providerType === 'vsphere') storageTitle = 'Datastores';
+  if (providerType === 'ovirt') storageTitle = 'Storage domains';
 
   const getStorageCount = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
     if (!provider.inventory) return 0;
-    if (providerType === ProviderType.vsphere) {
+    if (providerType === 'vsphere') {
       return (provider.inventory as IVMwareProvider).datastoreCount;
     }
-    if (providerType === ProviderType.ovirt) {
+    if (providerType === 'ovirt') {
       return (provider.inventory as IRHVProvider).storageDomainCount;
     }
     return 0;
@@ -144,7 +144,7 @@ const SourceProvidersTable = <T extends SourceInventoryProvider>({
         numStr(clusterCount),
         (() => {
           if (hostCount === undefined) return '';
-          if (providerType === ProviderType.vsphere) {
+          if (providerType === 'vsphere') {
             const hostCountWithIcon = (
               <>
                 <OutlinedHddIcon key="hosts-icon" /> {hostCount}
@@ -158,7 +158,7 @@ const SourceProvidersTable = <T extends SourceInventoryProvider>({
               ),
             };
           }
-          if (providerType === ProviderType.ovirt) {
+          if (providerType === 'ovirt') {
             return hostCount;
           }
           return null;

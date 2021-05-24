@@ -11,7 +11,6 @@ import {
   MOCK_INVENTORY_PROVIDERS,
 } from '@app/queries/mocks/providers.mock';
 import { correlateProviders } from '../../helpers';
-import { ProviderType } from '@app/common/constants';
 
 describe('<SourceProvidersTable />', () => {
   const history = createMemoryHistory();
@@ -19,14 +18,14 @@ describe('<SourceProvidersTable />', () => {
     providers: correlateProviders(
       MOCK_CLUSTER_PROVIDERS,
       MOCK_INVENTORY_PROVIDERS.vsphere,
-      ProviderType.vsphere
+      'vsphere'
     ),
   };
 
   it('renders vsphere table', () => {
     render(
       <Router history={history}>
-        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
@@ -51,7 +50,7 @@ describe('<SourceProvidersTable />', () => {
   it('renders Hosts links', () => {
     render(
       <Router history={history}>
-        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
@@ -63,7 +62,7 @@ describe('<SourceProvidersTable />', () => {
   it('renders status condition', async () => {
     render(
       <Router history={history}>
-        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
@@ -77,7 +76,7 @@ describe('<SourceProvidersTable />', () => {
   it('renders action menu', async () => {
     render(
       <Router history={history}>
-        <SourceProvidersTable {...props} providerType={ProviderType.vsphere} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 

@@ -37,7 +37,7 @@ export const EditProviderContext = React.createContext({
 });
 export interface IProvidersMatchParams {
   url: string;
-  providerType: string;
+  providerType: ProviderType;
 }
 
 const ProvidersPage: React.FunctionComponent = () => {
@@ -71,9 +71,7 @@ const ProvidersPage: React.FunctionComponent = () => {
     .filter((type) => !!type)
     .sort() as ProviderType[];
 
-  const activeProviderType = match?.params.providerType
-    ? ProviderType[match?.params.providerType]
-    : null;
+  const activeProviderType = match?.params.providerType || null;
 
   React.useEffect(() => {
     if (!activeProviderType && availableProviderTypes.length > 0) {

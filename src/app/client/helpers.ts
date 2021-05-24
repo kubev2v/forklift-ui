@@ -57,7 +57,7 @@ export function convertFormValuesToSecret(
   providerBeingEdited: IProviderObject | null
 ): ISecret {
   let secretData: ISecret['data'] = {};
-  if (values.providerType === ProviderType.vsphere) {
+  if (values.providerType === 'vsphere') {
     const vmwareValues = values as VMwareProviderFormValues;
     secretData = {
       user: btoa(vmwareValues.username),
@@ -65,14 +65,14 @@ export function convertFormValuesToSecret(
       thumbprint: btoa(vmwareValues.fingerprint),
     };
   }
-  if (values.providerType === ProviderType.ovirt) {
+  if (values.providerType === 'ovirt') {
     const rhvValues = values as RHVProviderFormValues;
     secretData = {
       user: btoa(rhvValues.username),
       password: btoa(rhvValues.password),
     };
   }
-  if (values.providerType === ProviderType.openshift) {
+  if (values.providerType === 'openshift') {
     const openshiftValues = values as OpenshiftProviderFormValues;
     secretData = {
       token: btoa(openshiftValues.saToken),
@@ -128,13 +128,13 @@ export const convertFormValuesToProvider = (
 ): IProviderObject => {
   const name = values.name;
   let url = '';
-  if (providerType === ProviderType.vsphere) {
+  if (providerType === 'vsphere') {
     url = vmwareHostnameToUrl((values as VMwareProviderFormValues).hostname);
   }
-  if (providerType === ProviderType.ovirt) {
+  if (providerType === 'ovirt') {
     url = ovirtHostnameToUrl((values as RHVProviderFormValues).hostname);
   }
-  if (providerType === ProviderType.openshift) {
+  if (providerType === 'openshift') {
     url = (values as OpenshiftProviderFormValues).url;
   }
   return {

@@ -61,9 +61,9 @@ export type InventoryProvider = IVMwareProvider | IRHVProvider | IOpenShiftProvi
 export type SourceInventoryProvider = IVMwareProvider | IRHVProvider;
 
 export interface IProvidersByType {
-  [ProviderType.vsphere]: IVMwareProvider[];
-  [ProviderType.ovirt]: IRHVProvider[];
-  [ProviderType.openshift]: IOpenShiftProvider[];
+  vsphere: IVMwareProvider[];
+  ovirt: IRHVProvider[];
+  openshift: IOpenShiftProvider[];
 }
 
 export interface ICorrelatedProvider<T extends InventoryProvider> extends IProviderObject {

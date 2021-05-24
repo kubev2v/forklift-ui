@@ -5,12 +5,11 @@ import {
   IProviderObject,
   IRHVProvider,
 } from '../types/providers.types';
-import { ProviderType } from '@app/common/constants';
 
 export let MOCK_INVENTORY_PROVIDERS: IProvidersByType = {
-  [ProviderType.vsphere]: [],
-  [ProviderType.ovirt]: [],
-  [ProviderType.openshift]: [],
+  vsphere: [],
+  ovirt: [],
+  openshift: [],
 };
 
 export let MOCK_CLUSTER_PROVIDERS: IProviderObject[];
@@ -22,7 +21,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     namespace: 'openshift-migration',
     name: 'vcenter-1',
     selfLink: '/foo/vmwareprovider/1',
-    type: ProviderType.vsphere,
+    type: 'vsphere',
     object: {
       apiVersion: '12345',
       kind: 'foo-kind',
@@ -36,7 +35,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         creationTimestamp: '2020-08-21T18:36:41.468Z',
       },
       spec: {
-        type: ProviderType.vsphere,
+        type: 'vsphere',
         url: 'https://vcenter.v2v.bos.redhat.com/sdk',
         secret: {
           namespace: 'openshift-migration',
@@ -164,7 +163,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     namespace: 'konveyor-forklift',
     name: 'rhv-1',
     selfLink: 'providers/ovirt/foo1',
-    type: ProviderType.ovirt,
+    type: 'ovirt',
     object: {
       kind: 'Provider',
       apiVersion: 'forklift.konveyor.io/v1beta1',
@@ -222,7 +221,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         ],
       },
       spec: {
-        type: ProviderType.ovirt,
+        type: 'ovirt',
         url: 'https://rhvm.v2v.bos.redhat.com/ovirt-engine/api',
         secret: { namespace: 'konveyor-forklift', name: 'rhv' },
       },
@@ -306,7 +305,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     uid: '1',
     name: 'ocpv-1',
     selfLink: '/foo/openshiftprovider/1',
-    type: ProviderType.openshift,
+    type: 'openshift',
     object: {
       ...vmwareProvider1.object,
       metadata: {
@@ -318,7 +317,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       spec: {
         ...vmwareProvider1.object.spec,
-        type: ProviderType.openshift,
+        type: 'openshift',
         url: 'https://my_OCPv_url',
       },
     },
@@ -369,14 +368,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   MOCK_INVENTORY_PROVIDERS = {
-    [ProviderType.vsphere]: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
-    [ProviderType.ovirt]: [rhvProvider1, rhvProvider2, rhvProvider3],
-    [ProviderType.openshift]: [openshiftProvider1, openshiftProvider2, openshiftProvider3],
+    vsphere: [vmwareProvider1, vmwareProvider2, vmwareProvider3],
+    ovirt: [rhvProvider1, rhvProvider2, rhvProvider3],
+    openshift: [openshiftProvider1, openshiftProvider2, openshiftProvider3],
   };
 
   MOCK_CLUSTER_PROVIDERS = [
-    ...MOCK_INVENTORY_PROVIDERS[ProviderType.vsphere],
-    ...MOCK_INVENTORY_PROVIDERS[ProviderType.ovirt],
-    ...MOCK_INVENTORY_PROVIDERS[ProviderType.openshift],
+    ...MOCK_INVENTORY_PROVIDERS.vsphere,
+    ...MOCK_INVENTORY_PROVIDERS.ovirt,
+    ...MOCK_INVENTORY_PROVIDERS.openshift,
   ].map((inventoryProvider) => ({ ...inventoryProvider.object }));
 }
