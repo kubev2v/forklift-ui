@@ -17,6 +17,7 @@ import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
+import { IMetaObjectMeta } from '@app/queries/types/common.types';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -65,21 +66,19 @@ export const useCreatePlanMutation = (
         ])
       ).map((response) => nameAndNamespace(response?.data.metadata));
 
+      // Create hooks CRs with generated names and collect their refs
       const planHooks = forms.hooks.values.instances.map((instance) => ({
         cr: generateHook(instance, null, `${forms.general.values.planName}-hook-`),
-        step: instance.step,
+        instance: instance,
       }));
-
-      // Create hooks CRs with generated names and collect their refs
       const newHooksRef = planHooks.map(async (newHook) => {
         const response = await client.create<IHook>(hookResource, newHook.cr);
-        return { ref: nameAndNamespace(response.data.metadata), step: newHook.step };
+        return { ref: nameAndNamespace(response.data.metadata), instance: newHook.instance };
       });
 
       const hooksRef = await Promise.all(newHooksRef);
-      console.log(hooksRef);
 
-      // Create plan referencing new mappings and patch plan's VMs with new hooks
+      // Create plan referencing new mappings and new hooks for plan's VMs
       const planResponse = await client.create<IPlan>(
         planResource,
         generatePlan(forms, networkMappingRef, storageMappingRef, hooksRef)
@@ -100,15 +99,19 @@ export const useCreatePlanMutation = (
         ]);
       }
 
-      // TODO - Patch hooks with ownerReferences to the new plan
-      // (call generateHook again but with the planResponse?.data)
-      // const hooks: hookWithOwnerRef[] = generateHook({
-      //   forms,
-      //   owner: planResponse?.data,
-      // });
-      // if (hookWithOwnerRef) {
-      //   await Promise.all([client.patch<IHook>(hookResource, hookRef.name, hookWithOwnerRef)]);
-      // }
+      // Patch hooks with ownerReferences to the new plan
+      const hooksWithOwnerRef = hooksRef.map((hook) =>
+        generateHook(hook.instance, hook.ref, '', planResponse?.data)
+      );
+      const newHooksWithOwnerRef = hooksWithOwnerRef.map(async (hookWithOwnerRef) => {
+        const response = await client.patch<IHook>(
+          hookResource,
+          (hookWithOwnerRef.metadata as IMetaObjectMeta).name,
+          hookWithOwnerRef
+        );
+        return response;
+      });
+      await Promise.all(newHooksWithOwnerRef);
 
       return planResponse;
     },

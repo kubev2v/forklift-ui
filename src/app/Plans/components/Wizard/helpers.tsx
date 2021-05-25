@@ -362,7 +362,7 @@ export const generateMappings = ({
 
 interface IHookRef {
   ref: INameNamespaceRef;
-  step: HookStep | null;
+  instance: PlanHookInstance;
 }
 
 export const generatePlan = (
@@ -399,7 +399,7 @@ export const generatePlan = (
     vms: hooksRef
       ? forms.selectVMs.values.selectedVMIds.map((id) => ({
           id,
-          hooks: hooksRef.map((hookRef) => ({ hook: hookRef.ref, step: hookRef.step })),
+          hooks: hooksRef.map((hookRef) => ({ hook: hookRef.ref, step: hookRef.instance.step })),
         }))
       : forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
     warm: forms.type.values.type === 'Warm',
@@ -597,16 +597,14 @@ export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): bool
 
 export const generateHook = (
   instance: PlanHookInstance,
-  existingHook: IHook | null,
+  existingHook: INameNamespaceRef | null,
   generateName?: string,
   owner?: IPlan
 ): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
-    ...(existingHook
-      ? { name: (existingHook.metadata as IMetaObjectMeta).name }
-      : { generateName: generateName || '' }),
+    ...(existingHook ? { name: existingHook.name } : { generateName: generateName || '' }),
     namespace: META.namespace,
     ...(owner ? { ownerReferences: [getObjectRef(owner)] } : {}),
   },
