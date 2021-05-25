@@ -82,7 +82,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({ plan }: IPlan
         Migration transfer network
       </GridItem>
       <GridItem md={9} id="review-transfer-network" aria-labelledby="transfer-network-label">
-        {plan.spec.transferNetwork || POD_NETWORK.name}
+        {plan.spec.transferNetwork?.name || POD_NETWORK.name}
       </GridItem>
       <GridItem md={3}>Selected VMs</GridItem>
       <GridItem md={9}>
