@@ -31,6 +31,7 @@ import {
   Mapping,
   MappingType,
   PlanType,
+  SourceInventoryProvider,
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
@@ -88,9 +89,9 @@ const usePlanWizardFormState = (
         getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
       ),
       planDescription: useFormField('', yup.string().label('Plan description').defined()),
-      sourceProvider: useFormField<IVMwareProvider | null>(
+      sourceProvider: useFormField<SourceInventoryProvider | null>(
         null,
-        yup.mixed<IVMwareProvider>().label('Source provider').required()
+        yup.mixed<SourceInventoryProvider>().label('Source provider').required()
       ),
       targetProvider: useFormField<IOpenShiftProvider | null>(
         null,
