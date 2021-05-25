@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { useClusterProvidersQuery, useInventoryProvidersQuery } from '@app/queries';
-import { InventoryProvider, IProviderObject } from '@app/queries/types';
+import {
+  InventoryProvider,
+  IOpenShiftProvider,
+  IProviderObject,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import { getFormGroupProps, IValidatedFormField } from '@konveyor/lib-ui';
 import { FormGroup, Select, SelectGroup, SelectOption, SelectProps } from '@patternfly/react-core';
 import {
@@ -16,22 +21,29 @@ import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
 
 import { isSameResource } from '@app/queries/helpers';
 
-interface IProviderSelectProps<T extends InventoryProvider> extends Partial<SelectProps> {
+interface IProviderSelectBaseProps<T> extends Partial<SelectProps> {
   label: string;
-  providerRole: 'source' | 'target';
-  field: IValidatedFormField<T | null>;
   notReadyTooltipPosition?: 'left' | 'right';
+  field: IValidatedFormField<T | null>;
 }
 
-// TODO render options in groups by type, but only if providerRole === 'source'.
+interface ISourceProviderSelectProps extends IProviderSelectBaseProps<SourceInventoryProvider> {
+  providerRole: 'source';
+}
 
-const ProviderSelect = <T extends InventoryProvider>({
+interface ITargetProviderSelectProps extends IProviderSelectBaseProps<IOpenShiftProvider> {
+  providerRole: 'target';
+}
+
+type ProviderSelectProps = ISourceProviderSelectProps | ITargetProviderSelectProps;
+
+const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   label,
   providerRole,
   field,
   notReadyTooltipPosition = 'left',
   ...props
-}: React.PropsWithChildren<IProviderSelectProps<T>>): JSX.Element | null => {
+}: ProviderSelectProps) => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const { data: inventoryData } = inventoryProvidersQuery;
@@ -98,7 +110,7 @@ const ProviderSelect = <T extends InventoryProvider>({
         label={label}
         isRequired
         fieldId={`provider-select-${providerRole}`}
-        {...getFormGroupProps(field)}
+        {...getFormGroupProps(field as IValidatedFormField<unknown>)}
       >
         <Select
           id={`provider-select-${providerRole}`}
@@ -114,7 +126,18 @@ const ProviderSelect = <T extends InventoryProvider>({
               selection as IProviderObject
             );
             if (matchingInventoryProvider) {
-              field.setValue(matchingInventoryProvider);
+              // There's probably some better way to make TS happy here.
+              // The discriminated union of ProviderSelectProps should mean that providerRole === 'source'
+              // narrows the type of `field` to IValidatedFormField<SourceInventoryProvider | null>, for example.
+              if (providerRole === 'source') {
+                (field as IValidatedFormField<SourceInventoryProvider | null>).setValue(
+                  matchingInventoryProvider as SourceInventoryProvider
+                );
+              } else {
+                (field as IValidatedFormField<IOpenShiftProvider | null>).setValue(
+                  matchingInventoryProvider as IOpenShiftProvider
+                );
+              }
             }
           }}
           {...props}
