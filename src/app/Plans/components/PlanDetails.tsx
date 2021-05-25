@@ -15,6 +15,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { isSameResource } from '@app/queries/helpers';
 interface IPlanDetailsProps {
   plan: IPlan;
 }
@@ -24,14 +25,14 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({ plan }: IPlan
 
   const networkMappings = useMappingsQuery(MappingType.Network);
   const networkMapping =
-    networkMappings.data?.items.find(
-      (mapping) => (mapping.metadata as IMetaObjectMeta).name === plan.spec.map.network.name
+    networkMappings.data?.items.find((mapping) =>
+      isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.network)
     ) || null;
 
   const storageMappings = useMappingsQuery(MappingType.Storage);
   const storageMapping =
-    storageMappings.data?.items.find(
-      (mapping) => (mapping.metadata as IMetaObjectMeta).name === plan.spec.map.storage.name
+    storageMappings.data?.items.find((mapping) =>
+      isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.storage)
     ) || null;
 
   const providers = useInventoryProvidersQuery();
