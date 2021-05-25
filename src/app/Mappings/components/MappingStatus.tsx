@@ -11,18 +11,30 @@ import { Button, Popover } from '@patternfly/react-core';
 interface IMappingStatusProps {
   mappingType: MappingType;
   mapping: Mapping;
+  isLabel?: boolean;
+  disableOk?: boolean;
+  className?: string;
 }
 
 const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
   mappingType,
   mapping,
+  isLabel = true,
+  disableOk = false,
+  className = '',
 }: IMappingStatusProps) => {
   const { availableSources, availableTargets, queries } = useResourceQueriesForMapping(
     mappingType,
     mapping
   );
   const isValid = isMappingValid(mappingType, mapping, availableSources, availableTargets);
-  const icon = <StatusIcon status={isValid ? 'Ok' : 'Error'} label={isValid ? 'OK' : 'Invalid'} />;
+  const icon = (
+    <StatusIcon
+      status={isValid ? 'Ok' : 'Error'}
+      label={isLabel ? (isValid ? 'OK' : 'Invalid') : null}
+      className={className}
+    />
+  );
   return (
     <ResolvedQueries
       results={queries}
@@ -38,7 +50,9 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
       }}
     >
       {isValid ? (
-        icon
+        disableOk ? null : (
+          icon
+        )
       ) : (
         <Popover
           hasAutoWidth
