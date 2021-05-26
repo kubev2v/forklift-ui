@@ -7,6 +7,7 @@ import { IVMwareProvider } from './types';
 import { VMwareTree, VMwareTreeType } from './types/tree.types';
 import { useAuthorizedFetch } from './fetchHelpers';
 
+// TODO add support for RHV VM trees, limit host trees to vmware only
 export const useVMwareTreeQuery = <T extends VMwareTree>(
   provider: IVMwareProvider | null,
   treeType: VMwareTreeType

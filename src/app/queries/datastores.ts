@@ -5,6 +5,7 @@ import { MOCK_VMWARE_DATASTORES } from './mocks/datastores.mock';
 import { IVMwareDatastore, IVMwareProvider, MappingType } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
 
+// TODO generalize for RHV storagedomains? not sure whether that should be its own hook.
 export const useDatastoresQuery = (
   provider: IVMwareProvider | null,
   mappingType: MappingType
