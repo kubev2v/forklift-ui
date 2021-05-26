@@ -15,7 +15,12 @@ import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
+import {
+  MappingType,
+  IOpenShiftProvider,
+  Mapping,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingResourceQueries,
@@ -57,9 +62,9 @@ const useMappingFormState = (
       '',
       getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
     ),
-    sourceProvider: useFormField<IVMwareProvider | null>(
+    sourceProvider: useFormField<SourceInventoryProvider | null>(
       null,
-      yup.mixed<IVMwareProvider>().label('Source provider').required()
+      yup.mixed<SourceInventoryProvider>().label('Source provider').required()
     ),
     targetProvider: useFormField<IOpenShiftProvider | null>(
       null,

@@ -17,7 +17,6 @@ import {
   IProvidersByType,
   InventoryProvider,
   ISecret,
-  IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
   IProviderObject,

@@ -3,7 +3,6 @@ import {
   Mapping,
   MappingItem,
   MappingType,
-  IVMwareProvider,
   IOpenShiftProvider,
   INetworkMappingItem,
   IStorageMappingItem,
@@ -13,6 +12,7 @@ import {
   IStorageMapping,
   IPlan,
   ISourceVM,
+  SourceInventoryProvider,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
@@ -59,7 +59,7 @@ interface IGetMappingParams {
   mappingName: string | null;
   generateName: string | null;
   owner?: IPlan;
-  sourceProvider: IVMwareProvider;
+  sourceProvider: SourceInventoryProvider;
   targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
 }

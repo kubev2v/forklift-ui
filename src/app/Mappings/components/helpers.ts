@@ -6,12 +6,12 @@ import {
   IOpenShiftProvider,
   IProvidersByType,
   IStorageMappingItem,
-  IVMwareProvider,
   Mapping,
   MappingItem,
   MappingSource,
   MappingTarget,
   MappingType,
+  SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingFormState } from './AddEditMappingModal';
 import { QueryResult, QueryStatus } from 'react-query';
@@ -66,7 +66,7 @@ export const useEditingMappingPrefillEffect = (
   mappingBeingEdited: Mapping | null,
   mappingType: MappingType,
   mappingBeingEditedProviders: {
-    sourceProvider: IVMwareProvider | null;
+    sourceProvider: SourceInventoryProvider | null;
     targetProvider: IOpenShiftProvider | null;
   },
   providersQuery: QueryResult<IProvidersByType>,
