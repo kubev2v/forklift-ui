@@ -1,7 +1,6 @@
 import { MutationResultPair, useQueryCache, QueryResult, QueryStatus } from 'react-query';
 import * as yup from 'yup';
 import {
-  IVMwareProvider,
   IOpenShiftProvider,
   MappingType,
   MappingSource,
@@ -9,6 +8,7 @@ import {
   Mapping,
   POD_NETWORK,
   IMetaObjectMeta,
+  SourceInventoryProvider,
 } from './types';
 import { useStorageClassesQuery } from './storageClasses';
 import {
@@ -150,17 +150,17 @@ export interface IMappingResourcesResult {
 }
 
 export interface ISpecificMappingResourcesResult extends IMappingResourcesResult {
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
 }
 
 export const useMappingResourceQueries = (
-  sourceProvider: IVMwareProvider | null,
+  sourceProvider: SourceInventoryProvider | null,
   targetProvider: IOpenShiftProvider | null,
   mappingType: MappingType
 ): IMappingResourcesResult => {
-  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider, mappingType);
-  const datastoresQuery = useDatastoresQuery(sourceProvider, mappingType);
+  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider, mappingType); // TODO add RHV support
+  const datastoresQuery = useDatastoresQuery(sourceProvider, mappingType); // TODO add RHV support (naming? storageDomains?)
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(targetProvider, mappingType);
   const storageClassesQuery = useStorageClassesQuery(
     targetProvider ? [targetProvider] : null,

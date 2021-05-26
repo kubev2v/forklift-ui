@@ -3,7 +3,7 @@ import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfl
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useVMwareTreeQuery, useSourceVMsQuery } from '@app/queries';
-import { IPlan, IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
+import { IPlan, SourceInventoryProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
 import {
   filterAndConvertVMwareTree,
   findMatchingNodeAndDescendants,
@@ -19,7 +19,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   planBeingEdited: IPlan | null;
 }
 

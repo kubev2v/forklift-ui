@@ -259,7 +259,7 @@ export const findNodesMatchingSelectedVMs = (
 
 export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
-  selectedVMs: IVMwareVM[],
+  selectedVMs: ISourceVM[],
   mappingType: MappingType
 ): MappingSource[] => {
   const sourceIds = Array.from(

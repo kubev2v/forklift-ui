@@ -11,8 +11,8 @@ import {
   ICommonMapping,
   INetworkMapping,
   IStorageMapping,
-  IVMwareVM,
   IPlan,
+  ISourceVM,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
@@ -156,7 +156,7 @@ export const getMappingFromBuilderItems = ({
 export const getBuilderItemsWithMissingSources = (
   builderItems: IMappingBuilderItem[],
   mappingResourceQueries: IMappingResourcesResult,
-  selectedVMs: IVMwareVM[],
+  selectedVMs: ISourceVM[],
   mappingType: MappingType,
   keepNonRequiredSources: boolean
 ): IMappingBuilderItem[] => {

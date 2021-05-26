@@ -15,8 +15,8 @@ import {
 import {
   ISourceVM,
   IVMwareHostTree,
-  IVMwareProvider,
   IVMwareVMTree,
+  SourceInventoryProvider,
   VMwareTree,
   VMwareTreeType,
 } from '@app/queries/types';
@@ -44,7 +44,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
   selectedTreeNodes: VMwareTree[]; // TODO add RHV support
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   selectedVMs: ISourceVM[];
 }
 

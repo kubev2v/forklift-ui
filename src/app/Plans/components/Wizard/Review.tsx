@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
-import { IMetaObjectMeta, IPlan, IVMwareVM, Mapping } from '@app/queries/types';
+import { IMetaObjectMeta, IPlan, ISourceVM, Mapping } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -20,7 +20,7 @@ interface IReviewProps {
   )[];
   allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;
-  selectedVMs: IVMwareVM[];
+  selectedVMs: ISourceVM[];
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({

@@ -21,11 +21,11 @@ import { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   MappingType,
   Mapping,
-  IVMwareProvider,
   IOpenShiftProvider,
-  IVMwareVM,
   IPlan,
   IMetaObjectMeta,
+  ISourceVM,
+  SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { filterSharedMappings, useMappingResourceQueries, useMappingsQuery } from '@app/queries';
@@ -45,10 +45,10 @@ import { usePausedPollingEffect } from '@app/common/context';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
-  selectedVMs: IVMwareVM[];
+  selectedVMs: ISourceVM[];
   planBeingEdited: IPlan | null;
 }
 
