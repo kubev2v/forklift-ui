@@ -1,22 +1,27 @@
 import { IVMwareObjRef } from './common.types';
 
-export interface IVMwareVMDisk {
-  file: string;
-  datastore: IVMwareObjRef;
-}
-
-export interface IVMwareVMConcern {
+export interface ISourceVMConcern {
   label: string;
   category: 'Warning' | 'Critical' | 'Information' | 'Advisory';
   assessment: string;
 }
 
-export interface IVMwareVM {
+export interface ISourceVM {
   id: string;
   revision: number;
-  parent: IVMwareObjRef;
   name: string;
   selfLink: string;
+  concerns: ISourceVMConcern[];
+  revisionValidated: number;
+}
+
+export interface IVMwareVMDisk {
+  file: string;
+  datastore: IVMwareObjRef;
+}
+
+export interface IVMwareVM extends ISourceVM {
+  parent: IVMwareObjRef;
   uuid: string;
   firmware: string;
   cpuAffinity: unknown[];
@@ -31,7 +36,13 @@ export interface IVMwareVM {
   ipAddress: string;
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
-  concerns: IVMwareVMConcern[];
+  concerns: ISourceVMConcern[];
   revisionValidated: number;
   isTemplate: boolean;
+}
+
+export interface IRHVVM extends ISourceVM {
+  description: string;
+  cluster: string;
+  host: string;
 }

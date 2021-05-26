@@ -19,8 +19,8 @@ import { IPlan, POD_NETWORK, VMwareTreeType } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
+  useSourceVMsQuery,
   useVMwareTreeQuery,
-  useVMwareVMsQuery,
 } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
@@ -95,9 +95,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   };
 
   // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
-  useVMwareVMsQuery(form.values.sourceProvider);
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.Host);
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.VM);
+  useSourceVMsQuery(form.values.sourceProvider);
+  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.Host); // TODO only query this if we're in a VMware plan
+  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.VM); // TODO add RHV support
 
   return (
     <ResolvedQueries
@@ -127,16 +127,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <Title headingLevel="h3" size="md">
           Select source and target providers
         </Title>
-        <ProviderSelect
-          label="Source provider"
-          providerType="vsphere"
-          field={form.fields.sourceProvider}
-        />
-        <ProviderSelect
-          label="Target provider"
-          providerType="openshift"
-          field={form.fields.targetProvider}
-        />
+        <ProviderSelect providerRole="source" field={form.fields.sourceProvider} />
+        <ProviderSelect providerRole="target" field={form.fields.targetProvider} />
         <FormGroup
           label="Target namespace"
           isRequired

@@ -22,7 +22,6 @@ import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IProviderSelectBaseProps<T> extends Partial<SelectProps> {
-  label: string;
   notReadyTooltipPosition?: 'left' | 'right';
   field: IValidatedFormField<T | null>;
 }
@@ -38,7 +37,6 @@ interface ITargetProviderSelectProps extends IProviderSelectBaseProps<IOpenShift
 type ProviderSelectProps = ISourceProviderSelectProps | ITargetProviderSelectProps;
 
 const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
-  label,
   providerRole,
   field,
   notReadyTooltipPosition = 'left',
@@ -96,6 +94,8 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   });
 
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const label = providerRole === 'source' ? 'Source provider' : 'Target provider';
 
   return (
     <ResolvedQueries

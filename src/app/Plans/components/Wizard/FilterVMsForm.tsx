@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
+import { useVMwareTreeQuery, useSourceVMsQuery } from '@app/queries';
 import { IPlan, IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
 import {
   filterAndConvertVMwareTree,
@@ -32,8 +32,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
 
   const [searchText, setSearchText] = React.useState('');
 
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
-  const treeQuery = useVMwareTreeQuery(sourceProvider, form.values.treeType);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
+  const treeQuery = useVMwareTreeQuery(sourceProvider, form.values.treeType); // TODO add RHV support
 
   const treeSelection = useSelectionState({
     items: flattenVMwareTreeNodes(treeQuery.data || null),

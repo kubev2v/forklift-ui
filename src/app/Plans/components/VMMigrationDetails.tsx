@@ -54,7 +54,7 @@ import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
   findVMById,
 } from '@app/queries';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -102,7 +102,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);

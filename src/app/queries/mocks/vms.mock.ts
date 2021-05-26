@@ -1,6 +1,7 @@
-import { IVMwareVM } from '../types/vms.types';
+import { IRHVVM, IVMwareVM } from '../types/vms.types';
 
 export let MOCK_VMWARE_VMS: IVMwareVM[] = [];
+export let MOCK_RHV_VMS: IRHVVM[] = [];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   MOCK_VMWARE_VMS = [
@@ -207,4 +208,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     uuid: 'vm-template-test',
     isTemplate: true,
   });
+
+  MOCK_RHV_VMS = []; // TODO
 }

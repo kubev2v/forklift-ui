@@ -27,7 +27,6 @@ import Review from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
-  IVMwareProvider,
   Mapping,
   MappingType,
   PlanType,
@@ -48,7 +47,7 @@ import {
   usePatchPlanMutation,
   usePlansQuery,
   useCreateMappingMutations,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
 } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -156,7 +155,7 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const vmsQuery = useVMwareVMsQuery(forms.general.values.sourceProvider);
+  const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
 
   const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
     forms,
@@ -273,6 +272,7 @@ const PlanWizard: React.FunctionComponent = () => {
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
                 planBeingEdited={planBeingEdited}
+                // TODO add RHV support (pass a providerType, limit to only VM tree)
               />
             </WizardStepContainer>
           ),

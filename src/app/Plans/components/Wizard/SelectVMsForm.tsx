@@ -13,6 +13,7 @@ import {
 } from '@patternfly/react-table';
 
 import {
+  ISourceVM,
   IVMwareHostTree,
   IVMwareProvider,
   IVMwareVM,
@@ -33,7 +34,7 @@ import {
   IVMTreePathInfoByVM,
   vmMatchesConcernFilter,
 } from './helpers';
-import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
+import { useVMwareTreeQuery, useSourceVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -43,9 +44,9 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
-  selectedTreeNodes: VMwareTree[];
+  selectedTreeNodes: VMwareTree[]; // TODO add RHV support
   sourceProvider: IVMwareProvider | null;
-  selectedVMs: IVMwareVM[];
+  selectedVMs: ISourceVM[];
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
@@ -54,13 +55,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   sourceProvider,
   selectedVMs,
 }: ISelectVMsFormProps) => {
-  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host);
-  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM);
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
+  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host); // TODO only for vmware
+  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM); // TODO add RHV support
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
   const selectedVMsOnMount = React.useRef(selectedVMs);
-  const [availableVMs, setAvailableVMs] = React.useState<IVMwareVM[] | null>(null);
+  const [availableVMs, setAvailableVMs] = React.useState<ISourceVM[] | null>(null);
   React.useEffect(() => {
     if (vmsQuery.data) {
       const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
@@ -85,12 +86,12 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       );
     }
   }, [availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
-  const getVMTreeInfo = (vm: IVMwareVM): IVMTreePathInfo => {
+  const getVMTreeInfo = (vm: ISourceVM): IVMTreePathInfo => {
     if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
     return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
   };
 
-  const filterCategories: FilterCategory<IVMwareVM>[] = [
+  const filterCategories: FilterCategory<ISourceVM>[] = [
     {
       key: 'name',
       title: 'VM name',

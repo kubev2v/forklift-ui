@@ -6,10 +6,11 @@ import {
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
+  ISourceVM,
   IStorageMapping,
   IVMwareHostTree,
   IVMwareVM,
-  IVMwareVMConcern,
+  ISourceVMConcern,
   IVMwareVMTree,
   MappingSource,
   MappingType,
@@ -35,9 +36,9 @@ import {
   useMappingResourceQueries,
   useInventoryProvidersQuery,
   useVMwareTreeQuery,
-  useVMwareVMsQuery,
   useMappingsQuery,
   useHooksQuery,
+  useSourceVMsQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -149,8 +150,8 @@ export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
 
 export const getAvailableVMs = (
   selectedTreeNodes: VMwareTree[],
-  allVMs: IVMwareVM[]
-): IVMwareVM[] => {
+  allVMs: ISourceVM[]
+): ISourceVM[] => {
   const treeVMs = getAllVMChildren(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
@@ -178,6 +179,7 @@ export interface IVMTreePathInfo {
 }
 
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
+// TODO add RHV support. no folders, basically.
 export const findVMTreePathInfo = (
   vmSelfLink: string,
   hostTree: IVMwareHostTree | null,
@@ -249,7 +251,7 @@ export const findMatchingNodeAndDescendants = (
 
 export const findNodesMatchingSelectedVMs = (
   tree: VMwareTree | null,
-  selectedVMs: IVMwareVM[]
+  selectedVMs: ISourceVM[]
 ): VMwareTree[] =>
   Array.from(
     new Set(selectedVMs.flatMap((vm) => findMatchingNodeAndDescendants(tree, vm.selfLink)))
@@ -267,7 +269,7 @@ export const filterSourcesBySelectedVMs = (
           return vm.networks.map((network) => network.id);
         }
         if (mappingType === MappingType.Storage) {
-          return vm.disks.map((disk) => disk.datastore.id);
+          return vm.disks.map((disk) => disk.datastore.id); // TODO add RHV support.. storageDomains work the same?
         }
         return [];
       })
@@ -278,7 +280,7 @@ export const filterSourcesBySelectedVMs = (
 
 export const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
 
-export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null => {
+export const getMostSevereVMConcern = (vm: IVMwareVM): ISourceVMConcern | null => {
   if (!vm.concerns || vm.concerns.length === 0) {
     return null;
   }
@@ -294,7 +296,7 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
   return { category: 'Warning', label: 'Unknown', assessment: '' };
 };
 
-export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): StatusType | null =>
+export const getVMConcernStatusType = (concern: ISourceVMConcern | null): StatusType | null =>
   !concern
     ? 'Ok'
     : concern.category === 'Critical'
@@ -305,7 +307,7 @@ export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): Status
     ? 'Info'
     : null;
 
-export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): string =>
+export const getVMConcernStatusLabel = (concern: ISourceVMConcern | null): string =>
   concern?.category === 'Information' || concern?.category === 'Advisory'
     ? 'Advisory'
     : concern?.category || 'Ok';
@@ -406,14 +408,17 @@ export const generatePlan = (
 
 export const getSelectedVMsFromIds = (
   vmIds: string[],
-  vmsQuery: QueryResult<IVMwareVM[]>
-): IVMwareVM[] =>
-  vmIds.map((id) => vmsQuery.data?.find((vm) => vm.id === id)).filter((vm) => !!vm) as IVMwareVM[];
+  vmsQuery: QueryResult<ISourceVM[]>
+): ISourceVM[] =>
+  vmIds.flatMap((id) => {
+    const matchingVM = vmsQuery.data?.find((vm) => vm.id === id);
+    return matchingVM ? [matchingVM] : [];
+  });
 
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
-  vmsQuery: QueryResult<IVMwareVM[]>
-): IVMwareVM[] => {
+  vmsQuery: QueryResult<ISourceVM[]>
+): ISourceVM[] => {
   if (!planBeingEdited) return [];
   const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
   return getSelectedVMsFromIds(vmIds, vmsQuery);
@@ -437,9 +442,9 @@ export const useEditingPlanPrefillEffect = (
     planBeingEdited?.spec.provider || null,
     providersQuery
   );
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
-  const hostTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.Host);
-  const vmTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.VM);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
+  const hostTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.Host); // TODO only for VMware
+  const vmTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.VM); // TODO add RHV support
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -586,7 +591,7 @@ export const useEditingPlanPrefillEffect = (
   };
 };
 
-export const concernMatchesFilter = (concern: IVMwareVMConcern, filterText?: string): boolean =>
+export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: string): boolean =>
   !!filterText &&
   `${concern.label}: ${concern.assessment}`.toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
 
