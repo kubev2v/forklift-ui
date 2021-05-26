@@ -43,7 +43,7 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { IVMStatus, IVMwareVM } from '@app/queries/types';
+import { ISourceVM, IVMStatus } from '@app/queries/types';
 import {
   findLatestMigration,
   useCancelVMsMutation,
@@ -403,7 +403,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         mutateFn={() => {
           const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
           if (vmsToCancel.some((vm) => !vm)) return;
-          cancelVMs(vmsToCancel as IVMwareVM[]);
+          cancelVMs(vmsToCancel as ISourceVM[]);
         }}
         mutateResult={cancelVMsResult}
         title="Cancel migrations?"

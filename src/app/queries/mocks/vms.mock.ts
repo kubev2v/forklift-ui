@@ -1,4 +1,4 @@
-import { IRHVVM, IVMwareVM } from '../types/vms.types';
+import { IVMwareVM, IRHVVM } from '../types/vms.types';
 
 export let MOCK_VMWARE_VMS: IVMwareVM[] = [];
 export let MOCK_RHV_VMS: IRHVVM[] = [];

@@ -9,7 +9,6 @@ import {
   ISourceVM,
   IStorageMapping,
   IVMwareHostTree,
-  IVMwareVM,
   ISourceVMConcern,
   IVMwareVMTree,
   MappingSource,
