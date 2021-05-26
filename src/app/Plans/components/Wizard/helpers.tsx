@@ -280,7 +280,7 @@ export const filterSourcesBySelectedVMs = (
 
 export const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
 
-export const getMostSevereVMConcern = (vm: IVMwareVM): ISourceVMConcern | null => {
+export const getMostSevereVMConcern = (vm: ISourceVM): ISourceVMConcern | null => {
   if (!vm.concerns || vm.concerns.length === 0) {
     return null;
   }
@@ -312,7 +312,7 @@ export const getVMConcernStatusLabel = (concern: ISourceVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
-export const someVMHasConcern = (vms: IVMwareVM[], concernLabel: string): boolean =>
+export const someVMHasConcern = (vms: ISourceVM[], concernLabel: string): boolean =>
   vms.some((vm) => vm.concerns.some((concern) => concern.label === concernLabel));
 
 export interface IGenerateMappingsArgs {
@@ -595,7 +595,7 @@ export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: str
   !!filterText &&
   `${concern.label}: ${concern.assessment}`.toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
 
-export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): boolean =>
+export const vmMatchesConcernFilter = (vm: ISourceVM, filterText?: string): boolean =>
   !!filterText && vm.concerns.some((concern) => concernMatchesFilter(concern, filterText));
 
 export const generateHook = (

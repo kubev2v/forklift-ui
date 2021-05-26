@@ -16,7 +16,6 @@ import {
   ISourceVM,
   IVMwareHostTree,
   IVMwareProvider,
-  IVMwareVM,
   IVMwareVMTree,
   VMwareTree,
   VMwareTreeType,
@@ -173,7 +172,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     filterCategories
   );
 
-  const getSortValues = (vm: IVMwareVM) => {
+  const getSortValues = (vm: ISourceVM) => {
     const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     return [
       '', // Expand control column
@@ -200,7 +199,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const {
     toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
-  } = useSelectionState<IVMwareVM>({
+  } = useSelectionState<ISourceVM>({
     items: sortedItems,
     isEqual: (a, b) => a.selfLink === b.selfLink,
   });
@@ -230,7 +229,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((vm: IVMwareVM) => {
+  currentPageItems.forEach((vm: ISourceVM) => {
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     rows.push({
@@ -296,7 +295,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           </TextContent>
           <Level>
             <LevelItem>
-              <FilterToolbar<IVMwareVM>
+              <FilterToolbar<ISourceVM>
                 filterCategories={filterCategories}
                 filterValues={filterValues}
                 setFilterValues={setFilterValues}
