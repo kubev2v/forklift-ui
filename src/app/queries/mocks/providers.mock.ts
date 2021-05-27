@@ -16,7 +16,7 @@ export let MOCK_CLUSTER_PROVIDERS: IProviderObject[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vmwareProvider1: IVMwareProvider = {
-    uid: '1',
+    uid: 'mock-uid-vcenter-1',
     version: '12345',
     namespace: 'openshift-migration',
     name: 'vcenter-1',
@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         name: 'vcenter-1',
         namespace: 'openshift-migration',
         selfLink: '/foo/bar',
-        uid: 'foo-uid',
+        uid: 'mock-uid-vcenter-1',
         resourceVersion: '12345',
         generation: 1,
         creationTimestamp: '2020-08-21T18:36:41.468Z',
@@ -89,7 +89,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmwareProvider2: IVMwareProvider = {
     ...vmwareProvider1,
-    uid: '2',
+    uid: 'mock-uid-vcenter-2',
     name: 'vcenter-2',
     selfLink: '/foo/vmwareprovider/2',
     object: {
@@ -97,6 +97,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...vmwareProvider1.object.metadata,
         name: 'vcenter-2',
+        uid: 'mock-uid-vcenter-2',
       },
       status: {
         conditions: [
@@ -116,7 +117,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmwareProvider3: IVMwareProvider = {
     ...vmwareProvider1,
-    uid: '3',
+    uid: 'mock-uid-vcenter-3',
     name: 'vcenter-3',
     selfLink: '/foo/vmwareprovider/3',
     object: {
@@ -124,6 +125,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...vmwareProvider1.object.metadata,
         name: 'vcenter-3',
+        uid: 'mock-uid-vcenter-3',
       },
       status: {
         conditions: [
@@ -158,7 +160,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const rhvProvider1: IRHVProvider = {
-    uid: 'foo1',
+    uid: 'mock-uid-rhv-1',
     version: '22858995',
     namespace: 'konveyor-forklift',
     name: 'rhv-1',
@@ -172,7 +174,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         namespace: 'konveyor-forklift',
         selfLink:
           '/apis/forklift.konveyor.io/v1beta1/namespaces/konveyor-forklift/providers/rhv-1/status',
-        uid: 'foo1',
+        uid: 'mock-uid-rhv-1',
         resourceVersion: '22858995',
         generation: 3,
         creationTimestamp: '2021-05-06T13:35:06Z',
@@ -272,7 +274,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const rhvProvider2: IRHVProvider = {
     ...rhvProvider1,
-    uid: 'foo2',
+    uid: 'mock-uid-rhv-2',
     name: 'rhv-2',
     selfLink: 'providers/ovirt/foo2',
     object: {
@@ -280,6 +282,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...rhvProvider1.object.metadata,
         name: 'rhv-2',
+        uid: 'mock-uid-rhv-2',
       },
       // TODO different mocked status?
     },
@@ -287,7 +290,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const rhvProvider3: IRHVProvider = {
     ...rhvProvider1,
-    uid: 'foo3',
+    uid: 'mock-uid-rhv-3',
     name: 'rhv-3',
     selfLink: 'providers/ovirt/foo3',
     object: {
@@ -295,6 +298,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...rhvProvider1.object.metadata,
         name: 'rhv-3',
+        uid: 'mock-uid-rhv-3',
       },
       // TODO different mocked status?
     },
@@ -302,7 +306,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const openshiftProvider1: IOpenShiftProvider = {
     ...vmwareProvider1,
-    uid: '1',
+    uid: 'mock-uid-ocpv-1',
     name: 'ocpv-1',
     selfLink: '/foo/openshiftprovider/1',
     type: 'openshift',
@@ -311,6 +315,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...vmwareProvider1.object.metadata,
         name: 'ocpv-1',
+        uid: 'mock-uid-ocpv-1',
         annotations: {
           'forklift.konveyor.io/defaultTransferNetwork': 'ocp-network-3',
         },
@@ -328,7 +333,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const openshiftProvider2: IOpenShiftProvider = {
     ...openshiftProvider1,
-    uid: '2',
+    uid: 'mock-uid-ocpv-2',
     name: 'ocpv-2',
     selfLink: '/foo/openshiftprovider/2',
     object: {
@@ -336,6 +341,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...openshiftProvider1.object.metadata,
         name: 'ocpv-2',
+        uid: 'mock-uid-ocpv-2',
       },
       status: {
         conditions: [
@@ -355,7 +361,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const openshiftProvider3: IOpenShiftProvider = {
     ...openshiftProvider1,
-    uid: '3',
+    uid: 'mock-uid-ocpv-3',
     name: 'ocpv-3',
     selfLink: '/foo/openshiftprovider/3',
     object: {
@@ -363,6 +369,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       metadata: {
         ...openshiftProvider1.object.metadata,
         name: 'ocpv-3',
+        uid: 'mock-uid-ocpv-3',
       },
     },
   };

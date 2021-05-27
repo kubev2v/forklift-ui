@@ -27,6 +27,7 @@ import ConditionalTooltip from './ConditionalTooltip';
 import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
 
 import { isSameResource } from '@app/queries/helpers';
+import { OptionWithValue } from './SimpleSelect';
 
 interface IProviderSelectBaseProps<T> extends Partial<SelectProps> {
   notReadyTooltipPosition?: 'left' | 'right';
@@ -67,20 +68,24 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   );
   // TODO handle the empty case here, "no source/target providers available" or something
 
-  const optionsByType: Partial<Record<ProviderType, React.ReactElement[]>> = {};
-  const optionsByProviderUid: Record<string, React.ReactElement> = {};
+  const optionNodesByType: Partial<Record<ProviderType, React.ReactElement[]>> = {};
+  const optionObjectsByUid: Record<string, OptionWithValue<IProviderObject>> = {};
   availableProviderTypes.forEach((type) => {
     const clusterProviders =
       clusterProvidersQuery.data?.items.filter((provider) => provider.spec.type === type) || [];
-    optionsByType[type] = clusterProviders.map((clusterProvider) => {
+    optionNodesByType[type] = clusterProviders.map((clusterProvider) => {
       const inventoryProvider = getMatchingInventoryProvider(clusterProvider);
       const isReady =
         !!inventoryProvider &&
         hasCondition(clusterProvider.status?.conditions || [], PlanStatusType.Ready);
+      const optionObject: OptionWithValue<IProviderObject> = {
+        toString: () => clusterProvider.metadata.name,
+        value: clusterProvider,
+      };
       const option = (
         <SelectOption
           key={clusterProvider.metadata.name}
-          value={clusterProvider}
+          value={optionObject}
           isDisabled={!isReady}
           className={!isReady ? 'disabled-with-pointer-events' : ''}
         >
@@ -94,11 +99,15 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
         </SelectOption>
       );
       if (clusterProvider.metadata.uid) {
-        optionsByProviderUid[clusterProvider.metadata.uid || ''] = option;
+        optionObjectsByUid[clusterProvider.metadata.uid || ''] = optionObject;
       }
       return option;
     });
   });
+
+  const selectedProvider = (clusterProvidersQuery.data?.items || []).find(
+    (provider) => provider.metadata.uid === field.value?.uid
+  );
 
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -126,11 +135,15 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
           placeholderText="Select a provider..."
           isOpen={isOpen}
           onToggle={setIsOpen}
-          selections={field.value?.uid ? [optionsByProviderUid[field.value.uid]] : []}
+          selections={
+            selectedProvider?.metadata.uid
+              ? [optionObjectsByUid[selectedProvider.metadata.uid]]
+              : []
+          }
           onSelect={(_event, selection) => {
             setIsOpen(false);
             const matchingInventoryProvider = getMatchingInventoryProvider(
-              selection as IProviderObject
+              (selection as OptionWithValue<IProviderObject>).value
             );
             if (matchingInventoryProvider) {
               // There's probably some better way to make TS happy here.
@@ -150,11 +163,11 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
           {...props}
         >
           {availableProviderTypes.length === 1
-            ? optionsByType[availableProviderTypes[0]] || []
+            ? optionNodesByType[availableProviderTypes[0]] || []
             : availableProviderTypes.map((type, index) => (
                 <>
                   <SelectGroup key={type} label={PROVIDER_TYPE_NAMES[type]}>
-                    {optionsByType[type]}
+                    {optionNodesByType[type]}
                   </SelectGroup>
                   {index !== availableProviderTypes.length - 1 ? <Divider key="divider" /> : null}
                 </>
