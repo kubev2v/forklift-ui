@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Grid, GridItem, Popover, Button, List, Text, ListItem } from '@patternfly/react-core';
+import { Grid, GridItem, Popover, Button, List, ListItem, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StatusIcon } from '@konveyor/lib-ui';
+import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
 import { IMetaObjectMeta, IPlan, IVMwareVM, MappingType, POD_NETWORK } from '@app/queries/types';
@@ -9,6 +10,7 @@ import {
   useInventoryProvidersQuery,
   useMappingsQuery,
   useResourceQueriesForMapping,
+  useHooksQuery,
   useVMwareVMsQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
@@ -47,6 +49,13 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({ plan }: IPlan
   const warmCriticalConcernsFound = plan.spec.warm
     ? warmCriticalConcerns.filter((label) => someVMHasConcern(selectedVMs as IVMwareVM[], label))
     : [];
+
+  const hooks = useHooksQuery();
+  const getHookDefinition = (name) => {
+    const hook =
+      hooks.data?.items.find((hook) => (hook.metadata as IMetaObjectMeta).name === name) || null;
+    return hook ? !!hook.spec.playbook : false;
+  };
 
   const networkMappingResources = useResourceQueriesForMapping(MappingType.Network, networkMapping);
   const storageMappingResources = useResourceQueriesForMapping(MappingType.Storage, storageMapping);
@@ -192,24 +201,41 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({ plan }: IPlan
         <GridItem md={9} id="review-migration-type" aria-labelledby="migration-type-label">
           {plan.spec.warm ? 'warm' : 'cold'}
         </GridItem>
-        <GridItem md={3} id="migration-type-label">
-          Hooks
-        </GridItem>
-        <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
-          <div>
-            <Grid>
-              <GridItem span={5} id="migration-plan-hooks-definition-label">
-                <label className="pf-c-form__label">Definition</label>
-                {plan.spec.vms[0].hooks?.map((hook) => hook.hook)}
+        {
+          // TODO: Add logic to handle dedicated Hook by VM
+          plan.spec.vms[0].hooks ? (
+            <>
+              <GridItem md={3} id="migration-type-label">
+                Hooks
               </GridItem>
-              <GridItem span={2} className="migration-hooks-align" />
-              <GridItem span={5} id="migration-plan-hooks-steps-label">
-                <label className="pf-c-form__label">Migration step</label>
-                {plan.spec.vms[0].hooks?.map((hook) => hook.step)}
+              <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
+                <div>
+                  <Grid>
+                    <GridItem span={5} id="migration-plan-hooks-definition-label">
+                      <Text className={text.fontWeightBold}>Definition</Text>
+                      {plan.spec.vms[0].hooks?.map((hook) => (
+                        <Text key={Math.random()}>
+                          {getHookDefinition(hook.hook.name)
+                            ? 'Ansible playbook'
+                            : 'Custom container image'}
+                        </Text>
+                      ))}
+                    </GridItem>
+                    <GridItem span={2} className="migration-hooks-align" />
+                    <GridItem span={5} id="migration-plan-hooks-steps-label">
+                      <Text className={text.fontWeightBold}>Migration step</Text>
+                      {plan.spec.vms[0].hooks?.map((hook) => (
+                        <Text key={Math.random()}>
+                          {hook.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
+                        </Text>
+                      ))}
+                    </GridItem>
+                  </Grid>
+                </div>
               </GridItem>
-            </Grid>
-          </div>
-        </GridItem>
+            </>
+          ) : null
+        }
       </Grid>
     </ResolvedQueries>
   );

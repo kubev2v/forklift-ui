@@ -10,6 +10,8 @@ import {
   List,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import text from '@patternfly/react-styles/css/utilities/Text/text';
+
 import { PlanWizardFormState } from './PlanWizard';
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
 import { IPlan, IVMwareVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
@@ -140,6 +142,36 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         <GridItem md={9} id="review-migration-type" aria-labelledby="migration-type-label">
           {forms.type.values.type}
         </GridItem>
+        {forms.hooks.values.instances ? (
+          <>
+            <GridItem md={3} id="migration-type-label">
+              Hooks
+            </GridItem>
+            <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
+              <div>
+                <Grid>
+                  <GridItem span={5} id="migration-plan-hooks-definition-label">
+                    <Text className={text.fontWeightBold}>Definition</Text>
+                    {forms.hooks.values.instances?.map((hook) => (
+                      <Text key={Math.random()}>
+                        {hook.type === 'playbook' ? 'Ansible playbook' : 'Custom container image'}
+                      </Text>
+                    ))}
+                  </GridItem>
+                  <GridItem span={2} className="migration-hooks-align" />
+                  <GridItem span={5} id="migration-plan-hooks-steps-label">
+                    <Text className={text.fontWeightBold}>Migration step</Text>
+                    {forms.hooks.values.instances?.map((hook) => (
+                      <Text key={Math.random()}>
+                        {hook.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
+                      </Text>
+                    ))}
+                  </GridItem>
+                </Grid>
+              </div>
+            </GridItem>
+          </>
+        ) : null}
       </Grid>
       <ResolvedQueries
         results={allMutationResults}
