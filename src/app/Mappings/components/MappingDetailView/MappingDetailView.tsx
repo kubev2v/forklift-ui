@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { Grid, GridItem } from '@patternfly/react-core';
+import { Grid, GridItem, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import text from '@patternfly/react-styles/css/utilities/Text/text';
+
 import { Mapping, MappingType } from '@app/queries/types';
 import LineArrow from '@app/common/components/LineArrow';
 import { useResourceQueriesForMapping } from '@app/queries';
@@ -42,15 +44,11 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
       <div className={className}>
         <Grid>
           <GridItem span={5} className={spacing.pbSm}>
-            <label className="pf-c-form__label">
-              <span className="pf-c-form__label-text">{getMappingSourceTitle(mappingType)}</span>
-            </label>
+            <Text className={text.fontWeightBold}>{getMappingSourceTitle(mappingType)}</Text>
           </GridItem>
           <GridItem span={2}></GridItem>
           <GridItem span={5} className={spacing.pbSm}>
-            <label className="pf-c-form__label">
-              <span className="pf-c-form__label-text">{getMappingTargetTitle(mappingType)}</span>
-            </label>
+            <Text className={text.fontWeightBold}>{getMappingTargetTitle(mappingType)}</Text>
           </GridItem>
         </Grid>
         {mappingItemGroups.map((items, index) => {
