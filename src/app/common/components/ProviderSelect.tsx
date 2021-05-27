@@ -68,38 +68,18 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   );
   // TODO handle the empty case here, "no source/target providers available" or something
 
-  const optionNodesByType: Partial<Record<ProviderType, React.ReactElement[]>> = {};
-  const optionObjectsByUid: Record<string, OptionWithValue<IProviderObject>> = {};
+  const optionsByType: Partial<Record<ProviderType, OptionWithValue<IProviderObject>[]>> = {};
+  const optionsByUid: Record<string, OptionWithValue<IProviderObject>> = {};
   availableProviderTypes.forEach((type) => {
     const clusterProviders =
       clusterProvidersQuery.data?.items.filter((provider) => provider.spec.type === type) || [];
-    optionNodesByType[type] = clusterProviders.map((clusterProvider) => {
-      const inventoryProvider = getMatchingInventoryProvider(clusterProvider);
-      const isReady =
-        !!inventoryProvider &&
-        hasCondition(clusterProvider.status?.conditions || [], PlanStatusType.Ready);
-      const optionObject: OptionWithValue<IProviderObject> = {
+    optionsByType[type] = clusterProviders.map((clusterProvider) => {
+      const option: OptionWithValue<IProviderObject> = {
         toString: () => clusterProvider.metadata.name,
         value: clusterProvider,
       };
-      const option = (
-        <SelectOption
-          key={clusterProvider.metadata.name}
-          value={optionObject}
-          isDisabled={!isReady}
-          className={!isReady ? 'disabled-with-pointer-events' : ''}
-        >
-          <ConditionalTooltip
-            isTooltipEnabled={!isReady}
-            content="This provider cannot be selected because its inventory data is not ready"
-            position={notReadyTooltipPosition}
-          >
-            <div>{clusterProvider.metadata.name}</div>
-          </ConditionalTooltip>
-        </SelectOption>
-      );
       if (clusterProvider.metadata.uid) {
-        optionObjectsByUid[clusterProvider.metadata.uid || ''] = optionObject;
+        optionsByUid[clusterProvider.metadata.uid || ''] = option;
       }
       return option;
     });
@@ -109,9 +89,33 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
     (provider) => provider.metadata.uid === field.value?.uid
   );
 
-  const [isOpen, setIsOpen] = React.useState(false);
+  const renderOption = (option: OptionWithValue<IProviderObject>) => {
+    const clusterProvider = option.value;
+    const inventoryProvider = getMatchingInventoryProvider(clusterProvider);
+    const isReady =
+      !!inventoryProvider &&
+      hasCondition(clusterProvider.status?.conditions || [], PlanStatusType.Ready);
+    return (
+      <SelectOption
+        key={clusterProvider.metadata.name}
+        value={option}
+        isDisabled={!isReady}
+        className={!isReady ? 'disabled-with-pointer-events' : ''}
+      >
+        <ConditionalTooltip
+          isTooltipEnabled={!isReady}
+          content="This provider cannot be selected because its inventory data is not ready"
+          position={notReadyTooltipPosition}
+        >
+          <div>{clusterProvider.metadata.name}</div>
+        </ConditionalTooltip>
+      </SelectOption>
+    );
+  };
 
   const label = providerRole === 'source' ? 'Source provider' : 'Target provider';
+
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <ResolvedQueries
@@ -136,9 +140,7 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
           isOpen={isOpen}
           onToggle={setIsOpen}
           selections={
-            selectedProvider?.metadata.uid
-              ? [optionObjectsByUid[selectedProvider.metadata.uid]]
-              : []
+            selectedProvider?.metadata.uid ? [optionsByUid[selectedProvider.metadata.uid]] : []
           }
           onSelect={(_event, selection) => {
             setIsOpen(false);
@@ -163,14 +165,14 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
           {...props}
         >
           {availableProviderTypes.length === 1
-            ? optionNodesByType[availableProviderTypes[0]] || []
+            ? (optionsByType[availableProviderTypes[0]] || []).map(renderOption) || []
             : availableProviderTypes.map((type, index) => (
-                <>
-                  <SelectGroup key={type} label={PROVIDER_TYPE_NAMES[type]}>
-                    {optionNodesByType[type]}
+                <React.Fragment key={type}>
+                  <SelectGroup label={PROVIDER_TYPE_NAMES[type]}>
+                    {(optionsByType[type] || []).map(renderOption)}
                   </SelectGroup>
-                  {index !== availableProviderTypes.length - 1 ? <Divider key="divider" /> : null}
-                </>
+                  {index !== availableProviderTypes.length - 1 ? <Divider /> : null}
+                </React.Fragment>
               ))}
         </Select>
       </FormGroup>
