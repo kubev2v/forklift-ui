@@ -13,6 +13,7 @@ import {
   SelectOption,
   SelectGroup,
   SelectOptionObject,
+  Divider,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
@@ -222,6 +223,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                   }
                 >
                   <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
+                  <Divider />
                   <SelectGroup
                     label={
                       mappingOptions.length > 0

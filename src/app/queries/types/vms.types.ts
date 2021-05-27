@@ -1,4 +1,3 @@
-import { StringLocale } from 'yup/lib/locale';
 import { IVMwareObjRef } from './common.types';
 
 export interface ISourceVMConcern {

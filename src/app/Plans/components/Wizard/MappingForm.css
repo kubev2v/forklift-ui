@@ -1,8 +1,3 @@
-#mappingSelect .pf-c-select__menu-group .pf-c-select__menu-item {
-  padding-left: var(--pf-global--spacer--xl);
-}
-
 #mappingSelect .pf-c-select__menu-item.pf-m-disabled.disabled-with-pointer-events > div {
   display: inline-block;
-  padding-left: 0;
 }
