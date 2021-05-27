@@ -7,7 +7,14 @@ import {
   SourceInventoryProvider,
 } from '@app/queries/types';
 import { getFormGroupProps, IValidatedFormField } from '@konveyor/lib-ui';
-import { FormGroup, Select, SelectGroup, SelectOption, SelectProps } from '@patternfly/react-core';
+import {
+  Divider,
+  FormGroup,
+  Select,
+  SelectGroup,
+  SelectOption,
+  SelectProps,
+} from '@patternfly/react-core';
 import {
   PlanStatusType,
   ProviderType,
@@ -144,10 +151,13 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
         >
           {availableProviderTypes.length === 1
             ? optionsByType[availableProviderTypes[0]] || []
-            : availableProviderTypes.map((type) => (
-                <SelectGroup key={type} label={PROVIDER_TYPE_NAMES[type]}>
-                  {optionsByType[type]}
-                </SelectGroup>
+            : availableProviderTypes.map((type, index) => (
+                <>
+                  <SelectGroup key={type} label={PROVIDER_TYPE_NAMES[type]}>
+                    {optionsByType[type]}
+                  </SelectGroup>
+                  {index !== availableProviderTypes.length - 1 ? <Divider key="divider" /> : null}
+                </>
               ))}
         </Select>
       </FormGroup>
