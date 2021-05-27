@@ -1,3 +1,4 @@
+import { StringLocale } from 'yup/lib/locale';
 import { IVMwareObjRef } from './common.types';
 
 export interface ISourceVMConcern {
@@ -6,7 +7,7 @@ export interface ISourceVMConcern {
   assessment: string;
 }
 
-export interface ISourceVM {
+interface IBaseSourceVM {
   id: string;
   revision: number;
   name: string;
@@ -20,7 +21,7 @@ export interface IVMwareVMDisk {
   datastore: IVMwareObjRef;
 }
 
-export interface IVMwareVM extends ISourceVM {
+export interface IVMwareVM extends IBaseSourceVM {
   parent: IVMwareObjRef;
   uuid: string;
   firmware: string;
@@ -41,8 +42,39 @@ export interface IVMwareVM extends ISourceVM {
   isTemplate: boolean;
 }
 
-export interface IRHVVM extends ISourceVM {
+export interface IRHVNIC {
+  id: string;
+  name: string;
+  profile: {
+    id: string;
+    name: string;
+    description: string;
+    revision: number;
+    network: string;
+    qos: string;
+  };
+}
+
+export interface IRHVDiskAttachment {
+  id: string;
+  interface: string;
+  disk: {
+    id: string;
+    name: string;
+    description: string;
+    revision: number;
+    shared: boolean;
+    storageDomain: string;
+  };
+}
+
+export interface IRHVVM extends IBaseSourceVM {
   description: string;
   cluster: string;
+  datacenter: string;
   host: string;
+  nics: IRHVNIC[];
+  diskAttachments: IRHVDiskAttachment[];
 }
+
+export type SourceVM = IVMwareVM | IRHVVM;

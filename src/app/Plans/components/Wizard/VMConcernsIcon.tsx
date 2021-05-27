@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ISourceVM } from '@app/queries/types';
+import { SourceVM } from '@app/queries/types';
 import { StatusIcon } from '@konveyor/lib-ui';
 
 import { getMostSevereVMConcern, getVMConcernStatusLabel, getVMConcernStatusType } from './helpers';
 interface IVMConcernsIconProps {
-  vm: ISourceVM;
+  vm: SourceVM;
 }
 
 const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({

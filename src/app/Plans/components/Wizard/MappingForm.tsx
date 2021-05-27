@@ -24,7 +24,7 @@ import {
   IOpenShiftProvider,
   IPlan,
   IMetaObjectMeta,
-  ISourceVM,
+  SourceVM,
   SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
@@ -48,7 +48,7 @@ interface IMappingFormProps {
   sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
-  selectedVMs: ISourceVM[];
+  selectedVMs: SourceVM[];
   planBeingEdited: IPlan | null;
 }
 

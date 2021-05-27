@@ -6,7 +6,7 @@ import {
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
-  ISourceVM,
+  SourceVM,
   IStorageMapping,
   IVMwareHostTree,
   ISourceVMConcern,
@@ -149,8 +149,8 @@ export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
 
 export const getAvailableVMs = (
   selectedTreeNodes: VMwareTree[],
-  allVMs: ISourceVM[]
-): ISourceVM[] => {
+  allVMs: SourceVM[]
+): SourceVM[] => {
   const treeVMs = getAllVMChildren(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
@@ -250,7 +250,7 @@ export const findMatchingNodeAndDescendants = (
 
 export const findNodesMatchingSelectedVMs = (
   tree: VMwareTree | null,
-  selectedVMs: ISourceVM[]
+  selectedVMs: SourceVM[]
 ): VMwareTree[] =>
   Array.from(
     new Set(selectedVMs.flatMap((vm) => findMatchingNodeAndDescendants(tree, vm.selfLink)))
@@ -258,7 +258,7 @@ export const findNodesMatchingSelectedVMs = (
 
 export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
-  selectedVMs: ISourceVM[],
+  selectedVMs: SourceVM[],
   mappingType: MappingType
 ): MappingSource[] => {
   const sourceIds = Array.from(
@@ -279,7 +279,7 @@ export const filterSourcesBySelectedVMs = (
 
 export const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
 
-export const getMostSevereVMConcern = (vm: ISourceVM): ISourceVMConcern | null => {
+export const getMostSevereVMConcern = (vm: SourceVM): ISourceVMConcern | null => {
   if (!vm.concerns || vm.concerns.length === 0) {
     return null;
   }
@@ -311,7 +311,7 @@ export const getVMConcernStatusLabel = (concern: ISourceVMConcern | null): strin
     ? 'Advisory'
     : concern?.category || 'Ok';
 
-export const someVMHasConcern = (vms: ISourceVM[], concernLabel: string): boolean =>
+export const someVMHasConcern = (vms: SourceVM[], concernLabel: string): boolean =>
   vms.some((vm) => vm.concerns.some((concern) => concern.label === concernLabel));
 
 export interface IGenerateMappingsArgs {
@@ -407,8 +407,8 @@ export const generatePlan = (
 
 export const getSelectedVMsFromIds = (
   vmIds: string[],
-  vmsQuery: QueryResult<ISourceVM[]>
-): ISourceVM[] =>
+  vmsQuery: QueryResult<SourceVM[]>
+): SourceVM[] =>
   vmIds.flatMap((id) => {
     const matchingVM = vmsQuery.data?.find((vm) => vm.id === id);
     return matchingVM ? [matchingVM] : [];
@@ -416,8 +416,8 @@ export const getSelectedVMsFromIds = (
 
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
-  vmsQuery: QueryResult<ISourceVM[]>
-): ISourceVM[] => {
+  vmsQuery: QueryResult<SourceVM[]>
+): SourceVM[] => {
   if (!planBeingEdited) return [];
   const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
   return getSelectedVMsFromIds(vmIds, vmsQuery);
@@ -594,7 +594,7 @@ export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: str
   !!filterText &&
   `${concern.label}: ${concern.assessment}`.toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
 
-export const vmMatchesConcernFilter = (vm: ISourceVM, filterText?: string): boolean =>
+export const vmMatchesConcernFilter = (vm: SourceVM, filterText?: string): boolean =>
   !!filterText && vm.concerns.some((concern) => concernMatchesFilter(concern, filterText));
 
 export const generateHook = (

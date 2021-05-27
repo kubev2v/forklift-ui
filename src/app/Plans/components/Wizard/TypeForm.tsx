@@ -3,12 +3,12 @@ import { List, ListItem, Radio } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import { warmCriticalConcerns, someVMHasConcern } from './helpers';
-import { ISourceVM } from '@app/queries/types';
+import { SourceVM } from '@app/queries/types';
 import { StatusIcon } from '@konveyor/lib-ui';
 
 interface ITypeFormProps {
   form: PlanWizardFormState['type'];
-  selectedVMs: ISourceVM[];
+  selectedVMs: SourceVM[];
 }
 
 const TypeForm: React.FunctionComponent<ITypeFormProps> = ({

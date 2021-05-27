@@ -5,15 +5,15 @@ import { useAuthorizedFetch } from './fetchHelpers';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import { MOCK_RHV_VMS, MOCK_VMWARE_VMS } from './mocks/vms.mock';
 import { SourceInventoryProvider } from './types';
-import { ISourceVM, IVMwareVM } from './types/vms.types';
+import { SourceVM, IVMwareVM } from './types/vms.types';
 
 export const useSourceVMsQuery = (
   provider: SourceInventoryProvider | null
-): QueryResult<ISourceVM[]> => {
-  let mockVMs: ISourceVM[] = [];
+): QueryResult<SourceVM[]> => {
+  let mockVMs: SourceVM[] = [];
   if (provider?.type === 'vsphere') mockVMs = MOCK_VMWARE_VMS;
   if (provider?.type === 'ovirt') mockVMs = MOCK_RHV_VMS;
-  const result = useMockableQuery<ISourceVM[]>(
+  const result = useMockableQuery<SourceVM[]>(
     {
       queryKey: ['vms', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
@@ -34,5 +34,5 @@ export const useSourceVMsQuery = (
   };
 };
 
-export const findVMById = (id: string, vmsQuery: QueryResult<ISourceVM[]>): ISourceVM | null =>
+export const findVMById = (id: string, vmsQuery: QueryResult<SourceVM[]>): SourceVM | null =>
   vmsQuery.data?.find((vm) => vm.id === id) || null;

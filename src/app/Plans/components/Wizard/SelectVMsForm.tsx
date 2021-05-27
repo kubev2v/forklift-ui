@@ -13,7 +13,7 @@ import {
 } from '@patternfly/react-table';
 
 import {
-  ISourceVM,
+  SourceVM,
   IVMwareHostTree,
   IVMwareVMTree,
   SourceInventoryProvider,
@@ -45,7 +45,7 @@ interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
   selectedTreeNodes: VMwareTree[]; // TODO add RHV support
   sourceProvider: SourceInventoryProvider | null;
-  selectedVMs: ISourceVM[];
+  selectedVMs: SourceVM[];
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
@@ -60,7 +60,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
   const selectedVMsOnMount = React.useRef(selectedVMs);
-  const [availableVMs, setAvailableVMs] = React.useState<ISourceVM[] | null>(null);
+  const [availableVMs, setAvailableVMs] = React.useState<SourceVM[] | null>(null);
   React.useEffect(() => {
     if (vmsQuery.data) {
       const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
@@ -85,12 +85,12 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       );
     }
   }, [availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
-  const getVMTreeInfo = (vm: ISourceVM): IVMTreePathInfo => {
+  const getVMTreeInfo = (vm: SourceVM): IVMTreePathInfo => {
     if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
     return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
   };
 
-  const filterCategories: FilterCategory<ISourceVM>[] = [
+  const filterCategories: FilterCategory<SourceVM>[] = [
     {
       key: 'name',
       title: 'VM name',
@@ -172,7 +172,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     filterCategories
   );
 
-  const getSortValues = (vm: ISourceVM) => {
+  const getSortValues = (vm: SourceVM) => {
     const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     return [
       '', // Expand control column
@@ -199,7 +199,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const {
     toggleItemSelected: toggleVMExpanded,
     isItemSelected: isVMExpanded,
-  } = useSelectionState<ISourceVM>({
+  } = useSelectionState<SourceVM>({
     items: sortedItems,
     isEqual: (a, b) => a.selfLink === b.selfLink,
   });
@@ -229,7 +229,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const rows: IRow[] = [];
 
-  currentPageItems.forEach((vm: ISourceVM) => {
+  currentPageItems.forEach((vm: SourceVM) => {
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
     rows.push({
@@ -295,7 +295,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           </TextContent>
           <Level>
             <LevelItem>
-              <FilterToolbar<ISourceVM>
+              <FilterToolbar<SourceVM>
                 filterCategories={filterCategories}
                 filterValues={filterValues}
                 setFilterValues={setFilterValues}

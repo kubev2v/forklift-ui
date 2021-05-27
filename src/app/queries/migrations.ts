@@ -15,7 +15,7 @@ import { IPlan } from './types/plans.types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { usePollingContext } from '@app/common/context';
 import { getObjectRef } from '@app/common/helpers';
-import { ISourceVM } from './types/vms.types';
+import { SourceVM } from './types/vms.types';
 import { MOCK_MIGRATIONS } from './mocks/migrations.mock';
 
 const migrationResource = new ForkliftResource(ForkliftResourceKind.Migration, META.namespace);
@@ -97,12 +97,12 @@ export const useLatestMigrationQuery = (plan: IPlan | null): IMigration | null =
 export const useCancelVMsMutation = (
   plan: IPlan | null,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, ISourceVM[], unknown> => {
+): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, SourceVM[], unknown> => {
   const latestMigration = useLatestMigrationQuery(plan);
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
-  return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, ISourceVM[]>(
-    (vms: ISourceVM[]) => {
+  return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, SourceVM[]>(
+    (vms: SourceVM[]) => {
       if (!latestMigration) return Promise.reject('Could not find active Migration CR');
       const existingCanceledVMs = latestMigration.spec.cancel || [];
       const newCanceledVMs = vms
