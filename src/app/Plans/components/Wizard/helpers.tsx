@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
 import {
+  HookStep,
   ICommonTreeObject,
   IHook,
   IMetaObjectMeta,
@@ -359,10 +360,16 @@ export const generateMappings = ({
   return { networkMapping, storageMapping };
 };
 
+interface IHookRef {
+  ref: INameNamespaceRef;
+  instance: PlanHookInstance;
+}
+
 export const generatePlan = (
   forms: PlanWizardFormState,
   networkMappingRef: INameNamespaceRef,
-  storageMappingRef: INameNamespaceRef
+  storageMappingRef: INameNamespaceRef,
+  hooksRef?: IHookRef[]
 ): IPlan => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
@@ -389,7 +396,12 @@ export const generatePlan = (
       network: networkMappingRef,
       storage: storageMappingRef,
     },
-    vms: forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
+    vms: hooksRef
+      ? forms.selectVMs.values.selectedVMIds.map((id) => ({
+          id,
+          hooks: hooksRef.map((hookRef) => ({ hook: hookRef.ref, step: hookRef.instance.step })),
+        }))
+      : forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
     warm: forms.type.values.type === 'Warm',
   },
 });
@@ -585,16 +597,14 @@ export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): bool
 
 export const generateHook = (
   instance: PlanHookInstance,
-  existingHook: IHook | null,
+  existingHook: INameNamespaceRef | null,
   generateName?: string,
   owner?: IPlan
 ): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
-    ...(existingHook
-      ? { name: (existingHook.metadata as IMetaObjectMeta).name }
-      : { generateName: generateName || '' }),
+    ...(existingHook ? { name: existingHook.name } : { generateName: generateName || '' }),
     namespace: META.namespace,
     ...(owner ? { ownerReferences: [getObjectRef(owner)] } : {}),
   },
