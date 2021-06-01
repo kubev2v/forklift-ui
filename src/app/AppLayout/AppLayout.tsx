@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { NavLink, useRouteMatch, useLocation } from 'react-router-dom';
+import { NavLink, useRouteMatch, useLocation, useHistory } from 'react-router-dom';
 import {
+  Button,
   Nav,
   NavList,
   NavItem,
@@ -9,10 +10,10 @@ import {
   PageSidebar,
   SkipToContent,
   NavExpandable,
-  Title,
   PageHeaderTools,
 } from '@patternfly/react-core';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
+import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { APP_TITLE } from '@app/common/constants';
 import logoRedHat from './logoRedHat.svg';
 import logoKonveyor from './logoKonveyor.svg';
@@ -42,10 +43,22 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const location = useLocation();
   const welcomePageMatch = useRouteMatch('/welcome');
   const isNavEnabled = !welcomePageMatch;
+  const history = useHistory();
 
   const Header = (
     <PageHeader
-      logo={<Title headingLevel="h1">{APP_TITLE}</Title>}
+      logo={
+        <Button
+          className="logo"
+          aria-label={`${APP_TITLE} logo`}
+          variant="plain"
+          onClick={() => {
+            history.push('/');
+          }}
+        >
+          {APP_TITLE}
+        </Button>
+      }
       logoComponent="span"
       showNavToggle={isNavEnabled}
       isNavOpen={isNavEnabled && isNavOpen}
@@ -110,12 +123,23 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
     />
   );
+
+  const pageId = 'primary-app-container';
+
   const PageSkipToContent = (
-    <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>
+    <SkipToContent
+      onClick={(event) => {
+        event.preventDefault();
+        accessibleRouteChangeHandler(pageId);
+      }}
+      href={`#${pageId}`}
+    >
+      Skip to Content
+    </SkipToContent>
   );
   return (
     <Page
-      mainContainerId="primary-app-container"
+      mainContainerId={pageId}
       header={Header}
       sidebar={isNavEnabled ? Sidebar : null}
       onPageResize={onPageResize}
