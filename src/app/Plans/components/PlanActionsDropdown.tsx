@@ -16,7 +16,7 @@ import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
-import PlanDetails from './PlanDetails';
+import ConnectedPlanDetails from './ConnectedPlansDetails';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -129,7 +129,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           </Button>,
         ]}
       >
-        <PlanDetails plan={plan} />
+        <ConnectedPlanDetails plan={plan} />
       </Modal>
     </>
   );
