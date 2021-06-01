@@ -13,3 +13,9 @@
 .brand-redhat .pf-c-about-modal-box__brand {
   display: none;
 }
+
+.logo.pf-c-button {
+  font-size: var(--pf-global--FontSize--2xl);
+  --pf-c-button--PaddingRight: .5rem;
+  --pf-c-button--PaddingLeft: .5rem;
+}

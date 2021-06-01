@@ -8,6 +8,14 @@ describe('App', () => {
   test('renders welcome page without errors', async () => {
     process.env['DATA_SOURCE'] = '';
     render(<App />);
-    expect(screen.getByRole('heading', { name: new RegExp(APP_TITLE) })).toBeInTheDocument;
+    expect(
+      screen.getByRole('button', { name: `${APP_TITLE} logo`, hidden: true })
+    ).toHaveTextContent(APP_TITLE);
+  });
+
+  test('renders help menu', async () => {
+    process.env['DATA_SOURCE'] = '';
+    render(<App />);
+    expect(screen.getByRole('button', { name: new RegExp('Help menu') })).toBeInTheDocument;
   });
 });

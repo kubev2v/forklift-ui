@@ -22,9 +22,11 @@ const LoadingEmptyState: React.FunctionComponent<ILoadingEmptyStateProps> = ({
   <Bullseye className={className}>
     <EmptyState variant="large">
       <div className="pf-c-empty-state__icon">
-        <Spinner size="xl" {...spinnerProps} />
+        <Spinner aria-labelledby="loadingPrefLabel" size="xl" {...spinnerProps} />
       </div>
-      <Title headingLevel="h2">Loading...</Title>
+      <Title id="loadingPrefLabel" headingLevel="h2">
+        Loading...
+      </Title>
       {body ? <EmptyStateBody>{body}</EmptyStateBody> : null}
     </EmptyState>
   </Bullseye>
