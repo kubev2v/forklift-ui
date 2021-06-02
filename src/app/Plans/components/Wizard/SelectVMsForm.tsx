@@ -165,16 +165,20 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         return host ? host.name : '';
       },
     },
-    {
-      key: 'folderPath',
-      title: 'Folder path',
-      type: FilterType.search,
-      placeholderText: 'Filter by folder path ...',
-      getItemValue: (item) => {
-        const { folderPathStr } = getVMTreeInfo(item);
-        return folderPathStr ? folderPathStr : '';
-      },
-    },
+    ...(sourceProvider?.type === 'vsphere'
+      ? [
+          {
+            key: 'folderPath',
+            title: 'Folder path',
+            type: FilterType.search,
+            placeholderText: 'Filter by folder path ...',
+            getItemValue: (item) => {
+              const { folderPathStr } = getVMTreeInfo(item);
+              return folderPathStr ? folderPathStr : '';
+            },
+          },
+        ]
+      : []),
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
@@ -192,7 +196,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       datacenter?.name || '',
       cluster?.name || '',
       host?.name || '',
-      folderPathStr || '',
+      ...(sourceProvider?.type === 'vsphere' ? [folderPathStr || ''] : []),
       '', // Action column
     ];
   };
@@ -234,7 +238,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     { title: 'Datacenter', transforms: [sortable] },
     { title: 'Cluster', transforms: [sortable] },
     { title: 'Host', transforms: [sortable] },
-    { title: 'Folder path', transforms: [sortable, wrappable] },
+    ...(sourceProvider?.type === 'vsphere'
+      ? [{ title: 'Folder path', transforms: [sortable, wrappable] }]
+      : []),
   ];
 
   const rows: IRow[] = [];
@@ -254,7 +260,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         datacenter?.name || '',
         cluster?.name || '',
         host?.name || '',
-        folderPathStr || '',
+        ...(sourceProvider?.type === 'vsphere' ? [folderPathStr || ''] : []),
       ],
     });
     if (isExpanded) {
