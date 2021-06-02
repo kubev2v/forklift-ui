@@ -10,7 +10,7 @@ import {
   InventoryTreeType,
 } from '@app/queries/types';
 import {
-  filterAndConvertVMwareTree,
+  filterAndConvertInventoryTree,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
   flattenVMwareTreeNodes,
@@ -101,7 +101,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView
-          data={filterAndConvertVMwareTree(
+          data={filterAndConvertInventoryTree(
             treeQuery.data || null,
             searchText,
             treeSelection.isItemSelected,

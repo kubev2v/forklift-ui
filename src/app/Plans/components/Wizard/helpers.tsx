@@ -45,7 +45,7 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import { IKubeList } from '@app/client/types';
 import { getObjectRef } from '@app/common/helpers';
 
-// Helper for filterAndConvertVMwareTree
+// Helper for filterAndConvertInventoryTree
 const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
   if (node.kind === 'VM') return false; // Exclude VMs from the tree entirely
   if (
@@ -68,8 +68,8 @@ const areSomeDescendantsSelected = (
   return false;
 };
 
-// Helper for filterAndConvertVMwareTree
-const convertVMwareTreeNode = (
+// Helper for filterAndConvertInventoryTree
+const convertInventoryTreeNode = (
   node: InventoryTree,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean
@@ -79,7 +79,7 @@ const convertVMwareTreeNode = (
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
-    children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
+    children: filterAndConvertInventoryTreeChildren(node.children, searchText, isNodeSelected),
     checkProps: {
       'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
       checked: isPartiallyChecked ? null : isNodeSelected(node),
@@ -95,8 +95,8 @@ const convertVMwareTreeNode = (
   };
 };
 
-// Helper for filterAndConvertVMwareTree
-const filterAndConvertVMwareTreeChildren = (
+// Helper for filterAndConvertInventoryTree
+const filterAndConvertInventoryTreeChildren = (
   children: InventoryTree[] | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean
@@ -105,12 +105,14 @@ const filterAndConvertVMwareTreeChildren = (
     subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
-    return filteredChildren.map((node) => convertVMwareTreeNode(node, searchText, isNodeSelected));
+    return filteredChildren.map((node) =>
+      convertInventoryTreeNode(node, searchText, isNodeSelected)
+    );
   return undefined;
 };
 
 // Convert the API tree structure to the PF TreeView structure, while filtering by the user's search text.
-export const filterAndConvertVMwareTree = (
+export const filterAndConvertInventoryTree = (
   rootNode: InventoryTree | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
@@ -127,7 +129,11 @@ export const filterAndConvertVMwareTree = (
         'aria-label': 'Select all datacenters',
         checked: isPartiallyChecked ? null : areAllSelected,
       },
-      children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
+      children: filterAndConvertInventoryTreeChildren(
+        rootNode.children,
+        searchText,
+        isNodeSelected
+      ),
     },
   ];
 };

@@ -16,7 +16,7 @@ interface ICommonTree {
 }
 
 export interface IInventoryHostTree extends ICommonTree {
-  kind: '' | 'Datacenter' | 'Cluster' | 'Folder' | 'Host' | 'VM';
+  kind: '' | 'Datacenter' | 'DataCenter' | 'Cluster' | 'Folder' | 'Host' | 'VM';
   children: IInventoryHostTree[] | null;
 }
 
