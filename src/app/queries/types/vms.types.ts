@@ -13,6 +13,7 @@ interface IBaseSourceVM {
   selfLink: string;
   concerns: ISourceVMConcern[];
   revisionValidated: number;
+  guestName: string;
 }
 
 export interface IVMwareVMDisk {
@@ -31,7 +32,6 @@ export interface IVMwareVM extends IBaseSourceVM {
   cpuCount: number;
   coresPerSocket: number;
   memoryMB: number;
-  guestName: string;
   balloonedMemory: number;
   ipAddress: string;
   networks: IVMwareObjRef[];
@@ -44,10 +44,12 @@ export interface IVMwareVM extends IBaseSourceVM {
 export interface IRHVNIC {
   id: string;
   name: string;
+  interface: string;
   profile: {
     id: string;
     name: string;
     description: string;
+    selfLink: string;
     revision: number;
     network: string;
     qos: string;
@@ -56,13 +58,14 @@ export interface IRHVNIC {
 
 export interface IRHVDiskAttachment {
   id: string;
-  interface: string;
   disk: {
     id: string;
     name: string;
     description: string;
+    selfLink: string;
     revision: number;
     shared: boolean;
+    profile: string;
     storageDomain: string;
   };
 }
@@ -70,7 +73,6 @@ export interface IRHVDiskAttachment {
 export interface IRHVVM extends IBaseSourceVM {
   description: string;
   cluster: string;
-  datacenter: string;
   host: string;
   nics: IRHVNIC[];
   diskAttachments: IRHVDiskAttachment[];
