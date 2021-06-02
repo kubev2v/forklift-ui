@@ -1,5 +1,3 @@
-import { IVMwareObjRef } from './common.types';
-
 export enum InventoryTreeType {
   Host = 'Host',
   VM = 'VM',
@@ -7,7 +5,6 @@ export enum InventoryTreeType {
 
 export interface ICommonTreeObject {
   id: string;
-  parent: IVMwareObjRef | null;
   name: string;
   selfLink: string;
 }
