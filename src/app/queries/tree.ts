@@ -2,7 +2,7 @@ import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
 import { QueryResult } from 'react-query';
 import { getInventoryApiUrl, sortTreeItemsByName, useMockableQuery } from './helpers';
-import { MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
+import { MOCK_RHV_HOST_TREE, MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
 import { SourceInventoryProvider } from './types';
 import { InventoryTree, InventoryTreeType } from './types/tree.types';
 import { useAuthorizedFetch } from './fetchHelpers';
@@ -26,7 +26,7 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
     (treeType === InventoryTreeType.Host
       ? provider?.type === 'vsphere'
         ? MOCK_VMWARE_HOST_TREE
-        : {} // TODO mock RHV tree
+        : MOCK_RHV_HOST_TREE
       : MOCK_VMWARE_VM_TREE) as T
   );
   const sortedData = React.useMemo(() => sortTreeItemsByName(result.data), [result.data]);
