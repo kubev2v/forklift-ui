@@ -14,7 +14,7 @@ import { StatusIcon } from '@konveyor/lib-ui';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { HookStep, IPlan, IVMwareVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
+import { HookStep, IPlan, SourceVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
 import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 
@@ -27,7 +27,7 @@ interface IPlanDetailsProps {
   plan: IPlan;
   networkMapping: Mapping | null;
   storageMapping: Mapping | null;
-  vms: IVMwareVM[] | undefined;
+  vms: SourceVM[] | undefined;
   hooksDetails: IHookDetails[] | null;
   isNewNamespace?: boolean;
 }
@@ -41,7 +41,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
   isNewNamespace = false,
 }: IPlanDetailsProps) => {
   const warmCriticalConcernsFound = plan.spec.warm
-    ? warmCriticalConcerns.filter((label) => someVMHasConcern(vms as IVMwareVM[], label))
+    ? warmCriticalConcerns.filter((label) => someVMHasConcern(vms as SourceVM[], label))
     : [];
 
   return (
