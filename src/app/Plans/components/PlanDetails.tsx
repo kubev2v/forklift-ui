@@ -62,7 +62,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
     <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
       <GridItem md={12}></GridItem>
       <GridItem md={3}>Plan name</GridItem>
-      <GridItem md={9} id="review-plan-name">
+      <GridItem md={9} id="details-plan-name">
         {planName}
       </GridItem>
       {description ? (
@@ -70,7 +70,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           <GridItem md={3} id="plan-description-label">
             Plan description
           </GridItem>
-          <GridItem md={9} id="review-plan-description" aria-labelledby="plan-description-label">
+          <GridItem md={9} id="details-plan-description" aria-labelledby="plan-description-label">
             {description}
           </GridItem>
         </>
@@ -78,25 +78,25 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
       <GridItem md={3} id="source-provider-label">
         Source provider
       </GridItem>
-      <GridItem md={9} id="review-source-provider" aria-labelledby="source-provider-label">
+      <GridItem md={9} id="details-source-provider" aria-labelledby="source-provider-label">
         {sourceName}
       </GridItem>
       <GridItem md={3} id="target-provider-label">
         Target provider
       </GridItem>
-      <GridItem md={9} id="review-target-provider" aria-labelledby="target-provider-label">
+      <GridItem md={9} id="details-target-provider" aria-labelledby="target-provider-label">
         {destinationName}
       </GridItem>
       <GridItem md={3} id="target-namespace-label">
         Target namespace
       </GridItem>
       <GridItem md={9}>
-        <span id="review-target-namespace" aria-labelledby="target-namespace-label">
+        <span id="details-target-namespace" aria-labelledby="target-namespace-label">
           {targetNamespace}
         </span>
         {isNewNamespace ? (
           <TextContent>
-            <Text component="small" id="review-new-target-namespace-message">
+            <Text component="small" id="details-new-target-namespace-message">
               This is a new namespace that will be created when the plan is started.
             </Text>
           </TextContent>
@@ -105,7 +105,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
       <GridItem md={3} id="transfer-network-label">
         Migration transfer network
       </GridItem>
-      <GridItem md={9} id="review-transfer-network" aria-labelledby="transfer-network-label">
+      <GridItem md={9} id="details-transfer-network" aria-labelledby="transfer-network-label">
         {transferNetwork}
       </GridItem>
       <GridItem md={3}>Selected VMs</GridItem>
@@ -113,14 +113,14 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         <Popover
           headerContent={<div>Selected VMs</div>}
           bodyContent={
-            <List id="review-selected-vms-list">
+            <List id="details-selected-vms-list">
               {planVMs.map((vm, index) => (
                 <li key={index}>{vm.id}</li>
               ))}
             </List>
           }
         >
-          <Button variant="link" isInline id="review-selected-vms-count">
+          <Button variant="link" isInline id="details-selected-vms-count">
             {planVMs.length}
           </Button>
         </Popover>
@@ -137,7 +137,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           />
         ) : null}
       </GridItem>
-      <GridItem md={9} id="review-network-mapping" aria-labelledby="network-mapping-label">
+      <GridItem md={9} id="details-network-mapping" aria-labelledby="network-mapping-label">
         <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
       </GridItem>
       <GridItem md={3} id="storage-mapping-label">
@@ -152,7 +152,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           />
         ) : null}
       </GridItem>
-      <GridItem md={9} id="review-storage-mapping" aria-labelledby="storage-mapping-label">
+      <GridItem md={9} id="details-storage-mapping" aria-labelledby="storage-mapping-label">
         <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
       </GridItem>
       <GridItem md={3} id="migration-type-label">
@@ -179,39 +179,41 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           </Popover>
         ) : null}
       </GridItem>
-      <GridItem md={9} id="review-migration-type" aria-labelledby="migration-type-label">
+      <GridItem md={9} id="details-migration-type" aria-labelledby="migration-type-label">
         {planType ? 'warm' : 'cold'}
       </GridItem>
+      <GridItem md={3} id="migration-type-label">
+        Hooks
+      </GridItem>
       {hooksDetails ? (
-        <>
-          <GridItem md={3} id="migration-type-label">
-            Hooks
-          </GridItem>
-          <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
-            <div>
-              <Grid>
-                <GridItem span={5} id="migration-plan-hooks-definition-label">
-                  <Text className={text.fontWeightBold}>Definition</Text>
-                  {hooksDetails.map((hookDetails, idx) => (
-                    <Text key={idx}>
-                      {hookDetails.playbook ? 'Ansible playbook' : 'Custom container image'}
-                    </Text>
-                  ))}
-                </GridItem>
-                <GridItem span={2} className="migration-hooks-align" />
-                <GridItem span={5} id="migration-plan-hooks-steps-label">
-                  <Text className={text.fontWeightBold}>Migration step</Text>
-                  {hooksDetails.map((hookDetail) => (
-                    <Text key={hookDetail.step}>
-                      {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
-                    </Text>
-                  ))}
-                </GridItem>
-              </Grid>
-            </div>
-          </GridItem>
-        </>
-      ) : null}
+        <GridItem md={9} id="details-plan-hooks" aria-labelledby="migration-hooks-label">
+          <div>
+            <Grid>
+              <GridItem span={5} id="migration-plan-hooks-steps-label">
+                <Text className={text.fontWeightBold}>Migration step</Text>
+                {hooksDetails.map((hookDetail) => (
+                  <Text key={hookDetail.step}>
+                    {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
+                  </Text>
+                ))}
+              </GridItem>
+              <GridItem span={2} className="migration-hooks-align" />
+              <GridItem span={5} id="migration-plan-hooks-definition-label">
+                <Text className={text.fontWeightBold}>Definition</Text>
+                {hooksDetails.map((hookDetails, idx) => (
+                  <Text key={idx}>
+                    {hookDetails.playbook ? 'Ansible playbook' : 'Custom container image'}
+                  </Text>
+                ))}
+              </GridItem>
+            </Grid>
+          </div>
+        </GridItem>
+      ) : (
+        <GridItem md={9} id="details-plan-hooks" aria-labelledby="migration-hooks-label">
+          None
+        </GridItem>
+      )}
     </Grid>
   );
 };
