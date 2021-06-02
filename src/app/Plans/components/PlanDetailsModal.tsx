@@ -13,13 +13,13 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isSameResource } from '@app/queries/helpers';
 import PlanDetails from './PlanDetails';
 
-interface IConnectedPlanDetailsProps {
+interface IPlanDetailsModalProps {
   plan: IPlan;
 }
 
-const ConnectedPlanDetails: React.FunctionComponent<IConnectedPlanDetailsProps> = ({
+const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
   plan,
-}: IConnectedPlanDetailsProps) => {
+}: IPlanDetailsModalProps) => {
   usePausedPollingEffect();
 
   const networkMappings = useMappingsQuery(MappingType.Network);
@@ -110,4 +110,4 @@ const ConnectedPlanDetails: React.FunctionComponent<IConnectedPlanDetailsProps> 
   );
 };
 
-export default ConnectedPlanDetails;
+export default PlanDetailsModal;
