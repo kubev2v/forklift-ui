@@ -182,36 +182,38 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
       <GridItem md={9} id="review-migration-type" aria-labelledby="migration-type-label">
         {planType ? 'warm' : 'cold'}
       </GridItem>
+      <GridItem md={3} id="migration-type-label">
+        Hooks
+      </GridItem>
       {hooksDetails ? (
-        <>
-          <GridItem md={3} id="migration-type-label">
-            Hooks
-          </GridItem>
-          <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
-            <div>
-              <Grid>
-                <GridItem span={5} id="migration-plan-hooks-definition-label">
-                  <Text className={text.fontWeightBold}>Definition</Text>
-                  {hooksDetails.map((hookDetails, idx) => (
-                    <Text key={idx}>
-                      {hookDetails.playbook ? 'Ansible playbook' : 'Custom container image'}
-                    </Text>
-                  ))}
-                </GridItem>
-                <GridItem span={2} className="migration-hooks-align" />
-                <GridItem span={5} id="migration-plan-hooks-steps-label">
-                  <Text className={text.fontWeightBold}>Migration step</Text>
-                  {hooksDetails.map((hookDetail) => (
-                    <Text key={hookDetail.step}>
-                      {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
-                    </Text>
-                  ))}
-                </GridItem>
-              </Grid>
-            </div>
-          </GridItem>
-        </>
-      ) : null}
+        <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
+          <div>
+            <Grid>
+              <GridItem span={5} id="migration-plan-hooks-steps-label">
+                <Text className={text.fontWeightBold}>Migration step</Text>
+                {hooksDetails.map((hookDetail) => (
+                  <Text key={hookDetail.step}>
+                    {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
+                  </Text>
+                ))}
+              </GridItem>
+              <GridItem span={2} className="migration-hooks-align" />
+              <GridItem span={5} id="migration-plan-hooks-definition-label">
+                <Text className={text.fontWeightBold}>Definition</Text>
+                {hooksDetails.map((hookDetails, idx) => (
+                  <Text key={idx}>
+                    {hookDetails.playbook ? 'Ansible playbook' : 'Custom container image'}
+                  </Text>
+                ))}
+              </GridItem>
+            </Grid>
+          </div>
+        </GridItem>
+      ) : (
+        <GridItem md={9} id="review-plan-hooks" aria-labelledby="migration-hooks-label">
+          None
+        </GridItem>
+      )}
     </Grid>
   );
 };
