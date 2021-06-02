@@ -96,8 +96,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
   useSourceVMsQuery(form.values.sourceProvider);
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Host); // TODO only query this if we're in a VMware plan
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM); // TODO add RHV support
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Host);
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM);
 
   return (
     <ResolvedQueries

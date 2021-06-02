@@ -57,11 +57,11 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
     sourceProvider,
     InventoryTreeType.Host
-  ); // TODO only for vmware
+  );
   const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
     sourceProvider,
     InventoryTreeType.VM
-  ); // TODO add RHV support
+  );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
@@ -81,16 +81,20 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const [treePathInfoByVM, setTreePathInfoByVM] = React.useState<IVMTreePathInfoByVM | null>(null);
   React.useEffect(() => {
-    if ((availableVMs || []).length > 0 && hostTreeQuery.data && vmTreeQuery.data) {
+    if (
+      (availableVMs || []).length > 0 &&
+      hostTreeQuery.data &&
+      (sourceProvider?.type === 'ovirt' || vmTreeQuery.data) // Only VMware has a VM tree
+    ) {
       setTreePathInfoByVM(
         getVMTreePathInfoByVM(
           availableVMs?.map((vm) => vm.selfLink) || [],
           hostTreeQuery.data,
-          vmTreeQuery.data
+          vmTreeQuery.data || null
         )
       );
     }
-  }, [availableVMs, hostTreeQuery.data, vmTreeQuery.data]);
+  }, [availableVMs, hostTreeQuery.data, sourceProvider?.type, vmTreeQuery.data]);
   const getVMTreeInfo = (vm: SourceVM): IVMTreePathInfo => {
     if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
     return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
@@ -276,10 +280,14 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   return (
     <ResolvedQueries
-      results={[hostTreeQuery, vmTreeQuery, vmsQuery]}
+      results={[
+        hostTreeQuery,
+        ...(sourceProvider?.type === 'vsphere' ? [vmTreeQuery] : []),
+        vmsQuery,
+      ]}
       errorTitles={[
-        'Error loading VMware host tree data',
-        'Error loading VMware VM tree data',
+        'Error loading inventory host tree data',
+        ...(sourceProvider?.type === 'vsphere' ? ['Error loading inventory VM tree data'] : []),
         'Error loading VMs',
       ]}
       emptyStateBody={LONG_LOADING_MESSAGE}

@@ -11,13 +11,15 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
   provider: SourceInventoryProvider | null,
   treeType: InventoryTreeType
 ): QueryResult<T> => {
+  // VMware providers have both Host and VM trees, but RHV only has Host trees.
+  const isValidQuery = provider?.type === 'vsphere' || treeType === InventoryTreeType.Host;
   const apiSlug = treeType === InventoryTreeType.Host ? '/tree/host' : '/tree/vm';
   const result = useMockableQuery<T>(
     {
       queryKey: ['inventory-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       config: {
-        enabled: !!provider,
+        enabled: isValidQuery && !!provider,
         refetchInterval: usePollingContext().refetchInterval,
       },
     },

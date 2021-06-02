@@ -38,7 +38,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const [searchText, setSearchText] = React.useState('');
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType); // TODO add RHV support
+  const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
   const treeSelection = useSelectionState({
     items: flattenVMwareTreeNodes(treeQuery.data || null),
@@ -79,25 +79,27 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           Refine the list of VMs selectable for migration by clusters and hosts or by folder.
         </Text>
       </TextContent>
-      <Tabs
-        activeKey={form.values.treeType}
-        onSelect={(_event, tabKey) => form.fields.treeType.setValue(tabKey as InventoryTreeType)}
-        className={spacing.mtMd}
-      >
-        <Tab
-          key={InventoryTreeType.Host}
-          eventKey={InventoryTreeType.Host}
-          title={<TabTitleText>By clusters and hosts</TabTitleText>}
-        />
-        <Tab
-          key={InventoryTreeType.VM}
-          eventKey={InventoryTreeType.VM}
-          title={<TabTitleText>By folders</TabTitleText>}
-        />
-      </Tabs>
+      {sourceProvider?.type === 'vsphere' ? (
+        <Tabs
+          activeKey={form.values.treeType}
+          onSelect={(_event, tabKey) => form.fields.treeType.setValue(tabKey as InventoryTreeType)}
+          className={spacing.mtMd}
+        >
+          <Tab
+            key={InventoryTreeType.Host}
+            eventKey={InventoryTreeType.Host}
+            title={<TabTitleText>By clusters and hosts</TabTitleText>}
+          />
+          <Tab
+            key={InventoryTreeType.VM}
+            eventKey={InventoryTreeType.VM}
+            title={<TabTitleText>By folders</TabTitleText>}
+          />
+        </Tabs>
+      ) : null}
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
-        errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
+        errorTitles={['Error loading VMs', 'Error loading inventory tree data']}
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView

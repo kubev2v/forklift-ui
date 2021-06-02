@@ -184,13 +184,12 @@ export interface IVMTreePathInfo {
 }
 
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
-// TODO add RHV support. no folders, basically.
 export const findVMTreePathInfo = (
   vmSelfLink: string,
   hostTree: IInventoryHostTree | null,
   vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfo => {
-  if (!hostTree || !vmTree) {
+  if (!hostTree) {
     return {
       datacenter: null,
       cluster: null,
@@ -200,11 +199,14 @@ export const findVMTreePathInfo = (
     };
   }
   const hostTreePath = findVMTreePath(hostTree, vmSelfLink);
-  const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
-  const folders =
-    (vmTreePath
-      ?.filter((node) => !!node && node.kind === 'Folder')
-      .map((node) => node.object) as ICommonTreeObject[]) || null;
+  let folders: ICommonTreeObject[] = [];
+  if (vmTree) {
+    const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
+    folders =
+      (vmTreePath
+        ?.filter((node) => !!node && node.kind === 'Folder')
+        .map((node) => node.object) as ICommonTreeObject[]) || null;
+  }
   return {
     datacenter: hostTreePath?.find((node) => node.kind === 'Datacenter')?.object || null,
     cluster: hostTreePath?.find((node) => node.kind === 'Cluster')?.object || null,
@@ -448,8 +450,7 @@ export const useEditingPlanPrefillEffect = (
     providersQuery
   );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Host); // TODO only for VMware
-  const vmTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.VM); // TODO add RHV support
+  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Host);
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -471,7 +472,6 @@ export const useEditingPlanPrefillEffect = (
     providersQuery,
     vmsQuery,
     hostTreeQuery,
-    vmTreeQuery,
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
     networkMappingsQuery,
@@ -481,8 +481,7 @@ export const useEditingPlanPrefillEffect = (
   const errorTitles = [
     'Error loading providers',
     'Error loading VMs',
-    'Error loading VMware host tree data',
-    'Error loading VMware VM tree data',
+    'Error loading inventory tree data',
     'Error loading source networks',
     'Error loading target networks',
     'Error loading source datastores',
@@ -501,9 +500,10 @@ export const useEditingPlanPrefillEffect = (
     if (!isStartedPrefilling && queryStatus === QueryStatus.Success && planBeingEdited) {
       setIsStartedPrefilling(true);
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
-      const treeQuery =
-        forms.filterVMs.values.treeType === InventoryTreeType.Host ? hostTreeQuery : vmTreeQuery;
-      const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+      const selectedTreeNodes = findNodesMatchingSelectedVMs(
+        hostTreeQuery.data || null,
+        selectedVMs
+      );
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
       );
@@ -522,6 +522,7 @@ export const useEditingPlanPrefillEffect = (
         planBeingEdited.spec.transferNetwork?.name || null
       );
 
+      forms.filterVMs.fields.treeType.setInitialValue(InventoryTreeType.Host);
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
       forms.filterVMs.fields.isPrefilled.setInitialValue(true);
 
@@ -581,7 +582,6 @@ export const useEditingPlanPrefillEffect = (
     storageMappingResourceQueries,
     vmsQuery,
     hostTreeQuery,
-    vmTreeQuery,
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
