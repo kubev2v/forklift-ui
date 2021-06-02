@@ -2,7 +2,7 @@ import { IKubeList } from '@app/client/types';
 import { PlanStatusType, PlanStatusDisplayType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
-import { IHook, IMetaObjectMeta, IPlan } from '@app/queries/types';
+import { IPlan } from '@app/queries/types';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { QueryResult } from 'react-query';
 
