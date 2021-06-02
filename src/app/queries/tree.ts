@@ -4,15 +4,14 @@ import { QueryResult } from 'react-query';
 import { getInventoryApiUrl, sortTreeItemsByName, useMockableQuery } from './helpers';
 import { MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
 import { IVMwareProvider } from './types';
-import { VMwareTree, VMwareTreeType } from './types/tree.types';
+import { InventoryTree, InventoryTreeType } from './types/tree.types';
 import { useAuthorizedFetch } from './fetchHelpers';
 
-// TODO add support for RHV VM trees, limit host trees to vmware only
-export const useVMwareTreeQuery = <T extends VMwareTree>(
+export const useInventoryTreeQuery = <T extends InventoryTree>(
   provider: IVMwareProvider | null,
-  treeType: VMwareTreeType
+  treeType: InventoryTreeType
 ): QueryResult<T> => {
-  const apiSlug = treeType === VMwareTreeType.Host ? '/tree/host' : '/tree/vm';
+  const apiSlug = treeType === InventoryTreeType.Host ? '/tree/host' : '/tree/vm';
   const result = useMockableQuery<T>(
     {
       queryKey: ['vmware-tree', provider?.name, treeType],
@@ -22,7 +21,7 @@ export const useVMwareTreeQuery = <T extends VMwareTree>(
         refetchInterval: usePollingContext().refetchInterval,
       },
     },
-    (treeType === VMwareTreeType.Host ? MOCK_VMWARE_HOST_TREE : MOCK_VMWARE_VM_TREE) as T
+    (treeType === InventoryTreeType.Host ? MOCK_VMWARE_HOST_TREE : MOCK_VMWARE_VM_TREE) as T
   );
   const sortedData = React.useMemo(() => sortTreeItemsByName(result.data), [result.data]);
   return {

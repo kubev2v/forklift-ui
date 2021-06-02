@@ -1,12 +1,12 @@
-import { IVMwareHostTree, IVMwareVMTree } from '../types/tree.types';
+import { IInventoryHostTree, IVMwareFolderTree } from '../types/tree.types';
 
-export let MOCK_VMWARE_HOST_TREE: IVMwareHostTree = {
+export let MOCK_VMWARE_HOST_TREE: IInventoryHostTree = {
   kind: '',
   object: null,
   children: null,
 };
 
-export let MOCK_VMWARE_VM_TREE: IVMwareVMTree = {
+export let MOCK_VMWARE_VM_TREE: IVMwareFolderTree = {
   kind: '',
   object: null,
   children: null,

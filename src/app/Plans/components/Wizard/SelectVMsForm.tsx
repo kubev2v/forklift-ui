@@ -14,11 +14,11 @@ import {
 
 import {
   SourceVM,
-  IVMwareHostTree,
-  IVMwareVMTree,
+  IInventoryHostTree,
+  IVMwareFolderTree,
   SourceInventoryProvider,
-  VMwareTree,
-  VMwareTreeType,
+  InventoryTree,
+  InventoryTreeType,
 } from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
@@ -33,7 +33,7 @@ import {
   IVMTreePathInfoByVM,
   vmMatchesConcernFilter,
 } from './helpers';
-import { useVMwareTreeQuery, useSourceVMsQuery } from '@app/queries';
+import { useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -43,7 +43,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
-  selectedTreeNodes: VMwareTree[]; // TODO add RHV support
+  selectedTreeNodes: InventoryTree[]; // TODO add RHV support
   sourceProvider: SourceInventoryProvider | null;
   selectedVMs: SourceVM[];
 }
@@ -54,8 +54,14 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   sourceProvider,
   selectedVMs,
 }: ISelectVMsFormProps) => {
-  const hostTreeQuery = useVMwareTreeQuery<IVMwareHostTree>(sourceProvider, VMwareTreeType.Host); // TODO only for vmware
-  const vmTreeQuery = useVMwareTreeQuery<IVMwareVMTree>(sourceProvider, VMwareTreeType.VM); // TODO add RHV support
+  const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
+    sourceProvider,
+    InventoryTreeType.Host
+  ); // TODO only for vmware
+  const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
+    sourceProvider,
+    InventoryTreeType.VM
+  ); // TODO add RHV support
   const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.

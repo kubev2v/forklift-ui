@@ -15,12 +15,12 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan, POD_NETWORK, VMwareTreeType } from '@app/queries/types';
+import { IPlan, POD_NETWORK, InventoryTreeType } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
   useSourceVMsQuery,
-  useVMwareTreeQuery,
+  useInventoryTreeQuery,
 } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import { useNamespacesQuery } from '@app/queries/namespaces';
@@ -96,8 +96,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
   useSourceVMsQuery(form.values.sourceProvider);
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.Host); // TODO only query this if we're in a VMware plan
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.VM); // TODO add RHV support
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Host); // TODO only query this if we're in a VMware plan
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM); // TODO add RHV support
 
   return (
     <ResolvedQueries

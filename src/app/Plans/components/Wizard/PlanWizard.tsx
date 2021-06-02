@@ -31,8 +31,8 @@ import {
   MappingType,
   PlanType,
   SourceInventoryProvider,
-  VMwareTree,
-  VMwareTreeType,
+  InventoryTree,
+  InventoryTreeType,
 } from '@app/queries/types';
 import {
   IMappingBuilderItem,
@@ -103,8 +103,14 @@ const usePlanWizardFormState = (
       ),
     }),
     filterVMs: useFormState({
-      treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
-      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required().min(1)),
+      treeType: useFormField<InventoryTreeType>(
+        InventoryTreeType.Host,
+        yup.mixed<InventoryTreeType>()
+      ),
+      selectedTreeNodes: useFormField<InventoryTree[]>(
+        [],
+        yup.array<InventoryTree>().required().min(1)
+      ),
       isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({

@@ -8,13 +8,13 @@ import {
   IPlan,
   SourceVM,
   IStorageMapping,
-  IVMwareHostTree,
+  IInventoryHostTree,
   ISourceVMConcern,
-  IVMwareVMTree,
+  IVMwareFolderTree,
   MappingSource,
   MappingType,
-  VMwareTree,
-  VMwareTreeType,
+  InventoryTree,
+  InventoryTreeType,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 import {
@@ -34,7 +34,7 @@ import {
   findProvidersByRefs,
   useMappingResourceQueries,
   useInventoryProvidersQuery,
-  useVMwareTreeQuery,
+  useInventoryTreeQuery,
   useMappingsQuery,
   useHooksQuery,
   useSourceVMsQuery,
@@ -46,7 +46,7 @@ import { IKubeList } from '@app/client/types';
 import { getObjectRef } from '@app/common/helpers';
 
 // Helper for filterAndConvertVMwareTree
-const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
+const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
   if (node.kind === 'VM') return false; // Exclude VMs from the tree entirely
   if (
     searchText === '' ||
@@ -58,8 +58,8 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
 };
 
 const areSomeDescendantsSelected = (
-  node: VMwareTree,
-  isNodeSelected: (node: VMwareTree) => boolean
+  node: InventoryTree,
+  isNodeSelected: (node: InventoryTree) => boolean
 ) => {
   if (isNodeSelected(node)) return true;
   if (node.children) {
@@ -70,9 +70,9 @@ const areSomeDescendantsSelected = (
 
 // Helper for filterAndConvertVMwareTree
 const convertVMwareTreeNode = (
-  node: VMwareTree,
+  node: InventoryTree,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean
+  isNodeSelected: (node: InventoryTree) => boolean
 ): TreeViewDataItem => {
   const isPartiallyChecked =
     !isNodeSelected(node) && areSomeDescendantsSelected(node, isNodeSelected);
@@ -97,11 +97,11 @@ const convertVMwareTreeNode = (
 
 // Helper for filterAndConvertVMwareTree
 const filterAndConvertVMwareTreeChildren = (
-  children: VMwareTree[] | null,
+  children: InventoryTree[] | null,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean
+  isNodeSelected: (node: InventoryTree) => boolean
 ): TreeViewDataItem[] | undefined => {
-  const filteredChildren = ((children || []) as VMwareTree[]).filter((node) =>
+  const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
     subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
@@ -111,9 +111,9 @@ const filterAndConvertVMwareTreeChildren = (
 
 // Convert the API tree structure to the PF TreeView structure, while filtering by the user's search text.
 export const filterAndConvertVMwareTree = (
-  rootNode: VMwareTree | null,
+  rootNode: InventoryTree | null,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean,
+  isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
@@ -133,22 +133,22 @@ export const filterAndConvertVMwareTree = (
 };
 
 // To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
-export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
+export const flattenVMwareTreeNodes = (rootNode: InventoryTree | null): InventoryTree[] => {
   if (rootNode?.children) {
-    const children = (rootNode.children as VMwareTree[]).filter((node) => node.kind !== 'VM');
+    const children = (rootNode.children as InventoryTree[]).filter((node) => node.kind !== 'VM');
     return [...children, ...children.flatMap(flattenVMwareTreeNodes)];
   }
   return [];
 };
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
-export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
+export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] =>
   Array.from(
     new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
   );
 
 export const getAvailableVMs = (
-  selectedTreeNodes: VMwareTree[],
+  selectedTreeNodes: InventoryTree[],
   allVMs: SourceVM[]
 ): SourceVM[] => {
   const treeVMs = getAllVMChildren(selectedTreeNodes)
@@ -159,7 +159,7 @@ export const getAvailableVMs = (
 };
 
 // Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
-export const findVMTreePath = (node: VMwareTree, vmSelfLink: string): VMwareTree[] | null => {
+export const findVMTreePath = (node: InventoryTree, vmSelfLink: string): InventoryTree[] | null => {
   if (node.object?.selfLink === vmSelfLink) return [node];
   if (!node.children) return null;
   for (const i in node.children) {
@@ -181,8 +181,8 @@ export interface IVMTreePathInfo {
 // TODO add RHV support. no folders, basically.
 export const findVMTreePathInfo = (
   vmSelfLink: string,
-  hostTree: IVMwareHostTree | null,
-  vmTree: IVMwareVMTree | null
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfo => {
   if (!hostTree || !vmTree) {
     return {
@@ -214,8 +214,8 @@ export interface IVMTreePathInfoByVM {
 
 export const getVMTreePathInfoByVM = (
   vmSelfLinks: string[],
-  hostTree: IVMwareHostTree | null,
-  vmTree: IVMwareVMTree | null
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfoByVM | null => {
   if (vmSelfLinks.length === 0) return null;
   return vmSelfLinks.reduce(
@@ -228,17 +228,17 @@ export const getVMTreePathInfoByVM = (
 };
 
 export const findMatchingNodeAndDescendants = (
-  tree: VMwareTree | null,
+  tree: InventoryTree | null,
   vmSelfLink: string
-): VMwareTree[] => {
+): InventoryTree[] => {
   const matchingPath = tree && findVMTreePath(tree, vmSelfLink);
   const matchingNode = matchingPath
     ?.slice()
     .reverse()
     .find((node) => node.kind !== 'VM');
   if (!matchingNode) return [];
-  const nodeAndDescendants: VMwareTree[] = [];
-  const pushNodeAndDescendants = (n: VMwareTree) => {
+  const nodeAndDescendants: InventoryTree[] = [];
+  const pushNodeAndDescendants = (n: InventoryTree) => {
     nodeAndDescendants.push(n);
     if (n.children) {
       n.children.filter((node) => node.kind !== 'VM').forEach(pushNodeAndDescendants);
@@ -249,9 +249,9 @@ export const findMatchingNodeAndDescendants = (
 };
 
 export const findNodesMatchingSelectedVMs = (
-  tree: VMwareTree | null,
+  tree: InventoryTree | null,
   selectedVMs: SourceVM[]
-): VMwareTree[] =>
+): InventoryTree[] =>
   Array.from(
     new Set(selectedVMs.flatMap((vm) => findMatchingNodeAndDescendants(tree, vm.selfLink)))
   );
@@ -442,8 +442,8 @@ export const useEditingPlanPrefillEffect = (
     providersQuery
   );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const hostTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.Host); // TODO only for VMware
-  const vmTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.VM); // TODO add RHV support
+  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Host); // TODO only for VMware
+  const vmTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.VM); // TODO add RHV support
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -496,7 +496,7 @@ export const useEditingPlanPrefillEffect = (
       setIsStartedPrefilling(true);
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
       const treeQuery =
-        forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
+        forms.filterVMs.values.treeType === InventoryTreeType.Host ? hostTreeQuery : vmTreeQuery;
       const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
