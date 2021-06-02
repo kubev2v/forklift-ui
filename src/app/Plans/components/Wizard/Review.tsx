@@ -62,8 +62,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         vms={selectedVMs}
         hooksDetails={
           forms.hooks?.values.instances.map((hook) => ({
-            type: hook.type,
             step: hook.step,
+            playbook: hook.type === 'playbook' ? true : false,
           })) || null
         }
       />

@@ -55,9 +55,9 @@ const ConnectedPlanDetails: React.FunctionComponent<IConnectedPlanDetailsProps> 
       )
     ) || [];
 
-  const getHookDefinition = (hooks: IHook[], name: string): string => {
-    const hook = hooks.find((hook) => (hook.metadata as IMetaObjectMeta).name === name) || null;
-    return hook?.spec.playbook ? hook.spec.playbook : '';
+  const isPlaybook = (hooks: IHook[], name: string): boolean => {
+    const hook = hooks.find((hook) => (hook.metadata as IMetaObjectMeta).name === name);
+    return hook?.spec.playbook ? true : false;
   };
 
   const networkMappingResources = useResourceQueriesForMapping(MappingType.Network, networkMapping);
@@ -101,8 +101,8 @@ const ConnectedPlanDetails: React.FunctionComponent<IConnectedPlanDetailsProps> 
         vms={selectedVMs}
         hooksDetails={
           plan.spec.vms[0].hooks?.map((hook) => ({
-            type: getHookDefinition(selectedHooks, hook.hook.name),
             step: hook.step,
+            playbook: isPlaybook(selectedHooks, hook.hook.name),
           })) || null
         }
       />

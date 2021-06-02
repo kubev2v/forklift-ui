@@ -19,8 +19,8 @@ import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 
 interface IHookDetails {
-  type: string;
   step: HookStep | null;
+  playbook: boolean;
 }
 
 interface IPlanDetailsProps {
@@ -192,9 +192,9 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
               <Grid>
                 <GridItem span={5} id="migration-plan-hooks-definition-label">
                   <Text className={text.fontWeightBold}>Definition</Text>
-                  {hooksDetails.map((hookDetails) => (
-                    <Text key={Math.random()}>
-                      {hookDetails.type ? 'Ansible playbook' : 'Custom container image'}
+                  {hooksDetails.map((hookDetails, idx) => (
+                    <Text key={idx}>
+                      {hookDetails.playbook ? 'Ansible playbook' : 'Custom container image'}
                     </Text>
                   ))}
                 </GridItem>
@@ -202,7 +202,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
                 <GridItem span={5} id="migration-plan-hooks-steps-label">
                   <Text className={text.fontWeightBold}>Migration step</Text>
                   {hooksDetails.map((hookDetail) => (
-                    <Text key={Math.random()}>
+                    <Text key={hookDetail.step}>
                       {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
                     </Text>
                   ))}
