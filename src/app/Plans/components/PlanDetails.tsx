@@ -14,7 +14,7 @@ import { StatusIcon } from '@konveyor/lib-ui';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { HookStep, IPlanVM, IVMwareVM, Mapping, MappingType } from '@app/queries/types';
+import { HookStep, IPlan, IVMwareVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
 import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 
@@ -24,37 +24,23 @@ interface IHookDetails {
 }
 
 interface IPlanDetailsProps {
-  planName: string;
-  description: string;
-  sourceName: string;
-  destinationName: string;
-  targetNamespace: string;
-  isNewNamespace?: boolean;
-  planType: boolean;
-  transferNetwork: string;
-  planVMs: IPlanVM[];
+  plan: IPlan;
   networkMapping: Mapping | null;
   storageMapping: Mapping | null;
   vms: IVMwareVM[] | undefined;
   hooksDetails: IHookDetails[] | null;
+  isNewNamespace?: boolean;
 }
 
 const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
-  planName,
-  description,
-  sourceName,
-  destinationName,
-  targetNamespace,
-  isNewNamespace = false,
-  planType,
-  transferNetwork,
-  planVMs,
+  plan,
   networkMapping,
   storageMapping,
   vms,
   hooksDetails,
+  isNewNamespace = false,
 }: IPlanDetailsProps) => {
-  const warmCriticalConcernsFound = planType
+  const warmCriticalConcernsFound = plan.spec.warm
     ? warmCriticalConcerns.filter((label) => someVMHasConcern(vms as IVMwareVM[], label))
     : [];
 
@@ -63,15 +49,15 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
       <GridItem md={12}></GridItem>
       <GridItem md={3}>Plan name</GridItem>
       <GridItem md={9} id="details-plan-name">
-        {planName}
+        {plan.metadata.name}
       </GridItem>
-      {description ? (
+      {plan.spec.description ? (
         <>
           <GridItem md={3} id="plan-description-label">
             Plan description
           </GridItem>
           <GridItem md={9} id="details-plan-description" aria-labelledby="plan-description-label">
-            {description}
+            {plan.spec.description}
           </GridItem>
         </>
       ) : null}
@@ -79,20 +65,20 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         Source provider
       </GridItem>
       <GridItem md={9} id="details-source-provider" aria-labelledby="source-provider-label">
-        {sourceName}
+        {plan.spec.provider.source.name}
       </GridItem>
       <GridItem md={3} id="target-provider-label">
         Target provider
       </GridItem>
       <GridItem md={9} id="details-target-provider" aria-labelledby="target-provider-label">
-        {destinationName}
+        {plan.spec.provider.destination.name}
       </GridItem>
       <GridItem md={3} id="target-namespace-label">
         Target namespace
       </GridItem>
       <GridItem md={9}>
         <span id="details-target-namespace" aria-labelledby="target-namespace-label">
-          {targetNamespace}
+          {plan.spec.targetNamespace}
         </span>
         {isNewNamespace ? (
           <TextContent>
@@ -106,7 +92,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         Migration transfer network
       </GridItem>
       <GridItem md={9} id="details-transfer-network" aria-labelledby="transfer-network-label">
-        {transferNetwork}
+        {plan.spec.transferNetwork?.name || POD_NETWORK.name}
       </GridItem>
       <GridItem md={3}>Selected VMs</GridItem>
       <GridItem md={9}>
@@ -114,14 +100,14 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           headerContent={<div>Selected VMs</div>}
           bodyContent={
             <List id="details-selected-vms-list">
-              {planVMs.map((vm, index) => (
-                <li key={index}>{vm.id}</li>
+              {plan.spec.vms.map((vm, idx) => (
+                <li key={idx}>{vm.id}</li>
               ))}
             </List>
           }
         >
           <Button variant="link" isInline id="details-selected-vms-count">
-            {planVMs.length}
+            {plan.spec.vms.length}
           </Button>
         </Popover>
       </GridItem>
@@ -180,12 +166,12 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         ) : null}
       </GridItem>
       <GridItem md={9} id="details-migration-type" aria-labelledby="migration-type-label">
-        {planType ? 'warm' : 'cold'}
+        {plan.spec.warm ? 'warm' : 'cold'}
       </GridItem>
       <GridItem md={3} id="migration-type-label">
         Hooks
       </GridItem>
-      {hooksDetails ? (
+      {hooksDetails && hooksDetails?.length > 0 ? (
         <GridItem md={9} id="details-plan-hooks" aria-labelledby="migration-hooks-label">
           <div>
             <Grid>
