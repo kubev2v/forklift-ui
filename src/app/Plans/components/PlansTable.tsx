@@ -17,7 +17,6 @@ import {
   ICell,
   IRow,
   sortable,
-  wrappable,
   expandable,
   classNames,
   cellWidth,
@@ -26,8 +25,10 @@ import {
   Td,
   Th,
   Tr,
+  truncate,
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
@@ -173,13 +174,25 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   };
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable, wrappable], cellFormatters: [expandable] },
-    { title: 'Type', transforms: [sortable] },
-    { title: 'Plan status', transforms: [sortable, cellWidth(30)] },
+    {
+      title: 'Name',
+      transforms: [sortable, cellWidth(20)],
+      cellFormatters: [expandable],
+    },
+    {
+      title: 'Type',
+      transforms: [sortable, cellWidth(10)],
+      cellTransforms: [truncate],
+    },
+    {
+      title: 'Plan status',
+      transforms: [sortable, cellWidth(60)],
+      cellTransforms: [truncate],
+    },
     {
       title: '',
       transforms: [cellWidth(10)],
-      columnTransforms: [classNames(alignment.textAlignRight)],
+      columnTransforms: [classNames(alignment.textAlignRight, spacing.pxSm)],
     },
   ];
 

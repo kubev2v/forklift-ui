@@ -6,3 +6,7 @@ export function accessibleRouteChangeHandler(pageId = 'primary-app-container') {
     }
   }, 50);
 }
+
+export const centerCellTransform = () => {
+  return { className: 'center-cell' };
+};

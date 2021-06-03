@@ -8,7 +8,7 @@ import {
   classNames as classNamesTransform,
   ICell,
   IRow,
-  fitContent,
+  truncate,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
@@ -106,14 +106,19 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
       columnTransforms: [classNamesTransform(tableStyles.tableCheck)],
     },
     */
-    { title: 'Name', transforms: [sortable] },
-    { title: 'Endpoint', transforms: [sortable] },
-    { title: 'Clusters', transforms: [sortable] },
-    { title: 'Hosts', transforms: [sortable] },
-    { title: 'VMs', transforms: [sortable] },
-    { title: 'Networks', transforms: [sortable] },
-    { title: getStorageTitle(providerType, true), transforms: [sortable, fitContent] },
-    { title: 'Status', transforms: [sortable] },
+
+    { title: 'Name', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Endpoint', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Clusters', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Hosts', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'VMs', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Networks', transforms: [sortable], cellTransforms: [truncate] },
+    {
+      title: getStorageTitle(providerType, true),
+      transforms: [sortable],
+      cellTransforms: [truncate],
+    },
+    { title: 'Status', transforms: [sortable], cellTransforms: [truncate] },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
@@ -198,6 +203,7 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
       </Level>
       <Table
         aria-label={`${PROVIDER_TYPE_NAMES[providerType]} providers table`}
+        variant="compact"
         cells={columns}
         rows={rows}
         sortBy={sortBy}
