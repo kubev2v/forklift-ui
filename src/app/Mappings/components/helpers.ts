@@ -17,6 +17,8 @@ import { MappingFormState } from './AddEditMappingModal';
 import { QueryResult, QueryStatus } from 'react-query';
 import { IMappingResourcesResult } from '@app/queries';
 import { getBuilderItemsFromMapping } from './MappingBuilder/helpers';
+import { ProviderType } from '@app/common/constants';
+import { getStorageTitle } from '@app/common/helpers';
 
 export const getMappingSourceById = (sources: MappingSource[], id: string): MappingSource | null =>
   sources.find((source) => source.id === id) || null;
@@ -41,12 +43,15 @@ export const getMappingTargetByRef = (
     return null;
   }) || null;
 
-export const getMappingSourceTitle = (mappingType: MappingType): string => {
+export const getMappingSourceTitle = (
+  mappingType: MappingType,
+  providerType: ProviderType
+): string => {
   if (mappingType === MappingType.Network) {
     return 'Source networks';
   }
   if (mappingType === MappingType.Storage) {
-    return 'Source datastores';
+    return `Source ${getStorageTitle(providerType)}`;
   }
   return '';
 };

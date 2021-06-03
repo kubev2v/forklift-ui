@@ -142,3 +142,9 @@ export const getAvailableProviderTypes = (
     .filter((type) => !!type)
     .sort() as ProviderType[];
 };
+
+export const getStorageTitle = (sourceProviderType: ProviderType, cap = false): string => {
+  if (sourceProviderType === 'vsphere') return `${cap ? 'D' : 'd'}atastores`;
+  if (sourceProviderType === 'ovirt') return `${cap ? 'S' : 's'}torage domains`;
+  return '';
+};

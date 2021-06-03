@@ -89,6 +89,7 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
     >
       <PlanDetails
         plan={plan}
+        sourceProvider={provider}
         networkMapping={networkMapping}
         storageMapping={storageMapping}
         vms={selectedVMs}

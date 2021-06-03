@@ -63,6 +63,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
       </TextContent>
       <PlanDetails
         plan={plan}
+        sourceProvider={forms.general.values.sourceProvider}
         isNewNamespace={isNewNamespace}
         networkMapping={networkMapping}
         storageMapping={storageMapping}

@@ -19,6 +19,7 @@ import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
 import MappingStatus from './MappingStatus';
 import { isSameResource } from '@app/queries/helpers';
+import { useClusterProvidersQuery } from '@app/queries';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
@@ -31,6 +32,8 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappingType,
   openEditMappingModal,
 }: IMappingsTableProps) => {
+  const clusterProvidersQuery = useClusterProvidersQuery();
+
   const getSortValues = (mapping: Mapping) => {
     const {
       metadata,
@@ -72,6 +75,9 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       metadata,
       spec: { provider },
     } = mapping;
+    const sourceProviderObj =
+      clusterProvidersQuery.data?.items.find((p) => isSameResource(p.metadata, provider.source)) ||
+      null;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
@@ -104,6 +110,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
               <Form>
                 <MappingDetailView
                   mappingType={mappingType}
+                  sourceProviderType={sourceProviderObj?.spec.type || 'vsphere'}
                   mapping={mapping}
                   className={spacing.mLg}
                 />

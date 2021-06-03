@@ -21,7 +21,12 @@ import {
 } from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
-import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
+import {
+  getMostSeriousCondition,
+  getStorageTitle,
+  hasCondition,
+  numStr,
+} from '@app/common/helpers';
 
 import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
@@ -36,10 +41,6 @@ const SourceProvidersTable = <T extends SourceInventoryProvider>({
   providers,
   providerType,
 }: React.PropsWithChildren<ISourceProvidersTableProps<T>>): JSX.Element | null => {
-  let storageTitle = '';
-  if (providerType === 'vsphere') storageTitle = 'Datastores';
-  if (providerType === 'ovirt') storageTitle = 'Storage domains';
-
   const getStorageCount = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
     if (!provider.inventory) return 0;
     if (providerType === 'vsphere') {
@@ -111,7 +112,7 @@ const SourceProvidersTable = <T extends SourceInventoryProvider>({
     { title: 'Hosts', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Networks', transforms: [sortable] },
-    { title: storageTitle, transforms: [sortable, fitContent] },
+    { title: getStorageTitle(providerType, true), transforms: [sortable, fitContent] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];

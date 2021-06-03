@@ -250,6 +250,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             <>
               <MappingBuilder
                 mappingType={mappingType}
+                sourceProviderType={sourceProvider?.type || 'vsphere'}
                 availableSources={availableSources}
                 availableTargets={availableTargets}
                 builderItems={form.values.builderItems}

@@ -14,7 +14,15 @@ import { StatusIcon } from '@konveyor/lib-ui';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import MappingDetailView from '@app/Mappings/components/MappingDetailView';
-import { HookStep, IPlan, SourceVM, Mapping, MappingType, POD_NETWORK } from '@app/queries/types';
+import {
+  HookStep,
+  IPlan,
+  SourceVM,
+  Mapping,
+  MappingType,
+  POD_NETWORK,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 
@@ -25,6 +33,7 @@ interface IHookDetails {
 
 interface IPlanDetailsProps {
   plan: IPlan;
+  sourceProvider: SourceInventoryProvider | null;
   networkMapping: Mapping | null;
   storageMapping: Mapping | null;
   vms: SourceVM[] | undefined;
@@ -34,6 +43,7 @@ interface IPlanDetailsProps {
 
 const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
   plan,
+  sourceProvider,
   networkMapping,
   storageMapping,
   vms,
@@ -124,7 +134,11 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         ) : null}
       </GridItem>
       <GridItem md={9} id="details-network-mapping" aria-labelledby="network-mapping-label">
-        <MappingDetailView mappingType={MappingType.Network} mapping={networkMapping} />
+        <MappingDetailView
+          mappingType={MappingType.Network}
+          sourceProviderType={sourceProvider?.type || 'vsphere'}
+          mapping={networkMapping}
+        />
       </GridItem>
       <GridItem md={3} id="storage-mapping-label">
         Storage mapping{' '}
@@ -139,7 +153,11 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         ) : null}
       </GridItem>
       <GridItem md={9} id="details-storage-mapping" aria-labelledby="storage-mapping-label">
-        <MappingDetailView mappingType={MappingType.Storage} mapping={storageMapping} />
+        <MappingDetailView
+          mappingType={MappingType.Storage}
+          sourceProviderType={sourceProvider?.type || 'vsphere'}
+          mapping={storageMapping}
+        />
       </GridItem>
       <GridItem md={3} id="migration-type-label">
         Migration type{' '}

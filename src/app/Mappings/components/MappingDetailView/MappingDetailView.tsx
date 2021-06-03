@@ -12,15 +12,18 @@ import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } fr
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
+import { ProviderType } from '@app/common/constants';
 
 interface IMappingDetailViewProps {
   mappingType: MappingType;
+  sourceProviderType: ProviderType;
   mapping: Mapping | null;
   className?: string;
 }
 
 const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mappingType,
+  sourceProviderType,
   mapping,
   className = '',
 }: IMappingDetailViewProps) => {
@@ -44,7 +47,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
       <div className={className}>
         <Grid>
           <GridItem span={5} className={spacing.pbSm}>
-            <Text className={text.fontWeightBold}>{getMappingSourceTitle(mappingType)}</Text>
+            <Text className={text.fontWeightBold}>
+              {getMappingSourceTitle(mappingType, sourceProviderType)}
+            </Text>
           </GridItem>
           <GridItem span={2}></GridItem>
           <GridItem span={5} className={spacing.pbSm}>

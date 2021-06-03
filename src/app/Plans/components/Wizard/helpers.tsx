@@ -497,7 +497,7 @@ export const useEditingPlanPrefillEffect = (
     'Error loading inventory tree data',
     'Error loading source networks',
     'Error loading target networks',
-    'Error loading source datastores',
+    'Error loading source storages',
     'Error loading target storage classes',
     'Error loading network mappings',
     'Error loading storage mappings',

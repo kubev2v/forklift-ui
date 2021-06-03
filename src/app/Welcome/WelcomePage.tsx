@@ -49,7 +49,8 @@ const WelcomePage: React.FunctionComponent = () => {
               <List component="ol">
                 <ListItem>Add source and target providers for the migration.</ListItem>
                 <ListItem>
-                  Map source datastores and networks to target storage classes and networks.
+                  Map source datastores or storage domains and networks to target storage classes
+                  and networks.
                 </ListItem>
                 <ListItem>
                   Create a migration plan and select VMs from the source provider for migration.
