@@ -2,14 +2,15 @@ import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
-import { IPlan, IVMwareVM, Mapping, POD_NETWORK } from '@app/queries/types';
+import { IMetaObjectMeta, IPlan, IVMwareVM, Mapping } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import { generateMappings } from './helpers';
+import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useNamespacesQuery } from '@app/queries/namespaces';
 import PlanDetails from '../PlanDetails';
+import { META } from '@app/common/constants';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
@@ -31,14 +32,27 @@ const Review: React.FunctionComponent<IReviewProps> = ({
 }: IReviewProps) => {
   usePausedPollingEffect();
 
+  // Create non resilient mappings and plan to display details before commit (or not)
   const { networkMapping, storageMapping } = generateMappings({ forms });
+  const plan: IPlan = generatePlan(
+    forms,
+    {
+      name: (networkMapping?.metadata as IMetaObjectMeta).name,
+      namespace: networkMapping?.metadata.namespace || META.namespace,
+    },
+    {
+      name: (storageMapping?.metadata as IMetaObjectMeta).name,
+      namespace: storageMapping?.metadata.namespace || META.namespace,
+    },
+    []
+  );
 
   const namespacesQuery = useNamespacesQuery(forms.general.values.targetProvider);
   const namespaceOptions = namespacesQuery.data?.map((namespace) => namespace.name) || [];
+
   const isNewNamespace = !namespaceOptions.find(
     (namespace) => namespace === forms.general.values.targetNamespace
   );
-
   return (
     <Form>
       <TextContent>
@@ -48,15 +62,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
         </Text>
       </TextContent>
       <PlanDetails
-        planName={forms.general.values.planName}
-        description={forms.general.values.planDescription}
-        sourceName={forms.general.values.sourceProvider?.name || ''}
-        destinationName={forms.general.values.targetProvider?.name || ''}
-        targetNamespace={forms.general.values.targetNamespace}
+        plan={plan}
         isNewNamespace={isNewNamespace}
-        planType={forms.type.values.type === 'Warm' ? true : false}
-        transferNetwork={forms.general.values.migrationNetwork || POD_NETWORK.name}
-        planVMs={selectedVMs}
         networkMapping={networkMapping}
         storageMapping={storageMapping}
         vms={selectedVMs}

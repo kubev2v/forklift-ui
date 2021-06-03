@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IHook, IMetaObjectMeta, IPlan, MappingType, POD_NETWORK } from '@app/queries/types';
+import { IHook, IMetaObjectMeta, IPlan, MappingType } from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingsQuery,
@@ -88,14 +88,7 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
       ]}
     >
       <PlanDetails
-        planName={plan.metadata.name}
-        description={plan.spec.description}
-        sourceName={plan.spec.provider.source.name}
-        destinationName={plan.spec.provider.destination.name}
-        targetNamespace={plan.spec.targetNamespace}
-        planType={plan.spec.warm}
-        transferNetwork={plan.spec.transferNetwork?.name || POD_NETWORK.name}
-        planVMs={plan.spec.vms}
+        plan={plan}
         networkMapping={networkMapping}
         storageMapping={storageMapping}
         vms={selectedVMs}
