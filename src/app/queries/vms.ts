@@ -11,9 +11,7 @@ export const useVMwareVMsQuery = (provider: IVMwareProvider | null): QueryResult
   const result = useMockableQuery<IVMwareVM[]>(
     {
       queryKey: ['vms', provider?.name],
-      queryFn: useAuthorizedFetch(
-        getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=true`)
-      ),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
       config: {
         enabled: !!provider,
         refetchInterval: usePollingContext().refetchInterval,
