@@ -184,7 +184,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
         ) : null}
       </GridItem>
       <GridItem md={9} id="details-migration-type" aria-labelledby="migration-type-label">
-        {plan.spec.warm ? 'warm' : 'cold'}
+        {plan.spec.warm ? 'Warm' : 'Cold'}
       </GridItem>
       <GridItem md={3} id="migration-type-label">
         Hooks
