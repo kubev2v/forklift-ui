@@ -32,15 +32,15 @@ import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/c
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
-interface ISourceProvidersTableProps<T extends SourceInventoryProvider> {
-  providers: ICorrelatedProvider<T>[];
+interface ISourceProvidersTableProps {
+  providers: ICorrelatedProvider<SourceInventoryProvider>[];
   providerType: ProviderType;
 }
 
-const SourceProvidersTable = <T extends SourceInventoryProvider>({
+const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
   providers,
   providerType,
-}: React.PropsWithChildren<ISourceProvidersTableProps<T>>): JSX.Element | null => {
+}: ISourceProvidersTableProps) => {
   const getStorageCount = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
     if (!provider.inventory) return 0;
     if (providerType === 'vsphere') {
