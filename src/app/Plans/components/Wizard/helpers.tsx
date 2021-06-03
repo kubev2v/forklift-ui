@@ -15,6 +15,8 @@ import {
   MappingType,
   InventoryTree,
   InventoryTreeType,
+  IVMwareVM,
+  IRHVVM,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 import {
@@ -23,7 +25,7 @@ import {
   getMappingFromBuilderItems,
 } from '@app/Mappings/components/MappingBuilder/helpers';
 import { PlanWizardFormState } from './PlanWizard';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
@@ -267,16 +269,27 @@ export const findNodesMatchingSelectedVMs = (
 export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
   selectedVMs: SourceVM[],
-  mappingType: MappingType
+  mappingType: MappingType,
+  sourceProviderType: ProviderType
 ): MappingSource[] => {
   const sourceIds = Array.from(
     new Set(
       selectedVMs.flatMap((vm) => {
         if (mappingType === MappingType.Network) {
-          return vm.networks.map((network) => network.id);
+          if (sourceProviderType === 'vsphere') {
+            return (vm as IVMwareVM).networks.map((network) => network.id);
+          }
+          if (sourceProviderType === 'ovirt') {
+            return (vm as IRHVVM).nics.map((nic) => nic.profile.network);
+          }
         }
         if (mappingType === MappingType.Storage) {
-          return vm.disks.map((disk) => disk.datastore.id); // TODO add RHV support.. storageDomains work the same?
+          if (sourceProviderType === 'vsphere') {
+            return (vm as IVMwareVM).disks.map((disk) => disk.datastore.id);
+          }
+          if (sourceProviderType === 'ovirt') {
+            return (vm as IRHVVM).diskAttachments.map((da) => da.disk.storageDomain);
+          }
         }
         return [];
       })
@@ -539,6 +552,7 @@ export const useEditingPlanPrefillEffect = (
           networkMappingResourceQueries,
           selectedVMs,
           MappingType.Network,
+          sourceProvider?.type || 'vsphere',
           false
         )
       );
@@ -555,6 +569,7 @@ export const useEditingPlanPrefillEffect = (
           storageMappingResourceQueries,
           selectedVMs,
           MappingType.Storage,
+          sourceProvider?.type || 'vsphere',
           false
         )
       );

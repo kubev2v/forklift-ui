@@ -43,6 +43,7 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { usePausedPollingEffect } from '@app/common/context';
+import { ProviderType } from '@app/common/constants';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
@@ -81,6 +82,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             mappingResourceQueries,
             selectedVMs,
             mappingType,
+            sourceProvider?.type || 'vsphere',
             !!form.values.selectedExistingMapping
           )
         );
@@ -93,6 +95,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingResourceQueries,
     mappingType,
     selectedVMs,
+    sourceProvider,
   ]);
 
   const mappingsQuery = useMappingsQuery(mappingType);
@@ -131,7 +134,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     };
   }) as OptionWithValue<Mapping>[];
 
-  const populateMappingBuilder = (mapping?: Mapping) => {
+  const populateMappingBuilder = (sourceProviderType: ProviderType, mapping?: Mapping) => {
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
       : getBuilderItemsFromMapping(mapping, mappingType, availableSources, availableTargets);
@@ -141,6 +144,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         mappingResourceQueries,
         selectedVMs,
         mappingType,
+        sourceProviderType,
         true
       )
     );
@@ -199,11 +203,11 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                     if (sel.value === 'new') {
                       form.fields.isCreateMappingSelected.setValue(true);
                       form.fields.selectedExistingMapping.setValue(null);
-                      populateMappingBuilder();
+                      populateMappingBuilder(sourceProvider?.type || 'vsphere');
                     } else {
                       form.fields.isCreateMappingSelected.setValue(false);
                       form.fields.selectedExistingMapping.setValue(sel.value);
-                      populateMappingBuilder(sel.value);
+                      populateMappingBuilder(sourceProvider?.type || 'vsphere', sel.value);
                     }
                     setIsMappingSelectOpen(false);
                   }}
