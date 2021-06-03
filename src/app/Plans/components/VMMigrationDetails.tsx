@@ -49,14 +49,12 @@ import {
   useCancelVMsMutation,
   useMigrationsQuery,
   usePlansQuery,
-} from '@app/queries';
-import { formatTimestamp, hasCondition } from '@app/common/helpers';
-import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
   useSourceVMsQuery,
   findVMById,
 } from '@app/queries';
+import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';

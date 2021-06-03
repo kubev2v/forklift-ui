@@ -21,14 +21,14 @@ import {
   useInventoryProvidersQuery,
   useSourceVMsQuery,
   useInventoryTreeQuery,
+  useOpenShiftNetworksQuery,
+  useNamespacesQuery,
 } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
-import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
-import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
 

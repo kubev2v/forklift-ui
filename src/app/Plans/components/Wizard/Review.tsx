@@ -8,7 +8,7 @@ import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
-import { useNamespacesQuery } from '@app/queries/namespaces';
+import { useNamespacesQuery } from '@app/queries';
 import PlanDetails from '../PlanDetails';
 import { META } from '@app/common/constants';
 

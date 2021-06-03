@@ -1,8 +1,8 @@
 import { IStorageMapping, INetworkMapping } from '../types/mappings.types';
-import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storageClasses.mock';
+import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './storages.mock';
 import { MOCK_INVENTORY_PROVIDERS } from './providers.mock';
 import { MOCK_OPENSHIFT_NETWORKS, MOCK_VMWARE_NETWORKS } from './networks.mock';
-import { MOCK_VMWARE_DATASTORES } from './datastores.mock';
+import { MOCK_VMWARE_DATASTORES } from './storages.mock';
 import { nameAndNamespace } from '../helpers';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 
