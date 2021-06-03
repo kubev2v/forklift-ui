@@ -56,7 +56,7 @@ export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'inventory-providers',
-      queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=true')),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=1')),
       config: { refetchInterval: usePollingContext().refetchInterval },
     },
     MOCK_INVENTORY_PROVIDERS

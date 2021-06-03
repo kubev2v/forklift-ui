@@ -14,5 +14,5 @@ export interface IOpenShiftNetwork {
   name: string;
   selfLink: string;
   type?: 'pod';
-  // There's more if we load with ?detail=true
+  // There's more if we load with ?detail=1
 }

@@ -13,7 +13,7 @@ export const useDatastoresQuery = (
     {
       queryKey: ['datastores', provider?.name],
       queryFn: useAuthorizedFetch(
-        getInventoryApiUrl(`${provider?.selfLink || ''}/datastores?detail=true`)
+        getInventoryApiUrl(`${provider?.selfLink || ''}/datastores?detail=1`)
       ),
       config: {
         enabled: !!provider && mappingType === MappingType.Storage,

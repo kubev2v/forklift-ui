@@ -55,7 +55,7 @@ export const useStorageClassesQuery = (
         const storageClassLists: IStorageClass[][] = await Promise.all(
           (providers || []).map((provider) =>
             authorizedFetch<IStorageClass[]>(
-              getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses?detail=true`),
+              getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses?detail=1`),
               fetchContext
             )
           )
