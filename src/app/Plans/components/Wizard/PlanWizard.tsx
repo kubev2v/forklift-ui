@@ -278,7 +278,6 @@ const PlanWizard: React.FunctionComponent = () => {
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
                 planBeingEdited={planBeingEdited}
-                // TODO add RHV support (pass a providerType, limit to only VM tree)
               />
             </WizardStepContainer>
           ),

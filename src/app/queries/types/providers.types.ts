@@ -40,8 +40,6 @@ export interface IVMwareProvider extends ICommonProvider {
   datastoreCount: number;
 }
 
-// TODO create interfaces for datacenters, networks, hosts, vms?
-// TODO rename existing generic types to VMware prefixes
 export interface IRHVProvider extends ICommonProvider {
   datacenterCount: number;
   clusterCount: number;

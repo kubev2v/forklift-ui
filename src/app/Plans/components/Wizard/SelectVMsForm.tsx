@@ -43,7 +43,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
-  selectedTreeNodes: InventoryTree[]; // TODO add RHV support
+  selectedTreeNodes: InventoryTree[];
   sourceProvider: SourceInventoryProvider | null;
   selectedVMs: SourceVM[];
 }
