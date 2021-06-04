@@ -8,8 +8,7 @@ import { APP_TITLE } from '@app/common/constants';
 import WelcomePage from '@app/Welcome/WelcomePage';
 import ProvidersPage from '@app/Providers/ProvidersPage';
 import PlansPage from '@app/Plans/PlansPage';
-import NetworkMappingsPage from '@app/Mappings/NetworkMappingsPage';
-import StorageMappingsPage from '@app/Mappings/StorageMappingsPage';
+import { MappingsPage } from '@app/Mappings/MappingsPage';
 import { HostsPage } from './Providers/HostsPage';
 import PlanWizard from '@app/Plans/components/Wizard/PlanWizard';
 import VMMigrationDetails from '@app/Plans/components/VMMigrationDetails';
@@ -110,25 +109,12 @@ export const routes: AppRouteConfig[] = [
     isProtected: true,
   },
   {
+    component: MappingsPage,
+    exact: true,
     label: 'Mappings',
-    routes: [
-      {
-        component: NetworkMappingsPage,
-        exact: true,
-        label: 'Network',
-        path: '/mappings/network',
-        title: `${APP_TITLE} | Network Mappings`,
-        isProtected: true,
-      },
-      {
-        component: StorageMappingsPage,
-        exact: true,
-        label: 'Storage',
-        path: '/mappings/storage',
-        title: `${APP_TITLE} | Storage Mappings`,
-        isProtected: true,
-      },
-    ],
+    path: '/mappings',
+    title: `${APP_TITLE} | Network and Storage Mappings`,
+    isProtected: true,
   },
 ];
 
