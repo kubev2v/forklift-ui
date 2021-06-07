@@ -46,10 +46,11 @@ const MappingsPage: React.FunctionComponent = () => {
       <PageSection variant="light" className={spacing.pb_0}>
         <Level>
           <LevelItem>
-            <Title headingLevel="h1">{activeMapType} Mappings</Title>
+            <Title headingLevel="h1">Mappings</Title>
           </LevelItem>
           <LevelItem>
             <CreateMappingButton
+              aria-label={`Create ${activeMapType} mapping`}
               variant="secondary"
               label="Create mapping"
               onClick={toggleModalAndResetEdit}

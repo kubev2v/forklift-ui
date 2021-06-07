@@ -13,6 +13,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
   onClick,
   variant = 'primary',
   label = 'Create mapping',
+  ...props
 }: ICreateMappingButtonProps) => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const { hasSufficientProviders } = sufficientProvidersQuery;
@@ -22,7 +23,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
       content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a mapping."
     >
       <div>
-        <Button onClick={onClick} isDisabled={!hasSufficientProviders} variant={variant}>
+        <Button {...props} onClick={onClick} isDisabled={!hasSufficientProviders} variant={variant}>
           {label}
         </Button>
       </div>

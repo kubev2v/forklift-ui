@@ -6,18 +6,22 @@ import { MappingsPage } from '@app/Mappings/MappingsPage';
 describe('MappingsPage', () => {
   test('renders mappings page without errors', async () => {
     render(<MappingsPage />);
-    const defaultTab = await screen.getByText('Network Mappings');
-    screen.getByRole('button', {
-      name: /Create mapping/i,
-    });
+    const heading = await screen.getByText('Mappings');
+    expect(heading).toBeDefined();
 
-    expect(defaultTab).toBeDefined();
+    screen.getByRole('button', {
+      name: /Create network mapping/i,
+    });
 
     const storageTabBtn = screen.getByRole('button', {
       name: /Storage/i,
     });
     storageTabBtn.click();
-    const newlySelectedTab = await screen.getByText('Storage Mappings');
-    expect(newlySelectedTab).toBeDefined();
+
+    const createMappingBtn = screen.getByRole('button', {
+      name: /Create storage mapping/i,
+    });
+
+    expect(createMappingBtn).toBeDefined();
   });
 });
