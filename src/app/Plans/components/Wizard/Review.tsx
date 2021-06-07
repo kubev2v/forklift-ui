@@ -36,14 +36,8 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   const { networkMapping, storageMapping } = generateMappings({ forms });
   const plan: IPlan = generatePlan(
     forms,
-    {
-      name: (networkMapping?.metadata as IMetaObjectMeta).name,
-      namespace: networkMapping?.metadata.namespace || META.namespace,
-    },
-    {
-      name: (storageMapping?.metadata as IMetaObjectMeta).name,
-      namespace: storageMapping?.metadata.namespace || META.namespace,
-    },
+    { name: '', namespace: '' },
+    { name: '', namespace: '' },
     []
   );
 
