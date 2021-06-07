@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Pagination, TextContent, Text, Level, LevelItem } from '@patternfly/react-core';
+import {
+  Pagination,
+  TextContent,
+  Text,
+  Level,
+  LevelItem,
+  Split,
+  SplitItem,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -313,18 +321,22 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
               analytics service.
             </Text>
           </TextContent>
-          <Level>
-            <LevelItem>
+          <Split>
+            <SplitItem isFilled>
               <FilterToolbar<SourceVM>
                 filterCategories={filterCategories}
                 filterValues={filterValues}
                 setFilterValues={setFilterValues}
               />
-            </LevelItem>
-            <LevelItem>
-              <Pagination {...paginationProps} widgetId="vms-table-pagination-top" />
-            </LevelItem>
-          </Level>
+            </SplitItem>
+            <SplitItem>
+              <Pagination
+                className={spacing.mtMd}
+                {...paginationProps}
+                widgetId="vms-table-pagination-top"
+              />
+            </SplitItem>
+          </Split>
           {filteredItems.length > 0 ? (
             <Table
               aria-label="VMware VMs table"
