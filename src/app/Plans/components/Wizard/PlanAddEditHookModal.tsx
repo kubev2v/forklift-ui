@@ -68,6 +68,7 @@ const useEditPlanHookInstancePrefillEffect = (
       if (instanceBeingEdited.type === 'image') {
         form.fields.image.setInitialValue(instanceBeingEdited.image);
       }
+      form.fields.prefilledFromHook.setInitialValue(instanceBeingEdited.prefilledFromHook);
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
         setIsDonePrefilling(true);

@@ -1,14 +1,19 @@
-import { QueryResult } from 'react-query';
+import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
 import * as yup from 'yup';
 import yaml from 'js-yaml';
 
 import { ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
-import { IKubeList } from '@app/client/types';
+import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 import { META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
-import { mockKubeList, useKubeResultsSortedByName, useMockableQuery } from './helpers';
+import {
+  mockKubeList,
+  useKubeResultsSortedByName,
+  useMockableMutation,
+  useMockableQuery,
+} from './helpers';
 import { MOCK_HOOKS } from './mocks/hooks.mock';
-import { IHook } from './types';
+import { IHook, IMetaObjectMeta } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 
 const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namespace);
@@ -26,6 +31,22 @@ export const useHooksQuery = (): QueryResult<IKubeList<IHook>> => {
     mockKubeList(MOCK_HOOKS, 'Hook')
   );
   return useKubeResultsSortedByName(result);
+};
+
+export const useDeleteHookMutation = (
+  onSuccess?: () => void
+): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IHook, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryCache = useQueryCache();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IHook>(
+    (hook: IHook) => client.delete(hookResource, (hook.metadata as IMetaObjectMeta).name),
+    {
+      onSuccess: () => {
+        queryCache.invalidateQueries('hooks');
+        onSuccess && onSuccess();
+      },
+    }
+  );
 };
 
 export const playbookSchema = yup

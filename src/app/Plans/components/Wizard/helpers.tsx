@@ -660,9 +660,10 @@ export const getPlanHookFormInstances = (
   }
   const instances: PlanHookInstance[] = [];
   planHookRefs.forEach((planHookRef) => {
-    const matchingHook = (hooksQuery.data?.items || []).find((hook) =>
-      isSameResource(hook.metadata, planHookRef.hook)
-    );
+    const matchingHook = (hooksQuery.data?.items || []).find((hook) => {
+      return isSameResource(hook.metadata, planHookRef.hook);
+    });
+
     if (matchingHook) {
       instances.push({
         step: planHookRef.step,
@@ -673,5 +674,6 @@ export const getPlanHookFormInstances = (
       });
     }
   });
+
   return instances;
 };

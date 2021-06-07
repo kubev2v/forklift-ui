@@ -4,12 +4,14 @@ import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/cli
 import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
+
 import {
   mockKubeList,
   nameAndNamespace,
   useKubeResultsSortedByName,
   useMockableMutation,
   useMockableQuery,
+  isSameResource,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
 import { IHook, IPlan, Mapping, MappingType } from './types';
@@ -18,6 +20,8 @@ import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
+import { useDeleteHookMutation } from '@app/queries';
+import { useHooksQuery } from './hooks';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -136,6 +140,9 @@ export const usePatchPlanMutation = (
   const client = useAuthorizedK8sClient();
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
+  const hooks = useHooksQuery();
+  const [deleteHook] = useDeleteHookMutation();
+
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
       const { networkMapping, storageMapping } = generateMappings({
@@ -143,21 +150,93 @@ export const usePatchPlanMutation = (
         owner: planBeingEdited,
       });
       const { network: networkMappingRef, storage: storageMappingRef } = planBeingEdited.spec.map;
-      const updatedPlan = generatePlan(forms, networkMappingRef, storageMappingRef);
+
+      // Add or update hooks
+      const planHooks = forms.hooks.values.instances.map((instance) => {
+        if (instance.prefilledFromHook) {
+          return {
+            cr: generateHook(
+              instance,
+              nameAndNamespace(instance.prefilledFromHook.metadata),
+              `${forms.general.values.planName}-hook-`
+            ),
+            existingHook: true,
+            instance: instance,
+          };
+        }
+        return {
+          cr: generateHook(instance, null, `${forms.general.values.planName}-hook-`),
+          existingHook: false,
+          instance: instance,
+        };
+      });
+
+      const updatedHooksRef = planHooks.map(async (hook) => {
+        if (hook.existingHook) {
+          const response = await client.patch<IHook>(
+            hookResource,
+            (hook.cr.metadata as IMetaObjectMeta).name,
+            hook.cr
+          );
+          return { ref: nameAndNamespace(response.data.metadata), instance: hook.instance };
+        }
+        const response = await client.create<IHook>(hookResource, hook.cr);
+        return { ref: nameAndNamespace(response.data.metadata), instance: hook.instance };
+      });
+
+      const hooksRef = await Promise.all(updatedHooksRef);
+
+      const updatedPlan = generatePlan(forms, networkMappingRef, storageMappingRef, hooksRef);
       const [, , planResponse] = await Promise.all([
         networkMapping &&
           client.patch<Mapping>(networkMapResource, networkMappingRef.name, networkMapping),
         storageMapping &&
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapping),
+
         client.patch<IPlan>(planResource, planBeingEdited.metadata.name, updatedPlan),
       ]);
 
-      // TODO handle hooks in the API
-      //  - for each instance in forms.hooks.values.instances:
-      //    - if there is a prefilledFromHook property in the instance, patch that existing hook using generateHook
-      //    - if not, create a new hook using generateHook
-      //  - for each hook reference in the plan (plan.spec.vms[].hooks[].hook) find any that don't match instances in the form data
-      //    - those were removed in the wizard, so delete the matching hook CRs
+      // Patch new hooks with ownerReferences to the edited plan
+      const hooksWithOwnerRef: IHook[] = [];
+      for (let i = 0; i < hooksRef.length; i++) {
+        if (!hooksRef[i].instance.prefilledFromHook) {
+          hooksWithOwnerRef.push(
+            generateHook(hooksRef[i].instance, hooksRef[i].ref, '', planBeingEdited)
+          );
+        }
+      }
+      const newHooksWithOwnerRef = hooksWithOwnerRef.map(async (hookWithOwnerRef) => {
+        const response = await client.patch<IHook>(
+          hookResource,
+          (hookWithOwnerRef.metadata as IMetaObjectMeta).name,
+          hookWithOwnerRef
+        );
+        return response;
+      });
+      await Promise.all(newHooksWithOwnerRef);
+
+      // Delete hooks removed from plan
+      const planHooksToDelete = planBeingEdited.spec.vms[0].hooks?.filter((vmsHook) => {
+        if (
+          forms.hooks.values.instances.length === 0 ||
+          forms.hooks.values.instances.filter((hook) => {
+            if (
+              !hook.prefilledFromHook ||
+              (hook.prefilledFromHook.metadata as IMetaObjectMeta).name === vmsHook.hook.name
+            ) {
+              return true;
+            }
+            return false;
+          }).length === 0
+        ) {
+          return true;
+        }
+        return false;
+      });
+      const hooksToDelete = hooks.data?.items.filter((hook) =>
+        planHooksToDelete?.find((vmHook) => isSameResource(vmHook.hook, hook.metadata) || null)
+      );
+      hooksToDelete?.forEach((hook) => deleteHook(hook));
 
       return planResponse;
     },
@@ -165,6 +244,7 @@ export const usePatchPlanMutation = (
       onSuccess: () => {
         queryCache.invalidateQueries('plans');
         queryCache.invalidateQueries('mappings');
+        queryCache.invalidateQueries('hooks');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
