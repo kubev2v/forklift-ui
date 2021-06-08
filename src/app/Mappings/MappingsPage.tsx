@@ -8,18 +8,13 @@ import {
   Tab,
   TabTitleText,
 } from '@patternfly/react-core';
-import { Mapping, MappingType } from '@app/queries/types';
+import { Mapping, MappingType, MapType } from '@app/queries/types';
 import CreateMappingButton from '@app/Mappings/components/CreateMappingButton';
 import AddEditMappingModal from '@app/Mappings/components/AddEditMappingModal';
 import Mappings from '@app/Mappings/Mappings';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const MappingsPage: React.FunctionComponent = () => {
-  enum MapType {
-    'Network',
-    'Storage',
-  }
-
   const [activeTabKey, setActiveTabKey] = React.useState<React.ReactText>(0);
   const [activeMapType, setActiveMapType] = React.useState('Network');
 
@@ -75,12 +70,12 @@ const MappingsPage: React.FunctionComponent = () => {
 
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title={`${
-            !mappingBeingEdited ? 'Create' : 'Edit'
-          } ${activeMapType.toLowerCase()} mapping`}
+          title={`${!mappingBeingEdited ? 'Create' : 'Edit'} mapping`}
           onClose={toggleModalAndResetEdit}
           mappingType={MappingType[activeMapType]}
           mappingBeingEdited={mappingBeingEdited}
+          setActiveTabKey={setActiveTabKey}
+          setActiveMapType={setActiveMapType}
         />
       ) : null}
     </>

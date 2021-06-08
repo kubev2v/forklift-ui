@@ -9,6 +9,11 @@ export enum MappingType {
   Storage = 'Storage',
 }
 
+export enum MapType {
+  'Network',
+  'Storage',
+}
+
 export interface INetworkMappingItem {
   source: {
     id: string;
