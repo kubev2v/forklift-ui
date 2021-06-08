@@ -48,7 +48,7 @@ npm run lint # or lint:fix to automatically fix certain issues
 npm run test # or test:watch to auto-rerun tests on file changes
 ```
 
-Note: the `npm run test` script will create a coverage report at `coverage/lcov-report/index.html`. This is useful to inspect locally before opening a PR. Open PRs will also report their coverage to Codecov and a report will be posted in the PR.
+Note: the `npm run test` script will create a coverage report at `coverage/lcov-report/index.html`. This is useful to inspect locally before opening a PR.
 
 [Prettier](https://prettier.io/) code formatting is enforced by ESLint. To run Prettier and format your code (do this before committing if you don't run Prettier in your editor):
 
