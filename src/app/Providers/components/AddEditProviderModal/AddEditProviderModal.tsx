@@ -140,7 +140,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       variant="small"
       title={`${!providerBeingEdited ? 'Add' : 'Edit'} provider`}
       isOpen
-      onClose={onClose}
+      onClose={() => onClose()}
       footer={
         <Stack hasGutter>
           <ResolvedQuery
