@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Level, LevelItem, Pagination, Form } from '@patternfly/react-core';
+import { Pagination, Form } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -17,21 +17,18 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IMetaObjectMeta, Mapping, MappingType } from '@app/queries/types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
-import CreateMappingButton from './CreateMappingButton';
 import MappingStatus from './MappingStatus';
 import { isSameResource } from '@app/queries/helpers';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
   mappingType: MappingType;
-  openCreateMappingModal: () => void;
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,
-  openCreateMappingModal,
   openEditMappingModal,
 }: IMappingsTableProps) => {
   const getSortValues = (mapping: Mapping) => {
@@ -121,18 +118,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem>
-          <CreateMappingButton
-            variant="secondary"
-            label="Create mapping"
-            onClick={openCreateMappingModal}
-          />
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
-        </LevelItem>
-      </Level>
+      <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
       <Table
         aria-label="Mappings table"
         cells={columns}
