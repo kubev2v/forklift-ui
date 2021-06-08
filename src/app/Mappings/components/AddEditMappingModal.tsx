@@ -15,13 +15,7 @@ import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import {
-  MappingType,
-  MapType,
-  IOpenShiftProvider,
-  IVMwareProvider,
-  Mapping,
-} from '@app/queries/types';
+import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingResourceQueries,
@@ -52,8 +46,7 @@ interface IAddEditMappingModalProps {
   onClose: () => void;
   mappingType: MappingType;
   mappingBeingEdited: Mapping | null;
-  setActiveTabKey: React.Dispatch<React.SetStateAction<React.ReactText>>;
-  setActiveMapType: React.Dispatch<React.SetStateAction<string>>;
+  setActiveMapType: React.Dispatch<React.SetStateAction<MappingType>>;
 }
 
 const useMappingFormState = (
@@ -87,7 +80,6 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   mappingType,
   mappingBeingEdited,
   setActiveMapType,
-  setActiveTabKey,
 }: IAddEditMappingModalProps) => {
   usePausedPollingEffect();
 
@@ -205,8 +197,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                       options={MAPPING_TYPE_OPTIONS}
                       value={[MAPPING_TYPE_OPTIONS.find((option) => option.value === mappingType)]}
                       onChange={(selection) => {
-                        setActiveMapType(selection.toString());
-                        setActiveTabKey(MapType[selection.toString()]);
+                        setActiveMapType(MappingType[selection.toString()]);
                       }}
                       placeholderText="Select a mapping type..."
                       isDisabled={!!mappingBeingEdited}

@@ -8,19 +8,18 @@ import {
   Tab,
   TabTitleText,
 } from '@patternfly/react-core';
-import { Mapping, MappingType, MapType } from '@app/queries/types';
+import { Mapping, MappingType } from '@app/queries/types';
 import CreateMappingButton from '@app/Mappings/components/CreateMappingButton';
 import AddEditMappingModal from '@app/Mappings/components/AddEditMappingModal';
 import Mappings from '@app/Mappings/Mappings';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const MappingsPage: React.FunctionComponent = () => {
-  const [activeTabKey, setActiveTabKey] = React.useState<React.ReactText>(0);
-  const [activeMapType, setActiveMapType] = React.useState('Network');
+  const defaultMappingType = MappingType.Network;
+  const [activeMapType, setActiveMapType] = React.useState(defaultMappingType);
 
   const handleTabSelect = (event: React.MouseEvent, tabIndex: React.ReactText) => {
-    setActiveTabKey(tabIndex);
-    setActiveMapType(MapType[tabIndex]);
+    setActiveMapType(MappingType[tabIndex]);
   };
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -53,9 +52,9 @@ const MappingsPage: React.FunctionComponent = () => {
           </LevelItem>
         </Level>
 
-        <Tabs className={spacing.mtSm} activeKey={activeTabKey} onSelect={handleTabSelect}>
-          <Tab eventKey={0} title={<TabTitleText>Network</TabTitleText>} />
-          <Tab eventKey={1} title={<TabTitleText>Storage</TabTitleText>} />
+        <Tabs className={spacing.mtSm} activeKey={activeMapType} onSelect={handleTabSelect}>
+          <Tab eventKey={MappingType.Network} title={<TabTitleText>Network</TabTitleText>} />
+          <Tab eventKey={MappingType.Storage} title={<TabTitleText>Storage</TabTitleText>} />
         </Tabs>
       </PageSection>
 
@@ -74,7 +73,6 @@ const MappingsPage: React.FunctionComponent = () => {
           onClose={toggleModalAndResetEdit}
           mappingType={MappingType[activeMapType]}
           mappingBeingEdited={mappingBeingEdited}
-          setActiveTabKey={setActiveTabKey}
           setActiveMapType={setActiveMapType}
         />
       ) : null}
