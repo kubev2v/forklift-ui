@@ -32,6 +32,7 @@ import {
   textCenter,
   fitContent,
 } from '@patternfly/react-table';
+import { centerCellTransform } from '@app/utils/utils';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -62,6 +63,7 @@ import { getWarmPlanState } from './helpers';
 import VMStatusPrecopyTable from './VMStatusPrecopyTable';
 import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+import '@app/Plans/components/VMMigrationDetails.css';
 
 export interface IPlanMatchParams {
   url: string;
@@ -241,14 +243,22 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Name',
       transforms: [sortable, wrappable],
-      cellTransforms: [truncate],
+      cellTransforms: [truncate, centerCellTransform],
       cellFormatters: planStarted ? [expandable] : [],
     },
     ...(!isShowingPrecopyView
       ? [
-          { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
-          { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
-          { title: 'Data copied', transforms: [sortable] },
+          {
+            title: 'Start time',
+            transforms: [sortable],
+            cellTransforms: [truncate, centerCellTransform],
+          },
+          {
+            title: 'End time',
+            transforms: [sortable],
+            cellTransforms: [truncate, centerCellTransform],
+          },
+          { title: 'Data copied', transforms: [sortable], cellTransforms: [centerCellTransform] },
         ]
       : [
           {
@@ -260,7 +270,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Status',
       transforms: [sortable, cellWidth(20)],
-      cellTransforms: [nowrap],
+      cellTransforms: [nowrap, centerCellTransform],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
@@ -361,6 +371,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               </Level>
               {filteredItems.length > 0 ? (
                 <Table
+                  className="migration-details-table"
                   aria-label="Migration VMs table"
                   cells={columns}
                   rows={rows}

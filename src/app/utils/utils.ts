@@ -1,3 +1,5 @@
+import { ITransform } from '@patternfly/react-table';
+
 export function accessibleRouteChangeHandler(pageId = 'primary-app-container') {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById(pageId);
@@ -7,6 +9,8 @@ export function accessibleRouteChangeHandler(pageId = 'primary-app-container') {
   }, 50);
 }
 
-export const centerCellTransform = () => {
-  return { className: 'center-cell' };
+export const centerCellTransform: ITransform = () => {
+  return {
+    className: 'center-cell',
+  };
 };

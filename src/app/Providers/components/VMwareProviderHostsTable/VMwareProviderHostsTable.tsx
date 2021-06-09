@@ -20,6 +20,7 @@ import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { getMostSeriousCondition } from '@app/common/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
+import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
