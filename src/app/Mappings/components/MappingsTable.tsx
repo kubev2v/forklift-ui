@@ -10,6 +10,7 @@ import {
   classNames as classNamesTransform,
   IRow,
   expandable,
+  truncate,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -62,7 +63,12 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   });
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
+    {
+      title: 'Name',
+      transforms: [sortable],
+      cellFormatters: [expandable],
+      cellTransforms: [truncate],
+    },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
     { title: 'Status' },
@@ -127,6 +133,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     <>
       <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
       <Table
+        variant="compact"
         aria-label="Mappings table"
         cells={columns}
         rows={rows}

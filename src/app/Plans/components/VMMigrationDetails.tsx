@@ -241,6 +241,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Name',
       transforms: [sortable, wrappable],
+      cellTransforms: [truncate],
       cellFormatters: planStarted ? [expandable] : [],
     },
     ...(!isShowingPrecopyView
