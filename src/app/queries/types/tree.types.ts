@@ -1,13 +1,10 @@
-import { IVMwareObjRef } from './common.types';
-
-export enum VMwareTreeType {
+export enum InventoryTreeType {
   Host = 'Host',
   VM = 'VM',
 }
 
 export interface ICommonTreeObject {
   id: string;
-  parent: IVMwareObjRef | null;
   name: string;
   selfLink: string;
 }
@@ -18,14 +15,14 @@ interface ICommonTree {
   children: ICommonTree[] | null;
 }
 
-export interface IVMwareHostTree extends ICommonTree {
-  kind: '' | 'Datacenter' | 'Cluster' | 'Folder' | 'Host' | 'VM';
-  children: IVMwareHostTree[] | null;
+export interface IInventoryHostTree extends ICommonTree {
+  kind: '' | 'Datacenter' | 'DataCenter' | 'Cluster' | 'Folder' | 'Host' | 'VM';
+  children: IInventoryHostTree[] | null;
 }
 
-export interface IVMwareVMTree extends ICommonTree {
+export interface IVMwareFolderTree extends ICommonTree {
   kind: '' | 'Datacenter' | 'Folder' | 'VM';
-  children: IVMwareVMTree[] | null;
+  children: IVMwareFolderTree[] | null;
 }
 
-export type VMwareTree = IVMwareHostTree | IVMwareVMTree;
+export type InventoryTree = IInventoryHostTree | IVMwareFolderTree;

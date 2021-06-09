@@ -2,13 +2,13 @@ import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
-import { IMetaObjectMeta, IPlan, IVMwareVM, Mapping } from '@app/queries/types';
+import { IMetaObjectMeta, IPlan, SourceVM, Mapping } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
-import { useNamespacesQuery } from '@app/queries/namespaces';
+import { useNamespacesQuery } from '@app/queries';
 import PlanDetails from '../PlanDetails';
 import { META } from '@app/common/constants';
 
@@ -20,7 +20,7 @@ interface IReviewProps {
   )[];
   allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;
-  selectedVMs: IVMwareVM[];
+  selectedVMs: SourceVM[];
 }
 
 const Review: React.FunctionComponent<IReviewProps> = ({
@@ -63,6 +63,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
       </TextContent>
       <PlanDetails
         plan={plan}
+        sourceProvider={forms.general.values.sourceProvider}
         isNewNamespace={isNewNamespace}
         networkMapping={networkMapping}
         storageMapping={storageMapping}

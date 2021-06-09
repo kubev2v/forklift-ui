@@ -1,8 +1,5 @@
-import { IVMwareObjRef } from './common.types';
-
-export interface IVMwareNetwork {
+export interface ISourceNetwork {
   id: string;
-  parent: IVMwareObjRef;
   name: string;
   selfLink: string;
 }

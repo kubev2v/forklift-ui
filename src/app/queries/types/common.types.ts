@@ -25,7 +25,7 @@ export interface IMetaObjectMeta {
   resourceVersion?: string;
   generation?: number;
   creationTimestamp?: string; // ISO timestamp
-  annotations?: Record<string, string>;
+  annotations?: Record<string, string | undefined>;
   labels?: {
     createdForResourceType?: string;
     createdForResource?: string;

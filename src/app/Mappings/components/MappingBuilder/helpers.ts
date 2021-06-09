@@ -3,7 +3,6 @@ import {
   Mapping,
   MappingItem,
   MappingType,
-  IVMwareProvider,
   IOpenShiftProvider,
   INetworkMappingItem,
   IStorageMappingItem,
@@ -11,12 +10,13 @@ import {
   ICommonMapping,
   INetworkMapping,
   IStorageMapping,
-  IVMwareVM,
   IPlan,
+  SourceVM,
+  SourceInventoryProvider,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
 import { IMappingResourcesResult } from '@app/queries';
@@ -59,7 +59,7 @@ interface IGetMappingParams {
   mappingName: string | null;
   generateName: string | null;
   owner?: IPlan;
-  sourceProvider: IVMwareProvider;
+  sourceProvider: SourceInventoryProvider;
   targetProvider: IOpenShiftProvider;
   builderItems: IMappingBuilderItem[];
 }
@@ -156,15 +156,17 @@ export const getMappingFromBuilderItems = ({
 export const getBuilderItemsWithMissingSources = (
   builderItems: IMappingBuilderItem[],
   mappingResourceQueries: IMappingResourcesResult,
-  selectedVMs: IVMwareVM[],
+  selectedVMs: SourceVM[],
   mappingType: MappingType,
+  sourceProviderType: ProviderType,
   keepNonRequiredSources: boolean
 ): IMappingBuilderItem[] => {
   const nonEmptyItems = builderItems.filter((item) => item.source && item.target);
   const requiredSources = filterSourcesBySelectedVMs(
     mappingResourceQueries.availableSources,
     selectedVMs,
-    mappingType
+    mappingType,
+    sourceProviderType
   );
   const itemsToKeep = keepNonRequiredSources
     ? nonEmptyItems

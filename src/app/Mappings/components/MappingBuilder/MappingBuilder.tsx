@@ -11,6 +11,8 @@ import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 
 import './MappingBuilder.css';
+import { ProviderType } from '@app/common/constants';
+import { getStorageTitle } from '@app/common/helpers';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
@@ -27,6 +29,7 @@ export const mappingBuilderItemsSchema = yup
 
 interface IMappingBuilderProps {
   mappingType: MappingType;
+  sourceProviderType: ProviderType;
   availableSources: MappingSource[];
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
@@ -36,6 +39,7 @@ interface IMappingBuilderProps {
 
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   mappingType,
+  sourceProviderType,
   availableSources,
   availableTargets,
   builderItems,
@@ -66,7 +70,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
     if (isWizardMode) {
       instructionText = 'Select target storage classes.';
     } else {
-      instructionText = 'Map source datastores to target storage classes.';
+      instructionText = `Map source ${getStorageTitle(
+        sourceProviderType
+      )} to target storage classes.`;
     }
   }
 
@@ -84,7 +90,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 <GridItem span={5} className={spacing.pbSm}>
                   <label className="pf-c-form__label">
                     <span className="pf-c-form__label-text">
-                      {getMappingSourceTitle(mappingType)}
+                      {getMappingSourceTitle(mappingType, sourceProviderType)}
                     </span>
                   </label>
                 </GridItem>
@@ -161,7 +167,9 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
             <ConditionalTooltip
               isTooltipEnabled={builderItems.length === availableSources.length}
               content={`All source ${
-                mappingType === MappingType.Network ? 'networks' : 'datastores'
+                mappingType === MappingType.Network
+                  ? 'networks'
+                  : getStorageTitle(sourceProviderType)
               } have been mapped.`}
               position="bottom"
             >

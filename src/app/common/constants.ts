@@ -17,10 +17,16 @@ export const PRODUCT_DOCO_LINK = {
   label: 'product documentation',
 };
 
-export enum ProviderType {
-  vsphere = 'vsphere',
-  openshift = 'openshift',
-}
+export const PROVIDER_TYPES = ['vsphere', 'ovirt', 'openshift'] as const;
+export type ProviderType = typeof PROVIDER_TYPES[number];
+export const SOURCE_PROVIDER_TYPES: ProviderType[] = ['vsphere', 'ovirt'];
+export const TARGET_PROVIDER_TYPES: ProviderType[] = ['openshift'];
+
+export const PROVIDER_TYPE_NAMES: Record<ProviderType, string> = {
+  vsphere: 'VMware',
+  ovirt: 'Red Hat Virtualization',
+  openshift: 'OpenShift Virtualization',
+};
 
 export enum StatusCategoryType {
   Required = 'Required',
@@ -53,14 +59,6 @@ export enum StepType {
   Empty = 'Empty',
   Canceled = 'Canceled',
 }
-
-export const PROVIDER_TYPE_NAMES = {
-  [ProviderType.vsphere]: 'VMware',
-  [ProviderType.openshift]: 'OpenShift Virtualization',
-};
-
-export const SOURCE_PROVIDER_TYPES = [ProviderType.vsphere];
-export const TARGET_PROVIDER_TYPES = [ProviderType.openshift];
 
 export const META: IMetaVars =
   process.env.DATA_SOURCE !== 'mock' && process.env.NODE_ENV !== 'test'
@@ -105,7 +103,7 @@ const ipAddressRegex = /((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])
 // https://www.regextester.com/103452
 const subdomainRegex = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/;
 
-export const vmwareHostnameSchema = yup
+export const hostnameSchema = yup
   .string()
   .label('Hostname or IP address')
   .max(253)
@@ -121,7 +119,7 @@ export const vmwareHostnameSchema = yup
     }
   );
 
-export const vmwareFingerprintSchema = yup
+export const fingerprintSchema = yup
   .string()
   .label('SHA-1 fingerprint')
   .matches(/^[a-fA-F0-9]{2}((:[a-fA-F0-9]{2}){19}|(:[a-fA-F0-9]{2}){15})$/, {
@@ -130,7 +128,7 @@ export const vmwareFingerprintSchema = yup
     excludeEmptyString: true,
   });
 
-export const vmwareUsernameSchema = yup
+export const usernameSchema = yup
   .string()
   .max(320)
   .label('Username')

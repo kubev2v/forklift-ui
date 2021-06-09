@@ -2,10 +2,15 @@ import * as React from 'react';
 import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { useVMwareTreeQuery, useVMwareVMsQuery } from '@app/queries';
-import { IPlan, IVMwareProvider, VMwareTree, VMwareTreeType } from '@app/queries/types';
+import { useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
 import {
-  filterAndConvertVMwareTree,
+  IPlan,
+  SourceInventoryProvider,
+  InventoryTree,
+  InventoryTreeType,
+} from '@app/queries/types';
+import {
+  filterAndConvertInventoryTree,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
   flattenVMwareTreeNodes,
@@ -19,7 +24,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   planBeingEdited: IPlan | null;
 }
 
@@ -32,13 +37,13 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
 
   const [searchText, setSearchText] = React.useState('');
 
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
-  const treeQuery = useVMwareTreeQuery(sourceProvider, form.values.treeType);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
+  const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
   const treeSelection = useSelectionState({
     items: flattenVMwareTreeNodes(treeQuery.data || null),
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
-    isEqual: (a: VMwareTree, b: VMwareTree) => a.object?.selfLink === b.object?.selfLink,
+    isEqual: (a: InventoryTree, b: InventoryTree) => a.object?.selfLink === b.object?.selfLink,
   });
 
   const isFirstRender = React.useRef(true);
@@ -74,29 +79,31 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           Refine the list of VMs selectable for migration by clusters and hosts or by folder.
         </Text>
       </TextContent>
-      <Tabs
-        activeKey={form.values.treeType}
-        onSelect={(_event, tabKey) => form.fields.treeType.setValue(tabKey as VMwareTreeType)}
-        className={spacing.mtMd}
-      >
-        <Tab
-          key={VMwareTreeType.Host}
-          eventKey={VMwareTreeType.Host}
-          title={<TabTitleText>By clusters and hosts</TabTitleText>}
-        />
-        <Tab
-          key={VMwareTreeType.VM}
-          eventKey={VMwareTreeType.VM}
-          title={<TabTitleText>By folders</TabTitleText>}
-        />
-      </Tabs>
+      {sourceProvider?.type === 'vsphere' ? (
+        <Tabs
+          activeKey={form.values.treeType}
+          onSelect={(_event, tabKey) => form.fields.treeType.setValue(tabKey as InventoryTreeType)}
+          className={spacing.mtMd}
+        >
+          <Tab
+            key={InventoryTreeType.Host}
+            eventKey={InventoryTreeType.Host}
+            title={<TabTitleText>By clusters and hosts</TabTitleText>}
+          />
+          <Tab
+            key={InventoryTreeType.VM}
+            eventKey={InventoryTreeType.VM}
+            title={<TabTitleText>By folders</TabTitleText>}
+          />
+        </Tabs>
+      ) : null}
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
-        errorTitles={['Error loading VMs', 'Error loading VMware tree data']}
+        errorTitles={['Error loading VMs', 'Error loading inventory tree data']}
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView
-          data={filterAndConvertVMwareTree(
+          data={filterAndConvertInventoryTree(
             treeQuery.data || null,
             searchText,
             treeSelection.isItemSelected,

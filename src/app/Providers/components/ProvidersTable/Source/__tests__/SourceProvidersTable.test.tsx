@@ -5,43 +5,44 @@ import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 
-import VMwareProvidersTable from '../VMwareProvidersTable';
+import SourceProvidersTable from '../SourceProvidersTable';
 import {
   MOCK_CLUSTER_PROVIDERS,
   MOCK_INVENTORY_PROVIDERS,
 } from '@app/queries/mocks/providers.mock';
 import { correlateProviders } from '../../helpers';
-import { ProviderType } from '@app/common/constants';
 
-describe('<VMwareProvidersTable />', () => {
+describe('<SourceProvidersTable />', () => {
   const history = createMemoryHistory();
   const props = {
     providers: correlateProviders(
       MOCK_CLUSTER_PROVIDERS,
       MOCK_INVENTORY_PROVIDERS.vsphere,
-      ProviderType.vsphere
+      'vsphere'
     ),
   };
 
   it('renders vsphere table', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
     expect(screen.getByRole('grid', { name: /VMware providers table/ })).toBeInTheDocument();
     expect(
-      screen.getByRole('row', { name: /vcenter-1 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Ready/ })
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole('row', {
-        name: /vcenter-2 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Critical/,
+        name: /vcenter-1 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Ready/,
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('row', {
-        name: /vcenter-3 vcenter.v2v.bos.redhat.com 2 2 41 8 3 Loading... Pending/,
+        name: /vcenter-2 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Critical/,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('row', {
+        name: /vcenter-3 https:\/\/vcenter.v2v.bos.redhat.com\/sdk 2 2 41 8 3 Loading... Pending/,
       })
     ).toBeInTheDocument();
   });
@@ -49,7 +50,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders Hosts links', () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
@@ -61,7 +62,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders status condition', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 
@@ -75,7 +76,7 @@ describe('<VMwareProvidersTable />', () => {
   it('renders action menu', async () => {
     render(
       <Router history={history}>
-        <VMwareProvidersTable {...props} />
+        <SourceProvidersTable {...props} providerType="vsphere" />
       </Router>
     );
 

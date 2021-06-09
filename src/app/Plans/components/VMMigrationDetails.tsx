@@ -43,20 +43,18 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { IVMStatus, IVMwareVM } from '@app/queries/types';
+import { SourceVM, IVMStatus } from '@app/queries/types';
 import {
   findLatestMigration,
   useCancelVMsMutation,
   useMigrationsQuery,
   usePlansQuery,
-} from '@app/queries';
-import { formatTimestamp, hasCondition } from '@app/common/helpers';
-import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
   findVMById,
 } from '@app/queries';
+import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
@@ -102,7 +100,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
@@ -403,7 +401,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         mutateFn={() => {
           const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
           if (vmsToCancel.some((vm) => !vm)) return;
-          cancelVMs(vmsToCancel as IVMwareVM[]);
+          cancelVMs(vmsToCancel as SourceVM[]);
         }}
         mutateResult={cancelVMsResult}
         title="Cancel migrations?"

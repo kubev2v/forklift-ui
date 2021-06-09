@@ -1,3 +1,9 @@
+export interface ISourceStorage {
+  id: string;
+  name: string;
+  selfLink: string;
+}
+
 export interface IStorageClass {
   uid: string;
   version: string;

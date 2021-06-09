@@ -2,18 +2,20 @@ import * as React from 'react';
 import { List, ListItem, Radio } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
-import { IVMwareVM } from '@app/queries/types';
 import { warmCriticalConcerns, someVMHasConcern } from './helpers';
+import { SourceInventoryProvider, SourceVM } from '@app/queries/types';
 import { StatusIcon } from '@konveyor/lib-ui';
 
 interface ITypeFormProps {
   form: PlanWizardFormState['type'];
-  selectedVMs: IVMwareVM[];
+  selectedVMs: SourceVM[];
+  sourceProvider: SourceInventoryProvider | null;
 }
 
 const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   form,
   selectedVMs,
+  sourceProvider,
 }: ITypeFormProps) => {
   const warmCriticalConcernsFound = warmCriticalConcerns.filter((label) =>
     someVMHasConcern(selectedVMs, label)
@@ -39,6 +41,7 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
         id="migration-type-warm"
         name="migration-type"
         label="Warm migration"
+        isDisabled={sourceProvider?.type === 'ovirt'}
         description={
           <>
             <List>
@@ -48,7 +51,14 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
                 copied, is run later.
               </ListItem>
             </List>
-            {isAnalysingVms ? (
+            {sourceProvider?.type === 'ovirt' ? (
+              <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
+                <StatusIcon
+                  status="Info"
+                  label="Warm migration is not currently supported for Red Hat Virtualization providers."
+                />
+              </div>
+            ) : isAnalysingVms ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon status="Loading" label="Analysing warm migration compatibility" />
               </div>

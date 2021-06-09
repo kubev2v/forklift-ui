@@ -15,7 +15,12 @@ import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
+import {
+  MappingType,
+  IOpenShiftProvider,
+  Mapping,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingResourceQueries,
@@ -39,7 +44,6 @@ import {
   QuerySpinnerMode,
 } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
-import { ProviderType } from '@app/common/constants';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -58,9 +62,9 @@ const useMappingFormState = (
       '',
       getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
     ),
-    sourceProvider: useFormField<IVMwareProvider | null>(
+    sourceProvider: useFormField<SourceInventoryProvider | null>(
       null,
-      yup.mixed<IVMwareProvider>().label('Source provider').required()
+      yup.mixed<SourceInventoryProvider>().label('Source provider').required()
     ),
     targetProvider: useFormField<IOpenShiftProvider | null>(
       null,
@@ -219,8 +223,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 </GridItem>
                 <GridItem md={6}>
                   <ProviderSelect
-                    label="Source provider"
-                    providerType={ProviderType.vsphere}
+                    providerRole="source"
                     field={form.fields.sourceProvider}
                     notReadyTooltipPosition="right"
                     menuAppendTo="parent"
@@ -229,8 +232,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 </GridItem>
                 <GridItem md={6}>
                   <ProviderSelect
-                    label="Target provider"
-                    providerType={ProviderType.openshift}
+                    providerRole="target"
                     field={form.fields.targetProvider}
                     menuAppendTo="parent"
                     maxHeight="40vh"
@@ -247,6 +249,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 >
                   <MappingBuilder
                     mappingType={mappingType}
+                    sourceProviderType={form.values.sourceProvider?.type || 'vsphere'}
                     availableSources={mappingResourceQueries.availableSources}
                     availableTargets={mappingResourceQueries.availableTargets}
                     builderItems={form.values.builderItems}

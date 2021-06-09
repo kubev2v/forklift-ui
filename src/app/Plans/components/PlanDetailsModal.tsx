@@ -6,7 +6,7 @@ import {
   useMappingsQuery,
   useResourceQueriesForMapping,
   useHooksQuery,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -39,7 +39,7 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
     providers.data?.vsphere.find((provider) => provider.name === plan.spec.provider.source.name) ||
     null;
 
-  const vms = useVMwareVMsQuery(provider);
+  const vms = useSourceVMsQuery(provider);
   const selectedVMs =
     vms.data?.filter((vm) => plan.spec.vms.find((planVM) => planVM.id === vm.id)) || [];
 
@@ -89,6 +89,7 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
     >
       <PlanDetails
         plan={plan}
+        sourceProvider={provider}
         networkMapping={networkMapping}
         storageMapping={storageMapping}
         vms={selectedVMs}

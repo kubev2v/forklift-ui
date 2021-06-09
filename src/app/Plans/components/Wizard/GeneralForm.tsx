@@ -15,21 +15,20 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan, POD_NETWORK, VMwareTreeType } from '@app/queries/types';
+import { IPlan, POD_NETWORK, InventoryTreeType } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
-  useVMwareTreeQuery,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
+  useInventoryTreeQuery,
+  useOpenShiftNetworksQuery,
+  useNamespacesQuery,
 } from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
-import { useNamespacesQuery } from '@app/queries/namespaces';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
-import { ProviderType } from '@app/common/constants';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
-import { useOpenShiftNetworksQuery } from '@app/queries/networks';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
 
@@ -96,9 +95,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   };
 
   // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
-  useVMwareVMsQuery(form.values.sourceProvider);
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.Host);
-  useVMwareTreeQuery(form.values.sourceProvider, VMwareTreeType.VM);
+  useSourceVMsQuery(form.values.sourceProvider);
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Host);
+  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM);
 
   return (
     <ResolvedQueries
@@ -128,16 +127,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <Title headingLevel="h3" size="md">
           Select source and target providers
         </Title>
-        <ProviderSelect
-          label="Source provider"
-          providerType={ProviderType.vsphere}
-          field={form.fields.sourceProvider}
-        />
-        <ProviderSelect
-          label="Target provider"
-          providerType={ProviderType.openshift}
-          field={form.fields.targetProvider}
-        />
+        <ProviderSelect providerRole="source" field={form.fields.sourceProvider} />
+        <ProviderSelect providerRole="target" field={form.fields.targetProvider} />
         <FormGroup
           label="Target namespace"
           isRequired

@@ -4,7 +4,7 @@ import { CheckIcon } from '@patternfly/react-icons';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { useOpenShiftNetworksQuery } from '@app/queries/networks';
+import { useOpenShiftNetworksQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
 import { isSameResource } from '@app/queries/helpers';
 import { hasCondition } from '@app/common/helpers';

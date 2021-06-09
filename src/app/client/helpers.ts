@@ -11,6 +11,7 @@ import { useNetworkContext } from '@app/common/context';
 import {
   AddProviderFormValues,
   OpenshiftProviderFormValues,
+  RHVProviderFormValues,
   VMwareProviderFormValues,
 } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
 import { AuthorizedClusterClient } from './types';
@@ -55,69 +56,57 @@ export function convertFormValuesToSecret(
   createdForResourceType: ForkliftResourceKind,
   providerBeingEdited: IProviderObject | null
 ): ISecret {
-  const ownerReferences = !providerBeingEdited
-    ? []
-    : [
-        {
-          apiVersion: CLUSTER_API_VERSION,
-          kind: 'Provider',
-          name: providerBeingEdited.metadata.name,
-          namespace: providerBeingEdited.metadata.namespace,
-          uid: providerBeingEdited.metadata.uid,
-        },
-      ];
-  if (values.providerType === ProviderType.openshift) {
-    const openshiftValues = values as OpenshiftProviderFormValues;
-    // btoa => to base64, atob => from base64
-    const encodedToken = openshiftValues.saToken && btoa(openshiftValues.saToken);
-    return {
-      apiVersion: 'v1',
-      data: {
-        token: encodedToken,
-      },
-      kind: 'Secret',
-      metadata: {
-        ...(!providerBeingEdited
-          ? {
-              generateName: `${openshiftValues.name}-`,
-              namespace: META.namespace,
-            }
-          : nameAndNamespace(providerBeingEdited.spec.secret)),
-        labels: {
-          createdForResourceType,
-          createdForResource: openshiftValues.name,
-        },
-        ownerReferences,
-      },
-      type: 'Opaque',
-    };
-  } else {
-    // default to vmware
+  let secretData: ISecret['data'] = {};
+  if (values.providerType === 'vsphere') {
     const vmwareValues = values as VMwareProviderFormValues;
-    const encodedUser = vmwareValues.username && btoa(vmwareValues.username);
-    const encodedPassword = vmwareValues.password && btoa(vmwareValues.password);
-    const encodedThumbprint = vmwareValues.fingerprint && btoa(vmwareValues.fingerprint);
-    return {
-      apiVersion: 'v1',
-      data: {
-        user: encodedUser,
-        password: encodedPassword,
-        thumbprint: encodedThumbprint,
-      },
-      kind: 'Secret',
-      metadata: {
-        ...(!providerBeingEdited
-          ? { generateName: `${vmwareValues.name}-`, namespace: META.namespace }
-          : nameAndNamespace(providerBeingEdited.spec.secret)),
-        labels: {
-          createdForResourceType,
-          createdForResource: vmwareValues.name,
-        },
-        ownerReferences,
-      },
-      type: 'Opaque',
+    secretData = {
+      user: btoa(vmwareValues.username),
+      password: btoa(vmwareValues.password),
+      thumbprint: btoa(vmwareValues.fingerprint),
     };
   }
+  if (values.providerType === 'ovirt') {
+    const rhvValues = values as RHVProviderFormValues;
+    secretData = {
+      user: btoa(rhvValues.username),
+      password: btoa(rhvValues.password),
+    };
+  }
+  if (values.providerType === 'openshift') {
+    const openshiftValues = values as OpenshiftProviderFormValues;
+    secretData = {
+      token: btoa(openshiftValues.saToken),
+    };
+  }
+  return {
+    apiVersion: 'v1',
+    data: secretData,
+    kind: 'Secret',
+    metadata: {
+      ...(!providerBeingEdited
+        ? {
+            generateName: `${values.name}-`,
+            namespace: META.namespace,
+          }
+        : nameAndNamespace(providerBeingEdited.spec.secret)),
+      labels: {
+        createdForResourceType,
+        createdForResource: values.name,
+      },
+      ownerReferences: !providerBeingEdited
+        ? []
+        : [
+            {
+              apiVersion: CLUSTER_API_VERSION,
+              kind: 'Provider',
+              name: providerBeingEdited.metadata.name,
+              namespace: providerBeingEdited.metadata.namespace,
+              uid: providerBeingEdited.metadata.uid,
+            },
+          ],
+    },
+    type: 'Opaque',
+  };
 }
 
 export const vmwareUrlToHostname = (url: string): string => {
@@ -126,20 +115,27 @@ export const vmwareUrlToHostname = (url: string): string => {
 };
 export const vmwareHostnameToUrl = (hostname: string): string => `https://${hostname}/sdk`;
 
+export const ovirtUrlToHostname = (url: string): string => {
+  const match = url.match(/^https:\/\/(.+)\/ovirt-engine\/api$/);
+  return match ? match[1] : url;
+};
+export const ovirtHostnameToUrl = (hostname: string): string =>
+  `https://${hostname}/ovirt-engine/api`;
+
 export const convertFormValuesToProvider = (
   values: AddProviderFormValues,
   providerType: ProviderType | null
 ): IProviderObject => {
-  let name: string;
-  let url: string;
+  const name = values.name;
+  let url = '';
   if (providerType === 'vsphere') {
-    const vmwareValues = values as VMwareProviderFormValues;
-    name = vmwareValues.name;
-    url = vmwareHostnameToUrl(vmwareValues.hostname);
-  } else {
-    const openshiftValues = values as OpenshiftProviderFormValues;
-    name = openshiftValues.name;
-    url = openshiftValues.url;
+    url = vmwareHostnameToUrl((values as VMwareProviderFormValues).hostname);
+  }
+  if (providerType === 'ovirt') {
+    url = ovirtHostnameToUrl((values as RHVProviderFormValues).hostname);
+  }
+  if (providerType === 'openshift') {
+    url = (values as OpenshiftProviderFormValues).url;
   }
   return {
     apiVersion: CLUSTER_API_VERSION,

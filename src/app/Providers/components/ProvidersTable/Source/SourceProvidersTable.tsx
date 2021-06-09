@@ -8,30 +8,52 @@ import {
   classNames as classNamesTransform,
   ICell,
   IRow,
+  fitContent,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 
 import { useSortState, usePaginationState } from '@app/common/hooks';
-import { ICorrelatedProvider, IVMwareProvider } from '@app/queries/types';
+import {
+  ICorrelatedProvider,
+  IRHVProvider,
+  IVMwareProvider,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
-import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
+import {
+  getMostSeriousCondition,
+  getStorageTitle,
+  hasCondition,
+  numStr,
+} from '@app/common/helpers';
 
-import './VMwareProvidersTable.css';
-import { PlanStatusType, ProviderType } from '@app/common/constants';
+import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
-interface IVMwareProvidersTableProps {
-  providers: ICorrelatedProvider<IVMwareProvider>[];
+interface ISourceProvidersTableProps {
+  providers: ICorrelatedProvider<SourceInventoryProvider>[];
+  providerType: ProviderType;
 }
 
-const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> = ({
+const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
   providers,
-}: IVMwareProvidersTableProps) => {
-  const getSortValues = (provider: ICorrelatedProvider<IVMwareProvider>) => {
-    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } =
-      provider.inventory || {};
+  providerType,
+}: ISourceProvidersTableProps) => {
+  const getStorageCount = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    if (!provider.inventory) return 0;
+    if (providerType === 'vsphere') {
+      return (provider.inventory as IVMwareProvider).datastoreCount;
+    }
+    if (providerType === 'ovirt') {
+      return (provider.inventory as IRHVProvider).storageDomainCount;
+    }
+    return 0;
+  };
+
+  const getSortValues = (provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount } = provider.inventory || {};
     return [
       // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
       // '',
@@ -41,7 +63,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
       numStr(hostCount),
       numStr(vmCount),
       numStr(networkCount),
-      numStr(datastoreCount),
+      numStr(getStorageCount(provider)),
       provider.status ? getMostSeriousCondition(provider.status?.conditions) : '',
       '',
     ];
@@ -59,7 +81,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     areAllSelected,
     selectAll,
     isItemSelected,
-  } = useSelectionState<IVMwareProvider>({ items: sortedItems });
+  } = useSelectionState<ICorrelatedProvider<SourceInventoryProvider>>({ items: sortedItems });
 
   const inventoryDownloadURL = `/inventory-payload-api/api/v1/extract?providers=${selectedItems
     .map((provider) => `${provider.namespace}/${provider.name}`)
@@ -90,23 +112,16 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
     { title: 'Hosts', transforms: [sortable] },
     { title: 'VMs', transforms: [sortable] },
     { title: 'Networks', transforms: [sortable] },
-    { title: 'Datastores', transforms: [sortable] },
+    { title: getStorageTitle(providerType, true), transforms: [sortable, fitContent] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
   ];
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((provider: ICorrelatedProvider<IVMwareProvider>) => {
-    const { clusterCount, hostCount, vmCount, networkCount, datastoreCount } =
-      provider.inventory || {};
+  currentPageItems.forEach((provider: ICorrelatedProvider<SourceInventoryProvider>) => {
+    const { clusterCount, hostCount, vmCount, networkCount } = provider.inventory || {};
     // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     // const isSelected = isItemSelected(provider);
-
-    const hostsCell = (
-      <>
-        <OutlinedHddIcon key="hosts-icon" /> {hostCount}
-      </>
-    );
 
     rows.push({
       meta: { provider },
@@ -128,25 +143,35 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         provider.metadata.name,
         provider.spec.url,
         numStr(clusterCount),
-        hostCount !== undefined
-          ? {
+        (() => {
+          if (hostCount === undefined) return '';
+          if (providerType === 'vsphere') {
+            const hostCountWithIcon = (
+              <>
+                <OutlinedHddIcon key="hosts-icon" /> {hostCount}
+              </>
+            );
+            return {
               title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
-                <Link to={`/providers/vsphere/${provider.metadata.name}`}>{hostsCell}</Link>
+                <Link to={`/providers/vsphere/${provider.metadata.name}`}>{hostCountWithIcon}</Link>
               ) : (
-                hostsCell
+                hostCountWithIcon
               ),
-            }
-          : '',
+            };
+          }
+          if (providerType === 'ovirt') {
+            return hostCount;
+          }
+          return null;
+        })(),
         numStr(vmCount),
         numStr(networkCount),
-        numStr(datastoreCount),
+        numStr(getStorageCount(provider)),
         {
           title: <StatusCondition status={provider.status} />,
         },
         {
-          title: (
-            <ProviderActionsDropdown provider={provider} providerType={ProviderType.vsphere} />
-          ),
+          title: <ProviderActionsDropdown provider={provider} providerType={providerType} />,
         },
       ],
     });
@@ -172,7 +197,7 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
         </LevelItem>
       </Level>
       <Table
-        aria-label="VMware providers table"
+        aria-label={`${PROVIDER_TYPE_NAMES[providerType]} providers table`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}
@@ -190,4 +215,4 @@ const VMwareProvidersTable: React.FunctionComponent<IVMwareProvidersTableProps> 
   );
 };
 
-export default VMwareProvidersTable;
+export default SourceProvidersTable;

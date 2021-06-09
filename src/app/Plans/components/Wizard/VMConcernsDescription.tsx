@@ -3,12 +3,12 @@ import { StatusIcon } from '@konveyor/lib-ui';
 import { TextContent, Text, List, ListItem, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
-import { IVMwareVM } from '@app/queries/types';
+import { SourceVM } from '@app/queries/types';
 import { concernMatchesFilter, getMostSevereVMConcern, getVMConcernStatusType } from './helpers';
 import './VMConcernsDescription.css';
 
 interface IVMConcernsDescriptionProps {
-  vm: IVMwareVM;
+  vm: SourceVM;
   filterText?: string;
 }
 

@@ -10,13 +10,14 @@ import {
 
 import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
+  fingerprintSchema,
+  hostnameSchema,
   PRODUCT_DOCO_LINK,
   ProviderType,
+  PROVIDER_TYPES,
   PROVIDER_TYPE_NAMES,
   urlSchema,
-  vmwareFingerprintSchema,
-  vmwareHostnameSchema,
-  vmwareUsernameSchema,
+  usernameSchema,
 } from '@app/common/constants';
 import { usePausedPollingEffect } from '@app/common/context';
 import {
@@ -40,7 +41,7 @@ interface IAddEditProviderModalProps {
   providerBeingEdited: IProviderObject | null;
 }
 
-const PROVIDER_TYPE_OPTIONS = Object.values(ProviderType).map((type) => ({
+const PROVIDER_TYPE_OPTIONS = PROVIDER_TYPES.map((type) => ({
   toString: () => PROVIDER_TYPE_NAMES[type],
   value: type,
 })) as OptionWithValue<ProviderType>[];
@@ -51,28 +52,37 @@ const useAddProviderFormState = (
 ) => {
   const providerTypeField = useFormField<ProviderType | null>(
     null,
-    yup.mixed().label('Provider type').oneOf(Object.values(ProviderType)).required()
+    yup
+      .mixed()
+      .label('Provider type')
+      .oneOf([...PROVIDER_TYPES]) // Spread necessary because readonly array isn't assignable to mutable any[]
+      .required()
   );
 
+  const commonProviderFields = {
+    providerType: providerTypeField,
+    name: useFormField(
+      '',
+      getProviderNameSchema(clusterProvidersQuery, providerBeingEdited).label('Name').required()
+    ),
+  };
+
+  const sourceProviderFields = {
+    ...commonProviderFields,
+    hostname: useFormField('', hostnameSchema),
+    username: useFormField('', usernameSchema.required()),
+    password: useFormField('', yup.string().max(256).label('Password').required()),
+  };
+
   return {
-    [ProviderType.vsphere]: useFormState({
-      providerType: providerTypeField,
-      name: useFormField(
-        '',
-        getProviderNameSchema(clusterProvidersQuery, providerBeingEdited).label('Name').required()
-      ),
-      hostname: useFormField('', vmwareHostnameSchema),
-      username: useFormField('', vmwareUsernameSchema.required()),
-      password: useFormField('', yup.string().max(256).label('Password').required()),
-      fingerprint: useFormField('', vmwareFingerprintSchema.required()),
+    vsphere: useFormState({
+      ...sourceProviderFields,
+      fingerprint: useFormField('', fingerprintSchema.required()),
       fingerprintFilename: useFormField('', yup.string()),
     }),
-    [ProviderType.openshift]: useFormState({
-      providerType: providerTypeField,
-      name: useFormField(
-        '',
-        getProviderNameSchema(clusterProvidersQuery, providerBeingEdited).label('Name').required()
-      ),
+    ovirt: useFormState(sourceProviderFields),
+    openshift: useFormState({
+      ...commonProviderFields,
       url: useFormField('', urlSchema.label('URL').required()),
       saToken: useFormField('', yup.string().label('Service account token').required()),
     }),
@@ -80,9 +90,13 @@ const useAddProviderFormState = (
 };
 
 export type AddProviderFormState = ReturnType<typeof useAddProviderFormState>; // ✨ Magic
-export type VMwareProviderFormValues = AddProviderFormState[ProviderType.vsphere]['values'];
-export type OpenshiftProviderFormValues = AddProviderFormState[ProviderType.openshift]['values'];
-export type AddProviderFormValues = VMwareProviderFormValues | OpenshiftProviderFormValues;
+export type VMwareProviderFormValues = AddProviderFormState['vsphere']['values'];
+export type RHVProviderFormValues = AddProviderFormState['ovirt']['values'];
+export type OpenshiftProviderFormValues = AddProviderFormState['openshift']['values'];
+export type AddProviderFormValues =
+  | VMwareProviderFormValues
+  | RHVProviderFormValues
+  | OpenshiftProviderFormValues;
 
 const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> = ({
   onClose,
@@ -96,13 +110,20 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
 
   const { isDonePrefilling } = useEditProviderPrefillEffect(forms, providerBeingEdited);
 
-  const vmwareForm = forms[ProviderType.vsphere];
-  const openshiftForm = forms[ProviderType.openshift];
-  const providerTypeField = vmwareForm.fields.providerType;
+  const providerTypeField = forms.vsphere.fields.providerType;
   const providerType = providerTypeField.value;
-  const formValues = providerType ? forms[providerType].values : vmwareForm.values;
+  const formValues = providerType ? forms[providerType].values : null;
   const isFormValid = providerType ? forms[providerType].isValid : false;
   const isFormDirty = providerType ? forms[providerType].isDirty : false;
+
+  // Combines fields of all 3 forms into one type with all properties as optional.
+  // This way, we can conditionally show fields based on whether they are defined in form state
+  // instead of duplicating the logic of which providers have which fields.
+  const fields = providerType
+    ? (forms[providerType].fields as Partial<
+        typeof forms.vsphere.fields & typeof forms.ovirt.fields & typeof forms.openshift.fields
+      >)
+    : null;
 
   const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
   const [patchProvider, patchProviderResult] = usePatchProviderMutation(
@@ -119,7 +140,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       variant="small"
       title={`${!providerBeingEdited ? 'Add' : 'Edit'} provider`}
       isOpen
-      onClose={onClose}
+      onClose={() => onClose()}
       footer={
         <Stack hasGutter>
           <ResolvedQuery
@@ -134,7 +155,9 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
               variant="primary"
               isDisabled={!isFormDirty || !isFormValid || mutateProviderResult.isLoading}
               onClick={() => {
-                mutateProvider(formValues);
+                if (formValues) {
+                  mutateProvider(formValues);
+                }
               }}
             >
               {!providerBeingEdited ? 'Add' : 'Save'}
@@ -178,183 +201,169 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 maxHeight="40vh"
               />
             </FormGroup>
-            {providerType === ProviderType.vsphere ? (
+            {providerType ? (
               <>
-                <ValidatedTextInput
-                  field={vmwareForm.fields.name}
-                  label="Name"
-                  isRequired
-                  fieldId="vmware-name"
-                  inputProps={{
-                    isDisabled: !!providerBeingEdited,
-                  }}
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <Button
-                          variant="plain"
-                          aria-label="More info for name field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="vmware-name-info"
-                          className="pf-c-form__group-label-help"
+                {fields?.name ? (
+                  <ValidatedTextInput
+                    field={forms[providerType].fields.name}
+                    label="Name"
+                    isRequired
+                    fieldId="name"
+                    inputProps={{
+                      isDisabled: !!providerBeingEdited,
+                    }}
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover bodyContent="User specified name that will be displayed in the UI.">
+                          <Button
+                            variant="plain"
+                            aria-label="More info for name field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="name-info"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </Button>
+                        </Popover>
+                      ),
+                    }}
+                  />
+                ) : null}
+                {fields?.hostname ? (
+                  <ValidatedTextInput
+                    field={fields.hostname}
+                    label="Hostname or IP address"
+                    isRequired
+                    fieldId="hostname"
+                  />
+                ) : null}
+                {fields?.username ? (
+                  <ValidatedTextInput
+                    field={fields.username}
+                    label="Username"
+                    isRequired
+                    fieldId="username"
+                  />
+                ) : null}
+                {fields?.password ? (
+                  <ValidatedPasswordInput
+                    field={fields.password}
+                    label="Password"
+                    isRequired
+                    fieldId="password"
+                  />
+                ) : null}
+                {fields?.fingerprint ? (
+                  <ValidatedTextInput
+                    field={fields.fingerprint}
+                    label="SHA-1 fingerprint"
+                    isRequired
+                    fieldId="fingerprint"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover
+                          bodyContent={
+                            <div>
+                              See{' '}
+                              <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
+                                {PRODUCT_DOCO_LINK.label}
+                              </a>{' '}
+                              for instructions on how to retrieve the fingerprint.
+                            </div>
+                          }
                         >
-                          <HelpIcon noVerticalAlign />
-                        </Button>
-                      </Popover>
-                    ),
-                  }}
-                />
-                <ValidatedTextInput
-                  field={vmwareForm.fields.hostname}
-                  label="Hostname or IP address"
-                  isRequired
-                  fieldId="vmware-hostname"
-                />
-                <ValidatedTextInput
-                  field={vmwareForm.fields.username}
-                  label="Username"
-                  isRequired
-                  fieldId="vmware-username"
-                />
-                <ValidatedPasswordInput
-                  field={vmwareForm.fields.password}
-                  label="Password"
-                  isRequired
-                  fieldId="vmware-password"
-                />
-                <ValidatedTextInput
-                  field={vmwareForm.fields.fingerprint}
-                  label="SHA-1 fingerprint"
-                  isRequired
-                  fieldId="vmware-fingerprint"
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover
-                        bodyContent={
-                          <div>
-                            See{' '}
-                            <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
-                              {PRODUCT_DOCO_LINK.label}
-                            </a>{' '}
-                            for instructions on how to retrieve the fingerprint.
-                          </div>
-                        }
-                      >
-                        <Button
-                          variant="plain"
-                          aria-label="More info for SHA-1 fingerprint field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="vmware-fingerprint"
-                          className="pf-c-form__group-label-help"
+                          <Button
+                            variant="plain"
+                            aria-label="More info for SHA-1 fingerprint field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="fingerprint"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </Button>
+                        </Popover>
+                      ),
+                    }}
+                  />
+                ) : null}
+                {fields?.url ? (
+                  <ValidatedTextInput
+                    field={fields.url}
+                    label="URL"
+                    isRequired
+                    fieldId="openshift-url"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover
+                          bodyContent={
+                            <>
+                              OpenShift cluster API endpoint.
+                              <br />
+                              For example: <i>https://api.clusterName.domain:6443</i>
+                            </>
+                          }
                         >
-                          <HelpIcon noVerticalAlign />
-                        </Button>
-                      </Popover>
-                    ),
-                  }}
-                />
+                          <Button
+                            variant="plain"
+                            aria-label="More info for URL field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="openshift-cluster-url-info"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </Button>
+                        </Popover>
+                      ),
+                    }}
+                  />
+                ) : null}
+                {fields?.saToken ? (
+                  <ValidatedPasswordInput
+                    field={fields.saToken}
+                    label="Service account token"
+                    isRequired
+                    fieldId="openshift-sa-token"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover
+                          bodyContent={
+                            <>
+                              To obtain SA token, run the following command:
+                              <br />
+                              <i>
+                                $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
+                              </i>
+                              <br />
+                              <br />
+                              <b>** Be sure to use the namespace in which you created the SA.</b>
+                            </>
+                          }
+                        >
+                          <Button
+                            variant="plain"
+                            aria-label="More info for service account field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="service-account-info"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </Button>
+                        </Popover>
+                      ),
+                    }}
+                  />
+                ) : null}
+                {/* TODO re-enable this when we have the API capability
+                providerType ? (
+                  <div>
+                    <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
+                      Check connection
+                    </Button>
+                  </div>
+                ) : null
+                */}
               </>
             ) : null}
-            {providerType === ProviderType.openshift ? (
-              <>
-                <ValidatedTextInput
-                  field={openshiftForm.fields.name}
-                  label="Name"
-                  isRequired
-                  fieldId="openshift-name"
-                  inputProps={{
-                    isDisabled: !!providerBeingEdited,
-                  }}
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover bodyContent="User specified name that will be displayed in the UI.">
-                        <Button
-                          variant="plain"
-                          aria-label="More info for name field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="openshift-name-info"
-                          className="pf-c-form__group-label-help"
-                        >
-                          <HelpIcon noVerticalAlign />
-                        </Button>
-                      </Popover>
-                    ),
-                  }}
-                />
-                <ValidatedTextInput
-                  field={openshiftForm.fields.url}
-                  label="URL"
-                  isRequired
-                  fieldId="openshift-url"
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover
-                        bodyContent={
-                          <>
-                            OpenShift cluster API endpoint.
-                            <br />
-                            For example: <i>https://api.clusterName.domain:6443</i>
-                          </>
-                        }
-                      >
-                        <Button
-                          variant="plain"
-                          aria-label="More info for URL field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="openshift-cluster-url-info"
-                          className="pf-c-form__group-label-help"
-                        >
-                          <HelpIcon noVerticalAlign />
-                        </Button>
-                      </Popover>
-                    ),
-                  }}
-                />
-                <ValidatedPasswordInput
-                  field={openshiftForm.fields.saToken}
-                  label="Service account token"
-                  isRequired
-                  fieldId="openshift-sa-token"
-                  formGroupProps={{
-                    labelIcon: (
-                      <Popover
-                        bodyContent={
-                          <>
-                            To obtain SA token, run the following command:
-                            <br />
-                            <i>
-                              $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
-                            </i>
-                            <br />
-                            <br />
-                            <b>** Be sure to use the namespace in which you created the SA.</b>
-                          </>
-                        }
-                      >
-                        <Button
-                          variant="plain"
-                          aria-label="More info for service account field"
-                          onClick={(e) => e.preventDefault()}
-                          aria-describedby="service-account-info"
-                          className="pf-c-form__group-label-help"
-                        >
-                          <HelpIcon noVerticalAlign />
-                        </Button>
-                      </Popover>
-                    ),
-                  }}
-                />
-              </>
-            ) : null}
-            {/* TODO re-enable this when we have the API capability
-            providerType ? (
-              <div>
-                <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
-                  Check connection
-                </Button>
-              </div>
-            ) : null
-            */}
           </Form>
         )}
       </ResolvedQuery>

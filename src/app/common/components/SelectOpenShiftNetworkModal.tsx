@@ -23,7 +23,7 @@ import {
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
-import { useOpenShiftNetworksQuery } from '@app/queries/networks';
+import { useOpenShiftNetworksQuery } from '@app/queries';
 import { isSameResource } from '@app/queries/helpers';
 
 interface ISelectOpenShiftNetworkModalProps {
