@@ -8,13 +8,11 @@ import {
   Pagination,
   PageSection,
   Title,
-  Level,
-  LevelItem,
+  Split,
+  SplitItem,
   Button,
-  Flex,
   List,
   ListItem,
-  FlexItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -344,17 +342,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         >
           <Card>
             <CardBody>
-              <Level>
-                <LevelItem>
-                  <Flex>
-                    <FlexItem spacer={{ default: 'spacerNone' }}>
-                      <FilterToolbar<IVMStatus>
-                        filterCategories={filterCategories}
-                        filterValues={filterValues}
-                        setFilterValues={setFilterValues}
-                      />
-                    </FlexItem>
-                    <FlexItem>
+              <Split>
+                <SplitItem isFilled>
+                  <FilterToolbar<IVMStatus>
+                    filterCategories={filterCategories}
+                    filterValues={filterValues}
+                    setFilterValues={setFilterValues}
+                    toolbarItems={
                       <Button
                         variant="secondary"
                         isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
@@ -362,13 +356,17 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                       >
                         Cancel
                       </Button>
-                    </FlexItem>
-                  </Flex>
-                </LevelItem>
-                <LevelItem>
-                  <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
-                </LevelItem>
-              </Level>
+                    }
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <Pagination
+                    className={spacing.mtMd}
+                    {...paginationProps}
+                    widgetId="migration-vms-table-pagination-top"
+                  />
+                </SplitItem>
+              </Split>
               {filteredItems.length > 0 ? (
                 <Table
                   className="migration-details-table"

@@ -5,6 +5,7 @@ import {
   ToolbarContent,
   ToolbarToggleGroup,
   ToolbarItem,
+  ToolbarGroup,
   Dropdown,
   DropdownToggle,
   DropdownItem,
@@ -49,12 +50,14 @@ export interface IFilterToolbarProps<T> {
   filterCategories: FilterCategory<T>[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
+  toolbarItems?: JSX.Element;
 }
 
 export const FilterToolbar = <T,>({
   filterCategories,
   filterValues,
   setFilterValues,
+  toolbarItems,
 }: React.PropsWithChildren<IFilterToolbarProps<T>>): JSX.Element | null => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = React.useState(filterCategories[0].key);
@@ -74,7 +77,7 @@ export const FilterToolbar = <T,>({
   return (
     <Toolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
       <ToolbarContent>
-        <ToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
+        <ToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="2xl">
           <ToolbarItem>
             <Dropdown
               toggle={
@@ -90,6 +93,7 @@ export const FilterToolbar = <T,>({
               ))}
             />
           </ToolbarItem>
+
           {filterCategories.map((category) => (
             <FilterControl<T>
               key={category.key}
@@ -100,6 +104,12 @@ export const FilterToolbar = <T,>({
             />
           ))}
         </ToolbarToggleGroup>
+
+        {toolbarItems && (
+          <ToolbarGroup>
+            <ToolbarItem>{toolbarItems}</ToolbarItem>
+          </ToolbarGroup>
+        )}
       </ToolbarContent>
     </Toolbar>
   );

@@ -2,8 +2,8 @@ import * as React from 'react';
 import {
   Flex,
   FlexItem,
-  Level,
-  LevelItem,
+  Split,
+  SplitItem,
   Pagination,
   Progress,
   ProgressMeasureLocation,
@@ -36,7 +36,7 @@ import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusDisplayType, PlanStatusType } from '@app/common/constants';
-import CreatePlanButton from './CreatePlanButton';
+import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
@@ -361,28 +361,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem>
-          <Flex>
-            <FlexItem
-              alignSelf={{ default: 'alignSelfFlexStart' }}
-              spacer={{ default: 'spacerNone' }}
-            >
-              <FilterToolbar<IPlan>
-                filterCategories={filterCategories}
-                filterValues={filterValues}
-                setFilterValues={setFilterValues}
-              />
-            </FlexItem>
-            <FlexItem>
-              <CreatePlanButton variant="secondary" />
-            </FlexItem>
-          </Flex>
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />
-        </LevelItem>
-      </Level>
+      <Split>
+        <SplitItem isFilled>
+          <FilterToolbar<IPlan>
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+            toolbarItems={<CreatePlanButton variant="secondary" />}
+          />
+        </SplitItem>
+        <SplitItem>
+          <Pagination
+            className={spacing.mtMd}
+            {...paginationProps}
+            widgetId="plans-table-pagination-top"
+          />
+        </SplitItem>
+      </Split>
       {filteredItems.length > 0 ? (
         <Table
           aria-label="Migration Plans table"
