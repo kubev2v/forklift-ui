@@ -289,10 +289,12 @@ export const useHasSufficientProvidersQuery = (): {
   hasSufficientProviders: boolean | undefined;
 } => {
   const result = useInventoryProvidersQuery();
-  const vmwareProviders = result.data?.vsphere || [];
+  const sourceProviders = SOURCE_PROVIDER_TYPES.flatMap(
+    (type) => (result.data && (result.data[type] as SourceInventoryProvider[])) || []
+  );
   const openshiftProviders = result.data?.openshift || [];
   const hasSufficientProviders = result.data
-    ? vmwareProviders.length >= 1 && openshiftProviders.length >= 1
+    ? sourceProviders.length >= 1 && openshiftProviders.length >= 1
     : undefined;
   return {
     result: result,

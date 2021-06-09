@@ -18,7 +18,7 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
   return (
     <ConditionalTooltip
       isTooltipEnabled={!hasSufficientProviders}
-      content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a migration plan."
+      content="You must add at least one VMware or Red Hat Virtualization provider and one OpenShift Virtualization provider in order to create a migration plan."
     >
       <div className={`${spacing.mtMd}`}>
         <Button
