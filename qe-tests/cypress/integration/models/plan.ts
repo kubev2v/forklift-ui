@@ -147,6 +147,8 @@ export class Plan {
   }
 
   protected waitForCanceled(name: string): void {
+    //Go to Migration plans list page
+    Plan.openList();
     cy.get(tdTag)
       .contains(name)
       .parent(tdTag)
@@ -157,15 +159,14 @@ export class Plan {
   }
 
   protected plan_details(name: string): void {
-    //cy.get('table tbody tr td').eq(name).click();
     cy.get(tdTag).contains(name).parent(tdTag).parent(trTag).click();
   }
 
   protected cancel(name: string): void {
     this.plan_details(name);
-    const selector = `pf-c-table__check`;
-    click(selector);
+    cy.get(`[aria-label="Select row 0"]`, { timeout: 20000 }).should('be.enabled').check();
     clickByText(button, 'Cancel');
+    clickByText(button, 'Yes, cancel');
   }
 
   // protected populate(planData: PlanData): void {}
@@ -220,6 +221,9 @@ export class Plan {
     this.cancel(name);
     this.waitForCanceled(name);
     this.restart(name);
+    cy.wait(10000);
+    openSidebarMenu();
+    clickByText(navMenuPoint, migrationPLan);
     this.waitForSuccess(name);
   }
 }
