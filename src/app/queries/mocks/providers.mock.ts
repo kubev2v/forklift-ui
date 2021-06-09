@@ -305,25 +305,70 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const openshiftProvider1: IOpenShiftProvider = {
-    ...vmwareProvider1,
     uid: 'mock-uid-ocpv-1',
+    version: '12345',
+    namespace: 'openshift-migration',
     name: 'ocpv-1',
     selfLink: '/foo/openshiftprovider/1',
     type: 'openshift',
     object: {
-      ...vmwareProvider1.object,
+      apiVersion: '12345',
+      kind: 'foo-kind',
       metadata: {
-        ...vmwareProvider1.object.metadata,
         name: 'ocpv-1',
+        namespace: 'openshift-migration',
+        selfLink: '/foo/bar',
         uid: 'mock-uid-ocpv-1',
+        resourceVersion: '12345',
+        generation: 1,
+        creationTimestamp: '2020-08-21T18:36:41.468Z',
         annotations: {
           'forklift.konveyor.io/defaultTransferNetwork': 'ocp-network-3',
         },
       },
       spec: {
-        ...vmwareProvider1.object.spec,
         type: 'openshift',
         url: 'https://my_OCPv_url',
+        secret: {
+          namespace: 'openshift-migration',
+          name: 'boston',
+        },
+      },
+      status: {
+        conditions: [
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-18T21:01:10Z',
+            message: 'Connection test, succeeded.',
+            reason: 'Tested',
+            status: 'True',
+            type: 'ConnectionTested',
+          },
+          {
+            category: 'Advisory',
+            lastTransitionTime: '2021-02-08T19:36:55Z',
+            message: 'Validation has been completed.',
+            reason: 'Completed',
+            status: 'True',
+            type: 'Validated',
+          },
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-23T16:58:23Z',
+            message: 'The inventory has been loaded.',
+            reason: 'Completed',
+            status: 'True',
+            type: 'InventoryCreated',
+          },
+          {
+            category: 'Required',
+            lastTransitionTime: '2021-03-23T16:58:23Z',
+            message: 'The provider is ready.',
+            status: 'True',
+            type: 'Ready',
+          },
+        ],
+        observedGeneration: 1,
       },
     },
     namespaceCount: 41,
