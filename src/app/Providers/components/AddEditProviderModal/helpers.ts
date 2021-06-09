@@ -33,6 +33,10 @@ export const useEditProviderPrefillEffect = (
         sourceFields.username.setInitialValue(atob(secret?.data.user || ''));
         sourceFields.password.setInitialValue(atob(secret?.data.password || ''));
       }
+      if (providerType === 'ovirt') {
+        const sourceFields = fields as typeof forms.ovirt.fields;
+        sourceFields.caCert.setInitialValue(atob(secret?.data.cacert || ''));
+      }
       if (providerType === 'vsphere') {
         const vmwareFields = forms.vsphere.fields;
         vmwareFields.hostname.setInitialValue(
