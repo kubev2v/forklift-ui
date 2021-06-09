@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
-import { IMetaObjectMeta, IPlan, SourceVM, Mapping } from '@app/queries/types';
+import { IPlan, SourceVM, Mapping } from '@app/queries/types';
 import { MutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -10,7 +10,6 @@ import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useNamespacesQuery } from '@app/queries';
 import PlanDetails from '../PlanDetails';
-import { META } from '@app/common/constants';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
