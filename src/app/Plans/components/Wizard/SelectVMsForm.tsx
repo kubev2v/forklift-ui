@@ -219,13 +219,11 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     externalState: [form.fields.selectedVMIds.value, form.fields.selectedVMIds.setValue],
   });
 
-  const {
-    toggleItemSelected: toggleVMExpanded,
-    isItemSelected: isVMExpanded,
-  } = useSelectionState<SourceVM>({
-    items: sortedItems,
-    isEqual: (a, b) => a.selfLink === b.selfLink,
-  });
+  const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } =
+    useSelectionState<SourceVM>({
+      items: sortedItems,
+      isEqual: (a, b) => a.selfLink === b.selfLink,
+    });
 
   React.useEffect(() => {
     if (filterValues.analysisCondition) {

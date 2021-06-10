@@ -205,15 +205,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const {
-    selectedItems,
-    isItemSelected,
-    toggleItemSelected,
-    setSelectedItems,
-  } = useSelectionState<IVMStatus>({
-    items: sortedItems,
-    isEqual: (a, b) => a.id === b.id,
-  });
+  const { selectedItems, isItemSelected, toggleItemSelected, setSelectedItems } =
+    useSelectionState<IVMStatus>({
+      items: sortedItems,
+      isEqual: (a, b) => a.id === b.id,
+    });
 
   const isVMCanceled = (vm: IVMStatus) =>
     !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
@@ -229,13 +225,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     setSelectedItems([]);
   });
 
-  const {
-    toggleItemSelected: toggleVMExpanded,
-    isItemSelected: isVMExpanded,
-  } = useSelectionState<IVMStatus>({
-    items: sortedItems,
-    isEqual: (a, b) => a.id === b.id,
-  });
+  const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } =
+    useSelectionState<IVMStatus>({
+      items: sortedItems,
+      isEqual: (a, b) => a.id === b.id,
+    });
 
   const columns: ICell[] = [
     {

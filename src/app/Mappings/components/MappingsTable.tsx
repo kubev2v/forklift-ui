@@ -54,13 +54,11 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const {
-    toggleItemSelected: toggleMappingExpanded,
-    isItemSelected: isMappingExpanded,
-  } = useSelectionState<Mapping>({
-    items: sortedItems,
-    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
-  });
+  const { toggleItemSelected: toggleMappingExpanded, isItemSelected: isMappingExpanded } =
+    useSelectionState<Mapping>({
+      items: sortedItems,
+      isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
+    });
 
   const columns: ICell[] = [
     {
