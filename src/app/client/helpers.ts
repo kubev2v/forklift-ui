@@ -70,6 +70,7 @@ export function convertFormValuesToSecret(
     secretData = {
       user: btoa(rhvValues.username),
       password: btoa(rhvValues.password),
+      cacert: btoa(rhvValues.caCert),
     };
   }
   if (values.providerType === 'openshift') {
