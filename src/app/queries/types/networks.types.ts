@@ -1,8 +1,5 @@
-import { IVMwareObjRef } from './common.types';
-
-export interface IVMwareNetwork {
+export interface ISourceNetwork {
   id: string;
-  parent: IVMwareObjRef;
   name: string;
   selfLink: string;
 }
@@ -14,5 +11,5 @@ export interface IOpenShiftNetwork {
   name: string;
   selfLink: string;
   type?: 'pod';
-  // There's more if we load with ?detail=true
+  // There's more if we load with ?detail=1
 }

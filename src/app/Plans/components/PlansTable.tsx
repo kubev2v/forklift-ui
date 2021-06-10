@@ -2,8 +2,8 @@ import * as React from 'react';
 import {
   Flex,
   FlexItem,
-  Level,
-  LevelItem,
+  Split,
+  SplitItem,
   Pagination,
   Progress,
   ProgressMeasureLocation,
@@ -17,7 +17,6 @@ import {
   ICell,
   IRow,
   sortable,
-  wrappable,
   expandable,
   classNames,
   cellWidth,
@@ -26,8 +25,10 @@ import {
   Td,
   Th,
   Tr,
+  truncate,
 } from '@patternfly/react-table';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
@@ -35,7 +36,7 @@ import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
 import { PlanStatusDisplayType, PlanStatusType } from '@app/common/constants';
-import CreatePlanButton from './CreatePlanButton';
+import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
 import { hasCondition } from '@app/common/helpers';
@@ -173,13 +174,25 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   };
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable, wrappable], cellFormatters: [expandable] },
-    { title: 'Type', transforms: [sortable] },
-    { title: 'Plan status', transforms: [sortable, cellWidth(30)] },
+    {
+      title: 'Name',
+      transforms: [sortable, cellWidth(20)],
+      cellFormatters: [expandable],
+    },
+    {
+      title: 'Type',
+      transforms: [sortable, cellWidth(10)],
+      cellTransforms: [truncate],
+    },
+    {
+      title: 'Plan status',
+      transforms: [sortable, cellWidth(60)],
+      cellTransforms: [truncate],
+    },
     {
       title: '',
       transforms: [cellWidth(10)],
-      columnTransforms: [classNames(alignment.textAlignRight)],
+      columnTransforms: [classNames(alignment.textAlignRight, spacing.pxSm)],
     },
   ];
 
@@ -348,28 +361,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem>
-          <Flex>
-            <FlexItem
-              alignSelf={{ default: 'alignSelfFlexStart' }}
-              spacer={{ default: 'spacerNone' }}
-            >
-              <FilterToolbar<IPlan>
-                filterCategories={filterCategories}
-                filterValues={filterValues}
-                setFilterValues={setFilterValues}
-              />
-            </FlexItem>
-            <FlexItem>
-              <CreatePlanButton variant="secondary" />
-            </FlexItem>
-          </Flex>
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="plans-table-pagination-top" />
-        </LevelItem>
-      </Level>
+      <Split>
+        <SplitItem isFilled>
+          <FilterToolbar<IPlan>
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+            toolbarItems={<CreatePlanButton variant="secondary" />}
+          />
+        </SplitItem>
+        <SplitItem>
+          <Pagination
+            className={spacing.mtMd}
+            {...paginationProps}
+            widgetId="plans-table-pagination-top"
+          />
+        </SplitItem>
+      </Split>
       {filteredItems.length > 0 ? (
         <Table
           aria-label="Migration Plans table"

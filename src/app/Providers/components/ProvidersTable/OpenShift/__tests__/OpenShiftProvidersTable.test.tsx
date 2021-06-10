@@ -12,7 +12,6 @@ import {
   MOCK_INVENTORY_PROVIDERS,
 } from '@app/queries/mocks/providers.mock';
 import { correlateProviders } from '../../helpers';
-import { ProviderType } from '@app/common/constants';
 
 describe('<OpenShiftProvidersTable />', () => {
   const history = createMemoryHistory();
@@ -20,7 +19,7 @@ describe('<OpenShiftProvidersTable />', () => {
     providers: correlateProviders(
       MOCK_CLUSTER_PROVIDERS,
       MOCK_INVENTORY_PROVIDERS.openshift,
-      ProviderType.openshift
+      'openshift'
     ),
   };
 

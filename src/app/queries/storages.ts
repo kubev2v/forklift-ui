@@ -1,6 +1,6 @@
 import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
-import { useMockableQuery, getInventoryApiUrl } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, useResultsSortedByName } from './helpers';
 import {
   IAnnotatedStorageClass,
   IByProvider,
@@ -8,10 +8,32 @@ import {
   IProvisioner,
   IStorageClass,
   MappingType,
+  ISourceStorage,
+  SourceInventoryProvider,
 } from './types';
-import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storageClasses.mock';
-import { authorizedFetch, useFetchContext } from './fetchHelpers';
+import { MOCK_VMWARE_DATASTORES, MOCK_RHV_STORAGE_DOMAINS } from './mocks/storages.mock';
+import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storages.mock';
+import { authorizedFetch, useAuthorizedFetch, useFetchContext } from './fetchHelpers';
 import { useProvisionersQuery } from '.';
+
+export const useSourceStoragesQuery = (
+  provider: SourceInventoryProvider | null,
+  mappingType: MappingType
+): QueryResult<ISourceStorage[]> => {
+  const apiSlug = provider?.type === 'vsphere' ? '/datastores' : '/storagedomains';
+  const result = useMockableQuery<ISourceStorage[]>(
+    {
+      queryKey: ['source-storages', provider?.name],
+      queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
+      config: {
+        enabled: !!provider && mappingType === MappingType.Storage,
+        refetchInterval: usePollingContext().refetchInterval,
+      },
+    },
+    provider?.type === 'vsphere' ? MOCK_VMWARE_DATASTORES : MOCK_RHV_STORAGE_DOMAINS
+  );
+  return useResultsSortedByName(result);
+};
 
 const annotateStorageClasses = (
   storageClasses: IStorageClass[],
@@ -55,7 +77,7 @@ export const useStorageClassesQuery = (
         const storageClassLists: IStorageClass[][] = await Promise.all(
           (providers || []).map((provider) =>
             authorizedFetch<IStorageClass[]>(
-              getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses?detail=true`),
+              getInventoryApiUrl(`${provider?.selfLink || ''}/storageclasses?detail=1`),
               fetchContext
             )
           )

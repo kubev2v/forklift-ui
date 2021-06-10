@@ -8,13 +8,11 @@ import {
   Pagination,
   PageSection,
   Title,
-  Level,
-  LevelItem,
+  Split,
+  SplitItem,
   Button,
-  Flex,
   List,
   ListItem,
-  FlexItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -32,6 +30,7 @@ import {
   textCenter,
   fitContent,
 } from '@patternfly/react-table';
+import { centerCellTransform } from '@app/utils/utils';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -43,20 +42,18 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { IVMStatus, IVMwareVM } from '@app/queries/types';
+import { SourceVM, IVMStatus } from '@app/queries/types';
 import {
   findLatestMigration,
   useCancelVMsMutation,
   useMigrationsQuery,
   usePlansQuery,
-} from '@app/queries';
-import { formatTimestamp, hasCondition } from '@app/common/helpers';
-import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
   findVMById,
 } from '@app/queries';
+import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
@@ -64,6 +61,7 @@ import { getWarmPlanState } from './helpers';
 import VMStatusPrecopyTable from './VMStatusPrecopyTable';
 import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+import '@app/Plans/components/VMMigrationDetails.css';
 
 export interface IPlanMatchParams {
   url: string;
@@ -102,7 +100,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
@@ -243,13 +241,22 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Name',
       transforms: [sortable, wrappable],
+      cellTransforms: [truncate, centerCellTransform],
       cellFormatters: planStarted ? [expandable] : [],
     },
     ...(!isShowingPrecopyView
       ? [
-          { title: 'Start time', transforms: [sortable], cellTransforms: [truncate] },
-          { title: 'End time', transforms: [sortable], cellTransforms: [truncate] },
-          { title: 'Data copied', transforms: [sortable] },
+          {
+            title: 'Start time',
+            transforms: [sortable],
+            cellTransforms: [truncate, centerCellTransform],
+          },
+          {
+            title: 'End time',
+            transforms: [sortable],
+            cellTransforms: [truncate, centerCellTransform],
+          },
+          { title: 'Data copied', transforms: [sortable], cellTransforms: [centerCellTransform] },
         ]
       : [
           {
@@ -261,7 +268,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     {
       title: 'Status',
       transforms: [sortable, cellWidth(20)],
-      cellTransforms: [nowrap],
+      cellTransforms: [nowrap, centerCellTransform],
     },
     { title: '', columnTransforms: [classNamesTransform(alignment.textAlignRight)] },
   ];
@@ -335,17 +342,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         >
           <Card>
             <CardBody>
-              <Level>
-                <LevelItem>
-                  <Flex>
-                    <FlexItem spacer={{ default: 'spacerNone' }}>
-                      <FilterToolbar<IVMStatus>
-                        filterCategories={filterCategories}
-                        filterValues={filterValues}
-                        setFilterValues={setFilterValues}
-                      />
-                    </FlexItem>
-                    <FlexItem>
+              <Split>
+                <SplitItem isFilled>
+                  <FilterToolbar<IVMStatus>
+                    filterCategories={filterCategories}
+                    filterValues={filterValues}
+                    setFilterValues={setFilterValues}
+                    toolbarItems={
                       <Button
                         variant="secondary"
                         isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
@@ -353,15 +356,20 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                       >
                         Cancel
                       </Button>
-                    </FlexItem>
-                  </Flex>
-                </LevelItem>
-                <LevelItem>
-                  <Pagination {...paginationProps} widgetId="migration-vms-table-pagination-top" />
-                </LevelItem>
-              </Level>
+                    }
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <Pagination
+                    className={spacing.mtMd}
+                    {...paginationProps}
+                    widgetId="migration-vms-table-pagination-top"
+                  />
+                </SplitItem>
+              </Split>
               {filteredItems.length > 0 ? (
                 <Table
+                  className="migration-details-table"
                   aria-label="Migration VMs table"
                   cells={columns}
                   rows={rows}
@@ -403,7 +411,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         mutateFn={() => {
           const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
           if (vmsToCancel.some((vm) => !vm)) return;
-          cancelVMs(vmsToCancel as IVMwareVM[]);
+          cancelVMs(vmsToCancel as SourceVM[]);
         }}
         mutateResult={cancelVMsResult}
         title="Cancel migrations?"

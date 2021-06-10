@@ -1,7 +1,6 @@
 import { MutationResultPair, useQueryCache, QueryResult, QueryStatus } from 'react-query';
 import * as yup from 'yup';
 import {
-  IVMwareProvider,
   IOpenShiftProvider,
   MappingType,
   MappingSource,
@@ -9,8 +8,8 @@ import {
   Mapping,
   POD_NETWORK,
   IMetaObjectMeta,
+  SourceInventoryProvider,
 } from './types';
-import { useStorageClassesQuery } from './storageClasses';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
@@ -19,8 +18,8 @@ import {
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
-import { useOpenShiftNetworksQuery, useVMwareNetworksQuery } from './networks';
-import { useDatastoresQuery } from './datastores';
+import { useOpenShiftNetworksQuery, useSourceNetworksQuery } from './networks';
+import { useSourceStoragesQuery, useStorageClassesQuery } from './storages';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/client/types';
@@ -150,17 +149,17 @@ export interface IMappingResourcesResult {
 }
 
 export interface ISpecificMappingResourcesResult extends IMappingResourcesResult {
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
 }
 
 export const useMappingResourceQueries = (
-  sourceProvider: IVMwareProvider | null,
+  sourceProvider: SourceInventoryProvider | null,
   targetProvider: IOpenShiftProvider | null,
   mappingType: MappingType
 ): IMappingResourcesResult => {
-  const vmwareNetworksQuery = useVMwareNetworksQuery(sourceProvider, mappingType);
-  const datastoresQuery = useDatastoresQuery(sourceProvider, mappingType);
+  const sourceNetworksQuery = useSourceNetworksQuery(sourceProvider, mappingType);
+  const sourceStoragesQuery = useSourceStoragesQuery(sourceProvider, mappingType);
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(targetProvider, mappingType);
   const storageClassesQuery = useStorageClassesQuery(
     targetProvider ? [targetProvider] : null,
@@ -170,14 +169,14 @@ export const useMappingResourceQueries = (
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
-    availableSources = (sourceProvider && vmwareNetworksQuery.data) || [];
+    availableSources = (sourceProvider && sourceNetworksQuery.data) || [];
     availableTargets =
       targetProvider && openshiftNetworksQuery.data
         ? [POD_NETWORK, ...openshiftNetworksQuery.data]
         : [];
   }
   if (mappingType === MappingType.Storage) {
-    availableSources = (sourceProvider && datastoresQuery.data) || [];
+    availableSources = (sourceProvider && sourceStoragesQuery.data) || [];
     availableTargets =
       (targetProvider &&
         storageClassesQuery.data &&
@@ -187,8 +186,8 @@ export const useMappingResourceQueries = (
 
   const queriesToWatch =
     mappingType === MappingType.Network
-      ? [vmwareNetworksQuery, openshiftNetworksQuery]
-      : [datastoresQuery, storageClassesQuery];
+      ? [sourceNetworksQuery, openshiftNetworksQuery]
+      : [sourceStoragesQuery, storageClassesQuery];
   const status = getAggregateQueryStatus(queriesToWatch);
   const error = getFirstQueryError(queriesToWatch);
 

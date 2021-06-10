@@ -1,12 +1,26 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, Grid, GridItem, Stack, Flex } from '@patternfly/react-core';
+import {
+  Modal,
+  Button,
+  Form,
+  Grid,
+  GridItem,
+  Stack,
+  Flex,
+  FormGroup,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui';
-
+import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
-import { MappingType, IOpenShiftProvider, IVMwareProvider, Mapping } from '@app/queries/types';
+import {
+  MappingType,
+  IOpenShiftProvider,
+  Mapping,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingResourceQueries,
@@ -30,13 +44,13 @@ import {
   QuerySpinnerMode,
 } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
-import { ProviderType } from '@app/common/constants';
 
 interface IAddEditMappingModalProps {
   title: string;
   onClose: () => void;
   mappingType: MappingType;
   mappingBeingEdited: Mapping | null;
+  setActiveMapType: React.Dispatch<React.SetStateAction<MappingType>>;
 }
 
 const useMappingFormState = (
@@ -48,9 +62,9 @@ const useMappingFormState = (
       '',
       getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
     ),
-    sourceProvider: useFormField<IVMwareProvider | null>(
+    sourceProvider: useFormField<SourceInventoryProvider | null>(
       null,
-      yup.mixed<IVMwareProvider>().label('Source provider').required()
+      yup.mixed<SourceInventoryProvider>().label('Source provider').required()
     ),
     targetProvider: useFormField<IOpenShiftProvider | null>(
       null,
@@ -69,6 +83,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   onClose,
   mappingType,
   mappingBeingEdited,
+  setActiveMapType,
 }: IAddEditMappingModalProps) => {
   usePausedPollingEffect();
 
@@ -110,6 +125,11 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
   const [patchMapping, patchMappingResult] = usePatchMappingMutation(mappingType, onClose);
   const mutateMapping = !mappingBeingEdited ? createMapping : patchMapping;
   const mutationResult = !mappingBeingEdited ? createMappingResult : patchMappingResult;
+
+  const MAPPING_TYPE_OPTIONS = Object.values(MappingType).map((type) => ({
+    toString: () => MappingType[type],
+    value: type,
+  })) as OptionWithValue<MappingType>[];
 
   return (
     <Modal
@@ -172,8 +192,25 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
             <LoadingEmptyState />
           ) : (
             <>
-              <Grid className={spacing.mbMd}>
-                <GridItem sm={12} md={5} className={spacing.mbMd}>
+              <Grid hasGutter className={spacing.mbMd}>
+                <GridItem md={6}>
+                  <FormGroup label="Type" isRequired fieldId="mapping-type">
+                    <SimpleSelect
+                      id="mapping-type"
+                      aria-label="Mapping type"
+                      options={MAPPING_TYPE_OPTIONS}
+                      value={[MAPPING_TYPE_OPTIONS.find((option) => option.value === mappingType)]}
+                      onChange={(selection) => {
+                        setActiveMapType(MappingType[selection.toString()]);
+                      }}
+                      placeholderText="Select a mapping type..."
+                      isDisabled={!!mappingBeingEdited}
+                      menuAppendTo="parent"
+                      maxHeight="40vh"
+                    />
+                  </FormGroup>
+                </GridItem>
+                <GridItem md={6} className={spacing.mbMd}>
                   <ValidatedTextInput
                     field={form.fields.name}
                     label="Name"
@@ -184,28 +221,23 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                     }}
                   />
                 </GridItem>
-                <GridItem />
-                <GridItem sm={12} md={5}>
+                <GridItem md={6}>
                   <ProviderSelect
-                    label="Source provider"
-                    providerType={ProviderType.vsphere}
+                    providerRole="source"
                     field={form.fields.sourceProvider}
                     notReadyTooltipPosition="right"
                     menuAppendTo="parent"
                     maxHeight="40vh"
                   />
                 </GridItem>
-                <GridItem sm={1} />
-                <GridItem sm={12} md={5}>
+                <GridItem md={6}>
                   <ProviderSelect
-                    label="Target provider"
-                    providerType={ProviderType.openshift}
+                    providerRole="target"
                     field={form.fields.targetProvider}
                     menuAppendTo="parent"
                     maxHeight="40vh"
                   />
                 </GridItem>
-                <GridItem sm={1} />
               </Grid>
               {form.values.sourceProvider && form.values.targetProvider ? (
                 <ResolvedQueries
@@ -217,6 +249,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 >
                   <MappingBuilder
                     mappingType={mappingType}
+                    sourceProviderType={form.values.sourceProvider?.type || 'vsphere'}
                     availableSources={mappingResourceQueries.availableSources}
                     availableTargets={mappingResourceQueries.availableTargets}
                     builderItems={form.values.builderItems}

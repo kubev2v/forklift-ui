@@ -18,16 +18,16 @@ cd forklift-ui
 npm install
 ```
 
-Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](https://github.com/konveyor/forklift-ui/blob/main/config/meta.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
+Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](./config/meta.dev.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
-**Optional**: If you plan to run webpack directly or run in production mode, you can create a file named `.env` in the repository root, using [`.env.example`](https://github.com/konveyor/forklift-ui/blob/main/.env.example) as a template. Here you can set persistent environment variables:
+### Environment variables:
 
 - `DATA_SOURCE` - either `mock` or `remote`
   (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
 - `META_FILE` path (for running in prod mode with `npm run start`)
 - `BRAND_TYPE` - either `Konveyor` (default) or `RedHat`
 
-Run the UI with webpack-dev-server at http://localhost:9000:
+Run the UI with webpack-dev-server at [localhost:9000](http://localhost:9000):
 
 ```sh
 npm run start:dev:remote  # uses data from the API URLs in your config/meta.dev.json file
@@ -48,7 +48,7 @@ npm run lint # or lint:fix to automatically fix certain issues
 npm run test # or test:watch to auto-rerun tests on file changes
 ```
 
-Note: the `npm run test` script will create a coverage report at `coverage/lcov-report/index.html`. This is useful to inspect locally before opening a PR. Open PRs will also report their coverage to Codecov and a report will be posted in the PR.
+Note: the `npm run test` script will create a coverage report at `coverage/lcov-report/index.html`. This is useful to inspect locally before opening a PR.
 
 [Prettier](https://prettier.io/) code formatting is enforced by ESLint. To run Prettier and format your code (do this before committing if you don't run Prettier in your editor):
 

@@ -3,19 +3,20 @@ import { TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
   IHook,
-  IMetaObjectMeta,
   INameNamespaceRef,
   INetworkMapping,
   IPlan,
+  SourceVM,
   IStorageMapping,
-  IVMwareHostTree,
-  IVMwareVM,
-  IVMwareVMConcern,
-  IVMwareVMTree,
+  IInventoryHostTree,
+  ISourceVMConcern,
+  IVMwareFolderTree,
   MappingSource,
   MappingType,
-  VMwareTree,
-  VMwareTreeType,
+  InventoryTree,
+  InventoryTreeType,
+  IVMwareVM,
+  IRHVVM,
 } from '@app/queries/types';
 import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
 import {
@@ -24,7 +25,7 @@ import {
   getMappingFromBuilderItems,
 } from '@app/Mappings/components/MappingBuilder/helpers';
 import { PlanWizardFormState } from './PlanWizard';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
   getFirstQueryError,
@@ -35,10 +36,10 @@ import {
   findProvidersByRefs,
   useMappingResourceQueries,
   useInventoryProvidersQuery,
-  useVMwareTreeQuery,
-  useVMwareVMsQuery,
+  useInventoryTreeQuery,
   useMappingsQuery,
   useHooksQuery,
+  useSourceVMsQuery,
 } from '@app/queries';
 import { QueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -46,8 +47,8 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import { IKubeList } from '@app/client/types';
 import { getObjectRef } from '@app/common/helpers';
 
-// Helper for filterAndConvertVMwareTree
-const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
+// Helper for filterAndConvertInventoryTree
+const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
   if (node.kind === 'VM') return false; // Exclude VMs from the tree entirely
   if (
     searchText === '' ||
@@ -59,8 +60,8 @@ const subtreeMatchesSearch = (node: VMwareTree, searchText: string) => {
 };
 
 const areSomeDescendantsSelected = (
-  node: VMwareTree,
-  isNodeSelected: (node: VMwareTree) => boolean
+  node: InventoryTree,
+  isNodeSelected: (node: InventoryTree) => boolean
 ) => {
   if (isNodeSelected(node)) return true;
   if (node.children) {
@@ -69,18 +70,18 @@ const areSomeDescendantsSelected = (
   return false;
 };
 
-// Helper for filterAndConvertVMwareTree
-const convertVMwareTreeNode = (
-  node: VMwareTree,
+// Helper for filterAndConvertInventoryTree
+const convertInventoryTreeNode = (
+  node: InventoryTree,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean
+  isNodeSelected: (node: InventoryTree) => boolean
 ): TreeViewDataItem => {
   const isPartiallyChecked =
     !isNodeSelected(node) && areSomeDescendantsSelected(node, isNodeSelected);
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
-    children: filterAndConvertVMwareTreeChildren(node.children, searchText, isNodeSelected),
+    children: filterAndConvertInventoryTreeChildren(node.children, searchText, isNodeSelected),
     checkProps: {
       'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
       checked: isPartiallyChecked ? null : isNodeSelected(node),
@@ -96,25 +97,27 @@ const convertVMwareTreeNode = (
   };
 };
 
-// Helper for filterAndConvertVMwareTree
-const filterAndConvertVMwareTreeChildren = (
-  children: VMwareTree[] | null,
+// Helper for filterAndConvertInventoryTree
+const filterAndConvertInventoryTreeChildren = (
+  children: InventoryTree[] | null,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean
+  isNodeSelected: (node: InventoryTree) => boolean
 ): TreeViewDataItem[] | undefined => {
-  const filteredChildren = ((children || []) as VMwareTree[]).filter((node) =>
+  const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
     subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
-    return filteredChildren.map((node) => convertVMwareTreeNode(node, searchText, isNodeSelected));
+    return filteredChildren.map((node) =>
+      convertInventoryTreeNode(node, searchText, isNodeSelected)
+    );
   return undefined;
 };
 
 // Convert the API tree structure to the PF TreeView structure, while filtering by the user's search text.
-export const filterAndConvertVMwareTree = (
-  rootNode: VMwareTree | null,
+export const filterAndConvertInventoryTree = (
+  rootNode: InventoryTree | null,
   searchText: string,
-  isNodeSelected: (node: VMwareTree) => boolean,
+  isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
@@ -128,30 +131,34 @@ export const filterAndConvertVMwareTree = (
         'aria-label': 'Select all datacenters',
         checked: isPartiallyChecked ? null : areAllSelected,
       },
-      children: filterAndConvertVMwareTreeChildren(rootNode.children, searchText, isNodeSelected),
+      children: filterAndConvertInventoryTreeChildren(
+        rootNode.children,
+        searchText,
+        isNodeSelected
+      ),
     },
   ];
 };
 
 // To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
-export const flattenVMwareTreeNodes = (rootNode: VMwareTree | null): VMwareTree[] => {
+export const flattenVMwareTreeNodes = (rootNode: InventoryTree | null): InventoryTree[] => {
   if (rootNode?.children) {
-    const children = (rootNode.children as VMwareTree[]).filter((node) => node.kind !== 'VM');
+    const children = (rootNode.children as InventoryTree[]).filter((node) => node.kind !== 'VM');
     return [...children, ...children.flatMap(flattenVMwareTreeNodes)];
   }
   return [];
 };
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
-export const getAllVMChildren = (nodes: VMwareTree[]): VMwareTree[] =>
+export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] =>
   Array.from(
     new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
   );
 
 export const getAvailableVMs = (
-  selectedTreeNodes: VMwareTree[],
-  allVMs: IVMwareVM[]
-): IVMwareVM[] => {
+  selectedTreeNodes: InventoryTree[],
+  allVMs: SourceVM[]
+): SourceVM[] => {
   const treeVMs = getAllVMChildren(selectedTreeNodes)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
@@ -160,7 +167,7 @@ export const getAvailableVMs = (
 };
 
 // Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
-export const findVMTreePath = (node: VMwareTree, vmSelfLink: string): VMwareTree[] | null => {
+export const findVMTreePath = (node: InventoryTree, vmSelfLink: string): InventoryTree[] | null => {
   if (node.object?.selfLink === vmSelfLink) return [node];
   if (!node.children) return null;
   for (const i in node.children) {
@@ -181,10 +188,10 @@ export interface IVMTreePathInfo {
 // Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
 export const findVMTreePathInfo = (
   vmSelfLink: string,
-  hostTree: IVMwareHostTree | null,
-  vmTree: IVMwareVMTree | null
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfo => {
-  if (!hostTree || !vmTree) {
+  if (!hostTree) {
     return {
       datacenter: null,
       cluster: null,
@@ -194,11 +201,14 @@ export const findVMTreePathInfo = (
     };
   }
   const hostTreePath = findVMTreePath(hostTree, vmSelfLink);
-  const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
-  const folders =
-    (vmTreePath
-      ?.filter((node) => !!node && node.kind === 'Folder')
-      .map((node) => node.object) as ICommonTreeObject[]) || null;
+  let folders: ICommonTreeObject[] = [];
+  if (vmTree) {
+    const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
+    folders =
+      (vmTreePath
+        ?.filter((node) => !!node && node.kind === 'Folder')
+        .map((node) => node.object) as ICommonTreeObject[]) || null;
+  }
   return {
     datacenter: hostTreePath?.find((node) => node.kind === 'Datacenter')?.object || null,
     cluster: hostTreePath?.find((node) => node.kind === 'Cluster')?.object || null,
@@ -214,8 +224,8 @@ export interface IVMTreePathInfoByVM {
 
 export const getVMTreePathInfoByVM = (
   vmSelfLinks: string[],
-  hostTree: IVMwareHostTree | null,
-  vmTree: IVMwareVMTree | null
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfoByVM | null => {
   if (vmSelfLinks.length === 0) return null;
   return vmSelfLinks.reduce(
@@ -228,17 +238,17 @@ export const getVMTreePathInfoByVM = (
 };
 
 export const findMatchingNodeAndDescendants = (
-  tree: VMwareTree | null,
+  tree: InventoryTree | null,
   vmSelfLink: string
-): VMwareTree[] => {
+): InventoryTree[] => {
   const matchingPath = tree && findVMTreePath(tree, vmSelfLink);
   const matchingNode = matchingPath
     ?.slice()
     .reverse()
     .find((node) => node.kind !== 'VM');
   if (!matchingNode) return [];
-  const nodeAndDescendants: VMwareTree[] = [];
-  const pushNodeAndDescendants = (n: VMwareTree) => {
+  const nodeAndDescendants: InventoryTree[] = [];
+  const pushNodeAndDescendants = (n: InventoryTree) => {
     nodeAndDescendants.push(n);
     if (n.children) {
       n.children.filter((node) => node.kind !== 'VM').forEach(pushNodeAndDescendants);
@@ -249,26 +259,37 @@ export const findMatchingNodeAndDescendants = (
 };
 
 export const findNodesMatchingSelectedVMs = (
-  tree: VMwareTree | null,
-  selectedVMs: IVMwareVM[]
-): VMwareTree[] =>
+  tree: InventoryTree | null,
+  selectedVMs: SourceVM[]
+): InventoryTree[] =>
   Array.from(
     new Set(selectedVMs.flatMap((vm) => findMatchingNodeAndDescendants(tree, vm.selfLink)))
   );
 
 export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
-  selectedVMs: IVMwareVM[],
-  mappingType: MappingType
+  selectedVMs: SourceVM[],
+  mappingType: MappingType,
+  sourceProviderType: ProviderType
 ): MappingSource[] => {
   const sourceIds = Array.from(
     new Set(
       selectedVMs.flatMap((vm) => {
         if (mappingType === MappingType.Network) {
-          return vm.networks.map((network) => network.id);
+          if (sourceProviderType === 'vsphere') {
+            return (vm as IVMwareVM).networks.map((network) => network.id);
+          }
+          if (sourceProviderType === 'ovirt') {
+            return (vm as IRHVVM).nics.map((nic) => nic.profile.network);
+          }
         }
         if (mappingType === MappingType.Storage) {
-          return vm.disks.map((disk) => disk.datastore.id);
+          if (sourceProviderType === 'vsphere') {
+            return (vm as IVMwareVM).disks.map((disk) => disk.datastore.id);
+          }
+          if (sourceProviderType === 'ovirt') {
+            return (vm as IRHVVM).diskAttachments.map((da) => da.disk.storageDomain);
+          }
         }
         return [];
       })
@@ -277,7 +298,9 @@ export const filterSourcesBySelectedVMs = (
   return availableSources.filter((source) => sourceIds.includes(source.id));
 };
 
-export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null => {
+export const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
+
+export const getMostSevereVMConcern = (vm: SourceVM): ISourceVMConcern | null => {
   if (!vm.concerns || vm.concerns.length === 0) {
     return null;
   }
@@ -293,7 +316,7 @@ export const getMostSevereVMConcern = (vm: IVMwareVM): IVMwareVMConcern | null =
   return { category: 'Warning', label: 'Unknown', assessment: '' };
 };
 
-export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): StatusType | null =>
+export const getVMConcernStatusType = (concern: ISourceVMConcern | null): StatusType | null =>
   !concern
     ? 'Ok'
     : concern.category === 'Critical'
@@ -304,12 +327,12 @@ export const getVMConcernStatusType = (concern: IVMwareVMConcern | null): Status
     ? 'Info'
     : null;
 
-export const getVMConcernStatusLabel = (concern: IVMwareVMConcern | null): string =>
+export const getVMConcernStatusLabel = (concern: ISourceVMConcern | null): string =>
   concern?.category === 'Information' || concern?.category === 'Advisory'
     ? 'Advisory'
     : concern?.category || 'Ok';
 
-export const someVMHasConcern = (vms: IVMwareVM[], concernLabel: string): boolean =>
+export const someVMHasConcern = (vms: SourceVM[], concernLabel: string): boolean =>
   vms.some((vm) => vm.concerns.some((concern) => concern.label === concernLabel));
 
 export interface IGenerateMappingsArgs {
@@ -357,10 +380,16 @@ export const generateMappings = ({
   return { networkMapping, storageMapping };
 };
 
+interface IHookRef {
+  ref: INameNamespaceRef;
+  instance: PlanHookInstance;
+}
+
 export const generatePlan = (
   forms: PlanWizardFormState,
   networkMappingRef: INameNamespaceRef,
-  storageMappingRef: INameNamespaceRef
+  storageMappingRef: INameNamespaceRef,
+  hooksRef?: IHookRef[]
 ): IPlan => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Plan',
@@ -387,21 +416,29 @@ export const generatePlan = (
       network: networkMappingRef,
       storage: storageMappingRef,
     },
-    vms: forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
+    vms: hooksRef
+      ? forms.selectVMs.values.selectedVMIds.map((id) => ({
+          id,
+          hooks: hooksRef.map((hookRef) => ({ hook: hookRef.ref, step: hookRef.instance.step })),
+        }))
+      : forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
     warm: forms.type.values.type === 'Warm',
   },
 });
 
 export const getSelectedVMsFromIds = (
   vmIds: string[],
-  vmsQuery: QueryResult<IVMwareVM[]>
-): IVMwareVM[] =>
-  vmIds.map((id) => vmsQuery.data?.find((vm) => vm.id === id)).filter((vm) => !!vm) as IVMwareVM[];
+  vmsQuery: QueryResult<SourceVM[]>
+): SourceVM[] =>
+  vmIds.flatMap((id) => {
+    const matchingVM = vmsQuery.data?.find((vm) => vm.id === id);
+    return matchingVM ? [matchingVM] : [];
+  });
 
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
-  vmsQuery: QueryResult<IVMwareVM[]>
-): IVMwareVM[] => {
+  vmsQuery: QueryResult<SourceVM[]>
+): SourceVM[] => {
   if (!planBeingEdited) return [];
   const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
   return getSelectedVMsFromIds(vmIds, vmsQuery);
@@ -425,9 +462,8 @@ export const useEditingPlanPrefillEffect = (
     planBeingEdited?.spec.provider || null,
     providersQuery
   );
-  const vmsQuery = useVMwareVMsQuery(sourceProvider);
-  const hostTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.Host);
-  const vmTreeQuery = useVMwareTreeQuery(sourceProvider, VMwareTreeType.VM);
+  const vmsQuery = useSourceVMsQuery(sourceProvider);
+  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Host);
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -449,7 +485,6 @@ export const useEditingPlanPrefillEffect = (
     providersQuery,
     vmsQuery,
     hostTreeQuery,
-    vmTreeQuery,
     ...networkMappingResourceQueries.queries,
     ...storageMappingResourceQueries.queries,
     networkMappingsQuery,
@@ -459,11 +494,10 @@ export const useEditingPlanPrefillEffect = (
   const errorTitles = [
     'Error loading providers',
     'Error loading VMs',
-    'Error loading VMware host tree data',
-    'Error loading VMware VM tree data',
+    'Error loading inventory tree data',
     'Error loading source networks',
     'Error loading target networks',
-    'Error loading source datastores',
+    'Error loading source storages',
     'Error loading target storage classes',
     'Error loading network mappings',
     'Error loading storage mappings',
@@ -479,9 +513,10 @@ export const useEditingPlanPrefillEffect = (
     if (!isStartedPrefilling && queryStatus === QueryStatus.Success && planBeingEdited) {
       setIsStartedPrefilling(true);
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
-      const treeQuery =
-        forms.filterVMs.values.treeType === VMwareTreeType.Host ? hostTreeQuery : vmTreeQuery;
-      const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+      const selectedTreeNodes = findNodesMatchingSelectedVMs(
+        hostTreeQuery.data || null,
+        selectedVMs
+      );
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
       );
@@ -500,6 +535,7 @@ export const useEditingPlanPrefillEffect = (
         planBeingEdited.spec.transferNetwork?.name || null
       );
 
+      forms.filterVMs.fields.treeType.setInitialValue(InventoryTreeType.Host);
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
       forms.filterVMs.fields.isPrefilled.setInitialValue(true);
 
@@ -516,6 +552,7 @@ export const useEditingPlanPrefillEffect = (
           networkMappingResourceQueries,
           selectedVMs,
           MappingType.Network,
+          sourceProvider?.type || 'vsphere',
           false
         )
       );
@@ -532,6 +569,7 @@ export const useEditingPlanPrefillEffect = (
           storageMappingResourceQueries,
           selectedVMs,
           MappingType.Storage,
+          sourceProvider?.type || 'vsphere',
           false
         )
       );
@@ -559,7 +597,6 @@ export const useEditingPlanPrefillEffect = (
     storageMappingResourceQueries,
     vmsQuery,
     hostTreeQuery,
-    vmTreeQuery,
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
@@ -574,25 +611,23 @@ export const useEditingPlanPrefillEffect = (
   };
 };
 
-export const concernMatchesFilter = (concern: IVMwareVMConcern, filterText?: string): boolean =>
+export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: string): boolean =>
   !!filterText &&
   `${concern.label}: ${concern.assessment}`.toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
 
-export const vmMatchesConcernFilter = (vm: IVMwareVM, filterText?: string): boolean =>
+export const vmMatchesConcernFilter = (vm: SourceVM, filterText?: string): boolean =>
   !!filterText && vm.concerns.some((concern) => concernMatchesFilter(concern, filterText));
 
 export const generateHook = (
   instance: PlanHookInstance,
-  existingHook: IHook | null,
+  existingHook: INameNamespaceRef | null,
   generateName?: string,
   owner?: IPlan
 ): IHook => ({
   apiVersion: CLUSTER_API_VERSION,
   kind: 'Hook',
   metadata: {
-    ...(existingHook
-      ? { name: (existingHook.metadata as IMetaObjectMeta).name }
-      : { generateName: generateName || '' }),
+    ...(existingHook ? { name: existingHook.name } : { generateName: generateName || '' }),
     namespace: META.namespace,
     ...(owner ? { ownerReferences: [getObjectRef(owner)] } : {}),
   },

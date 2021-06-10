@@ -63,6 +63,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
         <div>
           {erroredResults.map((result, index) => (
             <Alert
+              isLiveRegion
               key={`error-${index}`}
               variant="danger"
               isInline={errorsInline}

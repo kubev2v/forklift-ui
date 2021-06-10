@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Level, LevelItem, Pagination, Form } from '@patternfly/react-core';
+import { Pagination, Form } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Table,
@@ -10,6 +10,7 @@ import {
   classNames as classNamesTransform,
   IRow,
   expandable,
+  truncate,
 } from '@patternfly/react-table';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -17,23 +18,23 @@ import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IMetaObjectMeta, Mapping, MappingType } from '@app/queries/types';
 import MappingsActionsDropdown from './MappingsActionsDropdown';
 import MappingDetailView from './MappingDetailView';
-import CreateMappingButton from './CreateMappingButton';
 import MappingStatus from './MappingStatus';
 import { isSameResource } from '@app/queries/helpers';
+import { useClusterProvidersQuery } from '@app/queries';
 
 interface IMappingsTableProps {
   mappings: Mapping[];
   mappingType: MappingType;
-  openCreateMappingModal: () => void;
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
 const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,
-  openCreateMappingModal,
   openEditMappingModal,
 }: IMappingsTableProps) => {
+  const clusterProvidersQuery = useClusterProvidersQuery();
+
   const getSortValues = (mapping: Mapping) => {
     const {
       metadata,
@@ -62,7 +63,12 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   });
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable], cellFormatters: [expandable] },
+    {
+      title: 'Name',
+      transforms: [sortable],
+      cellFormatters: [expandable],
+      cellTransforms: [truncate],
+    },
     { title: 'Source provider', transforms: [sortable] },
     { title: 'Target provider', transforms: [sortable] },
     { title: 'Status' },
@@ -75,6 +81,9 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
       metadata,
       spec: { provider },
     } = mapping;
+    const sourceProviderObj =
+      clusterProvidersQuery.data?.items.find((p) => isSameResource(p.metadata, provider.source)) ||
+      null;
     const isExpanded = isMappingExpanded(mapping);
     rows.push({
       meta: { mapping },
@@ -107,6 +116,7 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
               <Form>
                 <MappingDetailView
                   mappingType={mappingType}
+                  sourceProviderType={sourceProviderObj?.spec.type || 'vsphere'}
                   mapping={mapping}
                   className={spacing.mLg}
                 />
@@ -121,19 +131,9 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem>
-          <CreateMappingButton
-            variant="secondary"
-            label="Create mapping"
-            onClick={openCreateMappingModal}
-          />
-        </LevelItem>
-        <LevelItem>
-          <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
-        </LevelItem>
-      </Level>
+      <Pagination {...paginationProps} widgetId="mappings-table-pagination-top" />
       <Table
+        variant="compact"
         aria-label="Mappings table"
         cells={columns}
         rows={rows}

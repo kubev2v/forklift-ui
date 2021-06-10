@@ -7,8 +7,10 @@ import {
   sortable,
   compoundExpand,
   classNames as classNamesTransform,
+  cellWidth,
   ICell,
   IRow,
+  truncate,
 } from '@patternfly/react-table';
 import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
@@ -19,8 +21,10 @@ import ProviderActionsDropdown from '../ProviderActionsDropdown';
 import StatusCondition from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
 import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
+import { centerCellTransform } from '@app/utils/utils';
 
 import './OpenShiftProvidersTable.css';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanStatusType, ProviderType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
@@ -47,13 +51,43 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     (storageClassesQuery.data && storageClassesQuery.data[provider.metadata.name]) || [];
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable] },
-    { title: 'Endpoint', transforms: [sortable] },
-    { title: 'VMs', transforms: [sortable] },
-    { title: 'Networks', transforms: [sortable], cellTransforms: [compoundExpand] },
-    { title: 'Storage classes', transforms: [sortable], cellTransforms: [compoundExpand] },
-    { title: 'Status', transforms: [sortable] },
-    { title: '', columnTransforms: [classNamesTransform(tableStyles.tableAction)] },
+    {
+      title: 'Name',
+      transforms: [sortable],
+      cellTransforms: [truncate],
+    },
+    {
+      title: 'Endpoint',
+      transforms: [sortable],
+      cellTransforms: [truncate],
+    },
+    {
+      title: 'VMs',
+      transforms: [sortable, cellWidth(10)],
+      cellTransforms: [truncate],
+    },
+    {
+      title: 'Networks',
+      transforms: [sortable],
+      cellTransforms: [compoundExpand, truncate, centerCellTransform],
+    },
+    {
+      title: 'Storage classes',
+      transforms: [sortable],
+      cellTransforms: [compoundExpand, truncate, centerCellTransform],
+    },
+    {
+      title: 'Status',
+      transforms: [sortable],
+      cellTransforms: [truncate],
+    },
+    {
+      title: '',
+      columnTransforms: [classNamesTransform(tableStyles.tableAction)],
+      props: {
+        className: spacing.prXs,
+      },
+    },
   ];
 
   const getSortValues = (provider: ICorrelatedProvider<IOpenShiftProvider>) => {
@@ -120,9 +154,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           title: <StatusCondition status={provider.status} />,
         },
         {
-          title: (
-            <ProviderActionsDropdown provider={provider} providerType={ProviderType.openshift} />
-          ),
+          title: <ProviderActionsDropdown provider={provider} providerType="openshift" />,
         },
       ],
     });
@@ -168,7 +200,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   return (
     <>
-      <Level>
+      <Level className={spacing.pbSm}>
         <LevelItem>
           <Button
             variant="secondary"
@@ -183,6 +215,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
         </LevelItem>
       </Level>
       <Table
+        variant="compact"
         aria-label="OpenShift Virtualization providers table"
         cells={columns}
         rows={rows}

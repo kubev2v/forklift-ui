@@ -16,7 +16,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef, IProviderObject, ISrcDestRefs } from './types';
-import { VMwareTree } from './types/tree.types';
+import { InventoryTree } from './types/tree.types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?
 
@@ -168,7 +168,7 @@ export const useKubeResultsSortedByName = <T>(
   ),
 });
 
-export const sortTreeItemsByName = <T extends VMwareTree>(tree?: T): T | undefined =>
+export const sortTreeItemsByName = <T extends InventoryTree>(tree?: T): T | undefined =>
   tree
     ? {
         ...tree,

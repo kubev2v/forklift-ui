@@ -25,9 +25,7 @@ export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHo
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: 'hosts',
-      queryFn: useAuthorizedFetch(
-        getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=true`)
-      ),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=1`)),
       config: {
         enabled: !!provider,
         refetchInterval: usePollingContext().refetchInterval,

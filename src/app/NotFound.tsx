@@ -1,13 +1,6 @@
 import * as React from 'react';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
-import {
-  PageSection,
-  Title,
-  Button,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-} from '@patternfly/react-core';
+import { PageSection, Title, Button, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
 const NotFound: React.FunctionComponent = () => {

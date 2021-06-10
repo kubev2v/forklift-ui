@@ -29,3 +29,7 @@
   width: 100%;
   text-align: left;
 }
+
+.plans-table .pf-c-progress {
+  --pf-c-progress--GridGap: var(--pf-global--spacer--xs)
+}

@@ -1,22 +1,28 @@
 import { IVMwareObjRef } from './common.types';
 
-export interface IVMwareVMDisk {
-  file: string;
-  datastore: IVMwareObjRef;
-}
-
-export interface IVMwareVMConcern {
+export interface ISourceVMConcern {
   label: string;
   category: 'Warning' | 'Critical' | 'Information' | 'Advisory';
   assessment: string;
 }
 
-export interface IVMwareVM {
+interface IBaseSourceVM {
   id: string;
   revision: number;
-  parent: IVMwareObjRef;
   name: string;
   selfLink: string;
+  concerns: ISourceVMConcern[];
+  revisionValidated: number;
+  guestName: string;
+}
+
+export interface IVMwareVMDisk {
+  file: string;
+  datastore: IVMwareObjRef;
+}
+
+export interface IVMwareVM extends IBaseSourceVM {
+  parent: IVMwareObjRef;
   uuid: string;
   firmware: string;
   cpuAffinity: unknown[];
@@ -26,12 +32,50 @@ export interface IVMwareVM {
   cpuCount: number;
   coresPerSocket: number;
   memoryMB: number;
-  guestName: string;
   balloonedMemory: number;
   ipAddress: string;
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
-  concerns: IVMwareVMConcern[];
+  concerns: ISourceVMConcern[];
   revisionValidated: number;
   isTemplate: boolean;
 }
+
+export interface IRHVNIC {
+  id: string;
+  name: string;
+  interface: string;
+  profile: {
+    id: string;
+    name: string;
+    description: string;
+    selfLink: string;
+    revision: number;
+    network: string;
+    qos: string;
+  };
+}
+
+export interface IRHVDiskAttachment {
+  id: string;
+  disk: {
+    id: string;
+    name: string;
+    description: string;
+    selfLink: string;
+    revision: number;
+    shared: boolean;
+    profile: string;
+    storageDomain: string;
+  };
+}
+
+export interface IRHVVM extends IBaseSourceVM {
+  description: string;
+  cluster: string;
+  host: string;
+  nics: IRHVNIC[];
+  diskAttachments: IRHVDiskAttachment[];
+}
+
+export type SourceVM = IVMwareVM | IRHVVM;

@@ -1,6 +1,6 @@
-import { IVMwareNetwork, IOpenShiftNetwork } from './networks.types';
-import { IVMwareDatastore } from './datastores.types';
-import { IAnnotatedStorageClass } from './storageClasses.types';
+import { ISourceNetwork, IOpenShiftNetwork } from './networks.types';
+import { ISourceStorage } from './storages.types';
+import { IAnnotatedStorageClass } from './storages.types';
 import { IMetaObjectGenerateName, IMetaObjectMeta, IMetaTypeMeta } from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
@@ -108,5 +108,5 @@ export const POD_NETWORK: IOpenShiftNetwork = {
   uid: 'pod',
   version: 'pod',
 };
-export type MappingSource = IVMwareDatastore | IVMwareNetwork;
+export type MappingSource = ISourceStorage | ISourceNetwork;
 export type MappingTarget = IOpenShiftNetwork | IAnnotatedStorageClass;

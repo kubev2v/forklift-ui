@@ -2,8 +2,17 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { StatusCategoryType, PlanStatusType, StepType } from '@app/common/constants';
-import { ICR, IObjectReference, IStatusCondition, IStep, IVMStatus } from '@app/queries/types';
+import { StatusCategoryType, PlanStatusType, StepType, ProviderType } from '@app/common/constants';
+import {
+  ICR,
+  IObjectReference,
+  IProviderObject,
+  IStatusCondition,
+  IStep,
+  IVMStatus,
+} from '@app/queries/types';
+import { QueryResult } from 'react-query';
+import { IKubeList } from '@app/client/types';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -123,4 +132,19 @@ export const getMinutesUntil = (timestamp: Date | string): string => {
   if (minutes <= 0) return 'less than 1 minute';
   if (minutes === 1) return '1 minute';
   return `${minutes} minutes`;
+};
+
+export const getAvailableProviderTypes = (
+  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>
+): ProviderType[] => {
+  const clusterProviders = clusterProvidersQuery.data?.items || [];
+  return Array.from(new Set(clusterProviders.map((provider) => provider.spec.type)))
+    .filter((type) => !!type)
+    .sort() as ProviderType[];
+};
+
+export const getStorageTitle = (sourceProviderType: ProviderType, cap = false): string => {
+  if (sourceProviderType === 'vsphere') return `${cap ? 'D' : 'd'}atastores`;
+  if (sourceProviderType === 'ovirt') return `${cap ? 'S' : 's'}torage domains`;
+  return '';
 };

@@ -17,13 +17,13 @@ import {
   IProvidersByType,
   InventoryProvider,
   ISecret,
-  IVMwareProvider,
   IOpenShiftProvider,
   ISrcDestRefs,
   IProviderObject,
   IMetaObjectMeta,
   IOpenShiftNetwork,
   POD_NETWORK,
+  SourceInventoryProvider,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -35,7 +35,7 @@ import {
   checkIfResourceExists,
 } from '@app/client/helpers';
 import { AddProviderFormValues } from '@app/Providers/components/AddEditProviderModal/AddEditProviderModal';
-import { dnsLabelNameSchema, ProviderType } from '@app/common/constants';
+import { dnsLabelNameSchema, ProviderType, SOURCE_PROVIDER_TYPES } from '@app/common/constants';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 
 export const useClusterProvidersQuery = (): QueryResult<IKubeList<IProviderObject>> => {
@@ -56,7 +56,7 @@ export const useInventoryProvidersQuery = (): QueryResult<IProvidersByType> => {
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'inventory-providers',
-      queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=true')),
+      queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=1')),
       config: { refetchInterval: usePollingContext().refetchInterval },
     },
     MOCK_INVENTORY_PROVIDERS
@@ -289,10 +289,12 @@ export const useHasSufficientProvidersQuery = (): {
   hasSufficientProviders: boolean | undefined;
 } => {
   const result = useInventoryProvidersQuery();
-  const vmwareProviders = result.data?.vsphere || [];
+  const sourceProviders = SOURCE_PROVIDER_TYPES.flatMap(
+    (type) => (result.data && (result.data[type] as SourceInventoryProvider[])) || []
+  );
   const openshiftProviders = result.data?.openshift || [];
   const hasSufficientProviders = result.data
-    ? vmwareProviders.length >= 1 && openshiftProviders.length >= 1
+    ? sourceProviders.length >= 1 && openshiftProviders.length >= 1
     : undefined;
   return {
     result: result,
@@ -349,13 +351,14 @@ export const findProvidersByRefs = (
   refs: ISrcDestRefs | null,
   providersQuery: QueryResult<IProvidersByType>
 ): {
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
 } => {
+  const allSourceProviders = SOURCE_PROVIDER_TYPES.flatMap((type) => {
+    return providersQuery.data ? (providersQuery.data[type] as SourceInventoryProvider[]) : [];
+  });
   const sourceProvider =
-    (refs &&
-      providersQuery.data?.vsphere.find((provider) => isSameResource(provider, refs.source))) ||
-    null;
+    (refs && allSourceProviders.find((provider) => isSameResource(provider, refs.source))) || null;
   const targetProvider =
     (refs &&
       providersQuery.data?.openshift.find((provider) =>

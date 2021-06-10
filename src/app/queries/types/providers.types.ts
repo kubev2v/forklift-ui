@@ -3,8 +3,8 @@ import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '@app/
 
 interface IProviderMetadata extends IMetaObjectMeta {
   annotations?: {
-    'forklift.konveyor.io/defaultTransferNetwork': string;
-    [key: string]: string;
+    'forklift.konveyor.io/defaultTransferNetwork'?: string;
+    [key: string]: string | undefined;
   };
 }
 
@@ -40,17 +40,28 @@ export interface IVMwareProvider extends ICommonProvider {
   datastoreCount: number;
 }
 
+export interface IRHVProvider extends ICommonProvider {
+  datacenterCount: number;
+  clusterCount: number;
+  hostCount: number;
+  vmCount: number;
+  networkCount: number;
+  storageDomainCount: number;
+}
+
 export interface IOpenShiftProvider extends ICommonProvider {
   vmCount: number;
   networkCount: number;
   namespaceCount: number;
 }
 
-export type InventoryProvider = IVMwareProvider | IOpenShiftProvider;
+export type InventoryProvider = IVMwareProvider | IRHVProvider | IOpenShiftProvider;
+export type SourceInventoryProvider = IVMwareProvider | IRHVProvider;
 
 export interface IProvidersByType {
-  [ProviderType.vsphere]: IVMwareProvider[];
-  [ProviderType.openshift]: IOpenShiftProvider[];
+  vsphere: IVMwareProvider[];
+  ovirt: IRHVProvider[];
+  openshift: IOpenShiftProvider[];
 }
 
 export interface ICorrelatedProvider<T extends InventoryProvider> extends IProviderObject {

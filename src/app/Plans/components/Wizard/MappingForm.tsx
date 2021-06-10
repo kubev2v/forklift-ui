@@ -13,6 +13,7 @@ import {
   SelectOption,
   SelectGroup,
   SelectOptionObject,
+  Divider,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
@@ -21,11 +22,11 @@ import { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   MappingType,
   Mapping,
-  IVMwareProvider,
   IOpenShiftProvider,
-  IVMwareVM,
   IPlan,
   IMetaObjectMeta,
+  SourceVM,
+  SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import { filterSharedMappings, useMappingResourceQueries, useMappingsQuery } from '@app/queries';
@@ -42,13 +43,14 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { usePausedPollingEffect } from '@app/common/context';
+import { ProviderType } from '@app/common/constants';
 
 interface IMappingFormProps {
   form: PlanWizardFormState['storageMapping'] | PlanWizardFormState['networkMapping'];
-  sourceProvider: IVMwareProvider | null;
+  sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
-  selectedVMs: IVMwareVM[];
+  selectedVMs: SourceVM[];
   planBeingEdited: IPlan | null;
 }
 
@@ -80,6 +82,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             mappingResourceQueries,
             selectedVMs,
             mappingType,
+            sourceProvider?.type || 'vsphere',
             !!form.values.selectedExistingMapping
           )
         );
@@ -92,6 +95,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingResourceQueries,
     mappingType,
     selectedVMs,
+    sourceProvider,
   ]);
 
   const mappingsQuery = useMappingsQuery(mappingType);
@@ -130,7 +134,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     };
   }) as OptionWithValue<Mapping>[];
 
-  const populateMappingBuilder = (mapping?: Mapping) => {
+  const populateMappingBuilder = (sourceProviderType: ProviderType, mapping?: Mapping) => {
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
       : getBuilderItemsFromMapping(mapping, mappingType, availableSources, availableTargets);
@@ -140,6 +144,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         mappingResourceQueries,
         selectedVMs,
         mappingType,
+        sourceProviderType,
         true
       )
     );
@@ -198,11 +203,11 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                     if (sel.value === 'new') {
                       form.fields.isCreateMappingSelected.setValue(true);
                       form.fields.selectedExistingMapping.setValue(null);
-                      populateMappingBuilder();
+                      populateMappingBuilder(sourceProvider?.type || 'vsphere');
                     } else {
                       form.fields.isCreateMappingSelected.setValue(false);
                       form.fields.selectedExistingMapping.setValue(sel.value);
-                      populateMappingBuilder(sel.value);
+                      populateMappingBuilder(sourceProvider?.type || 'vsphere', sel.value);
                     }
                     setIsMappingSelectOpen(false);
                   }}
@@ -222,6 +227,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                   }
                 >
                   <SelectOption key={newMappingOption.toString()} value={newMappingOption} />
+                  <Divider />
                   <SelectGroup
                     label={
                       mappingOptions.length > 0
@@ -244,6 +250,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             <>
               <MappingBuilder
                 mappingType={mappingType}
+                sourceProviderType={sourceProvider?.type || 'vsphere'}
                 availableSources={availableSources}
                 availableTargets={availableTargets}
                 builderItems={form.values.builderItems}

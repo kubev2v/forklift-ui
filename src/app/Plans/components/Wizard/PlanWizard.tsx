@@ -27,12 +27,12 @@ import Review from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
-  IVMwareProvider,
   Mapping,
   MappingType,
   PlanType,
-  VMwareTree,
-  VMwareTreeType,
+  SourceInventoryProvider,
+  InventoryTree,
+  InventoryTreeType,
 } from '@app/queries/types';
 import {
   IMappingBuilderItem,
@@ -47,7 +47,7 @@ import {
   usePatchPlanMutation,
   usePlansQuery,
   useCreateMappingMutations,
-  useVMwareVMsQuery,
+  useSourceVMsQuery,
 } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -88,9 +88,9 @@ const usePlanWizardFormState = (
         getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
       ),
       planDescription: useFormField('', yup.string().label('Plan description').defined()),
-      sourceProvider: useFormField<IVMwareProvider | null>(
+      sourceProvider: useFormField<SourceInventoryProvider | null>(
         null,
-        yup.mixed<IVMwareProvider>().label('Source provider').required()
+        yup.mixed<SourceInventoryProvider>().label('Source provider').required()
       ),
       targetProvider: useFormField<IOpenShiftProvider | null>(
         null,
@@ -103,8 +103,14 @@ const usePlanWizardFormState = (
       ),
     }),
     filterVMs: useFormState({
-      treeType: useFormField<VMwareTreeType>(VMwareTreeType.Host, yup.mixed<VMwareTreeType>()),
-      selectedTreeNodes: useFormField<VMwareTree[]>([], yup.array<VMwareTree>().required().min(1)),
+      treeType: useFormField<InventoryTreeType>(
+        InventoryTreeType.Host,
+        yup.mixed<InventoryTreeType>()
+      ),
+      selectedTreeNodes: useFormField<InventoryTree[]>(
+        [],
+        yup.array<InventoryTree>().required().min(1)
+      ),
       isPrefilled: useFormField(false, yup.boolean()),
     }),
     selectVMs: useFormState({
@@ -155,7 +161,7 @@ const PlanWizard: React.FunctionComponent = () => {
     planBeingEdited
   );
 
-  const vmsQuery = useVMwareVMsQuery(forms.general.values.sourceProvider);
+  const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
 
   const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
     forms,
@@ -339,7 +345,11 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm form={forms.type} selectedVMs={selectedVMs} />
+          <TypeForm
+            form={forms.type}
+            selectedVMs={selectedVMs}
+            sourceProvider={forms.general.values.sourceProvider}
+          />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,

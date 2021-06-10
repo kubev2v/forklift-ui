@@ -2,38 +2,25 @@ import * as React from 'react';
 import {
   PageSection,
   Title,
-  EmptyState,
-  Card,
-  CardBody,
-  EmptyStateIcon,
-  EmptyStateBody,
+  Level,
+  LevelItem,
+  Tabs,
+  Tab,
+  TabTitleText,
 } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
-import { PlusCircleIcon } from '@patternfly/react-icons';
-import MappingsTable from './components/MappingsTable';
-import AddEditMappingModal from './components/AddEditMappingModal';
-import {
-  filterSharedMappings,
-  useClusterProvidersQuery,
-  useHasSufficientProvidersQuery,
-  useMappingsQuery,
-} from '@app/queries';
-import CreateMappingButton from './components/CreateMappingButton';
-import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import CreateMappingButton from '@app/Mappings/components/CreateMappingButton';
+import AddEditMappingModal from '@app/Mappings/components/AddEditMappingModal';
+import Mappings from '@app/Mappings/Mappings';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-interface IMappingsPageProps {
-  mappingType: MappingType;
-}
+const MappingsPage: React.FunctionComponent = () => {
+  const defaultMappingType = MappingType.Network;
+  const [activeMapType, setActiveMapType] = React.useState(defaultMappingType);
 
-const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
-  mappingType,
-}: IMappingsPageProps) => {
-  const sufficientProvidersQuery = useHasSufficientProvidersQuery();
-  const clusterProvidersQuery = useClusterProvidersQuery();
-  const mappingsQuery = useMappingsQuery(mappingType);
-
-  const filteredMappings = filterSharedMappings(mappingsQuery.data?.items);
+  const handleTabSelect = (event: React.MouseEvent, tabIndex: React.ReactText) => {
+    setActiveMapType(MappingType[tabIndex]);
+  };
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [mappingBeingEdited, setMappingBeingEdited] = React.useState<Mapping | null>(null);
@@ -50,55 +37,46 @@ const MappingsPage: React.FunctionComponent<IMappingsPageProps> = ({
 
   return (
     <>
-      <PageSection variant="light">
-        <Title headingLevel="h1">{mappingType} mappings</Title>
+      <PageSection variant="light" className={spacing.pb_0}>
+        <Level>
+          <LevelItem>
+            <Title headingLevel="h1">Mappings</Title>
+          </LevelItem>
+          <LevelItem>
+            <CreateMappingButton
+              aria-label={`Create ${activeMapType} mapping`}
+              variant="secondary"
+              label="Create mapping"
+              onClick={toggleModalAndResetEdit}
+            />
+          </LevelItem>
+        </Level>
+
+        <Tabs className={spacing.mtSm} activeKey={activeMapType} onSelect={handleTabSelect}>
+          <Tab eventKey={MappingType.Network} title={<TabTitleText>Network</TabTitleText>} />
+          <Tab eventKey={MappingType.Storage} title={<TabTitleText>Storage</TabTitleText>} />
+        </Tabs>
       </PageSection>
+
       <PageSection>
-        <ResolvedQueries
-          results={[sufficientProvidersQuery.result, clusterProvidersQuery, mappingsQuery]}
-          errorTitles={[
-            'Error loading provider inventory data',
-            'Error loading providers from cluster',
-            'Error loading mappings',
-          ]}
-          errorsInline={false}
-        >
-          <Card>
-            <CardBody>
-              {!filteredMappings ? null : filteredMappings.length === 0 ? (
-                <EmptyState className={spacing.my_2xl}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="lg">
-                    No {mappingType.toLowerCase()} mappings
-                  </Title>
-                  <EmptyStateBody>
-                    {mappingType === MappingType.Network
-                      ? 'Map source provider networks to target provider networks.'
-                      : 'Map source provider datastores to target provider storage classes.'}
-                  </EmptyStateBody>
-                  <CreateMappingButton onClick={toggleModalAndResetEdit} />
-                </EmptyState>
-              ) : (
-                <MappingsTable
-                  mappings={filteredMappings || []}
-                  mappingType={mappingType}
-                  openCreateMappingModal={toggleModalAndResetEdit}
-                  openEditMappingModal={openEditMappingModal}
-                />
-              )}
-            </CardBody>
-          </Card>
-        </ResolvedQueries>
+        <Mappings
+          mappingType={MappingType[activeMapType]}
+          key={activeMapType.toLowerCase()}
+          toggleModalAndResetEdit={toggleModalAndResetEdit}
+          openEditMappingModal={openEditMappingModal}
+        />
       </PageSection>
+
       {isAddEditModalOpen ? (
         <AddEditMappingModal
-          title={`${!mappingBeingEdited ? 'Create' : 'Edit'} ${mappingType.toLowerCase()} mapping`}
+          title={`${!mappingBeingEdited ? 'Create' : 'Edit'} mapping`}
           onClose={toggleModalAndResetEdit}
-          mappingType={mappingType}
+          mappingType={MappingType[activeMapType]}
           mappingBeingEdited={mappingBeingEdited}
+          setActiveMapType={setActiveMapType}
         />
       ) : null}
     </>
   );
 };
-export default MappingsPage;
+export { MappingsPage };

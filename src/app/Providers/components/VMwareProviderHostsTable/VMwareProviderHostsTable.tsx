@@ -8,6 +8,7 @@ import {
   ICell,
   IRow,
   cellWidth,
+  truncate,
 } from '@patternfly/react-table';
 import { usePaginationState, useSortState } from '@app/common/hooks';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -19,6 +20,7 @@ import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { getMostSeriousCondition } from '@app/common/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
+import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -33,11 +35,15 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   const hostConfigs = hostConfigsQuery.data?.items || [];
 
   const columns: ICell[] = [
-    { title: 'Name', transforms: [sortable] },
-    { title: 'Network for migration data transfer', transforms: [sortable, cellWidth(30)] },
-    { title: 'Bandwidth', transforms: [sortable] },
-    { title: 'MTU', transforms: [sortable] },
-    { title: 'Status', transforms: [sortable] },
+    { title: 'Name', transforms: [sortable], cellTransforms: [truncate] },
+    {
+      title: 'Network for migration data transfer',
+      transforms: [sortable, cellWidth(30)],
+      cellTransforms: [truncate],
+    },
+    { title: 'Bandwidth', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'MTU', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Status', transforms: [sortable], cellTransforms: [truncate] },
   ];
 
   const getCells = (host: IHost) => {
@@ -121,6 +127,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
         </LevelItem>
       </Level>
       <Table
+        variant="compact"
         className="provider-inner-hosts-table"
         aria-label={`Hosts table for provider ${provider.name}`}
         cells={columns}
