@@ -20,7 +20,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
   return (
     <ConditionalTooltip
       isTooltipEnabled={!hasSufficientProviders}
-      content="You must add at least one VMware provider and one OpenShift Virtualization provider in order to create a mapping."
+      content="You must add at least one VMware or Red Hat Virtualization provider and one OpenShift Virtualization provider in order to create a mapping."
     >
       <div>
         <Button {...props} onClick={onClick} isDisabled={!hasSufficientProviders} variant={variant}>

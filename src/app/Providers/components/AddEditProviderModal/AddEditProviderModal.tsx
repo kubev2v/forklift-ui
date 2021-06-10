@@ -1,6 +1,15 @@
 import * as React from 'react';
 import * as yup from 'yup';
-import { Modal, Button, Form, FormGroup, Flex, Stack, Popover } from '@patternfly/react-core';
+import {
+  Modal,
+  Button,
+  Form,
+  FormGroup,
+  Flex,
+  Stack,
+  Popover,
+  FileUpload,
+} from '@patternfly/react-core';
 import {
   useFormState,
   useFormField,
@@ -80,7 +89,11 @@ const useAddProviderFormState = (
       fingerprint: useFormField('', fingerprintSchema.required()),
       fingerprintFilename: useFormField('', yup.string()),
     }),
-    ovirt: useFormState(sourceProviderFields),
+    ovirt: useFormState({
+      ...sourceProviderFields,
+      caCert: useFormField('', yup.string().label('CA certificate').required()),
+      caCertFilename: useFormField('', yup.string()),
+    }),
     openshift: useFormState({
       ...commonProviderFields,
       url: useFormField('', urlSchema.label('URL').required()),
@@ -285,6 +298,50 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                       ),
                     }}
                   />
+                ) : null}
+                {fields?.caCert && fields?.caCertFilename ? (
+                  <FormGroup
+                    label="CA certificate"
+                    labelIcon={
+                      <Popover
+                        bodyContent={
+                          <div>
+                            See{' '}
+                            <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
+                              {PRODUCT_DOCO_LINK.label}
+                            </a>{' '}
+                            for instructions on how to retrieve the CA certificate.
+                          </div>
+                        }
+                      >
+                        <Button
+                          variant="plain"
+                          aria-label="More info for CA certificate field"
+                          onClick={(e) => e.preventDefault()}
+                          aria-describedby="caCert"
+                          className="pf-c-form__group-label-help"
+                        >
+                          <HelpIcon noVerticalAlign />
+                        </Button>
+                      </Popover>
+                    }
+                    fieldId="caCert"
+                    {...getFormGroupProps(fields.caCert)}
+                  >
+                    <FileUpload
+                      id="caCert"
+                      type="text"
+                      value={fields.caCert.value}
+                      filename={fields.caCertFilename.value}
+                      onChange={(value, filename) => {
+                        fields.caCert?.setValue(value as string);
+                        fields.caCert?.setIsTouched(true);
+                        fields.caCertFilename?.setValue(filename);
+                      }}
+                      onBlur={() => fields.caCert?.setIsTouched(true)}
+                      validated={fields.caCert?.isValid ? 'default' : 'error'}
+                    />
+                  </FormGroup>
                 ) : null}
                 {fields?.url ? (
                   <ValidatedTextInput
