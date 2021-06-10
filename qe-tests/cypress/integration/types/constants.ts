@@ -28,6 +28,7 @@ export const selectANetworkMapping = 'Select a network mapping';
 export const selectAStorageMapping = 'Select a storage mapping';
 export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
+export const planCanceledMessage = 'Canceled';
 export const SEC = 1000;
 
 export const CreateNewNetworkMapping = 'Create a new network mapping';
