@@ -18,6 +18,7 @@ import {
   ICell,
   IRow,
   wrappable,
+  truncate,
 } from '@patternfly/react-table';
 
 import {
@@ -240,14 +241,15 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const columns: ICell[] = [
     {
       title: 'Migration assessment',
-      transforms: [sortable, wrappable],
+      transforms: [sortable],
+      cellTransforms: [truncate],
     },
-    { title: 'VM name', transforms: [sortable, wrappable] },
-    { title: 'Datacenter', transforms: [sortable] },
-    { title: 'Cluster', transforms: [sortable] },
-    { title: 'Host', transforms: [sortable] },
+    { title: 'VM name', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Datacenter', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Cluster', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Host', transforms: [sortable, wrappable], cellTransforms: [truncate] },
     ...(sourceProvider?.type === 'vsphere'
-      ? [{ title: 'Folder path', transforms: [sortable, wrappable] }]
+      ? [{ title: 'Folder path', transforms: [sortable, wrappable], cellTransforms: [truncate] }]
       : []),
   ];
 
