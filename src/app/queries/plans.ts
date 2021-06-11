@@ -85,13 +85,11 @@ export const useCreatePlanMutation = (
       );
 
       // Patch mappings with ownerReferences to new plan
-      const {
-        networkMapping: networkMapWithOwnerRef,
-        storageMapping: storageMapWithOwnerRef,
-      } = generateMappings({
-        forms,
-        owner: planResponse?.data,
-      });
+      const { networkMapping: networkMapWithOwnerRef, storageMapping: storageMapWithOwnerRef } =
+        generateMappings({
+          forms,
+          owner: planResponse?.data,
+        });
       if (networkMapWithOwnerRef && storageMapWithOwnerRef) {
         await Promise.all([
           client.patch<Mapping>(networkMapResource, networkMappingRef.name, networkMapWithOwnerRef),

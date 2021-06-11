@@ -271,9 +271,9 @@ export const useDeleteProviderMutation = (
           (oldData?: IProvidersByType) =>
             ({
               ...oldData,
-              [providerType]: ((oldData
-                ? oldData[providerType]
-                : []) as InventoryProvider[]).filter((p) => p.name !== provider.metadata.name),
+              [providerType]: (
+                (oldData ? oldData[providerType] : []) as InventoryProvider[]
+              ).filter((p) => p.name !== provider.metadata.name),
             } as IProvidersByType)
         );
         onSuccess && onSuccess();

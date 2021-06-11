@@ -150,13 +150,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const {
-    toggleItemSelected: togglePlanExpanded,
-    isItemSelected: isPlanExpanded,
-  } = useSelectionState<IPlan>({
-    items: sortedItems,
-    isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
-  });
+  const { toggleItemSelected: togglePlanExpanded, isItemSelected: isPlanExpanded } =
+    useSelectionState<IPlan>({
+      items: sortedItems,
+      isEqual: (a, b) => isSameResource(a.metadata, b.metadata),
+    });
 
   const ratioVMs = (plan: IPlan) => {
     const totalVMs = plan.spec.vms.length;

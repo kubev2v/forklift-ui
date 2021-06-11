@@ -111,10 +111,8 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
 
   const [expandedItem, setExpandedItem] = React.useState<IExpandedItem | null>(null);
 
-  const [
-    selectedProvider,
-    setSelectedProvider,
-  ] = React.useState<ICorrelatedProvider<IOpenShiftProvider> | null>(null);
+  const [selectedProvider, setSelectedProvider] =
+    React.useState<ICorrelatedProvider<IOpenShiftProvider> | null>(null);
 
   const rows: IRow[] = [];
   currentPageItems.forEach((provider: ICorrelatedProvider<IOpenShiftProvider>) => {
