@@ -37,10 +37,8 @@ import {
 } from '@app/queries';
 
 import { IProviderObject } from '@app/queries/types';
-import { QueryResult } from 'react-query';
 import { HelpIcon } from '@patternfly/react-icons';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { IKubeList } from '@app/client/types';
 import { useEditProviderPrefillEffect } from './helpers';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
@@ -56,7 +54,7 @@ const PROVIDER_TYPE_OPTIONS = PROVIDER_TYPES.map((type) => ({
 })) as OptionWithValue<ProviderType>[];
 
 const useAddProviderFormState = (
-  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>,
+  clusterProvidersQuery: ReturnType<typeof useClusterProvidersQuery>,
   providerBeingEdited: IProviderObject | null
 ) => {
   const providerTypeField = useFormField<ProviderType | null>(
@@ -138,14 +136,26 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
       >)
     : null;
 
-  const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
-  const [patchProvider, patchProviderResult] = usePatchProviderMutation(
+  // const [createProvider, createProviderResult] = useCreateProviderMutation(providerType, onClose);
+  const createProviderMutationResult = useCreateProviderMutation(providerType, onClose);
+  const { mutate: createProvider } = createProviderMutationResult;
+
+  // const [patchProvider, patchProviderResult] = usePatchProviderMutation(
+  //   providerType,
+  //   providerBeingEdited,
+  //   onClose
+  // );
+  const patchProviderMutationResult = usePatchProviderMutation(
     providerType,
     providerBeingEdited,
     onClose
   );
+  const { mutate: patchProvider } = patchProviderMutationResult;
+
   const mutateProvider = !providerBeingEdited ? createProvider : patchProvider;
-  const mutateProviderResult = !providerBeingEdited ? createProviderResult : patchProviderResult;
+  const mutateProviderResult = !providerBeingEdited
+    ? createProviderMutationResult
+    : patchProviderMutationResult;
 
   return (
     <Modal

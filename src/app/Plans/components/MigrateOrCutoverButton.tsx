@@ -26,9 +26,17 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
   const onMigrationStarted = (migration: IMigration) => {
     history.push(`/plans/${migration.spec.plan.name}`);
   };
-  const [createMigration, createMigrationResult] = useCreateMigrationMutation(onMigrationStarted);
-  const [setCutover, setCutoverResult] = useSetCutoverMutation();
-  if (isBeingStarted || createMigrationResult.isLoading || setCutoverResult.isLoading) {
+  const createMigrationMutationResult = useCreateMigrationMutation(onMigrationStarted);
+  const { mutate: createMigration } = createMigrationMutationResult;
+
+  const setCutoverMutationResult = useSetCutoverMutation();
+  const { mutate: setCutover } = setCutoverMutationResult;
+
+  if (
+    isBeingStarted ||
+    createMigrationMutationResult.isLoading ||
+    setCutoverMutationResult.isLoading
+  ) {
     return <Spinner size="md" className={spacing.mxLg} />;
   }
   return (
@@ -45,18 +53,19 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
       >
         {buttonType}
       </Button>
-      {(createMigrationResult.isError || setCutoverResult.isError) && errorContainerRef.current
+      {(createMigrationMutationResult.isError || setCutoverMutationResult.isError) &&
+      errorContainerRef.current
         ? createPortal(
             <>
               <ResolvedQuery
-                result={createMigrationResult}
+                result={createMigrationMutationResult}
                 errorTitle="Error starting migration"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}
                 className={spacing.mbMd}
               />
               <ResolvedQuery
-                result={setCutoverResult}
+                result={setCutoverMutationResult}
                 errorTitle="Error setting cutover time"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}

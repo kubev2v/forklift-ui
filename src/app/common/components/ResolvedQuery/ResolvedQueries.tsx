@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { MutationResult, QueryResult, QueryStatus } from 'react-query';
+import { UseMutationResult } from 'react-query';
+import { ResultSubset } from '@app/common/types';
 import {
   Spinner,
   Alert,
@@ -19,7 +20,7 @@ export enum QuerySpinnerMode {
 }
 
 export interface IResolvedQueriesProps {
-  results: (QueryResult<unknown> | MutationResult<unknown>)[];
+  results: ResultSubset[];
   errorTitles: string[];
   errorsInline?: boolean;
   spinnerMode?: QuerySpinnerMode;
@@ -57,9 +58,9 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
 
   return (
     <>
-      {status === QueryStatus.Loading || forceLoadingState ? (
+      {status === 'loading' || forceLoadingState ? (
         spinner
-      ) : status === QueryStatus.Error ? (
+      ) : status === 'error' ? (
         <div>
           {erroredResults.map((result, index) => (
             <Alert
@@ -73,7 +74,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
                 (result as { reset?: () => void }).reset ? (
                   <AlertActionCloseButton
                     aria-label="Dismiss error"
-                    onClose={(result as MutationResult<unknown>).reset}
+                    onClose={(result as UseMutationResult<unknown>).reset}
                   />
                 ) : null
               }

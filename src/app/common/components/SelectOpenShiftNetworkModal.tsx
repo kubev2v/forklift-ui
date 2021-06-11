@@ -19,8 +19,9 @@ import {
   IProviderObject,
   POD_NETWORK,
 } from '@app/queries/types';
+import { IProviderMigrationNetworkMutationVars } from '@app/queries/providers';
 
-import { MutationResult } from 'react-query';
+import { UseMutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries';
@@ -33,7 +34,13 @@ interface ISelectOpenShiftNetworkModalProps {
   instructions: string;
   onClose: () => void;
   onSubmit: (network: IOpenShiftNetwork | null) => void;
-  mutationResult?: MutationResult<IKubeResponse<IProviderObject>, KubeClientError>;
+  // mutationResult?: UseMutationResult<IKubeResponse<IProviderObject>, KubeClientError>;
+  mutationResult?: UseMutationResult<
+    IKubeResponse<IProviderObject>,
+    KubeClientError,
+    IProviderMigrationNetworkMutationVars,
+    unknown
+  >;
 }
 
 const useSelectNetworkFormState = (initialSelectedNetwork: string | null) =>

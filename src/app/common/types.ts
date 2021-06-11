@@ -1,4 +1,5 @@
 import { BrandType } from '@app/global-flags';
+import { UseQueryResult } from 'react-query';
 
 export interface IMetaVars {
   clusterApi: string;
@@ -27,3 +28,8 @@ export interface IEnvVars {
   FORKLIFT_VALIDATION_GIT_COMMIT: string;
   FORKLIFT_CLUSTER_VERSION: string;
 }
+
+export type ResultSubset = Pick<
+  UseQueryResult<unknown>,
+  'isError' | 'isLoading' | 'isIdle' | 'error'
+>;

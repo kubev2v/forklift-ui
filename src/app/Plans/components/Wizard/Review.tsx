@@ -3,7 +3,7 @@ import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
 import { IPlan, SourceVM, Mapping } from '@app/queries/types';
-import { MutationResult } from 'react-query';
+import { UseMutationResult } from 'react-query';
 import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
@@ -14,8 +14,8 @@ import PlanDetails from '../PlanDetails';
 interface IReviewProps {
   forms: PlanWizardFormState;
   allMutationResults: (
-    | MutationResult<IKubeResponse<IPlan>, KubeClientError>
-    | MutationResult<IKubeResponse<Mapping>, KubeClientError>
+    | UseMutationResult<IKubeResponse<IPlan>, KubeClientError>
+    | UseMutationResult<IKubeResponse<Mapping>, KubeClientError>
   )[];
   allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;

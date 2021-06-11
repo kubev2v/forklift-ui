@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
+import { QueryClientProvider, QueryClient } from 'react-query';
+const queryClient = new QueryClient();
 
 import { NetworkContextProvider } from '@app/common/context';
 import OpenShiftProvidersTable from '../OpenShiftProvidersTable';
@@ -25,11 +27,13 @@ describe('<OpenShiftProvidersTable />', () => {
 
   it('renders openshift table', () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <OpenShiftProvidersTable {...props} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <OpenShiftProvidersTable {...props} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     expect(
@@ -43,11 +47,13 @@ describe('<OpenShiftProvidersTable />', () => {
   // The expanding section doesn't render, is it the right button?
   it.skip('renders storage classes', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <OpenShiftProvidersTable {...props} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <OpenShiftProvidersTable {...props} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const sharedClasses = screen.getAllByRole('button', { name: '0' });
@@ -60,11 +66,13 @@ describe('<OpenShiftProvidersTable />', () => {
 
   it('renders status condition', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <OpenShiftProvidersTable {...props} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <OpenShiftProvidersTable {...props} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     userEvent.click(screen.getByRole('button', { name: /Critical/ }));
@@ -76,11 +84,13 @@ describe('<OpenShiftProvidersTable />', () => {
 
   it('renders action menu', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <OpenShiftProvidersTable {...props} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <OpenShiftProvidersTable {...props} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     userEvent.click(screen.getAllByRole('button', { name: /Actions/ })[0]);

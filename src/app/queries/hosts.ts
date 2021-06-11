@@ -1,4 +1,4 @@
-import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
+import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import {
   useMockableQuery,
@@ -7,7 +7,7 @@ import {
   useMockableMutation,
   nameAndNamespace,
   mockKubeList,
-  useResultsSortedByName,
+  sortByName,
 } from './helpers';
 import { MOCK_HOSTS, MOCK_HOST_CONFIGS } from './mocks/hosts.mock';
 import { IHost, IHostConfig, INameNamespaceRef, ISecret, IVMwareProvider } from './types';
@@ -21,30 +21,27 @@ import { isManagementNetworkSelected } from '@app/Providers/components/VMwarePro
 
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
-export const useHostsQuery = (provider: IVMwareProvider | null): QueryResult<IHost[]> => {
+export const useHostsQuery = (provider: IVMwareProvider | null) => {
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: 'hosts',
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=1`)),
-      config: {
-        enabled: !!provider,
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      enabled: !!provider,
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortByName,
     },
     MOCK_HOSTS
   );
-  return useResultsSortedByName(result);
+  return result;
 };
 
-export const useHostConfigsQuery = (): QueryResult<IKubeList<IHostConfig>> => {
+export const useHostConfigsQuery = (): UseQueryResult<IKubeList<IHostConfig>> => {
   const client = useAuthorizedK8sClient();
   return useMockableQuery<IKubeList<IHostConfig>>(
     {
       queryKey: 'host-configs',
       queryFn: async () => (await client.list<IKubeList<IHostConfig>>(hostConfigResource)).data,
-      config: {
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      refetchInterval: usePollingContext().refetchInterval,
     },
     mockKubeList(MOCK_HOST_CONFIGS, 'Host')
   );
@@ -132,14 +129,14 @@ export const useConfigureHostsMutation = (
   selectedHosts: IHost[],
   allHostConfigs: IHostConfig[],
   onSuccess?: () => void
-): MutationResultPair<
+): UseMutationResult<
   (IKubeResponse<IHostConfig> | null)[],
   KubeClientError,
   SelectNetworkFormValues,
   unknown
 > => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const { pollFasterAfterMutation } = usePollingContext();
 
   const configureHosts = (values: SelectNetworkFormValues) => {
@@ -188,8 +185,8 @@ export const useConfigureHostsMutation = (
     SelectNetworkFormValues
   >(configureHosts, {
     onSuccess: () => {
-      queryCache.invalidateQueries('hosts');
-      queryCache.invalidateQueries('hostconfigs');
+      queryClient.invalidateQueries('hosts');
+      queryClient.invalidateQueries('hostconfigs');
       pollFasterAfterMutation();
       onSuccess && onSuccess();
     },

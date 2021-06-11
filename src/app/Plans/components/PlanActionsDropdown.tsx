@@ -28,7 +28,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
+  // const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
+  const deletePlanMutationResult = useDeletePlanMutation(toggleDeleteModal);
+  const { mutate: deletePlan } = deletePlanMutationResult;
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -69,19 +71,21 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           <ConditionalTooltip
             key="Delete"
             isTooltipEnabled={
-              hasCondition(conditions, PlanStatusType.Executing) || deletePlanResult.isLoading
+              hasCondition(conditions, PlanStatusType.Executing) ||
+              deletePlanMutationResult.isLoading
             }
             content={
               hasCondition(conditions, PlanStatusType.Executing)
                 ? 'This plan cannot be deleted because it is running'
-                : deletePlanResult.isLoading
+                : deletePlanMutationResult.isLoading
                 ? 'This plan cannot be deleted because it is deleting'
                 : ''
             }
           >
             <DropdownItem
               isDisabled={
-                hasCondition(conditions, PlanStatusType.Executing) || deletePlanResult.isLoading
+                hasCondition(conditions, PlanStatusType.Executing) ||
+                deletePlanMutationResult.isLoading
               }
               onClick={() => {
                 setKebabIsOpen(false);
@@ -107,7 +111,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deletePlan(plan)}
-        mutateResult={deletePlanResult}
+        mutateResult={deletePlanMutationResult}
         title="Delete migration plan"
         confirmButtonText="Delete"
         body={

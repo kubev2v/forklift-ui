@@ -12,7 +12,7 @@ import {
   WizardStepFunctionType,
 } from '@patternfly/react-core';
 import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
-import { QueryResult, QueryStatus } from 'react-query';
+import { UseQueryResult } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
 
@@ -59,7 +59,7 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import './PlanWizard.css';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
-const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => {
+const useMappingFormState = (mappingsQuery: UseQueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
   const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
   return useFormState({
@@ -76,9 +76,9 @@ const useMappingFormState = (mappingsQuery: QueryResult<IKubeList<Mapping>>) => 
 };
 
 const usePlanWizardFormState = (
-  plansQuery: QueryResult<IKubeList<IPlan>>,
-  networkMappingsQuery: QueryResult<IKubeList<Mapping>>,
-  storageMappingsQuery: QueryResult<IKubeList<Mapping>>,
+  plansQuery: UseQueryResult<IKubeList<IPlan>>,
+  networkMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
+  storageMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   planBeingEdited: IPlan | null
 ) => {
   const forms = {
@@ -209,21 +209,32 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onClose = () => history.push('/plans');
 
-  const [createPlan, createPlanResult] = useCreatePlanMutation();
-  const [patchPlan, patchPlanResult] = usePatchPlanMutation();
+  const createPlanMutationResult = useCreatePlanMutation();
+  const { mutate: createPlan } = createPlanMutationResult;
 
-  const {
-    network: [createSharedNetworkMap, createSharedNetworkMapResult],
-    storage: [createSharedStorageMap, createSharedStorageMapResult],
-  } = useCreateMappingMutations();
+  const patchPlanMutationResult = usePatchPlanMutation();
+  const { mutate: patchPlan } = patchPlanMutationResult;
+
+  // const {
+  //   network: [createSharedNetworkMap, createSharedNetworkMapResult],
+  //   storage: [createSharedStorageMap, createSharedStorageMapResult],
+  // } = useCreateMappingMutations();
+
+  const createMappingMutationResult = useCreateMappingMutations();
+  const { mutate: createSharedNetworkMap } = createMappingMutationResult.network;
+  const { mutate: createSharedStorageMap } = createMappingMutationResult.storage;
+  let createSharedNetworkMapResult;
+  let createSharedStorageMapResult;
 
   const createSharedMappings = async () => {
     const { networkMapping, storageMapping } = generateMappings({ forms });
     if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
-      createSharedNetworkMap(networkMapping);
+      createSharedNetworkMapResult = createSharedNetworkMap(networkMapping);
+      // TODO: needs more testing
     }
     if (storageMapping && forms.storageMapping.values.isSaveNewMapping) {
-      createSharedStorageMap(storageMapping);
+      createSharedStorageMapResult = createSharedStorageMap(storageMapping);
+      // TODO: needs more testing
     }
   };
 
@@ -237,7 +248,7 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const allMutationResults = [
-    !editRouteMatch ? createPlanResult : patchPlanResult,
+    !editRouteMatch ? createPlanMutationResult : patchPlanMutationResult,
     ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapResult] : []),
     ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapResult] : []),
   ];
@@ -249,7 +260,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const mutationStatus = getAggregateQueryStatus(allMutationResults);
 
   React.useEffect(() => {
-    if (mutationStatus === QueryStatus.Success) onClose();
+    if (mutationStatus === 'success') onClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutationStatus]);
 
@@ -380,7 +391,7 @@ const PlanWizard: React.FunctionComponent = () => {
           />
         </WizardStepContainer>
       ),
-      enableNext: mutationStatus === QueryStatus.Idle,
+      enableNext: mutationStatus === 'idle',
       nextButtonText: 'Finish',
       canJumpTo: stepIdReached >= StepId.Review,
     },
@@ -412,7 +423,7 @@ const PlanWizard: React.FunctionComponent = () => {
       ) : (
         <>
           <Prompt
-            when={forms.isSomeFormDirty && mutationStatus === QueryStatus.Idle}
+            when={forms.isSomeFormDirty && mutationStatus === 'idle'}
             message="You have unsaved changes, are you sure you want to leave this page?"
           />
           <PageSection
