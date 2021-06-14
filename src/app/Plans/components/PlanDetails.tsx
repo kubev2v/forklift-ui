@@ -54,6 +54,8 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
     ? warmCriticalConcerns.filter((label) => someVMHasConcern(vms as SourceVM[], label))
     : [];
 
+  const hookStepPostfix = plan.spec.warm ? 'cutover' : 'migration';
+
   return (
     <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
       <GridItem md={12}></GridItem>
@@ -197,7 +199,9 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
                 <Text className={text.fontWeightBold}>Migration step</Text>
                 {hooksDetails.map((hookDetail) => (
                   <Text key={hookDetail.step}>
-                    {hookDetail.step === 'PreHook' ? 'Pre-migration' : 'Post-migration'}
+                    {hookDetail.step === 'PreHook'
+                      ? `Pre-${hookStepPostfix}`
+                      : `Post-${hookStepPostfix}`}
                   </Text>
                 ))}
               </GridItem>
