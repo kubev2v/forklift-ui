@@ -22,7 +22,7 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
       <Button
         isSmall
         onClick={() => history.push('/plans/create')}
-        isDisabled={!hasSufficientProviders}
+        isAriaDisabled={!hasSufficientProviders}
         variant={variant}
         id="create-plan-button"
       >

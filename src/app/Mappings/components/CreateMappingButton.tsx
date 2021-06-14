@@ -22,7 +22,12 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
       isTooltipEnabled={!hasSufficientProviders}
       content="You must add at least one VMware or Red Hat Virtualization provider and one OpenShift Virtualization provider in order to create a mapping."
     >
-      <Button {...props} onClick={onClick} isDisabled={!hasSufficientProviders} variant={variant}>
+      <Button
+        {...props}
+        onClick={onClick}
+        isAriaDisabled={!hasSufficientProviders}
+        variant={variant}
+      >
         {label}
       </Button>
     </ConditionalTooltip>
