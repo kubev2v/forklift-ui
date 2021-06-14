@@ -28,6 +28,15 @@ interface IFilterVMsFormProps {
   planBeingEdited: IPlan | null;
 }
 
+// TODO switch to new cluster tree, update mock data, test against Jeff's cluster
+// TODO hide hosts entirely
+// TODO figure out if it makes sense to change Select VMs list so it comes from filtering on VM properties matching selected tree nodes
+//      instead of using the leaf nodes. otherwise, see if it makes sense to limit to only the direct child leaves.
+// TODO figure out if we need to change how selection and deselection works in terms of auto-toggling descendants, and having indeterminates.
+//      maybe the only state we save is which (displayed) leaves are selected, and the rest is render logic.
+//      (i.e. there is no such thing as selecting a parent, a parent is only shown as selected if all its children are).
+// See notes in Typora scratch
+
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
