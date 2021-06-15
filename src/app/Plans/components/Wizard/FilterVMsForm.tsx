@@ -11,10 +11,12 @@ import {
 } from '@app/queries/types';
 import {
   filterAndConvertInventoryTree,
+  findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
   flattenVMwareTreeNodes,
   getSelectedVMsFromPlan,
+  isNodeFullyChecked,
 } from './helpers';
 import { PlanWizardFormState } from './PlanWizard';
 
@@ -37,6 +39,8 @@ interface IFilterVMsFormProps {
 //      (i.e. there is no such thing as selecting a parent, a parent is only shown as selected if all its children are).
 // See notes in Typora scratch
 
+// TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
+
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
@@ -49,8 +53,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const vmsQuery = useSourceVMsQuery(sourceProvider);
   const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
+  const leafSelectionOnly = form.values.treeType !== InventoryTreeType.VM; // Allow selecting parent folders but not parents of clusters
+
   const treeSelection = useSelectionState({
-    items: flattenVMwareTreeNodes(treeQuery.data || null),
+    items: flattenVMwareTreeNodes(treeQuery.data || null, leafSelectionOnly),
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
     isEqual: (a: InventoryTree, b: InventoryTree) => a.object?.selfLink === b.object?.selfLink,
   });
@@ -66,7 +72,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         lastTreeType.current = form.values.treeType;
       } else if (vmsQuery.isSuccess && treeQuery.isSuccess) {
         const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
-        const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+        const selectedTreeNodes = findNodesMatchingSelectedVMs(
+          treeQuery.data || null,
+          selectedVMs,
+          leafSelectionOnly
+        );
         treeSelection.setSelectedItems(selectedTreeNodes);
         lastTreeType.current = form.values.treeType;
       }
@@ -79,6 +89,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     treeQuery,
     vmsQuery,
     treeSelection,
+    leafSelectionOnly,
   ]);
 
   return (
@@ -116,7 +127,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             treeQuery.data || null,
             searchText,
             treeSelection.isItemSelected,
-            treeSelection.areAllSelected
+            treeSelection.areAllSelected,
+            leafSelectionOnly
           )}
           defaultAllExpanded
           hasChecks
@@ -125,14 +137,20 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else {
+              const matchingNode = findMatchingNode(treeQuery.data || null, treeViewItem.id || '');
+              const isFullyChecked = isNodeFullyChecked(
+                matchingNode,
+                treeSelection.isItemSelected,
+                leafSelectionOnly
+              );
               const nodesToSelect = findMatchingNodeAndDescendants(
                 treeQuery.data || null,
-                treeViewItem.id || ''
+                treeViewItem.id || '',
+                leafSelectionOnly
               );
-              treeSelection.selectMultiple(
-                nodesToSelect,
-                !treeSelection.isItemSelected(nodesToSelect[0])
-              );
+              if (nodesToSelect.length > 0) {
+                treeSelection.selectMultiple(nodesToSelect, !isFullyChecked);
+              }
             }
           }}
           searchProps={{
