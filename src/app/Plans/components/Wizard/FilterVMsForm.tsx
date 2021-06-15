@@ -31,10 +31,7 @@ interface IFilterVMsFormProps {
   planBeingEdited: IPlan | null;
 }
 
-// TODO switch to new cluster tree, update mock data, test against Jeff's cluster
-// TODO figure out if it makes sense to change Select VMs list so it comes from filtering on VM properties matching selected tree nodes
-//      instead of using the leaf nodes. otherwise, see if it makes sense to limit to only the direct child leaves.
-
+// TODO figure out why Templates folder VMs are coming up even though that folder isn't selected
 // TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
