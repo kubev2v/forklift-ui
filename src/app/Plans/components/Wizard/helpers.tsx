@@ -213,16 +213,22 @@ export const getSelectableNodes = (
   isNodeSelectable: (node: InventoryTree) => boolean
 ): InventoryTree[] => flattenInventoryTreeNodes(rootNode).filter(isNodeSelectable);
 
-// From the flattened selected nodes list, get all the unique VMs from all descendants of them.
+export const getDirectVMChildren = (node: InventoryTree): InventoryTree[] =>
+  node.children?.filter((node) => node.kind === 'VM') || [];
+
+// From the flattened selected nodes list, get all the unique VMs.
 export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] => {
   if (nodes.length === 0) return [];
-  const directChildren = Array.from(
-    new Set(nodes.flatMap((node) => node.children?.filter((node) => node.kind === 'VM') || []))
+  return Array.from(
+    new Set(
+      nodes.flatMap((node) => {
+        // Only include direct children of folders so we can exclude subfolders
+        if (node.kind === 'Folder') return getDirectVMChildren(node);
+        // Otherwise, we might have VMs under hidden descendants like hosts
+        return [...getDirectVMChildren(node), ...getAllVMChildren(node.children || [])];
+      })
+    )
   );
-  return [
-    ...directChildren,
-    ...Array.from(new Set(nodes.flatMap((node) => getAllVMChildren(node.children || [])))),
-  ];
 };
 
 export const getAvailableVMs = (
