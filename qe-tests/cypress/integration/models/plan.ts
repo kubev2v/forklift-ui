@@ -122,7 +122,9 @@ export class Plan {
     next();
   }
 
-  protected finalReviewStep(): void {
+  protected migrationTypeAndReview(): void {
+    //Default migration type is cold migration
+    next();
     clickByText(button, finish);
   }
 
@@ -178,7 +180,7 @@ export class Plan {
     this.vmSelectionStep(planData);
     this.networkMappingStep(planData);
     this.storageMappingStep(planData);
-    this.finalReviewStep();
+    this.migrationTypeAndReview();
   }
 
   delete(planData: PlanData): void {
