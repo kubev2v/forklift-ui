@@ -92,7 +92,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
         <Text component="p">
-          Refine the list of VMs selectable for migration by clusters or by folders.
+          Refine the list of VMs selectable for migration by clusters
+          {sourceProvider?.type === 'vsphere' ? ' or by folders' : ''}.
         </Text>
       </TextContent>
       {sourceProvider?.type === 'vsphere' ? (
