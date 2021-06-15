@@ -92,7 +92,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
         <Text component="p">
-          Refine the list of VMs selectable for migration by clusters and hosts or by folder.
+          Refine the list of VMs selectable for migration by clusters or by folders.
         </Text>
       </TextContent>
       {sourceProvider?.type === 'vsphere' ? (
@@ -102,9 +102,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           className={spacing.mtMd}
         >
           <Tab
-            key={InventoryTreeType.Host}
-            eventKey={InventoryTreeType.Host}
-            title={<TabTitleText>By clusters and hosts</TabTitleText>}
+            key={InventoryTreeType.Cluster}
+            eventKey={InventoryTreeType.Cluster}
+            title={<TabTitleText>By clusters</TabTitleText>}
           />
           <Tab
             key={InventoryTreeType.VM}

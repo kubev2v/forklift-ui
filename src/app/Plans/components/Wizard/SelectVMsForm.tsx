@@ -65,7 +65,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 }: ISelectVMsFormProps) => {
   const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
     sourceProvider,
-    InventoryTreeType.Host
+    InventoryTreeType.Cluster
   );
   const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
     sourceProvider,

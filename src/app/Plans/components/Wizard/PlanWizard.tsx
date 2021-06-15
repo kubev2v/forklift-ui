@@ -104,7 +104,7 @@ const usePlanWizardFormState = (
     }),
     filterVMs: useFormState({
       treeType: useFormField<InventoryTreeType>(
-        InventoryTreeType.Host,
+        InventoryTreeType.Cluster,
         yup.mixed<InventoryTreeType>()
       ),
       selectedTreeNodes: useFormField<InventoryTree[]>(

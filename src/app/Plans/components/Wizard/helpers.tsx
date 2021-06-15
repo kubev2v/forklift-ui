@@ -551,7 +551,7 @@ export const useEditingPlanPrefillEffect = (
     providersQuery
   );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Host);
+  const hostTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Cluster);
 
   const networkMappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
@@ -598,7 +598,7 @@ export const useEditingPlanPrefillEffect = (
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
 
-  const defaultTreeType = InventoryTreeType.Host;
+  const defaultTreeType = InventoryTreeType.Cluster;
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
 
   React.useEffect(() => {
