@@ -36,7 +36,7 @@ interface IPlanDetailsProps {
   sourceProvider: SourceInventoryProvider | null;
   networkMapping: Mapping | null;
   storageMapping: Mapping | null;
-  vms: SourceVM[] | undefined;
+  vms: SourceVM[];
   hooksDetails: IHookDetails[] | null;
   isNewNamespace?: boolean;
 }
@@ -55,6 +55,8 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
     : [];
 
   const hookStepPostfix = plan.spec.warm ? 'cutover' : 'migration';
+
+  const getVMName = (id: string) => vms.find((vm) => (vm.id = id))?.name;
 
   return (
     <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
@@ -113,7 +115,7 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
           bodyContent={
             <List id="details-selected-vms-list">
               {plan.spec.vms.map((vm, idx) => (
-                <li key={idx}>{vm.id}</li>
+                <li key={idx}>{getVMName(vm.id)}</li>
               ))}
             </List>
           }
