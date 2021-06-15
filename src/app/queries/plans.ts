@@ -20,7 +20,6 @@ import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
-import { useDeleteHookMutation } from '@app/queries';
 import { useHooksQuery } from './hooks';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
@@ -141,7 +140,6 @@ export const usePatchPlanMutation = (
   const queryCache = useQueryCache();
   const { pollFasterAfterMutation } = usePollingContext();
   const hooks = useHooksQuery();
-  const [deleteHook] = useDeleteHookMutation();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
@@ -216,27 +214,18 @@ export const usePatchPlanMutation = (
       await Promise.all(newHooksWithOwnerRef);
 
       // Delete hooks removed from plan
-      const planHooksToDelete = planBeingEdited.spec.vms[0].hooks?.filter((vmsHook) => {
-        if (
-          forms.hooks.values.instances.length === 0 ||
-          forms.hooks.values.instances.filter((hook) => {
-            if (
-              !hook.prefilledFromHook ||
-              (hook.prefilledFromHook.metadata as IMetaObjectMeta).name === vmsHook.hook.name
-            ) {
-              return true;
-            }
-            return false;
-          }).length === 0
-        ) {
-          return true;
-        }
-        return false;
-      });
-      const hooksToDelete = hooks.data?.items.filter((hook) =>
-        planHooksToDelete?.find((vmHook) => isSameResource(vmHook.hook, hook.metadata) || null)
+      const planHooksToDelete = planBeingEdited.spec.vms[0].hooks?.filter(
+        (vmsHook) =>
+          !forms.hooks.values.instances.find((instance) =>
+            isSameResource(instance.prefilledFromHook?.metadata, vmsHook.hook)
+          )
       );
-      hooksToDelete?.forEach((hook) => deleteHook(hook));
+
+      const deleteHooks = planHooksToDelete?.map(async (hook) => {
+        const response = client.delete(hookResource, hook.hook.name);
+        return response;
+      });
+      if (deleteHooks) await Promise.all(deleteHooks);
 
       return planResponse;
     },
