@@ -48,8 +48,9 @@ import { IKubeList } from '@app/client/types';
 import { getObjectRef } from '@app/common/helpers';
 
 // Exclude VMs and Hosts from the rendered tree entirely
-const isIncludedNode = (node: InventoryTree) => node.kind !== 'VM' && node.kind !== 'Host';
-const isIncludedLeafNode = (node: InventoryTree) =>
+export const isIncludedNode = (node: InventoryTree): boolean =>
+  node.kind !== 'VM' && node.kind !== 'Host';
+export const isIncludedLeafNode = (node: InventoryTree): boolean =>
   isIncludedNode(node) &&
   (!node.children ||
     node.children.length === 0 ||
@@ -67,6 +68,20 @@ const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
   return node.children?.some((child) => subtreeMatchesSearch(child, searchText)) || false;
 };
 
+export const useIsNodeSelectableCallback = (
+  treeType: InventoryTreeType
+): ((node: InventoryTree) => boolean) =>
+  React.useCallback(
+    (node: InventoryTree) => {
+      if (isIncludedLeafNode(node)) return true;
+      if (treeType === InventoryTreeType.VM) {
+        return node.kind === 'Folder';
+      }
+      return false;
+    },
+    [treeType]
+  );
+
 const areSomeDescendantsSelected = (
   node: InventoryTree,
   isNodeSelected: (node: InventoryTree) => boolean
@@ -74,19 +89,26 @@ const areSomeDescendantsSelected = (
   if (isNodeSelected(node)) return true;
   return node.children?.some((child) => areSomeDescendantsSelected(child, isNodeSelected)) || false;
 };
-const areAllChildrenSelected = (
+
+const areAllSelectableDescendantsSelected = (
   node: InventoryTree,
-  isNodeSelected: (node: InventoryTree) => boolean
-) => node.children?.every(isNodeSelected) || false;
+  isNodeSelected: (node: InventoryTree) => boolean,
+  isNodeSelectable: (node: InventoryTree) => boolean
+) => {
+  if (!node.children) return isNodeSelectable(node) && isNodeSelected(node);
+  const selectableDescendants = getSelectableNodes(node, isNodeSelectable);
+  return selectableDescendants.every(isNodeSelected);
+};
 
 export const isNodeFullyChecked = (
   node: InventoryTree | null,
   isNodeSelected: (node: InventoryTree) => boolean,
-  leafSelectionOnly: boolean
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): boolean => {
   if (!node) return false;
   return (
-    isNodeSelected(node) || (leafSelectionOnly && areAllChildrenSelected(node, isNodeSelected))
+    isNodeSelected(node) ||
+    areAllSelectableDescendantsSelected(node, isNodeSelected, isNodeSelectable)
   );
 };
 
@@ -104,9 +126,9 @@ const convertInventoryTreeNode = (
   node: InventoryTree,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
-  leafSelectionOnly: boolean
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): TreeViewDataItem => {
-  const isFullyChecked = isNodeFullyChecked(node, isNodeSelected, leafSelectionOnly);
+  const isFullyChecked = isNodeFullyChecked(node, isNodeSelected, isNodeSelectable);
   const isPartiallyChecked = isNodePartiallyChecked(node, isNodeSelected, isFullyChecked);
   return {
     name: node.object?.name || '',
@@ -115,7 +137,7 @@ const convertInventoryTreeNode = (
       node.children,
       searchText,
       isNodeSelected,
-      leafSelectionOnly
+      isNodeSelectable
     ),
     checkProps: {
       'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
@@ -137,14 +159,14 @@ const filterAndConvertInventoryTreeChildren = (
   children: InventoryTree[] | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
-  leafSelectionOnly: boolean
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): TreeViewDataItem[] | undefined => {
   const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
     subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
     return filteredChildren.map((node) =>
-      convertInventoryTreeNode(node, searchText, isNodeSelected, leafSelectionOnly)
+      convertInventoryTreeNode(node, searchText, isNodeSelected, isNodeSelectable)
     );
   return undefined;
 };
@@ -155,7 +177,7 @@ export const filterAndConvertInventoryTree = (
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean,
-  leafSelectionOnly = false
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   const isPartiallyChecked = isNodePartiallyChecked(rootNode, isNodeSelected, areAllSelected);
@@ -171,27 +193,25 @@ export const filterAndConvertInventoryTree = (
         rootNode.children,
         searchText,
         isNodeSelected,
-        leafSelectionOnly
+        isNodeSelectable
       ),
     },
   ];
 };
 
 // To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
-export const flattenVMwareTreeNodes = (
-  rootNode: InventoryTree | null,
-  leavesOnly = false
-): InventoryTree[] => {
+export const flattenInventoryTreeNodes = (rootNode: InventoryTree | null): InventoryTree[] => {
   if (rootNode?.children) {
     const children = (rootNode.children as InventoryTree[]).filter(isIncludedNode);
-    const leafChildren = children.filter(isIncludedLeafNode);
-    return [
-      ...(leavesOnly ? leafChildren : children),
-      ...children.flatMap((child) => flattenVMwareTreeNodes(child, leavesOnly)),
-    ];
+    return [rootNode, ...children.flatMap((child) => flattenInventoryTreeNodes(child))];
   }
-  return [];
+  return rootNode ? [rootNode] : [];
 };
+
+export const getSelectableNodes = (
+  rootNode: InventoryTree | null,
+  isNodeSelectable: (node: InventoryTree) => boolean
+): InventoryTree[] => flattenInventoryTreeNodes(rootNode).filter(isNodeSelectable);
 
 // From the flattened selected nodes list, get all the unique VMs from all descendants of them.
 export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] => {
@@ -300,13 +320,13 @@ export const findMatchingNode = (
 export const findMatchingNodeAndDescendants = (
   tree: InventoryTree | null,
   vmSelfLink: string,
-  leafSelectionOnly = false
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): InventoryTree[] => {
   const matchingNode = findMatchingNode(tree, vmSelfLink);
   if (!matchingNode) return [];
   const nodeAndDescendants: InventoryTree[] = [];
   const pushNodeAndDescendants = (n: InventoryTree) => {
-    if (!leafSelectionOnly || isIncludedLeafNode(n)) nodeAndDescendants.push(n);
+    if (isNodeSelectable(n)) nodeAndDescendants.push(n);
     if (n.children) {
       n.children.filter(isIncludedNode).forEach(pushNodeAndDescendants);
     }
@@ -318,12 +338,12 @@ export const findMatchingNodeAndDescendants = (
 export const findNodesMatchingSelectedVMs = (
   tree: InventoryTree | null,
   selectedVMs: SourceVM[],
-  leafSelectionOnly = false
+  isNodeSelectable: (node: InventoryTree) => boolean
 ): InventoryTree[] =>
   Array.from(
     new Set(
       selectedVMs.flatMap((vm) =>
-        findMatchingNodeAndDescendants(tree, vm.selfLink, leafSelectionOnly)
+        findMatchingNodeAndDescendants(tree, vm.selfLink, isNodeSelectable)
       )
     )
   );
@@ -571,6 +591,10 @@ export const useEditingPlanPrefillEffect = (
 
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
   const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
+
+  const defaultTreeType = InventoryTreeType.Host;
+  const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
+
   React.useEffect(() => {
     if (!isStartedPrefilling && queryStatus === QueryStatus.Success && planBeingEdited) {
       setIsStartedPrefilling(true);
@@ -578,7 +602,7 @@ export const useEditingPlanPrefillEffect = (
       const selectedTreeNodes = findNodesMatchingSelectedVMs(
         hostTreeQuery.data || null,
         selectedVMs,
-        false // Assuming we will never default to folder mode? may not always be true
+        isNodeSelectable
       );
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
         isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
@@ -598,7 +622,7 @@ export const useEditingPlanPrefillEffect = (
         planBeingEdited.spec.transferNetwork?.name || null
       );
 
-      forms.filterVMs.fields.treeType.setInitialValue(InventoryTreeType.Host);
+      forms.filterVMs.fields.treeType.setInitialValue(defaultTreeType);
       forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
       forms.filterVMs.fields.isPrefilled.setInitialValue(true);
 
@@ -663,6 +687,8 @@ export const useEditingPlanPrefillEffect = (
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
+    defaultTreeType,
+    isNodeSelectable,
   ]);
 
   return {

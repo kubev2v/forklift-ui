@@ -14,9 +14,10 @@ import {
   findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
-  flattenVMwareTreeNodes,
+  getSelectableNodes,
   getSelectedVMsFromPlan,
   isNodeFullyChecked,
+  useIsNodeSelectableCallback,
 } from './helpers';
 import { PlanWizardFormState } from './PlanWizard';
 
@@ -31,13 +32,8 @@ interface IFilterVMsFormProps {
 }
 
 // TODO switch to new cluster tree, update mock data, test against Jeff's cluster
-// TODO hide hosts entirely
 // TODO figure out if it makes sense to change Select VMs list so it comes from filtering on VM properties matching selected tree nodes
 //      instead of using the leaf nodes. otherwise, see if it makes sense to limit to only the direct child leaves.
-// TODO figure out if we need to change how selection and deselection works in terms of auto-toggling descendants, and having indeterminates.
-//      maybe the only state we save is which (displayed) leaves are selected, and the rest is render logic.
-//      (i.e. there is no such thing as selecting a parent, a parent is only shown as selected if all its children are).
-// See notes in Typora scratch
 
 // TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
 
@@ -53,10 +49,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const vmsQuery = useSourceVMsQuery(sourceProvider);
   const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
-  const leafSelectionOnly = form.values.treeType !== InventoryTreeType.VM; // Allow selecting parent folders but not parents of clusters
+  const isNodeSelectable = useIsNodeSelectableCallback(form.values.treeType);
 
   const treeSelection = useSelectionState({
-    items: flattenVMwareTreeNodes(treeQuery.data || null, leafSelectionOnly),
+    items: getSelectableNodes(treeQuery.data || null, isNodeSelectable),
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
     isEqual: (a: InventoryTree, b: InventoryTree) => a.object?.selfLink === b.object?.selfLink,
   });
@@ -75,7 +71,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         const selectedTreeNodes = findNodesMatchingSelectedVMs(
           treeQuery.data || null,
           selectedVMs,
-          leafSelectionOnly
+          isNodeSelectable
         );
         treeSelection.setSelectedItems(selectedTreeNodes);
         lastTreeType.current = form.values.treeType;
@@ -89,7 +85,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     treeQuery,
     vmsQuery,
     treeSelection,
-    leafSelectionOnly,
+    isNodeSelectable,
   ]);
 
   return (
@@ -128,7 +124,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             searchText,
             treeSelection.isItemSelected,
             treeSelection.areAllSelected,
-            leafSelectionOnly
+            isNodeSelectable
           )}
           defaultAllExpanded
           hasChecks
@@ -141,12 +137,12 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
               const isFullyChecked = isNodeFullyChecked(
                 matchingNode,
                 treeSelection.isItemSelected,
-                leafSelectionOnly
+                isNodeSelectable
               );
               const nodesToSelect = findMatchingNodeAndDescendants(
                 treeQuery.data || null,
                 treeViewItem.id || '',
-                leafSelectionOnly
+                isNodeSelectable
               );
               if (nodesToSelect.length > 0) {
                 treeSelection.selectMultiple(nodesToSelect, !isFullyChecked);
