@@ -1,14 +1,12 @@
 import {
   LoginData,
   MappingData,
+  MappingPeer,
   PlanData,
   TestData,
-  OcpVirtData,
   VmwareProviderData,
-  MappingPeer,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
-
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -23,14 +21,7 @@ export const loginData: LoginData = {
   url: url,
 };
 
-export const targetOcpData: OcpVirtData = {
-  type: 'OpenShift Virtualization',
-  name: 'mgn05',
-  url: 'https://api.mgn05.cnv-qe.rhcloud.com:6443',
-  saToken: 'sha256~L-klfv9mqOe5UTXMwCeUhNu6w7zZyDnFzrjK0x2U5M8',
-};
-
-export const sourceVmwareData: VmwareProviderData = {
+export const providerData: VmwareProviderData = {
   type: providerType.vmware,
   name: 'qe-vmware',
   hostname: v2v_vmware_hostname,
@@ -53,35 +44,36 @@ export const storageMappingPeer: MappingPeer[] = [
   },
 ];
 
-export const networkMappingData: MappingData = {
+export const networkMapping: MappingData = {
   name: 'network-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
-  tProviderName: 'mgn05',
+  tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
 
-export const storageMappingData: MappingData = {
+export const storageMapping: MappingData = {
   name: 'storage-qe-vmware-mapping',
-  sProviderName: 'qe-vmware',
-  tProviderName: 'mgn05',
+  sProviderName: providerData.name,
+  tProviderName: 'host',
   mappingPeer: storageMappingPeer,
 };
+
 export const planData: PlanData = {
-  name: 'testplan',
-  sProvider: sourceVmwareData.name,
-  tProvider: 'mgn05',
+  name: 'testplan-separate-mapping-cold',
+  sProvider: providerData.name,
+  tProvider: 'host',
   namespace: 'default',
   vmwareSourceFqdn: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
   vmwareSourceVmList: ['v2v-rhel7-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
-  providerData: sourceVmwareData,
-  targetProvider: targetOcpData,
-  networkMappingData: networkMappingData,
-  storageMappingData: storageMappingData,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
 };
 
-export const tData: TestData = {
+export const testData: TestData = {
   loginData: loginData,
   planData: planData,
 };

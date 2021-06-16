@@ -48,6 +48,7 @@ export type PlanData = {
   targetProvider?: ProviderData;
   networkMappingData: MappingData;
   storageMappingData: MappingData;
+  warmMigration?: boolean;
 };
 export type TestData = {
   loginData: LoginData;

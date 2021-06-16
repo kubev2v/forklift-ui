@@ -1,4 +1,4 @@
-import { testData } from './config';
+import { testData } from './config_separate_mapping';
 import { login } from '../../../utils/utils';
 import { ProviderVmware } from '../../models/providerVmware';
 import { VmwareProviderData } from '../../types/types';
