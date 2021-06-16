@@ -6,9 +6,10 @@ import {
   ocpinstanceName,
   instanceUrl,
   instanceToken,
-  addButtonModal,
+  // addButtonModal,
   ocpVMenu,
   dataLabel,
+  addButtonModal,
 } from '../views/providerOcpV.view';
 
 export class ProviderocpV extends Provider {

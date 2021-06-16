@@ -1,5 +1,5 @@
 import { MappingNetwork } from '../../models/mappingNetwork';
-import { testData } from './config';
+import { testData } from './config_separate_mapping';
 import { login } from '../../../utils/utils';
 import { MappingStorage } from '../../models/mappingStorage';
 
