@@ -6,6 +6,7 @@ import {
   next,
   openSidebarMenu,
   selectFromDroplist,
+  applyAction,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 
@@ -20,7 +21,7 @@ import {
   SEC,
   planSuccessMessage,
   planCanceledMessage,
-  // CreateNewNetworkMapping,
+  CreateNewNetworkMapping,
 } from '../types/constants';
 
 import {
@@ -28,13 +29,18 @@ import {
   mappingDropdown,
   planDescriptionInput,
   planNameInput,
+  reviewName,
+  reviewSourceProvider,
+  reviewTargetProvider,
+  reviewTargetNamespace,
   searchInput,
   selectDestProviderMenu,
   selectSourceProviderMenu,
   selectTargetNamespace,
-  kebab,
+  targetNetwork,
 } from '../views/plan.view';
 import { kebabDropDownItem } from '../views/provider.view';
+// import { networkMappingPeer } from '../tests/vmware/config';
 
 export class Plan {
   protected static openList(): void {
@@ -102,13 +108,20 @@ export class Plan {
   }
 
   protected networkMappingStep(planData: PlanData): void {
-    const { name } = planData.networkMappingData;
-    const { useExistingNetworkMapping } = planData;
-    if (useExistingNetworkMapping) selectFromDroplist(mappingDropdown, name);
-    // } else {
-    //   const { networkMappingPeer } = planData.networkMappingData;
-    //   selectFromDroplist(mappingDropdown, CreateNewNetworkMapping);
-    // }
+    const { useExistingNetworkMapping, networkMappingData } = planData;
+    const { name, mappingPeer } = networkMappingData;
+    if (useExistingNetworkMapping) {
+      selectFromDroplist(mappingDropdown, name);
+    } else {
+      selectFromDroplist(mappingDropdown, CreateNewNetworkMapping);
+      if (mappingPeer.length == 1) {
+        selectFromDroplist(targetNetwork, mappingPeer[0].dProvider);
+      } else {
+        mappingPeer.forEach((peer) => {
+          selectFromDroplist(targetNetwork, peer.dProvider);
+        });
+      }
+    }
 
     next();
   }
@@ -122,27 +135,49 @@ export class Plan {
     next();
   }
 
-  protected migrationTypeAndReview(): void {
-    //Default migration type is cold migration
-    next();
+  protected validateSummaryLine(selector: string, value: string): void {
+    cy.get(selector).should('have.text', value);
+  }
+
+  protected reviewPlanName(name: string): void {
+    this.validateSummaryLine(reviewName, name);
+  }
+
+  protected reviewSourceProvider(sProvider: string): void {
+    this.validateSummaryLine(reviewSourceProvider, sProvider);
+  }
+
+  protected reviewTargetProvider(tProvider: string): void {
+    this.validateSummaryLine(reviewTargetProvider, tProvider);
+  }
+
+  protected reviewTargetNamespace(namespace: string): void {
+    this.validateSummaryLine(reviewTargetNamespace, namespace);
+  }
+
+  protected finalReviewStep(planData: PlanData): void {
+    const { name, sProvider, tProvider, namespace } = planData;
+    // const totalVmAmount = vmwareSourceVmList.length;
+    this.reviewPlanName(name);
+    this.reviewSourceProvider(sProvider);
+    this.reviewTargetProvider(tProvider);
+    this.reviewTargetNamespace(namespace);
     clickByText(button, finish);
   }
 
-  protected run(name: string): void {
+  protected run(name: string, action: string): void {
     cy.get(tdTag)
       .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
+      .closest(trTag)
       .within(() => {
-        clickByText(button, 'Start');
+        clickByText(button, action);
       });
   }
 
   protected waitForSuccess(name: string): void {
     cy.get(tdTag)
       .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
+      .closest(trTag)
       .within(() => {
         cy.get(dataLabel.status).contains(planSuccessMessage, { timeout: 3600 * SEC });
       });
@@ -171,7 +206,15 @@ export class Plan {
     clickByText(button, 'Yes, cancel');
   }
 
-  // protected populate(planData: PlanData): void {}
+  protected selectMigrationTypeStep(planData: PlanData): void {
+    const { warmMigration } = planData;
+    if (!warmMigration) {
+      click('[for="migration-type-cold"]');
+    } else {
+      click('[for="migration-type-warm"]');
+    }
+    next();
+  }
 
   create(planData: PlanData): void {
     Plan.openList();
@@ -180,29 +223,27 @@ export class Plan {
     this.vmSelectionStep(planData);
     this.networkMappingStep(planData);
     this.storageMappingStep(planData);
-    this.migrationTypeAndReview();
+    this.selectMigrationTypeStep(planData);
+    this.finalReviewStep(planData);
   }
 
   delete(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
-    // applyAction(name, deleteButton);
-    cy.get(tdTag)
-      .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
-      .within(() => {
-        click(kebab);
-      });
+    applyAction(name, deleteButton);
     clickByText(kebabDropDownItem, deleteButton);
     // clickByText(button, deleteButton);
     click('#modal-confirm-button');
   }
 
   execute(planData: PlanData): void {
-    const { name } = planData;
+    const { name, warmMigration } = planData;
     Plan.openList();
-    this.run(name);
+    this.run(name, 'Start');
+    if (warmMigration) {
+      Plan.openList();
+      this.run(name, 'Cutover');
+    }
     this.waitForSuccess(name);
   }
 
@@ -219,7 +260,7 @@ export class Plan {
   cancel_and_restart(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
-    this.run(name);
+    this.run(name, 'Start');
     this.cancel(name);
     this.waitForCanceled(name);
     this.restart(name);

@@ -1,12 +1,6 @@
 import { LoginData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
-import {
-  button,
-  // deleteButton,
-  loginButton,
-  nextButton,
-  trTag,
-} from '../integration/types/constants';
+import { button, loginButton, nextButton, trTag } from '../integration/types/constants';
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 
@@ -41,13 +35,14 @@ export function openSidebarMenu(): void {
 
 export function applyAction(itemName: string, action: string): void {
   cy.contains(itemName)
-    .parent(trTag)
+    .closest(trTag)
     .within(() => {
       click(kebab);
     });
   clickByText(kebabDropDownItem, action);
   clickByText(button, action);
 }
+
 export function selectFromDroplist(selector: string, point: string): void {
   click(selector);
   clickByText(button, point);

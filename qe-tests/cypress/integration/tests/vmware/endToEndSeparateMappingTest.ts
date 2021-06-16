@@ -1,5 +1,5 @@
 import { ProviderVmware } from '../../models/providerVmware';
-import { testData } from './config';
+import { testData } from './config_separate_mapping';
 import { login } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
@@ -33,9 +33,13 @@ describe('End to End test, creating provider, mapping, plan, running plan and de
     plan.execute(testData.planData);
   });
 
-  it('Deleting plan created in a previous tests', () => {
-    plan.delete(testData.planData);
-  });
+  // after('Deleting plan, mappings and provider created in a previous tests', () => {
+  //   login(testData.loginData);
+  //   plan.delete(testData.planData);
+  //   networkMapping.delete(testData.planData.networkMappingData);
+  //   storageMapping.delete(testData.planData.storageMappingData);
+  //   provider.delete(testData.planData.providerData);
+  // });
 
   // it('Clearing resources by deleting mappings, provider and plan', () => {
   //   instances.forEach((instance) => {

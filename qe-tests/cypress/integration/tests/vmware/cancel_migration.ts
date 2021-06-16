@@ -3,7 +3,7 @@ import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 import { ProviderVmware } from '../../models/providerVmware';
-import { testData } from './config';
+import { testData } from './config_separate_mapping';
 
 describe('Automate cancel and restart of cold migration test', () => {
   const source = new ProviderVmware();
