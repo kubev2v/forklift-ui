@@ -74,9 +74,11 @@ const ProvidersPage: React.FunctionComponent = () => {
   const activeProviderType = match?.params.providerType || null;
 
   React.useEffect(() => {
-    if (!activeProviderType && availableProviderTypes.length > 0) {
+    if (
+      (!activeProviderType && availableProviderTypes.length > 0) ||
+      (activeProviderType && !availableProviderTypes.includes(activeProviderType))
+    )
       history.push(`/providers/${availableProviderTypes[0]}`);
-    }
   }, [activeProviderType, availableProviderTypes, history]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
