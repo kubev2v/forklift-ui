@@ -8,6 +8,10 @@ import {
   ListItem,
   Text,
   TextContent,
+  DescriptionListGroup,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListTerm,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StatusIcon } from '@konveyor/lib-ui';
@@ -59,41 +63,50 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
   const getVMName = (id: string) => vms.find((vm) => (vm.id = id))?.name;
 
   return (
-    <Grid hasGutter className={`${spacing.mtSm} ${spacing.mbMd}`}>
-      <GridItem md={12}></GridItem>
-      <GridItem md={3}>Plan name</GridItem>
-      <GridItem md={9} id="details-plan-name">
-        {plan.metadata.name}
-      </GridItem>
+    <DescriptionList isHorizontal>
+      <DescriptionListGroup>
+        <DescriptionListTerm>Plan name</DescriptionListTerm>
+        <DescriptionListDescription id="details-plan-name">
+          {plan.metadata.name}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
       {plan.spec.description ? (
-        <>
-          <GridItem md={3} id="plan-description-label">
-            Plan description
-          </GridItem>
-          <GridItem md={9} id="details-plan-description" aria-labelledby="plan-description-label">
+        <DescriptionListGroup>
+          <DescriptionListTerm id="plan-description-label">Plan description</DescriptionListTerm>
+          <DescriptionListDescription
+            id="details-plan-description"
+            aria-labelledby="plan-description-label"
+          >
             {plan.spec.description}
-          </GridItem>
-        </>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
       ) : null}
-      <GridItem md={3} id="source-provider-label">
-        Source provider
-      </GridItem>
-      <GridItem md={9} id="details-source-provider" aria-labelledby="source-provider-label">
-        {plan.spec.provider.source.name}
-      </GridItem>
-      <GridItem md={3} id="target-provider-label">
-        Target provider
-      </GridItem>
-      <GridItem md={9} id="details-target-provider" aria-labelledby="target-provider-label">
-        {plan.spec.provider.destination.name}
-      </GridItem>
-      <GridItem md={3} id="target-namespace-label">
-        Target namespace
-      </GridItem>
-      <GridItem md={9}>
-        <span id="details-target-namespace" aria-labelledby="target-namespace-label">
+      <DescriptionListGroup>
+        <DescriptionListTerm id="source-provider-label">Source provider</DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-source-provider"
+          aria-labelledby="source-provider-label"
+        >
+          {plan.spec.provider.source.name}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="target-provider-label">Target provider</DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-target-provider"
+          aria-labelledby="target-provider-label"
+        >
+          {plan.spec.provider.destination.name}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="target-namespace-label">Target namespace</DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-target-namespace"
+          aria-labelledby="target-namespace-label"
+        >
           {plan.spec.targetNamespace}
-        </span>
+        </DescriptionListDescription>
         {isNewNamespace ? (
           <TextContent>
             <Text component="small" id="details-new-target-namespace-message">
@@ -101,101 +114,122 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
             </Text>
           </TextContent>
         ) : null}
-      </GridItem>
-      <GridItem md={3} id="transfer-network-label">
-        Migration transfer network
-      </GridItem>
-      <GridItem md={9} id="details-transfer-network" aria-labelledby="transfer-network-label">
-        {plan.spec.transferNetwork?.name || POD_NETWORK.name}
-      </GridItem>
-      <GridItem md={3}>Selected VMs</GridItem>
-      <GridItem md={9}>
-        <Popover
-          headerContent={<div>Selected VMs</div>}
-          bodyContent={
-            <List id="details-selected-vms-list">
-              {plan.spec.vms.map((vm, idx) => (
-                <li key={idx}>{getVMName(vm.id)}</li>
-              ))}
-            </List>
-          }
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="transfer-network-label">
+          Migration transfer network
+        </DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-transfer-network"
+          aria-labelledby="transfer-network-label"
         >
-          <Button variant="link" isInline id="details-selected-vms-count">
-            {plan.spec.vms.length}
-          </Button>
-        </Popover>
-      </GridItem>
-      <GridItem md={3} id="network-mapping-label">
-        Network mapping{' '}
-        {networkMapping ? (
-          <MappingStatus
-            className={spacing.mlXs}
-            mappingType={MappingType.Network}
-            mapping={networkMapping}
-            isLabel={false}
-            disableOk={true}
-          />
-        ) : null}
-      </GridItem>
-      <GridItem md={9} id="details-network-mapping" aria-labelledby="network-mapping-label">
-        <MappingDetailView
-          mappingType={MappingType.Network}
-          sourceProviderType={sourceProvider?.type || 'vsphere'}
-          mapping={networkMapping}
-        />
-      </GridItem>
-      <GridItem md={3} id="storage-mapping-label">
-        Storage mapping{' '}
-        {storageMapping ? (
-          <MappingStatus
-            className={spacing.mlXs}
-            mappingType={MappingType.Storage}
-            mapping={storageMapping}
-            isLabel={false}
-            disableOk={true}
-          />
-        ) : null}
-      </GridItem>
-      <GridItem md={9} id="details-storage-mapping" aria-labelledby="storage-mapping-label">
-        <MappingDetailView
-          mappingType={MappingType.Storage}
-          sourceProviderType={sourceProvider?.type || 'vsphere'}
-          mapping={storageMapping}
-        />
-      </GridItem>
-      <GridItem md={3} id="migration-type-label">
-        Migration type{' '}
-        {warmCriticalConcernsFound.length > 0 ? (
+          {plan.spec.transferNetwork?.name || POD_NETWORK.name}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>Selected VMs</DescriptionListTerm>
+        <DescriptionListDescription>
           <Popover
-            hasAutoWidth
+            headerContent={<div>Selected VMs</div>}
             bodyContent={
-              <>
-                <Text>
-                  Warm migration will fail for one or more VMs because of the following conditions:
-                </Text>
-                <List className={`${spacing.mtSm} ${spacing.mlMd}`}>
-                  {warmCriticalConcernsFound.map((label) => (
-                    <ListItem key={label}>{label}</ListItem>
-                  ))}
-                </List>
-              </>
+              <List id="details-selected-vms-list">
+                {plan.spec.vms.map((vm, idx) => (
+                  <li key={idx}>{getVMName(vm.id)}</li>
+                ))}
+              </List>
             }
           >
-            <Button variant="link" isInline>
-              <StatusIcon status="Error" className={spacing.mlXs} />
+            <Button variant="link" isInline id="details-selected-vms-count">
+              {plan.spec.vms.length}
             </Button>
           </Popover>
-        ) : null}
-      </GridItem>
-      <GridItem md={9} id="details-migration-type" aria-labelledby="migration-type-label">
-        {plan.spec.warm ? 'Warm' : 'Cold'}
-      </GridItem>
-      <GridItem md={3} id="migration-type-label">
-        Hooks
-      </GridItem>
-      {hooksDetails && hooksDetails?.length > 0 ? (
-        <GridItem md={9} id="details-plan-hooks" aria-labelledby="migration-hooks-label">
-          <div>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="network-mapping-label">
+          Network mapping{' '}
+          {networkMapping ? (
+            <MappingStatus
+              className={spacing.mlXs}
+              mappingType={MappingType.Network}
+              mapping={networkMapping}
+              isLabel={false}
+              disableOk={true}
+            />
+          ) : null}
+        </DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-network-mapping"
+          aria-labelledby="network-mapping-label"
+        >
+          <MappingDetailView
+            mappingType={MappingType.Network}
+            sourceProviderType={sourceProvider?.type || 'vsphere'}
+            mapping={networkMapping}
+          />
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="storage-mapping-label">
+          Storage mapping{' '}
+          {storageMapping ? (
+            <MappingStatus
+              className={spacing.mlXs}
+              mappingType={MappingType.Storage}
+              mapping={storageMapping}
+              isLabel={false}
+              disableOk={true}
+            />
+          ) : null}
+        </DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-storage-mapping"
+          aria-labelledby="storage-mapping-label"
+        >
+          <MappingDetailView
+            mappingType={MappingType.Storage}
+            sourceProviderType={sourceProvider?.type || 'vsphere'}
+            mapping={storageMapping}
+          />
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="migration-type-label">
+          Migration type{' '}
+          {warmCriticalConcernsFound.length > 0 ? (
+            <Popover
+              hasAutoWidth
+              bodyContent={
+                <>
+                  <Text>
+                    Warm migration will fail for one or more VMs because of the following
+                    conditions:
+                  </Text>
+                  <List className={`${spacing.mtSm} ${spacing.mlMd}`}>
+                    {warmCriticalConcernsFound.map((label) => (
+                      <ListItem key={label}>{label}</ListItem>
+                    ))}
+                  </List>
+                </>
+              }
+            >
+              <Button variant="link" isInline>
+                <StatusIcon status="Error" className={spacing.mlXs} />
+              </Button>
+            </Popover>
+          ) : null}
+        </DescriptionListTerm>
+        <DescriptionListDescription
+          id="details-migration-type"
+          aria-labelledby="migration-type-label"
+        >
+          {plan.spec.warm ? 'Warm' : 'Cold'}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm id="migration-hooks-label">Hooks</DescriptionListTerm>
+        <DescriptionListDescription id="details-plan-hooks" aria-labelledby="migration-hooks-label">
+          {hooksDetails && hooksDetails?.length > 0 ? (
             <Grid>
               <GridItem span={5} id="migration-plan-hooks-steps-label">
                 <Text className={text.fontWeightBold}>Migration step</Text>
@@ -217,14 +251,12 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
                 ))}
               </GridItem>
             </Grid>
-          </div>
-        </GridItem>
-      ) : (
-        <GridItem md={9} id="details-plan-hooks" aria-labelledby="migration-hooks-label">
-          None
-        </GridItem>
-      )}
-    </Grid>
+          ) : (
+            'None'
+          )}
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+    </DescriptionList>
   );
 };
 
