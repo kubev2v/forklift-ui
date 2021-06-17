@@ -381,6 +381,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ],
   };
 
+  // TODO fix this data, there are duplicate VM leaves, they need to all be unique
+  // TODO it looks like we need to make datacenters directly selectable again if there can be VMs directly under them?
+
   MOCK_VMWARE_VM_TREE = {
     kind: '',
     object: null,

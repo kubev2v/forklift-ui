@@ -291,6 +291,7 @@ const PlanWizard: React.FunctionComponent = () => {
             <WizardStepContainer title="Select VMs">
               <SelectVMsForm
                 form={forms.selectVMs}
+                treeType={forms.filterVMs.values.treeType}
                 selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
                 sourceProvider={forms.general.values.sourceProvider}
                 selectedVMs={selectedVMs}

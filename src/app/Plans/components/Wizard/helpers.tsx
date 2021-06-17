@@ -75,7 +75,7 @@ export const useIsNodeSelectableCallback = (
     (node: InventoryTree) => {
       if (isIncludedLeafNode(node)) return true;
       if (treeType === InventoryTreeType.VM) {
-        return node.kind === 'Folder';
+        return node.kind === 'Folder' || node.kind === 'Cluster';
       }
       return false;
     },
@@ -217,15 +217,22 @@ export const getDirectVMChildren = (node: InventoryTree): InventoryTree[] =>
   node.children?.filter((node) => node.kind === 'VM') || [];
 
 // From the flattened selected nodes list, get all the unique VMs.
-export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] => {
+export const getAllVMChildren = (
+  nodes: InventoryTree[],
+  treeType: InventoryTreeType
+): InventoryTree[] => {
   if (nodes.length === 0) return [];
   return Array.from(
     new Set(
       nodes.flatMap((node) => {
-        // Only include direct children of folders so we can exclude subfolders
-        if (node.kind === 'Folder') return getDirectVMChildren(node);
+        // Only include direct children of nodes in the folder tree so we can exclude subfolders
+        if (
+          node.kind === 'Folder' ||
+          (treeType === InventoryTreeType.VM && node.kind === 'Cluster')
+        )
+          return getDirectVMChildren(node);
         // Otherwise, we might have VMs under hidden descendants like hosts
-        return [...getDirectVMChildren(node), ...getAllVMChildren(node.children || [])];
+        return [...getDirectVMChildren(node), ...getAllVMChildren(node.children || [], treeType)];
       })
     )
   );
@@ -233,9 +240,11 @@ export const getAllVMChildren = (nodes: InventoryTree[]): InventoryTree[] => {
 
 export const getAvailableVMs = (
   selectedTreeNodes: InventoryTree[],
-  allVMs: SourceVM[]
+  allVMs: SourceVM[],
+  treeType: InventoryTreeType
 ): SourceVM[] => {
-  const treeVMs = getAllVMChildren(selectedTreeNodes)
+  console.log({ selectedTreeNodes });
+  const treeVMs = getAllVMChildren(selectedTreeNodes, treeType)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];
   const vmSelfLinks = treeVMs.map((object) => object.selfLink);
