@@ -75,7 +75,7 @@ export const useIsNodeSelectableCallback = (
     (node: InventoryTree) => {
       if (isIncludedLeafNode(node)) return true;
       if (treeType === InventoryTreeType.VM) {
-        return node.kind === 'Folder' || node.kind === 'Cluster';
+        return node.kind === 'Folder' || node.kind === 'Datacenter';
       }
       return false;
     },
@@ -228,7 +228,7 @@ export const getAllVMChildren = (
         // Only include direct children of nodes in the folder tree so we can exclude subfolders
         if (
           node.kind === 'Folder' ||
-          (treeType === InventoryTreeType.VM && node.kind === 'Cluster')
+          (treeType === InventoryTreeType.VM && node.kind === 'Datacenter')
         )
           return getDirectVMChildren(node);
         // Otherwise, we might have VMs under hidden descendants like hosts
@@ -243,7 +243,6 @@ export const getAvailableVMs = (
   allVMs: SourceVM[],
   treeType: InventoryTreeType
 ): SourceVM[] => {
-  console.log({ selectedTreeNodes });
   const treeVMs = getAllVMChildren(selectedTreeNodes, treeType)
     .map((node) => node.object)
     .filter((object) => !!object) as ICommonTreeObject[];

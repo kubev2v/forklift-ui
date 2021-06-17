@@ -431,15 +431,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'Folder',
                 object: {
-                  id: 'vm-2685',
-                  name: 'pemcg-discovery01',
-                  selfLink: '/providers/vsphere/test/vms/vm-2685',
-                },
-                children: null,
-              },
-              {
-                kind: 'Folder',
-                object: {
                   id: 'group-v2831',
                   name: 'Linux',
                   selfLink: '/providers/vsphere/test4/folders/group-v2831',
