@@ -31,7 +31,6 @@ interface IFilterVMsFormProps {
   planBeingEdited: IPlan | null;
 }
 
-// TODO figure out why Templates folder VMs are coming up even though that folder isn't selected
 // TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
