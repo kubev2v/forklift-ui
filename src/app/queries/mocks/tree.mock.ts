@@ -381,9 +381,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     ],
   };
 
-  // TODO fix this data, there are duplicate VM leaves, they need to all be unique
-  // TODO it looks like we need to make datacenters directly selectable again if there can be VMs directly under them?
-
   MOCK_VMWARE_VM_TREE = {
     kind: '',
     object: null,
@@ -408,45 +405,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           {
             kind: 'VM',
             object: {
-              id: 'vm-1630',
-              name: 'fdupont-test-migration',
-              selfLink: '/providers/vsphere/test/vms/vm-1630',
-            },
-            children: null,
-          },
-          {
-            kind: 'VM',
-            object: {
-              id: 'vm-template-test',
-              name: 'vm-template-test',
-              selfLink: '/providers/vsphere/test/vms/vm-template-test',
-            },
-            children: null,
-          },
-          {
-            kind: 'VM',
-            object: {
               id: 'vm-2844',
               name: 'fdupont%2ftest',
               selfLink: '/providers/vsphere/test/vms/vm-2844',
-            },
-            children: null,
-          },
-          {
-            kind: 'VM',
-            object: {
-              id: 'vm-1008',
-              name: 'fdupont-test-migration-centos',
-              selfLink: '/providers/vsphere/test/vms/vm-1008',
-            },
-            children: null,
-          },
-          {
-            kind: 'VM',
-            object: {
-              id: 'vm-2685',
-              name: 'pemcg-discovery01',
-              selfLink: '/providers/vsphere/test/vms/vm-2685',
             },
             children: null,
           },
@@ -467,42 +428,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               selfLink: '/providers/vsphere/test4/folders/group-v1001',
             },
             children: [
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1630',
-                  name: 'fdupont-test-migration',
-                  selfLink: '/providers/vsphere/test/vms/vm-1630',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-template-test',
-                  name: 'vm-template-test',
-                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-2844',
-                  name: 'fdupont%2ftest',
-                  selfLink: '/providers/vsphere/test/vms/vm-2844',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1008',
-                  name: 'fdupont-test-migration-centos',
-                  selfLink: '/providers/vsphere/test/vms/vm-1008',
-                },
-                children: null,
-              },
               {
                 kind: 'Folder',
                 object: {
@@ -529,24 +454,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                     },
                     children: null,
                   },
-                  {
-                    kind: 'VM',
-                    object: {
-                      id: 'vm-template-test',
-                      name: 'vm-template-test',
-                      selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                    },
-                    children: null,
-                  },
-                  {
-                    kind: 'VM',
-                    object: {
-                      id: 'vm-2844',
-                      name: 'fdupont%2ftest',
-                      selfLink: '/providers/vsphere/test/vms/vm-2844',
-                    },
-                    children: null,
-                  },
                 ],
               },
               {
@@ -557,24 +464,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                   selfLink: '/providers/vsphere/test4/folders/group-v2835',
                 },
                 children: [
-                  {
-                    kind: 'VM',
-                    object: {
-                      id: 'vm-1630',
-                      name: 'fdupont-test-migration',
-                      selfLink: '/providers/vsphere/test/vms/vm-1630',
-                    },
-                    children: null,
-                  },
-                  {
-                    kind: 'VM',
-                    object: {
-                      id: 'vm-template-test',
-                      name: 'vm-template-test',
-                      selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                    },
-                    children: null,
-                  },
                   {
                     kind: 'Folder',
                     object: {
@@ -609,33 +498,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'VM',
                 object: {
-                  id: 'vm-1630',
-                  name: 'fdupont-test-migration',
-                  selfLink: '/providers/vsphere/test/vms/vm-1630',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-template-test',
-                  name: 'vm-template-test',
-                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-2844',
-                  name: 'fdupont%2ftest',
-                  selfLink: '/providers/vsphere/test/vms/vm-2844',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
                   id: 'vm-1008',
                   name: 'fdupont-test-migration-centos',
                   selfLink: '/providers/vsphere/test/vms/vm-1008',
@@ -655,98 +517,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               {
                 kind: 'VM',
                 object: {
-                  id: 'vm-1630',
-                  name: 'fdupont-test-migration',
-                  selfLink: '/providers/vsphere/test/vms/vm-1630',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-template-test',
-                  name: 'vm-template-test',
-                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-2844',
-                  name: 'fdupont%2ftest',
-                  selfLink: '/providers/vsphere/test/vms/vm-2844',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1008',
-                  name: 'fdupont-test-migration-centos',
-                  selfLink: '/providers/vsphere/test/vms/vm-1008',
-                },
-                children: null,
-              },
-            ],
-          },
-          {
-            kind: 'Folder',
-            object: {
-              id: 'group-v39',
-              name: 'V2V',
-              selfLink: '/providers/vsphere/test4/folders/group-v39',
-            },
-            children: [
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1630',
-                  name: 'fdupont-test-migration',
-                  selfLink: '/providers/vsphere/test/vms/vm-1630',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-template-test',
-                  name: 'vm-template-test',
-                  selfLink: '/providers/vsphere/test/vms/vm-template-test',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-2844',
-                  name: 'fdupont%2ftest',
-                  selfLink: '/providers/vsphere/test/vms/vm-2844',
-                },
-                children: null,
-              },
-            ],
-          },
-          {
-            kind: 'Folder',
-            object: {
-              id: 'group-v38',
-              name: 'Infrastructure',
-              selfLink: '/providers/vsphere/test4/folders/group-v38',
-            },
-            children: [
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1630',
-                  name: 'fdupont-test-migration',
-                  selfLink: '/providers/vsphere/test/vms/vm-1630',
-                },
-                children: null,
-              },
-              {
-                kind: 'VM',
-                object: {
                   id: 'vm-template-test',
                   name: 'vm-template-test',
                   selfLink: '/providers/vsphere/test/vms/vm-template-test',
@@ -762,7 +532,17 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
               name: 'Discovered virtual machine',
               selfLink: '/providers/vsphere/test4/folders/group-v28',
             },
-            children: null,
+            children: [
+              {
+                kind: 'VM',
+                object: {
+                  id: 'vm-2685',
+                  name: 'pemcg-discovery01',
+                  selfLink: '/providers/vsphere/test/vms/vm-2685',
+                },
+                children: null,
+              },
+            ],
           },
         ],
       },
