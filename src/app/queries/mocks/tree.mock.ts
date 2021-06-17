@@ -470,30 +470,21 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                           name: 'jortel',
                           selfLink: '/providers/vsphere/test4/folders/group-v2838',
                         },
-                        children: null,
+                        children: [
+                          {
+                            kind: 'VM',
+                            object: {
+                              id: 'vm-1008',
+                              name: 'fdupont-test-migration-centos',
+                              selfLink: '/providers/vsphere/test/vms/vm-1008',
+                            },
+                            children: null,
+                          },
+                        ],
                       },
                     ],
                   },
                 ],
-              },
-            ],
-          },
-          {
-            kind: 'Folder',
-            object: {
-              id: 'group-v162',
-              name: 'v2v dev',
-              selfLink: '/providers/vsphere/test4/folders/group-v162',
-            },
-            children: [
-              {
-                kind: 'VM',
-                object: {
-                  id: 'vm-1008',
-                  name: 'fdupont-test-migration-centos',
-                  selfLink: '/providers/vsphere/test/vms/vm-1008',
-                },
-                children: null,
               },
             ],
           },
