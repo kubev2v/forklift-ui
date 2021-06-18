@@ -1,6 +1,7 @@
 import * as React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { QueryClientProvider, QueryClient, QueryCache } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
@@ -27,6 +28,7 @@ const App: React.FunctionComponent = () => (
         </NetworkContextProvider>
       </LocalStorageContextProvider>
     </PollingContextProvider>
+    {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
   </QueryClientProvider>
 );
 

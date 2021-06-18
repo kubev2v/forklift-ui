@@ -50,7 +50,7 @@ export const useClusterProvidersQuery = (): UseQueryResult<IKubeList<IProviderOb
   );
 };
 
-export const useInventoryProvidersQuery = (): UseQueryResult<IProvidersByType> => {
+export const useInventoryProvidersQuery = () => {
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'inventory-providers',
@@ -61,7 +61,6 @@ export const useInventoryProvidersQuery = (): UseQueryResult<IProvidersByType> =
     MOCK_INVENTORY_PROVIDERS
   );
   return result;
-  // return useIndexedResultsSortedByName(result);
 };
 
 export const useCreateProviderMutation = (
