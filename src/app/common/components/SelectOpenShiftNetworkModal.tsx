@@ -34,7 +34,6 @@ interface ISelectOpenShiftNetworkModalProps {
   instructions: string;
   onClose: () => void;
   onSubmit: (network: IOpenShiftNetwork | null) => void;
-  // mutationResult?: UseMutationResult<IKubeResponse<IProviderObject>, KubeClientError>;
   mutationResult?: UseMutationResult<
     IKubeResponse<IProviderObject>,
     KubeClientError,

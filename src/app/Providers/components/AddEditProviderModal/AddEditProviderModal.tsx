@@ -140,11 +140,6 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
   const createProviderMutationResult = useCreateProviderMutation(providerType, onClose);
   const { mutate: createProvider } = createProviderMutationResult;
 
-  // const [patchProvider, patchProviderResult] = usePatchProviderMutation(
-  //   providerType,
-  //   providerBeingEdited,
-  //   onClose
-  // );
   const patchProviderMutationResult = usePatchProviderMutation(
     providerType,
     providerBeingEdited,

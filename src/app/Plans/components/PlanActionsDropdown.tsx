@@ -28,7 +28,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
-  // const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
   const deletePlanMutationResult = useDeletePlanMutation(toggleDeleteModal);
   const { mutate: deletePlan } = deletePlanMutationResult;
   const history = useHistory();

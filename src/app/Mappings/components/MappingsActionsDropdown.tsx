@@ -24,10 +24,6 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
 }: IMappingsActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-  // const [deleteMapping, deleteMappingResult] = useDeleteMappingMutation(
-  //   mappingType,
-  //   toggleDeleteModal
-  // );
 
   const deleteMappingMutationResult = useDeleteMappingMutation(mappingType, toggleDeleteModal);
   const { mutate: deleteMapping } = deleteMappingMutationResult;
