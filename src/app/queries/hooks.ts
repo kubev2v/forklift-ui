@@ -8,8 +8,7 @@ import { META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import {
   mockKubeList,
-  // useKubeResultsSortedByName,
-  // sortByName,
+  sortKubeListByName,
   useMockableQuery,
 } from './helpers';
 import { MOCK_HOOKS } from './mocks/hooks.mock';
@@ -25,12 +24,11 @@ export const useHooksQuery = (): UseQueryResult<IKubeList<IHook>> => {
       queryKey: 'hooks',
       queryFn: async () => (await client.list<IKubeList<IHook>>(hookResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      // select: sortByName
+      select: sortKubeListByName
     },
     mockKubeList(MOCK_HOOKS, 'Hook')
   );
   return result;
-  // return useKubeResultsSortedByName(result);
 };
 
 export const playbookSchema = yup

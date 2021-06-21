@@ -9,6 +9,7 @@ import {
   nameAndNamespace,
   useMockableMutation,
   useMockableQuery,
+  sortKubeListByName,
   isSameResource,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
@@ -32,12 +33,11 @@ export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      // select: sortByName
+      select: sortKubeListByName
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
   return result;
-  // return useKubeResultsSortedByName(result);
 };
 
 export const useCreatePlanMutation = (
