@@ -25,8 +25,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  const deleteMappingMutationResult = useDeleteMappingMutation(mappingType, toggleDeleteModal);
-  const { mutate: deleteMapping } = deleteMappingMutationResult;
+  const deleteMappingMutation = useDeleteMappingMutation(mappingType, toggleDeleteModal);
   const clusterProvidersQuery = useClusterProvidersQuery();
   const areProvidersReady = React.useMemo(
     () => kebabIsOpen && areAssociatedProvidersReady(clusterProvidersQuery, mapping.spec.provider),
@@ -73,7 +72,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
               setKebabIsOpen(false);
               toggleDeleteModal();
             }}
-            isDisabled={deleteMappingMutationResult.isLoading}
+            isDisabled={deleteMappingMutation.isLoading}
             key="delete"
           >
             Delete
@@ -84,8 +83,8 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        mutateFn={() => deleteMapping(mapping)}
-        mutateResult={deleteMappingMutationResult}
+        mutateFn={() => deleteMappingMutation.mutate(mapping)}
+        mutateResult={deleteMappingMutation}
         title={`Delete ${mappingType.toLowerCase()} mapping`}
         confirmButtonText="Delete"
         body={

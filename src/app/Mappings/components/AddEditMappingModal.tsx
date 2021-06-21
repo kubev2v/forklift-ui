@@ -121,16 +121,13 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
-  const createMappingMutationResult = useCreateMappingMutation(mappingType, onClose);
-  const { mutate: createMapping } = createMappingMutationResult;
+  const createMappingMutation = useCreateMappingMutation(mappingType, onClose);
+  const patchMappingMutation = usePatchMappingMutation(mappingType, onClose);
 
-  const patchMappingMutationResult = usePatchMappingMutation(mappingType, onClose);
-  const { mutate: patchMapping } = patchMappingMutationResult;
-
-  const mutateMapping = !mappingBeingEdited ? createMapping : patchMapping;
-  const mutationResult = !mappingBeingEdited
-    ? createMappingMutationResult
-    : patchMappingMutationResult;
+  const mutateMapping = !mappingBeingEdited
+    ? createMappingMutation.mutate
+    : patchMappingMutation.mutate;
+  const mutationResult = !mappingBeingEdited ? createMappingMutation : patchMappingMutation;
 
   const MAPPING_TYPE_OPTIONS = Object.values(MappingType).map((type) => ({
     toString: () => MappingType[type],

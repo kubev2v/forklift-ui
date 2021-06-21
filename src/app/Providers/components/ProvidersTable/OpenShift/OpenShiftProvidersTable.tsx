@@ -181,7 +181,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     false
   );
 
-  const migrationNetworkMutationResult = useOCPMigrationNetworkMutation(() => {
+  const migrationNetworkMutation = useOCPMigrationNetworkMutation(() => {
     toggleSelectNetworkModal();
     setExpandedItem({
       provider: selectedProvider as ICorrelatedProvider<IOpenShiftProvider>,
@@ -189,8 +189,6 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     });
     setSelectedProvider(null);
   });
-
-  const { mutate: setMigrationNetwork } = migrationNetworkMutationResult;
 
   const selectedNetworkName =
     (selectedProvider?.metadata.annotations &&
@@ -252,13 +250,16 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
           onClose={() => {
             toggleSelectNetworkModal();
-            migrationNetworkMutationResult.reset();
+            migrationNetworkMutation.reset();
             setSelectedProvider(null);
           }}
           onSubmit={(network) =>
-            setMigrationNetwork({ provider: selectedProvider?.inventory || null, network })
+            migrationNetworkMutation.mutate({
+              provider: selectedProvider?.inventory || null,
+              network,
+            })
           }
-          mutationResult={migrationNetworkMutationResult}
+          mutationResult={migrationNetworkMutation}
         />
       ) : null}
     </>

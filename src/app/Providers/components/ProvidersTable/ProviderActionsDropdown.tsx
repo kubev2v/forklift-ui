@@ -21,9 +21,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  const deleteProviderMutationResult = useDeleteProviderMutation(providerType, toggleDeleteModal);
-
-  const { mutate: deleteProvider } = deleteProviderMutationResult;
+  const deleteProviderMutation = useDeleteProviderMutation(providerType, toggleDeleteModal);
 
   const { openEditProviderModal, plans } = React.useContext(EditProviderContext);
   const hasRunningMigration = !!plans
@@ -82,7 +80,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
                 setKebabIsOpen(false);
                 toggleDeleteModal();
               }}
-              isDisabled={deleteProviderMutationResult.isLoading || isEditDeleteDisabled}
+              isDisabled={deleteProviderMutation.isLoading || isEditDeleteDisabled}
             >
               Remove
             </DropdownItem>
@@ -93,8 +91,8 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        mutateFn={() => deleteProvider(provider)}
-        mutateResult={deleteProviderMutationResult}
+        mutateFn={() => deleteProviderMutation.mutate(provider)}
+        mutateResult={deleteProviderMutation}
         title="Remove provider"
         confirmButtonText="Remove"
         body={
