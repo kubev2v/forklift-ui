@@ -14,7 +14,7 @@ import {
   SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingFormState } from './AddEditMappingModal';
-import { QueryResult, QueryStatus } from 'react-query';
+import { UseQueryResult } from 'react-query';
 import { IMappingResourcesResult } from '@app/queries';
 import { getBuilderItemsFromMapping } from './MappingBuilder/helpers';
 import { ProviderType } from '@app/common/constants';
@@ -74,7 +74,7 @@ export const useEditingMappingPrefillEffect = (
     sourceProvider: SourceInventoryProvider | null;
     targetProvider: IOpenShiftProvider | null;
   },
-  providersQuery: QueryResult<IProvidersByType>,
+  providersQuery: UseQueryResult<IProvidersByType>,
   mappingResourceQueries: IMappingResourcesResult
 ): { isDonePrefilling: boolean } => {
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
@@ -84,7 +84,7 @@ export const useEditingMappingPrefillEffect = (
       !isStartedPrefilling &&
       mappingBeingEdited &&
       providersQuery.isSuccess &&
-      mappingResourceQueries.status === QueryStatus.Success
+      mappingResourceQueries.status === 'success'
     ) {
       setIsStartedPrefilling(true);
       const { sourceProvider, targetProvider } = mappingBeingEditedProviders;

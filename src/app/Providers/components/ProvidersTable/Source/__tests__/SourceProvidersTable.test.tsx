@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
+import { QueryClientProvider, QueryClient } from 'react-query';
+const queryClient = new QueryClient();
 
 import SourceProvidersTable from '../SourceProvidersTable';
 import {
@@ -24,9 +26,11 @@ describe('<SourceProvidersTable />', () => {
 
   it('renders vsphere table', () => {
     render(
-      <Router history={history}>
-        <SourceProvidersTable {...props} providerType="vsphere" />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router history={history}>
+          <SourceProvidersTable {...props} providerType="vsphere" />
+        </Router>
+      </QueryClientProvider>
     );
 
     expect(screen.getByRole('grid', { name: /VMware providers table/ })).toBeInTheDocument();
@@ -49,9 +53,11 @@ describe('<SourceProvidersTable />', () => {
 
   it('renders Hosts links', () => {
     render(
-      <Router history={history}>
-        <SourceProvidersTable {...props} providerType="vsphere" />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router history={history}>
+          <SourceProvidersTable {...props} providerType="vsphere" />
+        </Router>
+      </QueryClientProvider>
     );
 
     const links = screen.getAllByRole('link');
@@ -61,9 +67,11 @@ describe('<SourceProvidersTable />', () => {
 
   it('renders status condition', async () => {
     render(
-      <Router history={history}>
-        <SourceProvidersTable {...props} providerType="vsphere" />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router history={history}>
+          <SourceProvidersTable {...props} providerType="vsphere" />
+        </Router>
+      </QueryClientProvider>
     );
 
     userEvent.click(screen.getByRole('button', { name: /Critical/ }));
@@ -75,9 +83,11 @@ describe('<SourceProvidersTable />', () => {
 
   it('renders action menu', async () => {
     render(
-      <Router history={history}>
-        <SourceProvidersTable {...props} providerType="vsphere" />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router history={history}>
+          <SourceProvidersTable {...props} providerType="vsphere" />
+        </Router>
+      </QueryClientProvider>
     );
 
     userEvent.click(screen.getAllByRole('button', { name: /Actions/ })[0]);

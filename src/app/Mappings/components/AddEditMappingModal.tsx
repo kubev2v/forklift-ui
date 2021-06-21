@@ -35,7 +35,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
-import { QueryResult } from 'react-query';
+import { UseQueryResult } from 'react-query';
 import { useEditingMappingPrefillEffect } from './helpers';
 import { IKubeList } from '@app/client/types';
 import {
@@ -54,7 +54,7 @@ interface IAddEditMappingModalProps {
 }
 
 const useMappingFormState = (
-  mappingsQuery: QueryResult<IKubeList<Mapping>>,
+  mappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   mappingBeingEdited: Mapping | null
 ) =>
   useFormState({
@@ -121,10 +121,13 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.sourceProvider, form.values.targetProvider]);
 
-  const [createMapping, createMappingResult] = useCreateMappingMutation(mappingType, onClose);
-  const [patchMapping, patchMappingResult] = usePatchMappingMutation(mappingType, onClose);
-  const mutateMapping = !mappingBeingEdited ? createMapping : patchMapping;
-  const mutationResult = !mappingBeingEdited ? createMappingResult : patchMappingResult;
+  const createMappingMutation = useCreateMappingMutation(mappingType, onClose);
+  const patchMappingMutation = usePatchMappingMutation(mappingType, onClose);
+
+  const mutateMapping = !mappingBeingEdited
+    ? createMappingMutation.mutate
+    : patchMappingMutation.mutate;
+  const mutationResult = !mappingBeingEdited ? createMappingMutation : patchMappingMutation;
 
   const MAPPING_TYPE_OPTIONS = Object.values(MappingType).map((type) => ({
     toString: () => MappingType[type],

@@ -26,9 +26,10 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
   const onMigrationStarted = (migration: IMigration) => {
     history.push(`/plans/${migration.spec.plan.name}`);
   };
-  const [createMigration, createMigrationResult] = useCreateMigrationMutation(onMigrationStarted);
-  const [setCutover, setCutoverResult] = useSetCutoverMutation();
-  if (isBeingStarted || createMigrationResult.isLoading || setCutoverResult.isLoading) {
+  const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
+  const setCutoverMutation = useSetCutoverMutation();
+
+  if (isBeingStarted || createMigrationMutation.isLoading || setCutoverMutation.isLoading) {
     return <Spinner size="md" className={spacing.mxLg} />;
   }
   return (
@@ -37,26 +38,26 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
         variant="secondary"
         onClick={() => {
           if (buttonType === 'Start' || buttonType === 'Restart') {
-            createMigration(plan);
+            createMigrationMutation.mutate(plan);
           } else if (buttonType === 'Cutover') {
-            setCutover({ plan, cutover: new Date().toISOString() });
+            setCutoverMutation.mutate({ plan, cutover: new Date().toISOString() });
           }
         }}
       >
         {buttonType}
       </Button>
-      {(createMigrationResult.isError || setCutoverResult.isError) && errorContainerRef.current
+      {(createMigrationMutation.isError || setCutoverMutation.isError) && errorContainerRef.current
         ? createPortal(
             <>
               <ResolvedQuery
-                result={createMigrationResult}
+                result={createMigrationMutation}
                 errorTitle="Error starting migration"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}
                 className={spacing.mbMd}
               />
               <ResolvedQuery
-                result={setCutoverResult}
+                result={setCutoverMutation}
                 errorTitle="Error setting cutover time"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}

@@ -1,6 +1,5 @@
-import { QueryResult } from 'react-query';
 import { usePollingContext } from '@app/common/context';
-import { useMockableQuery, getInventoryApiUrl, useResultsSortedByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import {
   IAnnotatedStorageClass,
   IByProvider,
@@ -19,20 +18,19 @@ import { useProvisionersQuery } from '.';
 export const useSourceStoragesQuery = (
   provider: SourceInventoryProvider | null,
   mappingType: MappingType
-): QueryResult<ISourceStorage[]> => {
+) => {
   const apiSlug = provider?.type === 'vsphere' ? '/datastores' : '/storagedomains';
   const result = useMockableQuery<ISourceStorage[]>(
     {
       queryKey: ['source-storages', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
-      config: {
-        enabled: !!provider && mappingType === MappingType.Storage,
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      enabled: !!provider && mappingType === MappingType.Storage,
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortByName,
     },
     provider?.type === 'vsphere' ? MOCK_VMWARE_DATASTORES : MOCK_RHV_STORAGE_DOMAINS
   );
-  return useResultsSortedByName(result);
+  return result;
 };
 
 const annotateStorageClasses = (
@@ -62,7 +60,7 @@ const annotateStorageClasses = (
 export const useStorageClassesQuery = (
   providers: (IOpenShiftProvider | null)[] | null,
   mappingType: MappingType
-): QueryResult<IByProvider<IAnnotatedStorageClass>> => {
+) => {
   const fetchContext = useFetchContext();
   const definedProviders = providers
     ? (providers.filter((provider) => !!provider) as IOpenShiftProvider[])
@@ -93,14 +91,12 @@ export const useStorageClassesQuery = (
           {} as IByProvider<IAnnotatedStorageClass>
         );
       },
-      config: {
-        enabled:
-          !!providers &&
-          providers.length > 0 &&
-          mappingType === MappingType.Storage &&
-          !!provisionersQuery.data,
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      enabled:
+        !!providers &&
+        providers.length > 0 &&
+        mappingType === MappingType.Storage &&
+        !!provisionersQuery.data,
+      refetchInterval: usePollingContext().refetchInterval,
     },
     MOCK_STORAGE_CLASSES_BY_PROVIDER
   );

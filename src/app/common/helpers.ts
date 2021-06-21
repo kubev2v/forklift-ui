@@ -11,7 +11,7 @@ import {
   IStep,
   IVMStatus,
 } from '@app/queries/types';
-import { QueryResult } from 'react-query';
+import { UseQueryResult } from 'react-query';
 import { IKubeList } from '@app/client/types';
 
 dayjs.extend(utc);
@@ -135,7 +135,7 @@ export const getMinutesUntil = (timestamp: Date | string): string => {
 };
 
 export const getAvailableProviderTypes = (
-  clusterProvidersQuery: QueryResult<IKubeList<IProviderObject>>
+  clusterProvidersQuery: UseQueryResult<IKubeList<IProviderObject>>
 ): ProviderType[] => {
   const clusterProviders = clusterProvidersQuery.data?.items || [];
   return Array.from(new Set(clusterProviders.map((provider) => provider.spec.type)))

@@ -2,7 +2,6 @@ import {
   IAnnotatedStorageClass,
   INetworkMappingItem,
   IOpenShiftNetwork,
-  IStorageClass,
   IStorageMappingItem,
   MappingItem,
   MappingTarget,

@@ -41,7 +41,7 @@ import {
   useHooksQuery,
   useSourceVMsQuery,
 } from '@app/queries';
-import { QueryResult, QueryStatus } from 'react-query';
+import { UseQueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
 import { PlanHookInstance } from './PlanAddEditHookModal';
 import { IKubeList } from '@app/client/types';
@@ -524,7 +524,7 @@ export const generatePlan = (
 
 export const getSelectedVMsFromIds = (
   vmIds: string[],
-  vmsQuery: QueryResult<SourceVM[]>
+  vmsQuery: UseQueryResult<SourceVM[]>
 ): SourceVM[] =>
   vmIds.flatMap((id) => {
     const matchingVM = vmsQuery.data?.find((vm) => vm.id === id);
@@ -533,7 +533,7 @@ export const getSelectedVMsFromIds = (
 
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
-  vmsQuery: QueryResult<SourceVM[]>
+  vmsQuery: UseQueryResult<SourceVM[]>
 ): SourceVM[] => {
   if (!planBeingEdited) return [];
   const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
@@ -544,7 +544,7 @@ interface IEditingPrefillResults {
   prefillQueryStatus: QueryStatus;
   prefillQueryError: unknown;
   isDonePrefilling: boolean;
-  prefillQueries: QueryResult<unknown>[];
+  prefillQueries: UseQueryResult<unknown>[];
   prefillErrorTitles: string[];
 }
 
@@ -610,7 +610,7 @@ export const useEditingPlanPrefillEffect = (
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
 
   React.useEffect(() => {
-    if (!isStartedPrefilling && queryStatus === QueryStatus.Success && planBeingEdited) {
+    if (!isStartedPrefilling && queryStatus === 'success' && planBeingEdited) {
       setIsStartedPrefilling(true);
       const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
       const selectedTreeNodes = findNodesMatchingSelectedVMs(
@@ -743,7 +743,7 @@ export const generateHook = (
 
 export const getPlanHookFormInstances = (
   plan: IPlan,
-  hooksQuery: QueryResult<IKubeList<IHook>>
+  hooksQuery: UseQueryResult<IKubeList<IHook>>
 ): PlanHookInstance[] => {
   if (plan.spec.vms.length === 0) return [];
   const planHookRefs = plan.spec.vms[0].hooks || [];

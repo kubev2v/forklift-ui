@@ -1,4 +1,4 @@
-import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
+import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import { ForkliftResource, ForkliftResourceKind, checkIfResourceExists } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
@@ -6,7 +6,7 @@ import {
   isSameResource,
   mockKubeList,
   nameAndNamespace,
-  useKubeResultsSortedByName,
+  sortKubeListByName,
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
@@ -22,9 +22,9 @@ const migrationResource = new ForkliftResource(ForkliftResourceKind.Migration, M
 
 export const useCreateMigrationMutation = (
   onSuccess?: (migration: IMigration) => void
-): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
+): UseMutationResult<IKubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
@@ -50,8 +50,8 @@ export const useCreateMigrationMutation = (
     },
     {
       onSuccess: ({ data }) => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('migrations');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('migrations');
         pollFasterAfterMutation();
         onSuccess && onSuccess(data);
       },
@@ -59,19 +59,18 @@ export const useCreateMigrationMutation = (
   );
 };
 
-export const useMigrationsQuery = (): QueryResult<IKubeList<IMigration>> => {
+export const useMigrationsQuery = (): UseQueryResult<IKubeList<IMigration>> => {
   const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<IMigration>>(
     {
       queryKey: 'migrations',
       queryFn: async () => (await client.list<IKubeList<IMigration>>(migrationResource)).data,
-      config: {
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortKubeListByName,
     },
     mockKubeList(MOCK_MIGRATIONS, 'Migration')
   );
-  return useKubeResultsSortedByName(result);
+  return result;
 };
 
 export const findLatestMigration = (
@@ -97,10 +96,10 @@ export const useLatestMigrationQuery = (plan: IPlan | null): IMigration | null =
 export const useCancelVMsMutation = (
   plan: IPlan | null,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, SourceVM[], unknown> => {
+): UseMutationResult<IKubeResponse<IMigration>, KubeClientError, SourceVM[], unknown> => {
   const latestMigration = useLatestMigrationQuery(plan);
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, SourceVM[]>(
     (vms: SourceVM[]) => {
       if (!latestMigration) return Promise.reject('Could not find active Migration CR');
@@ -133,8 +132,8 @@ export const useCancelVMsMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('migrations');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('migrations');
         onSuccess && onSuccess();
       },
     }
@@ -148,10 +147,10 @@ export interface ISetCutoverArgs {
 
 export const useSetCutoverMutation = (
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs, unknown> => {
+): UseMutationResult<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs, unknown> => {
   const migrationsQuery = useMigrationsQuery();
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs>(
     ({ plan, cutover }) => {
       const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
@@ -167,8 +166,8 @@ export const useSetCutoverMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('migrations');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('migrations');
         onSuccess && onSuccess();
       },
     }

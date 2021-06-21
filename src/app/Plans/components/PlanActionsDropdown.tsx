@@ -28,7 +28,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [deletePlan, deletePlanResult] = useDeletePlanMutation(toggleDeleteModal);
+  const deletePlanMutation = useDeletePlanMutation(toggleDeleteModal);
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -69,19 +69,19 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           <ConditionalTooltip
             key="Delete"
             isTooltipEnabled={
-              hasCondition(conditions, PlanStatusType.Executing) || deletePlanResult.isLoading
+              hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
             }
             content={
               hasCondition(conditions, PlanStatusType.Executing)
                 ? 'This plan cannot be deleted because it is running'
-                : deletePlanResult.isLoading
+                : deletePlanMutation.isLoading
                 ? 'This plan cannot be deleted because it is deleting'
                 : ''
             }
           >
             <DropdownItem
               isDisabled={
-                hasCondition(conditions, PlanStatusType.Executing) || deletePlanResult.isLoading
+                hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
               }
               onClick={() => {
                 setKebabIsOpen(false);
@@ -106,8 +106,8 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         toggleOpen={toggleDeleteModal}
-        mutateFn={() => deletePlan(plan)}
-        mutateResult={deletePlanResult}
+        mutateFn={() => deletePlanMutation.mutate(plan)}
+        mutateResult={deletePlanMutation}
         title="Delete migration plan"
         confirmButtonText="Delete"
         body={

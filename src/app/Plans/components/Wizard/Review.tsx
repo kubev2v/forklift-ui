@@ -2,21 +2,17 @@ import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
 import { PlanWizardFormState } from './PlanWizard';
-import { IPlan, SourceVM, Mapping } from '@app/queries/types';
-import { MutationResult } from 'react-query';
-import { IKubeResponse, KubeClientError } from '@app/client/types';
+import { IPlan, SourceVM } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useNamespacesQuery } from '@app/queries';
 import PlanDetails from '../PlanDetails';
+import { UnknownResult } from '@app/common/types';
 
 interface IReviewProps {
   forms: PlanWizardFormState;
-  allMutationResults: (
-    | MutationResult<IKubeResponse<IPlan>, KubeClientError>
-    | MutationResult<IKubeResponse<Mapping>, KubeClientError>
-  )[];
+  allMutationResults: UnknownResult[];
   allMutationErrorTitles: string[];
   planBeingEdited: IPlan | null;
   selectedVMs: SourceVM[];

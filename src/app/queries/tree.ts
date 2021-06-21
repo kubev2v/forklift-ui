@@ -1,6 +1,5 @@
-import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
-import { QueryResult } from 'react-query';
+import { UseQueryResult } from 'react-query';
 import { getInventoryApiUrl, sortTreeItemsByName, useMockableQuery } from './helpers';
 import { MOCK_RHV_HOST_TREE, MOCK_VMWARE_HOST_TREE, MOCK_VMWARE_VM_TREE } from './mocks/tree.mock';
 import { SourceInventoryProvider } from './types';
@@ -10,7 +9,7 @@ import { useAuthorizedFetch } from './fetchHelpers';
 export const useInventoryTreeQuery = <T extends InventoryTree>(
   provider: SourceInventoryProvider | null,
   treeType: InventoryTreeType
-): QueryResult<T> => {
+): UseQueryResult<T> => {
   // VMware providers have both Host and VM trees, but RHV only has Host trees.
   const isValidQuery = provider?.type === 'vsphere' || treeType === InventoryTreeType.Cluster;
   const apiSlug =
@@ -23,10 +22,9 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
     {
       queryKey: ['inventory-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
-      config: {
-        enabled: isValidQuery && !!provider,
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      enabled: isValidQuery && !!provider,
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortTreeItemsByName,
     },
     (treeType === InventoryTreeType.Cluster
       ? provider?.type === 'vsphere'
@@ -34,9 +32,5 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
         : MOCK_RHV_HOST_TREE
       : MOCK_VMWARE_VM_TREE) as T
   );
-  const sortedData = React.useMemo(() => sortTreeItemsByName(result.data), [result.data]);
-  return {
-    ...result,
-    data: sortedData,
-  };
+  return result;
 };

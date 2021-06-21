@@ -4,20 +4,23 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
-
+import { QueryClientProvider, QueryClient } from 'react-query';
 import { NetworkContextProvider } from '@app/common/context';
 import PlanWizard from '../PlanWizard';
+const queryClient = new QueryClient();
 
 describe('<AddEditProviderModal />', () => {
   const history = createMemoryHistory();
 
   it('allows to cancel a plan wizard', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <PlanWizard />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <PlanWizard />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
@@ -26,11 +29,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows to create a plan', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <PlanWizard />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <PlanWizard />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const name = await screen.findByRole('textbox', { name: /plan name/i });
@@ -73,11 +78,13 @@ describe('<AddEditProviderModal />', () => {
     const history = createMemoryHistory();
     history.push('/plans/plantest-02/edit');
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <PlanWizard />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <PlanWizard />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     await waitFor(() => {
