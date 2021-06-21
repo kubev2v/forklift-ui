@@ -52,6 +52,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
+  treeType: InventoryTreeType;
   selectedTreeNodes: InventoryTree[];
   sourceProvider: SourceInventoryProvider | null;
   selectedVMs: SourceVM[];
@@ -59,13 +60,14 @@ interface ISelectVMsFormProps {
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   form,
+  treeType,
   selectedTreeNodes,
   sourceProvider,
   selectedVMs,
 }: ISelectVMsFormProps) => {
   const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
     sourceProvider,
-    InventoryTreeType.Host
+    InventoryTreeType.Cluster
   );
   const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
     sourceProvider,
@@ -78,7 +80,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const [availableVMs, setAvailableVMs] = React.useState<SourceVM[] | null>(null);
   React.useEffect(() => {
     if (vmsQuery.data) {
-      const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || []);
+      const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || [], treeType);
       setAvailableVMs([
         ...selectedVMsOnMount.current,
         ...filteredVMs.filter(
@@ -86,7 +88,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         ),
       ]);
     }
-  }, [vmsQuery.data, selectedTreeNodes]);
+  }, [vmsQuery.data, selectedTreeNodes, treeType]);
 
   const [treePathInfoByVM, setTreePathInfoByVM] = React.useState<IVMTreePathInfoByVM | null>(null);
   React.useEffect(() => {

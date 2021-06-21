@@ -1,5 +1,5 @@
 export enum InventoryTreeType {
-  Host = 'Host',
+  Cluster = 'Cluster',
   VM = 'VM',
 }
 

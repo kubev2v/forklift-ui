@@ -110,9 +110,7 @@ describe('<AddEditProviderModal />', () => {
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Filter by VM location/ })).toBeInTheDocument();
-    expect(
-      screen.getByRole('checkbox', { name: /Select Host esx13.v2v.bos.redhat.com/ })
-    ).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /Select Cluster V2V_Cluster/ })).toBeChecked();
     expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);
 

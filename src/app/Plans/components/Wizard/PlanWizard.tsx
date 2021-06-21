@@ -104,7 +104,7 @@ const usePlanWizardFormState = (
     }),
     filterVMs: useFormState({
       treeType: useFormField<InventoryTreeType>(
-        InventoryTreeType.Host,
+        InventoryTreeType.Cluster,
         yup.mixed<InventoryTreeType>()
       ),
       selectedTreeNodes: useFormField<InventoryTree[]>(
@@ -289,6 +289,7 @@ const PlanWizard: React.FunctionComponent = () => {
             <WizardStepContainer title="Select VMs">
               <SelectVMsForm
                 form={forms.selectVMs}
+                treeType={forms.filterVMs.values.treeType}
                 selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
                 sourceProvider={forms.general.values.sourceProvider}
                 selectedVMs={selectedVMs}

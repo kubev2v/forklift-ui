@@ -11,8 +11,13 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
   treeType: InventoryTreeType
 ): UseQueryResult<T> => {
   // VMware providers have both Host and VM trees, but RHV only has Host trees.
-  const isValidQuery = provider?.type === 'vsphere' || treeType === InventoryTreeType.Host;
-  const apiSlug = treeType === InventoryTreeType.Host ? '/tree/host' : '/tree/vm';
+  const isValidQuery = provider?.type === 'vsphere' || treeType === InventoryTreeType.Cluster;
+  const apiSlug =
+    treeType === InventoryTreeType.Cluster
+      ? provider?.type === 'vsphere'
+        ? '/tree/host' // TODO in the future, this vsphere tree will also be at /tree/cluster
+        : '/tree/cluster'
+      : '/tree/vm';
   const result = useMockableQuery<T>(
     {
       queryKey: ['inventory-tree', provider?.name, treeType],
@@ -21,7 +26,7 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
       refetchInterval: usePollingContext().refetchInterval,
       select: sortTreeItemsByName,
     },
-    (treeType === InventoryTreeType.Host
+    (treeType === InventoryTreeType.Cluster
       ? provider?.type === 'vsphere'
         ? MOCK_VMWARE_HOST_TREE
         : MOCK_RHV_HOST_TREE

@@ -11,10 +11,13 @@ import {
 } from '@app/queries/types';
 import {
   filterAndConvertInventoryTree,
+  findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
-  flattenVMwareTreeNodes,
+  getSelectableNodes,
   getSelectedVMsFromPlan,
+  isNodeFullyChecked,
+  useIsNodeSelectableCallback,
 } from './helpers';
 import { PlanWizardFormState } from './PlanWizard';
 
@@ -28,6 +31,8 @@ interface IFilterVMsFormProps {
   planBeingEdited: IPlan | null;
 }
 
+// TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
+
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   sourceProvider,
@@ -40,8 +45,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const vmsQuery = useSourceVMsQuery(sourceProvider);
   const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
+  const isNodeSelectable = useIsNodeSelectableCallback(form.values.treeType);
+
   const treeSelection = useSelectionState({
-    items: flattenVMwareTreeNodes(treeQuery.data || null),
+    items: getSelectableNodes(treeQuery.data || null, isNodeSelectable),
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
     isEqual: (a: InventoryTree, b: InventoryTree) => a.object?.selfLink === b.object?.selfLink,
   });
@@ -57,7 +64,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         lastTreeType.current = form.values.treeType;
       } else if (vmsQuery.isSuccess && treeQuery.isSuccess) {
         const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
-        const selectedTreeNodes = findNodesMatchingSelectedVMs(treeQuery.data || null, selectedVMs);
+        const selectedTreeNodes = findNodesMatchingSelectedVMs(
+          treeQuery.data || null,
+          selectedVMs,
+          isNodeSelectable
+        );
         treeSelection.setSelectedItems(selectedTreeNodes);
         lastTreeType.current = form.values.treeType;
       }
@@ -70,13 +81,15 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     treeQuery,
     vmsQuery,
     treeSelection,
+    isNodeSelectable,
   ]);
 
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
         <Text component="p">
-          Refine the list of VMs selectable for migration by clusters and hosts or by folder.
+          Refine the list of VMs selectable for migration by clusters
+          {sourceProvider?.type === 'vsphere' ? ' or by folders' : ''}.
         </Text>
       </TextContent>
       {sourceProvider?.type === 'vsphere' ? (
@@ -86,9 +99,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           className={spacing.mtMd}
         >
           <Tab
-            key={InventoryTreeType.Host}
-            eventKey={InventoryTreeType.Host}
-            title={<TabTitleText>By clusters and hosts</TabTitleText>}
+            key={InventoryTreeType.Cluster}
+            eventKey={InventoryTreeType.Cluster}
+            title={<TabTitleText>By clusters</TabTitleText>}
           />
           <Tab
             key={InventoryTreeType.VM}
@@ -107,7 +120,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             treeQuery.data || null,
             searchText,
             treeSelection.isItemSelected,
-            treeSelection.areAllSelected
+            treeSelection.areAllSelected,
+            isNodeSelectable
           )}
           defaultAllExpanded
           hasChecks
@@ -116,14 +130,20 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else {
+              const matchingNode = findMatchingNode(treeQuery.data || null, treeViewItem.id || '');
+              const isFullyChecked = isNodeFullyChecked(
+                matchingNode,
+                treeSelection.isItemSelected,
+                isNodeSelectable
+              );
               const nodesToSelect = findMatchingNodeAndDescendants(
                 treeQuery.data || null,
-                treeViewItem.id || ''
+                treeViewItem.id || '',
+                isNodeSelectable
               );
-              treeSelection.selectMultiple(
-                nodesToSelect,
-                !treeSelection.isItemSelected(nodesToSelect[0])
-              );
+              if (nodesToSelect.length > 0) {
+                treeSelection.selectMultiple(nodesToSelect, !isFullyChecked);
+              }
             }
           }}
           searchProps={{
