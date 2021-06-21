@@ -215,26 +215,16 @@ const PlanWizard: React.FunctionComponent = () => {
   const patchPlanMutationResult = usePatchPlanMutation();
   const { mutate: patchPlan } = patchPlanMutationResult;
 
-  // const {
-  //   network: [createSharedNetworkMap, createSharedNetworkMapResult],
-  //   storage: [createSharedStorageMap, createSharedStorageMapResult],
-  // } = useCreateMappingMutations();
-
-  const createMappingMutationResult = useCreateMappingMutations();
-  const { mutate: createSharedNetworkMap } = createMappingMutationResult.network;
-  const { mutate: createSharedStorageMap } = createMappingMutationResult.storage;
-  let createSharedNetworkMapResult;
-  let createSharedStorageMapResult;
+  const { network: createSharedNetworkMapMutation, storage: createSharedStorageMapMutation } =
+    useCreateMappingMutations();
 
   const createSharedMappings = async () => {
     const { networkMapping, storageMapping } = generateMappings({ forms });
     if (networkMapping && forms.networkMapping.values.isSaveNewMapping) {
-      createSharedNetworkMapResult = createSharedNetworkMap(networkMapping);
-      // TODO: needs more testing
+      createSharedNetworkMapMutation.mutate(networkMapping);
     }
     if (storageMapping && forms.storageMapping.values.isSaveNewMapping) {
-      createSharedStorageMapResult = createSharedStorageMap(storageMapping);
-      // TODO: needs more testing
+      createSharedStorageMapMutation.mutate(storageMapping);
     }
   };
 
@@ -249,8 +239,8 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const allMutationResults = [
     !editRouteMatch ? createPlanMutationResult : patchPlanMutationResult,
-    ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapResult] : []),
-    ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapResult] : []),
+    ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapMutation] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapMutation] : []),
   ];
   const allMutationErrorTitles = [
     !editRouteMatch ? 'Error creating migration plan' : 'Error saving migration plan',
