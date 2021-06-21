@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
-import { UseMutationResult } from 'react-query';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
-import { IKubeResponse, KubeClientError } from '@app/client/types';
+import { MutationResultSubset } from '../types';
 
 // TODO lib-ui candidate
 
@@ -10,7 +9,7 @@ interface IConfirmModalProps {
   isOpen: boolean;
   toggleOpen: () => void;
   mutateFn: () => void;
-  mutateResult?: UseMutationResult<IKubeResponse<unknown>, KubeClientError, any, unknown>;
+  mutateResult?: MutationResultSubset;
   title: string;
   body: React.ReactNode;
   confirmButtonText: string;

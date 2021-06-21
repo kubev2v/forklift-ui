@@ -1,5 +1,5 @@
 import { BrandType } from '@app/global-flags';
-import { UseQueryResult } from 'react-query';
+import { UseMutationResult, UseQueryResult } from 'react-query';
 
 export interface IMetaVars {
   clusterApi: string;
@@ -32,4 +32,9 @@ export interface IEnvVars {
 export type ResultSubset = Pick<
   UseQueryResult<unknown>,
   'isError' | 'isLoading' | 'isIdle' | 'error'
+>;
+
+export type MutationResultSubset = Pick<
+  UseMutationResult<unknown>,
+  'isError' | 'isLoading' | 'isIdle' | 'error' | 'reset'
 >;
