@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
+import { QueryClientProvider, QueryClient } from 'react-query';
+const queryClient = new QueryClient();
 
 import { NetworkContextProvider } from '@app/common/context';
 import AddEditProviderModal from '../AddEditProviderModal';
@@ -21,11 +23,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows to cancel addition/edition of a provider', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={null} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
@@ -36,11 +40,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows adding a vsphere provider', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={null} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
@@ -75,11 +81,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('fails to add a vsphere provider with wrong values', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={null} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
@@ -114,11 +122,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows editing a vsphere provider', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[0]} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[0]} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const editButton = await screen.findByRole('dialog', { name: /Edit provider/ });
@@ -131,11 +141,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows to add an openshift provider', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={null} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
@@ -161,11 +173,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('fails to add an openshift provider with wrong values', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={null} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
@@ -191,11 +205,13 @@ describe('<AddEditProviderModal />', () => {
 
   it('allows editing an openshift provider', async () => {
     render(
-      <NetworkContextProvider>
-        <Router history={history}>
-          <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[4]} />
-        </Router>
-      </NetworkContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={MOCK_CLUSTER_PROVIDERS[4]} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
     );
 
     const editButton = await screen.findByRole('dialog', { name: /Edit provider/ });

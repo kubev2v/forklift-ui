@@ -57,7 +57,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   commonNetworkAdapters,
   onClose,
 }: ISelectNetworkModalProps) => {
-  const [configureHosts, configureHostsResult] = useConfigureHostsMutation(
+  const configureHostMutation = useConfigureHostsMutation(
     provider,
     selectedHosts,
     hostConfigs,
@@ -93,7 +93,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
       footer={
         <Stack hasGutter>
           <ResolvedQuery
-            result={configureHostsResult}
+            result={configureHostMutation}
             errorTitle="Error configuring hosts"
             spinnerMode={QuerySpinnerMode.Inline}
           />
@@ -102,10 +102,10 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               id="modal-confirm-button"
               key="confirm"
               variant="primary"
-              isDisabled={!form.isDirty || !form.isValid || configureHostsResult.isLoading}
+              isDisabled={!form.isDirty || !form.isValid || configureHostMutation.isLoading}
               onClick={() => {
                 if (form.isValid) {
-                  configureHosts(form.values);
+                  configureHostMutation.mutate(form.values);
                 }
               }}
             >
@@ -116,7 +116,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
               key="cancel"
               variant="link"
               onClick={onClose}
-              isDisabled={configureHostsResult.isLoading}
+              isDisabled={configureHostMutation.isLoading}
             >
               Cancel
             </Button>

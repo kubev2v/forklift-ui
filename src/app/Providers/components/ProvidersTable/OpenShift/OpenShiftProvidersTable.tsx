@@ -25,7 +25,7 @@ import { centerCellTransform } from '@app/utils/utils';
 
 import './OpenShiftProvidersTable.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanStatusType, ProviderType } from '@app/common/constants';
+import { PlanStatusType } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
@@ -180,16 +180,15 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     (isOpen) => !isOpen,
     false
   );
-  const [setMigrationNetwork, migrationNetworkMutationResult] = useOCPMigrationNetworkMutation(
-    () => {
-      toggleSelectNetworkModal();
-      setExpandedItem({
-        provider: selectedProvider as ICorrelatedProvider<IOpenShiftProvider>,
-        column: 'Networks',
-      });
-      setSelectedProvider(null);
-    }
-  );
+
+  const migrationNetworkMutation = useOCPMigrationNetworkMutation(() => {
+    toggleSelectNetworkModal();
+    setExpandedItem({
+      provider: selectedProvider as ICorrelatedProvider<IOpenShiftProvider>,
+      column: 'Networks',
+    });
+    setSelectedProvider(null);
+  });
 
   const selectedNetworkName =
     (selectedProvider?.metadata.annotations &&
@@ -251,13 +250,16 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
           instructions="Select a default migration network for the provider. This network will be used for migrating data to all namespaces to which it is attached."
           onClose={() => {
             toggleSelectNetworkModal();
-            migrationNetworkMutationResult.reset();
+            migrationNetworkMutation.reset();
             setSelectedProvider(null);
           }}
           onSubmit={(network) =>
-            setMigrationNetwork({ provider: selectedProvider?.inventory || null, network })
+            migrationNetworkMutation.mutate({
+              provider: selectedProvider?.inventory || null,
+              network,
+            })
           }
-          mutationResult={migrationNetworkMutationResult}
+          mutationResult={migrationNetworkMutation}
         />
       ) : null}
     </>

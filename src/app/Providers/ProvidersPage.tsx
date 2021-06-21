@@ -27,7 +27,6 @@ import AddEditProviderModal from './components/AddEditProviderModal';
 import { IPlan, IProviderObject } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
-import { QueryStatus } from 'react-query';
 import { useRouteMatch } from 'react-router';
 
 export const EditProviderContext = React.createContext({
@@ -63,7 +62,7 @@ const ProvidersPage: React.FunctionComponent = () => {
   const clusterProviders = clusterProvidersQuery.data?.items || [];
   const areProvidersEmpty = clusterProviders.length === 0;
 
-  const areTabsVisible = queryStatus !== QueryStatus.Loading && !areProvidersEmpty;
+  const areTabsVisible = queryStatus !== 'loading' && !areProvidersEmpty;
 
   const availableProviderTypes = Array.from(
     new Set(clusterProviders.map((provider) => provider.spec.type))

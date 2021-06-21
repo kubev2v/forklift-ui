@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
-import { MutationResult } from 'react-query';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
+import { UnknownMutationResult } from '../types';
 
 // TODO lib-ui candidate
 
@@ -9,7 +9,7 @@ interface IConfirmModalProps {
   isOpen: boolean;
   toggleOpen: () => void;
   mutateFn: () => void;
-  mutateResult?: MutationResult<unknown>;
+  mutateResult?: UnknownMutationResult;
   title: string;
   body: React.ReactNode;
   confirmButtonText: string;

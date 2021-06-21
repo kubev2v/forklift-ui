@@ -1,6 +1,5 @@
 import { usePollingContext } from '@app/common/context';
-import { QueryResult } from 'react-query';
-import { useMockableQuery, getInventoryApiUrl, useResultsSortedByName } from './helpers';
+import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import {
   MOCK_OPENSHIFT_NETWORKS,
   MOCK_RHV_NETWORKS,
@@ -21,26 +20,25 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
   providerRole: 'source' | 'target',
   mappingType: MappingType | null,
   mockNetworks: T[]
-): QueryResult<T[]> => {
+) => {
   const apiSlug = providerRole === 'source' ? '/networks' : '/networkattachmentdefinitions';
   const result = useMockableQuery<T[]>(
     {
       queryKey: ['networks', providerRole, provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
-      config: {
-        enabled: !!provider && (!mappingType || mappingType === MappingType.Network),
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      enabled: !!provider && (!mappingType || mappingType === MappingType.Network),
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortByName,
     },
     mockNetworks
   );
-  return useResultsSortedByName(result);
+  return result;
 };
 
 export const useSourceNetworksQuery = (
   provider: SourceInventoryProvider | null,
   mappingType?: MappingType
-): QueryResult<ISourceNetwork[]> =>
+) =>
   useNetworksQuery(
     provider,
     'source',
@@ -51,5 +49,4 @@ export const useSourceNetworksQuery = (
 export const useOpenShiftNetworksQuery = (
   provider: IOpenShiftProvider | null,
   mappingType?: MappingType
-): QueryResult<IOpenShiftNetwork[]> =>
-  useNetworksQuery(provider, 'target', mappingType || null, MOCK_OPENSHIFT_NETWORKS);
+) => useNetworksQuery(provider, 'target', mappingType || null, MOCK_OPENSHIFT_NETWORKS);

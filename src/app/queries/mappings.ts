@@ -1,4 +1,4 @@
-import { MutationResultPair, useQueryCache, QueryResult, QueryStatus } from 'react-query';
+import { UseMutationResult, useQueryClient, UseQueryResult, QueryStatus } from 'react-query';
 import * as yup from 'yup';
 import {
   IOpenShiftProvider,
@@ -14,7 +14,7 @@ import {
   getAggregateQueryStatus,
   getFirstQueryError,
   mockKubeList,
-  useKubeResultsSortedByName,
+  sortKubeListByName,
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
@@ -39,33 +39,34 @@ export const getMappingResource = (
   return { kind, resource };
 };
 
-export const useMappingsQuery = (mappingType: MappingType): QueryResult<IKubeList<Mapping>> => {
+export const useMappingsQuery = (mappingType: MappingType): UseQueryResult<IKubeList<Mapping>> => {
   const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
       queryKey: ['mappings', mappingType],
       queryFn: async () =>
         (await client.list<IKubeList<Mapping>>(getMappingResource(mappingType).resource)).data,
-      config: { refetchInterval: usePollingContext().refetchInterval },
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortKubeListByName,
     },
     mappingType === MappingType.Network
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')
       : mockKubeList(MOCK_STORAGE_MAPPINGS, 'StorageMapList')
   );
-  return useKubeResultsSortedByName(result);
+  return result;
 };
 
 export const useCreateMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
-): MutationResultPair<
+): UseMutationResult<
   IKubeResponse<Mapping>,
   KubeClientError,
   Mapping,
   unknown // TODO replace `unknown` for TSnapshot? not even sure what this is for
 > => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping) => {
       const { kind, resource } = getMappingResource(mappingType);
@@ -77,7 +78,7 @@ export const useCreateMappingMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries(['mappings', mappingType]);
+        queryClient.invalidateQueries(['mappings', mappingType]);
         onSuccess && onSuccess();
       },
     }
@@ -95,9 +96,9 @@ export const useCreateMappingMutations = (): {
 export const usePatchMappingMutation = (
   mappingType: MappingType,
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<Mapping>, KubeClientError, Mapping, unknown> => {
+): UseMutationResult<IKubeResponse<Mapping>, KubeClientError, Mapping, unknown> => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<Mapping>, KubeClientError, Mapping>(
     async (mapping: Mapping) => {
       const { resource } = getMappingResource(mappingType);
@@ -105,7 +106,7 @@ export const usePatchMappingMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries(['mappings', mappingType]);
+        queryClient.invalidateQueries(['mappings', mappingType]);
         onSuccess && onSuccess();
       },
     }
@@ -120,18 +121,15 @@ export const usePatchMappingMutations = (): {
   storage: usePatchMappingMutation(MappingType.Storage),
 });
 
-export const useDeleteMappingMutation = (
-  mappingType: MappingType,
-  onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, Mapping, unknown> => {
+export const useDeleteMappingMutation = (mappingType: MappingType, onSuccess?: () => void) => {
   const client = useAuthorizedK8sClient();
   const { resource } = getMappingResource(mappingType);
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, Mapping>(
     (mapping: Mapping) => client.delete(resource, (mapping.metadata as IMetaObjectMeta).name),
     {
       onSuccess: () => {
-        queryCache.invalidateQueries(['mappings', mappingType]);
+        queryClient.invalidateQueries(['mappings', mappingType]);
         onSuccess && onSuccess();
       },
     }
@@ -145,7 +143,7 @@ export interface IMappingResourcesResult {
   isError: boolean;
   status: QueryStatus;
   error: unknown; // TODO not sure how to handle error types yet
-  queries: QueryResult<unknown>[];
+  queries: UseQueryResult<unknown>[];
 }
 
 export interface ISpecificMappingResourcesResult extends IMappingResourcesResult {
@@ -194,8 +192,8 @@ export const useMappingResourceQueries = (
   return {
     availableSources,
     availableTargets,
-    isLoading: status === QueryStatus.Loading,
-    isError: status === QueryStatus.Error,
+    isLoading: status === 'loading',
+    isError: status === 'error',
     status,
     error,
     queries: queriesToWatch,
@@ -222,8 +220,8 @@ export const useResourceQueriesForMapping = (
   return {
     ...mappingResourceQueries,
     queries: allQueries,
-    isLoading: status === QueryStatus.Loading,
-    isError: status === QueryStatus.Error,
+    isLoading: status === 'loading',
+    isError: status === 'error',
     status,
     error,
     sourceProvider,
@@ -232,7 +230,7 @@ export const useResourceQueriesForMapping = (
 };
 
 export const getMappingNameSchema = (
-  mappingsQuery: QueryResult<IKubeList<Mapping>>,
+  mappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   mappingBeingEdited: Mapping | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A mapping with this name already exists', (value) => {

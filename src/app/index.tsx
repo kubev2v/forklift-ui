@@ -1,7 +1,7 @@
 import * as React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { QueryCache, ReactQueryCacheProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query-devtools';
+import { QueryClientProvider, QueryClient, QueryCache } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
@@ -13,9 +13,10 @@ import {
 } from '@app/common/context';
 
 const queryCache = new QueryCache();
+const queryClient = new QueryClient({ queryCache });
 
 const App: React.FunctionComponent = () => (
-  <ReactQueryCacheProvider queryCache={queryCache}>
+  <QueryClientProvider client={queryClient}>
     <PollingContextProvider>
       <LocalStorageContextProvider>
         <NetworkContextProvider>
@@ -28,7 +29,7 @@ const App: React.FunctionComponent = () => (
       </LocalStorageContextProvider>
     </PollingContextProvider>
     {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
-  </ReactQueryCacheProvider>
+  </QueryClientProvider>
 );
 
 export { App };

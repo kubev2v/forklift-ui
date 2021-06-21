@@ -3,14 +3,13 @@ import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
 import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
-import { MutationResultPair, QueryResult, useQueryCache } from 'react-query';
-
+import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import {
   mockKubeList,
   nameAndNamespace,
-  useKubeResultsSortedByName,
   useMockableMutation,
   useMockableQuery,
+  sortKubeListByName,
   isSameResource,
 } from './helpers';
 import { MOCK_PLANS } from './mocks/plans.mock';
@@ -27,26 +26,25 @@ const networkMapResource = getMappingResource(MappingType.Network).resource;
 const storageMapResource = getMappingResource(MappingType.Storage).resource;
 const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namespace);
 
-export const usePlansQuery = (): QueryResult<IKubeList<IPlan>> => {
+export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
-      config: {
-        refetchInterval: usePollingContext().refetchInterval,
-      },
+      refetchInterval: usePollingContext().refetchInterval,
+      select: sortKubeListByName,
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
-  return useKubeResultsSortedByName(result);
+  return result;
 };
 
 export const useCreatePlanMutation = (
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
+): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState>(
     async (forms) => {
@@ -118,9 +116,9 @@ export const useCreatePlanMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('mappings');
-        queryCache.invalidateQueries('hooks');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('mappings');
+        queryClient.invalidateQueries('hooks');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
@@ -135,9 +133,9 @@ interface IPatchPlanArgs {
 
 export const usePatchPlanMutation = (
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
+): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const { pollFasterAfterMutation } = usePollingContext();
   const hooks = useHooksQuery();
 
@@ -231,9 +229,9 @@ export const usePatchPlanMutation = (
     },
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('mappings');
-        queryCache.invalidateQueries('hooks');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('hooks');
+        queryClient.invalidateQueries('mappings');
         pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
@@ -243,15 +241,15 @@ export const usePatchPlanMutation = (
 
 export const useDeletePlanMutation = (
   onSuccess?: () => void
-): MutationResultPair<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
+): UseMutationResult<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
     (plan: IPlan) => client.delete(planResource, plan.metadata.name),
     {
       onSuccess: () => {
-        queryCache.invalidateQueries('plans');
-        queryCache.invalidateQueries('mappings');
+        queryClient.invalidateQueries('plans');
+        queryClient.invalidateQueries('mappings');
         onSuccess && onSuccess();
       },
     }
@@ -259,7 +257,7 @@ export const useDeletePlanMutation = (
 };
 
 export const getPlanNameSchema = (
-  plansQuery: QueryResult<IKubeList<IPlan>>,
+  plansQuery: UseQueryResult<IKubeList<IPlan>>,
   planBeingEdited: IPlan | null
 ): yup.StringSchema =>
   dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {

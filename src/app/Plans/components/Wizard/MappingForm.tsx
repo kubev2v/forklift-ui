@@ -38,7 +38,6 @@ import {
 import { isSameResource } from '@app/queries/helpers';
 
 import './MappingForm.css';
-import { QueryStatus } from 'react-query';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
@@ -73,7 +72,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 
   const hasInitialized = React.useRef(false);
   React.useEffect(() => {
-    if (!hasInitialized.current && mappingResourceQueries.status === QueryStatus.Success) {
+    if (!hasInitialized.current && mappingResourceQueries.status === 'success') {
       hasInitialized.current = true;
       if (form.values.builderItems.length > 0) {
         form.fields.builderItems.setValue(

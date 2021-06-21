@@ -4,7 +4,7 @@ import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
 import { IPlan } from '@app/queries/types';
 import { IMigration } from '@app/queries/types/migrations.types';
-import { QueryResult } from 'react-query';
+import { UseQueryResult } from 'react-query';
 
 export const getPlanStatusTitle = (plan: IPlan): string => {
   const condition = plan.status?.conditions.find(
@@ -30,7 +30,7 @@ type WarmPlanState =
 export const getWarmPlanState = (
   plan: IPlan | null,
   migration: IMigration | null,
-  migrationsQuery: QueryResult<IKubeList<IMigration>>
+  migrationsQuery: UseQueryResult<IKubeList<IMigration>>
 ): WarmPlanState | null => {
   if (!plan || !plan.spec.warm) return null;
   if (!migration) return 'NotStarted';
@@ -92,7 +92,7 @@ export const canPlanBeStarted = (plan: IPlan): boolean => {
 export const isPlanBeingStarted = (
   plan: IPlan,
   latestMigrationInHistory: IMigration | null,
-  migrationsQuery: QueryResult<IKubeList<IMigration>>
+  migrationsQuery: UseQueryResult<IKubeList<IMigration>>
 ): boolean => {
   // True if we just don't have any status data yet
   if (

@@ -220,7 +220,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     isSelected ? setSelectedItems(cancelableVMs) : setSelectedItems([]);
 
   const [isCancelModalOpen, toggleCancelModal] = React.useReducer((isOpen) => !isOpen, false);
-  const [cancelVMs, cancelVMsResult] = useCancelVMsMutation(plan || null, () => {
+
+  const cancelVMsMutation = useCancelVMsMutation(plan || null, () => {
     toggleCancelModal();
     setSelectedItems([]);
   });
@@ -345,7 +346,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
                     toolbarItems={
                       <Button
                         variant="secondary"
-                        isDisabled={selectedItems.length === 0 || cancelVMsResult.isLoading}
+                        isDisabled={selectedItems.length === 0 || cancelVMsMutation.isLoading}
                         onClick={toggleCancelModal}
                       >
                         Cancel
@@ -405,9 +406,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         mutateFn={() => {
           const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
           if (vmsToCancel.some((vm) => !vm)) return;
-          cancelVMs(vmsToCancel as SourceVM[]);
+          cancelVMsMutation.mutate(vmsToCancel as SourceVM[]);
         }}
-        mutateResult={cancelVMsResult}
+        mutateResult={cancelVMsMutation}
         title="Cancel migrations?"
         confirmButtonText="Yes, cancel"
         cancelButtonText="No, keep migrating"
