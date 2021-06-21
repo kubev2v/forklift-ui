@@ -209,11 +209,8 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onClose = () => history.push('/plans');
 
-  const createPlanMutationResult = useCreatePlanMutation();
-  const { mutate: createPlan } = createPlanMutationResult;
-
-  const patchPlanMutationResult = usePatchPlanMutation();
-  const { mutate: patchPlan } = patchPlanMutationResult;
+  const createPlanMutation = useCreatePlanMutation();
+  const patchPlanMutation = usePatchPlanMutation();
 
   const { network: createSharedNetworkMapMutation, storage: createSharedStorageMapMutation } =
     useCreateMappingMutations();
@@ -230,15 +227,15 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onSave = () => {
     if (!planBeingEdited) {
-      createPlan(forms);
+      createPlanMutation.mutate(forms);
     } else {
-      patchPlan({ planBeingEdited, forms });
+      patchPlanMutation.mutate({ planBeingEdited, forms });
     }
     createSharedMappings();
   };
 
   const allMutationResults = [
-    !editRouteMatch ? createPlanMutationResult : patchPlanMutationResult,
+    !editRouteMatch ? createPlanMutation : patchPlanMutation,
     ...(forms.networkMapping.values.isSaveNewMapping ? [createSharedNetworkMapMutation] : []),
     ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapMutation] : []),
   ];
