@@ -1,10 +1,10 @@
-import { ResultSubset } from '@app/common/types';
+import { UnknownResult } from '@app/common/types';
 import * as React from 'react';
 import { ResolvedQueries, IResolvedQueriesProps } from './ResolvedQueries';
 
 export interface IResolvedQueryProps
   extends Omit<IResolvedQueriesProps, 'results' | 'errorTitles'> {
-  result: ResultSubset;
+  result: UnknownResult;
   errorTitle: string;
 }
 

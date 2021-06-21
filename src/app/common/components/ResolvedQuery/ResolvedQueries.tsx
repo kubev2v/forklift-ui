@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { UseMutationResult } from 'react-query';
-import { ResultSubset } from '@app/common/types';
+import { UnknownResult } from '@app/common/types';
 import {
   Spinner,
   Alert,
@@ -20,7 +20,7 @@ export enum QuerySpinnerMode {
 }
 
 export interface IResolvedQueriesProps {
-  results: ResultSubset[];
+  results: UnknownResult[];
   errorTitles: string[];
   errorsInline?: boolean;
   spinnerMode?: QuerySpinnerMode;

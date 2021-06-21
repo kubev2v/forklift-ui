@@ -14,7 +14,7 @@ import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef, IProviderObject, ISrcDestRefs } from './types';
 import { InventoryTree } from './types/tree.types';
-import { ResultSubset } from '@app/common/types';
+import { UnknownResult } from '@app/common/types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?
 
@@ -86,7 +86,7 @@ export const useMockableMutation = <
 export const getInventoryApiUrl = (relativePath: string): string =>
   `/inventory-api/${relativePath}`;
 
-export const getAggregateQueryStatus = (queryResults: ResultSubset[]): QueryStatus => {
+export const getAggregateQueryStatus = (queryResults: UnknownResult[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return 'error';
   if (queryResults.some((result) => result.isLoading)) return 'loading';
   if (queryResults.every((result) => result.isIdle)) return 'idle';
