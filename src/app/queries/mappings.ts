@@ -47,7 +47,7 @@ export const useMappingsQuery = (mappingType: MappingType): UseQueryResult<IKube
       queryFn: async () =>
         (await client.list<IKubeList<Mapping>>(getMappingResource(mappingType).resource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName
+      select: sortKubeListByName,
     },
     mappingType === MappingType.Network
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')

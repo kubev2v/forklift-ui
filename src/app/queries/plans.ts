@@ -33,7 +33,7 @@ export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName
+      select: sortKubeListByName,
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
