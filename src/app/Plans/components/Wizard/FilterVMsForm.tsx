@@ -14,6 +14,7 @@ import {
   findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
+  flattenInventoryTreeNodes,
   getAvailableVMs,
   getSelectableNodes,
   getSelectedVMsFromPlan,
@@ -88,8 +89,15 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   ]);
 
   const getNodeBadgeContent = (node: InventoryTree) => {
-    if (!isNodeSelectable(node)) return null;
-    return getAvailableVMs([node], vmsQuery.data || [], form.values.treeType).length || null;
+    const selectedDescendants = flattenInventoryTreeNodes(node).filter(
+      treeSelection.isItemSelected
+    );
+    const numVMs =
+      getAvailableVMs(selectedDescendants, vmsQuery.data || [], form.values.treeType).length ||
+      null;
+    if (numVMs) return numVMs;
+    if (treeSelection.isItemSelected(node)) return '0';
+    return null;
   };
 
   return (
