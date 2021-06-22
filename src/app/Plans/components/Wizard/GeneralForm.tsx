@@ -44,11 +44,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
-
-  const targetNsFoundInQueriesNs = () =>
-    namespacesQuery.data?.reduce((acc, namespace) => {
-      return acc ? true : form.values.targetNamespace === namespace.name;
-    }, false);
+  const targetNsFoundInQueriesNs = !!namespacesQuery.data?.find(
+    (namespace) => form.values.targetNamespace === namespace.name
+  );
 
   const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
   usePausedPollingEffect(isNamespaceSelectOpen);
@@ -194,7 +192,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 </Popover>
               </Text>
             </TextContent>
-            {targetNsFoundInQueriesNs() && (
+            {targetNsFoundInQueriesNs && (
               <Button
                 variant="link"
                 isInline
