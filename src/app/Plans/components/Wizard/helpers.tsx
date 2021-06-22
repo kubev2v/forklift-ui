@@ -127,11 +127,11 @@ const convertInventoryTreeNode = (
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   isNodeSelectable: (node: InventoryTree) => boolean,
-  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
+  getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem => {
   const isFullyChecked = isNodeFullyChecked(node, isNodeSelected, isNodeSelectable);
   const isPartiallyChecked = isNodePartiallyChecked(node, isNodeSelected, isFullyChecked);
-  const badge = getNodeBadgeContent(node);
+  const badge = getNodeBadgeContent(node, false);
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
@@ -165,7 +165,7 @@ const filterAndConvertInventoryTreeChildren = (
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   isNodeSelectable: (node: InventoryTree) => boolean,
-  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
+  getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem[] | undefined => {
   const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
     subtreeMatchesSearch(node, searchText)
@@ -190,11 +190,11 @@ export const filterAndConvertInventoryTree = (
   isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean,
   isNodeSelectable: (node: InventoryTree) => boolean,
-  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
+  getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   const isPartiallyChecked = isNodePartiallyChecked(rootNode, isNodeSelected, areAllSelected);
-  const badge = getNodeBadgeContent(rootNode);
+  const badge = getNodeBadgeContent(rootNode, true);
   return [
     {
       name: 'All datacenters',

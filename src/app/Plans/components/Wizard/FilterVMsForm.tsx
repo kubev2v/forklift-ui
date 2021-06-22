@@ -86,15 +86,14 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     isNodeSelectable,
   ]);
 
-  const getNodeBadgeContent = (node: InventoryTree) => {
-    const selectedDescendants = flattenInventoryTreeNodes(node).filter(
-      treeSelection.isItemSelected
-    );
-    const numVMs =
-      getAvailableVMs(selectedDescendants, vmsQuery.data || [], form.values.treeType).length ||
-      null;
-    if (numVMs) return numVMs;
-    if (treeSelection.isItemSelected(node)) return '0';
+  const getNodeBadgeContent = (node: InventoryTree, isRootNode: boolean) => {
+    const { treeType } = form.values;
+    const { isItemSelected, selectedItems } = treeSelection;
+    const selectedDescendants = flattenInventoryTreeNodes(node).filter(isItemSelected);
+    const numVMs = getAvailableVMs(selectedDescendants, vmsQuery.data || [], treeType).length;
+    if (numVMs || isItemSelected(node) || (isRootNode && selectedItems.length > 0)) {
+      return `${numVMs}${isRootNode ? ` VM${numVMs !== 1 ? 's' : ''}` : ''}`;
+    }
     return null;
   };
 
