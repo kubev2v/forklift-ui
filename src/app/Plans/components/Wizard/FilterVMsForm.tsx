@@ -18,8 +18,6 @@ import {
   getAvailableVMs,
   getSelectableNodes,
   getSelectedVMsFromPlan,
-  isIncludedLeafNode,
-  isIncludedNode,
   isNodeFullyChecked,
   useIsNodeSelectableCallback,
 } from './helpers';
