@@ -14,8 +14,11 @@ import {
   findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
+  getAvailableVMs,
   getSelectableNodes,
   getSelectedVMsFromPlan,
+  isIncludedLeafNode,
+  isIncludedNode,
   isNodeFullyChecked,
   useIsNodeSelectableCallback,
 } from './helpers';
@@ -84,6 +87,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     isNodeSelectable,
   ]);
 
+  const getNodeBadgeContent = (node: InventoryTree) => {
+    if (!isNodeSelectable(node)) return null;
+    return getAvailableVMs([node], vmsQuery.data || [], form.values.treeType).length || null;
+  };
+
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
@@ -121,10 +129,12 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             searchText,
             treeSelection.isItemSelected,
             treeSelection.areAllSelected,
-            isNodeSelectable
+            isNodeSelectable,
+            getNodeBadgeContent
           )}
           defaultAllExpanded
           hasChecks
+          hasBadges
           onSearch={(event) => setSearchText(event.target.value)}
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {

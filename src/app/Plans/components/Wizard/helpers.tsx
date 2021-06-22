@@ -126,10 +126,12 @@ const convertInventoryTreeNode = (
   node: InventoryTree,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
-  isNodeSelectable: (node: InventoryTree) => boolean
+  isNodeSelectable: (node: InventoryTree) => boolean,
+  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
 ): TreeViewDataItem => {
   const isFullyChecked = isNodeFullyChecked(node, isNodeSelected, isNodeSelectable);
   const isPartiallyChecked = isNodePartiallyChecked(node, isNodeSelected, isFullyChecked);
+  const badge = getNodeBadgeContent(node);
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
@@ -137,7 +139,8 @@ const convertInventoryTreeNode = (
       node.children,
       searchText,
       isNodeSelected,
-      isNodeSelectable
+      isNodeSelectable,
+      getNodeBadgeContent
     ),
     checkProps: {
       'aria-label': `Select ${node.kind} ${node.object?.name || ''}`,
@@ -151,6 +154,8 @@ const convertInventoryTreeNode = (
       ) : node.kind === 'Folder' ? (
         <FolderIcon />
       ) : null,
+    customBadgeContent: badge,
+    hasBadge: !!badge,
   };
 };
 
@@ -159,14 +164,21 @@ const filterAndConvertInventoryTreeChildren = (
   children: InventoryTree[] | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
-  isNodeSelectable: (node: InventoryTree) => boolean
+  isNodeSelectable: (node: InventoryTree) => boolean,
+  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
 ): TreeViewDataItem[] | undefined => {
   const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
     subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
     return filteredChildren.map((node) =>
-      convertInventoryTreeNode(node, searchText, isNodeSelected, isNodeSelectable)
+      convertInventoryTreeNode(
+        node,
+        searchText,
+        isNodeSelected,
+        isNodeSelectable,
+        getNodeBadgeContent
+      )
     );
   return undefined;
 };
@@ -177,10 +189,12 @@ export const filterAndConvertInventoryTree = (
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean,
-  isNodeSelectable: (node: InventoryTree) => boolean
+  isNodeSelectable: (node: InventoryTree) => boolean,
+  getNodeBadgeContent: (node: InventoryTree) => React.ReactNode
 ): TreeViewDataItem[] => {
   if (!rootNode) return [];
   const isPartiallyChecked = isNodePartiallyChecked(rootNode, isNodeSelected, areAllSelected);
+  const badge = getNodeBadgeContent(rootNode);
   return [
     {
       name: 'All datacenters',
@@ -193,8 +207,11 @@ export const filterAndConvertInventoryTree = (
         rootNode.children,
         searchText,
         isNodeSelected,
-        isNodeSelectable
+        isNodeSelectable,
+        getNodeBadgeContent
       ),
+      customBadgeContent: badge,
+      hasBadge: !!badge,
     },
   ];
 };
