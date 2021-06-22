@@ -44,6 +44,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
+  const targetNsFoundInQueriesNs = !!namespacesQuery.data?.find(
+    (namespace) => form.values.targetNamespace === namespace.name
+  );
 
   const [isNamespaceSelectOpen, setIsNamespaceSelectOpen] = React.useState(false);
   usePausedPollingEffect(isNamespaceSelectOpen);
@@ -143,6 +146,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             spinnerMode={QuerySpinnerMode.Inline}
           >
             <Select
+              isInputValuePersisted
               placeholderText="Select a namespace"
               isOpen={isNamespaceSelectOpen}
               onToggle={(isOpen) => {
@@ -188,14 +192,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 </Popover>
               </Text>
             </TextContent>
-            <Button
-              variant="link"
-              isInline
-              onClick={toggleSelectNetworkModal}
-              className={spacing.mtXs}
-            >
-              Select a different network
-            </Button>
+            {targetNsFoundInQueriesNs && (
+              <Button
+                variant="link"
+                isInline
+                onClick={toggleSelectNetworkModal}
+                className={spacing.mtXs}
+              >
+                Select a different network
+              </Button>
+            )}
           </div>
         ) : null}
       </Form>
