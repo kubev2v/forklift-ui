@@ -202,6 +202,7 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
         </LevelItem>
       </Level>
       <Table
+        gridBreakPoint="grid-lg"
         aria-label={`${PROVIDER_TYPE_NAMES[providerType]} providers table`}
         variant="compact"
         cells={columns}
