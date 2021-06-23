@@ -8,16 +8,16 @@ export type PaginationStateProps = Pick<
   'itemCount' | 'perPage' | 'page' | 'onSetPage' | 'onPerPageSelect'
 >;
 
-export interface IPaginationStateHook {
-  currentPageItems: any[];
+export interface IPaginationStateHook<T> {
+  currentPageItems: T[];
   setPageNumber: (pageNumber: number) => void;
   paginationProps: PaginationStateProps;
 }
 
-export const usePaginationState = (
-  items: any[],
+export const usePaginationState = <T>(
+  items: T[],
   initialItemsPerPage: number
-): IPaginationStateHook => {
+): IPaginationStateHook<T> => {
   const [pageNumber, setPageNumber] = React.useState(1);
   const [itemsPerPage, setItemsPerPage] = React.useState(initialItemsPerPage);
 
