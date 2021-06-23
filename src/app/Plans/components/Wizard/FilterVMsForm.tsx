@@ -91,8 +91,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     const { isItemSelected, selectedItems } = treeSelection;
     const selectedDescendants = flattenInventoryTreeNodes(node).filter(isItemSelected);
     const numVMs = getAvailableVMs(selectedDescendants, vmsQuery.data || [], treeType).length;
+    const rootNodeSuffix = ` VM${numVMs !== 1 ? 's' : ''}`;
     if (numVMs || isItemSelected(node) || (isRootNode && selectedItems.length > 0)) {
-      return `${numVMs}${isRootNode ? ` VM${numVMs !== 1 ? 's' : ''}` : ''}`;
+      return `${numVMs}${isRootNode ? rootNodeSuffix : ''}`;
     }
     return null;
   };
