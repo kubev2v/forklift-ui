@@ -2,8 +2,10 @@ import * as yup from 'yup';
 
 import { IEnvVars, IMetaVars } from './types';
 
+export const ENV: IEnvVars = window['_env'] || {};
+
 export const APP_TITLE =
-  process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
+  ENV.BRAND_TYPE === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
 export const CLUSTER_API_VERSION = 'forklift.konveyor.io/v1beta1';
 
@@ -24,8 +26,8 @@ export const TARGET_PROVIDER_TYPES: ProviderType[] = ['openshift'];
 
 export const PROVIDER_TYPE_NAMES: Record<ProviderType, string> = {
   vsphere: 'VMware',
-  ovirt: 'Red Hat Virtualization',
-  openshift: 'OpenShift Virtualization',
+  ovirt: ENV.BRAND_TYPE === 'RedHat' ? 'Red Hat Virtualization' : 'oVirt',
+  openshift: ENV.BRAND_TYPE === 'RedHat' ? 'OpenShift Virtualization' : 'KubeVirt',
 };
 
 export enum StatusCategoryType {
@@ -77,8 +79,6 @@ export const META: IMetaVars =
         inventoryApi: '/mock/api',
         inventoryPayloadApi: '/mock/api',
       };
-
-export const ENV: IEnvVars = window['_env'] || {};
 
 export const dnsLabelNameSchema = yup
   .string()

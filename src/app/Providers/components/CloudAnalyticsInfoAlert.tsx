@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Alert, AlertActionCloseButton, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
-import { CLOUD_MA_LINK } from '@app/common/constants';
+import { CLOUD_MA_LINK, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
   const [isAlertHidden, setIsAlertHidden] = useLocalStorageContext(
@@ -17,10 +17,11 @@ const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
 
   const alertMessage = (
     <Text>
-      You can analyze your VMware provider data with Migration Analytics. Migration Analytics
-      generates a complete inventory of your VMware environment and VM recommendations for
-      migration. Select your VMware providers and download the data file. Then log in to {link},
-      select Migration Analytics, and create a Migration Analytics report.
+      You can analyze your {PROVIDER_TYPE_NAMES.vsphere} provider data with Migration Analytics.
+      Migration Analytics generates a complete inventory of your {PROVIDER_TYPE_NAMES.vsphere}{' '}
+      environment and VM recommendations for migration. Select your {PROVIDER_TYPE_NAMES.vsphere}{' '}
+      providers and download the data file. Then log in to {link}, select Migration Analytics, and
+      create a Migration Analytics report.
     </Text>
   );
 

@@ -49,6 +49,7 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import VMConcernsIcon from './VMConcernsIcon';
 import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -341,7 +342,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           </Split>
           {filteredItems.length > 0 ? (
             <Table
-              aria-label="VMware VMs table"
+              aria-label={`${PROVIDER_TYPE_NAMES[sourceProvider?.type || 'vsphere']} VMs table`}
               variant={TableVariant.compact}
               cells={columns}
               rows={rows}

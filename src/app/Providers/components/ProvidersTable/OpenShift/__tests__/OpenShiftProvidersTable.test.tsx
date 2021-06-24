@@ -36,9 +36,7 @@ describe('<OpenShiftProvidersTable />', () => {
       </QueryClientProvider>
     );
 
-    expect(
-      screen.getByRole('grid', { name: /OpenShift Virtualization providers table/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('grid', { name: /KubeVirt providers table/ })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: /ocpv-1/ })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: /ocpv-2/ })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: /ocpv-3/ })).toBeInTheDocument();

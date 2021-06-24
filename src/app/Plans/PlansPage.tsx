@@ -20,6 +20,7 @@ import {
 import PlansTable from './components/PlansTable';
 import CreatePlanButton from './components/CreatePlanButton';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -53,7 +54,8 @@ const PlansPage: React.FunctionComponent = () => {
                     No migration plans
                   </Title>
                   <EmptyStateBody>
-                    Create a migration plan to select VMs to migrate to OpenShift Virtualization.
+                    Create a migration plan to select VMs to migrate to{' '}
+                    {PROVIDER_TYPE_NAMES.openshift}.
                   </EmptyStateBody>
                   <CreatePlanButton />
                 </EmptyState>
