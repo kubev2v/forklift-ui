@@ -625,24 +625,24 @@ export const useEditingPlanPrefillEffect = (
         isSameResource(mapping.metadata, planBeingEdited.spec.map.storage)
       );
 
-      forms.general.fields.planName.setInitialValue(planBeingEdited.metadata.name);
+      forms.general.fields.planName.prefill(planBeingEdited.metadata.name);
       if (planBeingEdited.spec.description) {
-        forms.general.fields.planDescription.setInitialValue(planBeingEdited.spec.description);
+        forms.general.fields.planDescription.prefill(planBeingEdited.spec.description);
       }
-      forms.general.fields.sourceProvider.setInitialValue(sourceProvider);
-      forms.general.fields.targetProvider.setInitialValue(targetProvider);
-      forms.general.fields.targetNamespace.setInitialValue(planBeingEdited.spec.targetNamespace);
-      forms.general.fields.migrationNetwork.setInitialValue(
+      forms.general.fields.sourceProvider.prefill(sourceProvider);
+      forms.general.fields.targetProvider.prefill(targetProvider);
+      forms.general.fields.targetNamespace.prefill(planBeingEdited.spec.targetNamespace);
+      forms.general.fields.migrationNetwork.prefill(
         planBeingEdited.spec.transferNetwork?.name || null
       );
 
-      forms.filterVMs.fields.treeType.setInitialValue(defaultTreeType);
-      forms.filterVMs.fields.selectedTreeNodes.setInitialValue(selectedTreeNodes);
-      forms.filterVMs.fields.isPrefilled.setInitialValue(true);
+      forms.filterVMs.fields.treeType.prefill(defaultTreeType);
+      forms.filterVMs.fields.selectedTreeNodes.prefill(selectedTreeNodes);
+      forms.filterVMs.fields.isPrefilled.prefill(true);
 
-      forms.selectVMs.fields.selectedVMIds.setInitialValue(selectedVMs.map((vm) => vm.id));
+      forms.selectVMs.fields.selectedVMIds.prefill(selectedVMs.map((vm) => vm.id));
 
-      forms.networkMapping.fields.builderItems.setInitialValue(
+      forms.networkMapping.fields.builderItems.prefill(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
             networkMapping?.spec.map || [],
@@ -657,9 +657,9 @@ export const useEditingPlanPrefillEffect = (
           false
         )
       );
-      forms.networkMapping.fields.isPrefilled.setInitialValue(true);
+      forms.networkMapping.fields.isPrefilled.prefill(true);
 
-      forms.storageMapping.fields.builderItems.setInitialValue(
+      forms.storageMapping.fields.builderItems.prefill(
         getBuilderItemsWithMissingSources(
           getBuilderItemsFromMappingItems(
             storageMapping?.spec.map || [],
@@ -674,13 +674,11 @@ export const useEditingPlanPrefillEffect = (
           false
         )
       );
-      forms.storageMapping.fields.isPrefilled.setInitialValue(true);
+      forms.storageMapping.fields.isPrefilled.prefill(true);
 
-      forms.type.fields.type.setInitialValue(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
+      forms.type.fields.type.prefill(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
 
-      forms.hooks.fields.instances.setInitialValue(
-        getPlanHookFormInstances(planBeingEdited, hooksQuery)
-      );
+      forms.hooks.fields.instances.prefill(getPlanHookFormInstances(planBeingEdited, hooksQuery));
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
