@@ -152,7 +152,7 @@ describe('<AddEditProviderModal />', () => {
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
     userEvent.click(typeButton);
-    const openshiftButton = await screen.findByRole('option', { name: /openshift/i, hidden: true });
+    const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);
 
     await waitFor(() => {
@@ -184,7 +184,7 @@ describe('<AddEditProviderModal />', () => {
 
     const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
     userEvent.click(typeButton);
-    const openshiftButton = await screen.findByRole('option', { name: /openshift/i, hidden: true });
+    const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);
 
     await waitFor(() => {

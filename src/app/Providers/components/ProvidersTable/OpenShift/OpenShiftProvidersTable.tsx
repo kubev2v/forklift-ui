@@ -25,7 +25,7 @@ import { centerCellTransform } from '@app/utils/utils';
 
 import './OpenShiftProvidersTable.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanStatusType } from '@app/common/constants';
+import { PlanStatusType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
 import OpenShiftNetworkList from './OpenShiftNetworkList';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
@@ -213,7 +213,7 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
       </Level>
       <Table
         variant="compact"
-        aria-label="OpenShift Virtualization providers table"
+        aria-label={`${PROVIDER_TYPE_NAMES.openshift} providers table`}
         cells={columns}
         rows={rows}
         sortBy={sortBy}

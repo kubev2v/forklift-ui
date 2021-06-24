@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface ICreateMappingButtonProps {
   onClick: () => void;
@@ -20,7 +21,7 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
   return (
     <ConditionalTooltip
       isTooltipEnabled={!hasSufficientProviders}
-      content="You must add at least one VMware or Red Hat Virtualization provider and one OpenShift Virtualization provider in order to create a mapping."
+      content={`You must add at least one ${PROVIDER_TYPE_NAMES.vsphere} or ${PROVIDER_TYPE_NAMES.ovirt} provider and one ${PROVIDER_TYPE_NAMES.openshift} provider in order to create a mapping.`}
     >
       <Button
         {...props}
