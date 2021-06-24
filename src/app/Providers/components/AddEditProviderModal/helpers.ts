@@ -26,32 +26,30 @@ export const useEditProviderPrefillEffect = (
       const secret = secretQuery.data;
       const providerType = providerBeingEdited.spec.type;
       const { fields } = forms[providerType];
-      fields.providerType.setInitialValue(providerType);
-      fields.name.setInitialValue(providerBeingEdited.metadata.name);
+      fields.providerType.prefill(providerType);
+      fields.name.prefill(providerBeingEdited.metadata.name);
       if (providerType === 'vsphere' || providerType === 'ovirt') {
         const sourceFields = fields as typeof forms.vsphere.fields | typeof forms.ovirt.fields;
-        sourceFields.username.setInitialValue(atob(secret?.data.user || ''));
-        sourceFields.password.setInitialValue(atob(secret?.data.password || ''));
+        sourceFields.username.prefill(atob(secret?.data.user || ''));
+        sourceFields.password.prefill(atob(secret?.data.password || ''));
       }
       if (providerType === 'ovirt') {
         const sourceFields = fields as typeof forms.ovirt.fields;
-        sourceFields.caCert.setInitialValue(atob(secret?.data.cacert || ''));
+        sourceFields.caCert.prefill(atob(secret?.data.cacert || ''));
       }
       if (providerType === 'vsphere') {
         const vmwareFields = forms.vsphere.fields;
-        vmwareFields.hostname.setInitialValue(
-          vmwareUrlToHostname(providerBeingEdited.spec.url || '')
-        );
-        vmwareFields.fingerprint.setInitialValue(atob(secret?.data.thumbprint || ''));
+        vmwareFields.hostname.prefill(vmwareUrlToHostname(providerBeingEdited.spec.url || ''));
+        vmwareFields.fingerprint.prefill(atob(secret?.data.thumbprint || ''));
       }
       if (providerType === 'ovirt') {
         const rhvFields = forms.ovirt.fields;
-        rhvFields.hostname.setInitialValue(ovirtUrlToHostname(providerBeingEdited.spec.url || ''));
+        rhvFields.hostname.prefill(ovirtUrlToHostname(providerBeingEdited.spec.url || ''));
       }
       if (providerType === 'openshift') {
         const openshiftFields = forms.openshift.fields;
-        openshiftFields.url.setInitialValue(providerBeingEdited.spec.url || '');
-        openshiftFields.saToken.setInitialValue(atob(secret?.data.token || ''));
+        openshiftFields.url.prefill(providerBeingEdited.spec.url || '');
+        openshiftFields.saToken.prefill(atob(secret?.data.token || ''));
       }
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {

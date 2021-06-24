@@ -90,11 +90,11 @@ export const useEditingMappingPrefillEffect = (
       const { sourceProvider, targetProvider } = mappingBeingEditedProviders;
       const { availableSources, availableTargets } = mappingResourceQueries;
 
-      form.fields.name.setInitialValue((mappingBeingEdited.metadata as IMetaObjectMeta).name);
-      form.fields.sourceProvider.setInitialValue(sourceProvider);
-      form.fields.targetProvider.setInitialValue(targetProvider);
+      form.fields.name.prefill((mappingBeingEdited.metadata as IMetaObjectMeta).name);
+      form.fields.sourceProvider.prefill(sourceProvider);
+      form.fields.targetProvider.prefill(targetProvider);
 
-      form.fields.builderItems.setInitialValue(
+      form.fields.builderItems.prefill(
         getBuilderItemsFromMapping(
           mappingBeingEdited,
           mappingType,

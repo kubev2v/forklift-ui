@@ -79,11 +79,11 @@ export const usePrefillHostConfigEffect = (
         null;
       const secret = secretQuery.data;
       if (preselectedAdapter) {
-        form.fields.selectedNetworkAdapter.setInitialValue(preselectedAdapter);
+        form.fields.selectedNetworkAdapter.prefill(preselectedAdapter);
       }
       if (secret) {
-        form.fields.adminUsername.setInitialValue(atob(secret.data.user || ''));
-        form.fields.adminPassword.setInitialValue(atob(secret.data.password || ''));
+        form.fields.adminUsername.prefill(atob(secret.data.user || ''));
+        form.fields.adminPassword.prefill(atob(secret.data.password || ''));
       }
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
