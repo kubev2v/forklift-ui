@@ -5,6 +5,7 @@ import { PlanWizardFormState } from './PlanWizard';
 import { warmCriticalConcerns, someVMHasConcern } from './helpers';
 import { SourceInventoryProvider, SourceVM } from '@app/queries/types';
 import { StatusIcon } from '@konveyor/lib-ui';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface ITypeFormProps {
   form: PlanWizardFormState['type'];
@@ -55,7 +56,7 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon
                   status="Info"
-                  label="Warm migration is not currently supported for Red Hat Virtualization providers."
+                  label={`Warm migration is not currently supported for ${PROVIDER_TYPE_NAMES.ovirt} providers.`}
                 />
               </div>
             ) : isAnalysingVms ? (

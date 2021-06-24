@@ -18,7 +18,7 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import logoMA from './logoMA.svg';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
-import { APP_TITLE } from '@app/common/constants';
+import { APP_TITLE, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 const WelcomePage: React.FunctionComponent = () => {
   const [isPageHidden, setIsPageHidden] = useLocalStorageContext(
@@ -44,7 +44,7 @@ const WelcomePage: React.FunctionComponent = () => {
           <FlexItem>
             <TextContent>
               <Text component="p">
-                Migrating workloads to OpenShift Virtualization is a multi-step process.
+                Migrating workloads to {PROVIDER_TYPE_NAMES.openshift} is a multi-step process.
               </Text>
               <List component="ol">
                 <ListItem>Add source and target providers for the migration.</ListItem>

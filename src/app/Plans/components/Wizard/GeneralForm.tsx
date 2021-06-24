@@ -31,6 +31,7 @@ import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftN
 import { HelpIcon } from '@patternfly/react-icons';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
@@ -180,7 +181,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               <Text component="p">
                 The migration transfer network for this migration plan is:{' '}
                 <strong>{form.values.migrationNetwork || POD_NETWORK.name}</strong>.
-                <Popover bodyContent="The default migration network defined for the OpenShift Virtualization provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.">
+                <Popover
+                  bodyContent={`The default migration network defined for the ${PROVIDER_TYPE_NAMES.openshift} provider is used if it exists in the target namespace. Otherwise, the pod network is used. You can select a different network for this migration plan.`}
+                >
                   <Button
                     variant="plain"
                     aria-label="More info for migration transfer network field"
