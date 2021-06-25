@@ -195,13 +195,13 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const isFirstRender = React.useRef(true);
 
-  // When providers change, reset all forms containing provider-specific options
+  // When providers change, clear all forms containing provider-specific options
   React.useEffect(() => {
     if (!isFirstRender.current && isDonePrefilling) {
-      forms.filterVMs.reset();
-      forms.selectVMs.reset();
-      forms.networkMapping.reset();
-      forms.storageMapping.reset();
+      forms.filterVMs.clear();
+      forms.selectVMs.clear();
+      forms.networkMapping.clear();
+      forms.storageMapping.clear();
     }
     isFirstRender.current = false;
     // eslint-disable-next-line react-hooks/exhaustive-deps

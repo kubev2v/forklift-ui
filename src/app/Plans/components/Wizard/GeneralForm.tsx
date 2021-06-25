@@ -93,7 +93,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         (network) =>
           network.name === providerDefaultNetworkName && network.namespace === targetNamespace
       );
-      form.fields.migrationNetwork.setInitialValue(matchingNetwork?.name || null);
+      form.fields.migrationNetwork.prefill(matchingNetwork?.name || null);
     }
   };
 
