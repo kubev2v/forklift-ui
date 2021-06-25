@@ -62,13 +62,13 @@ const useEditPlanHookInstancePrefillEffect = (
   React.useEffect(() => {
     if (!isStartedPrefilling && instanceBeingEdited) {
       setIsStartedPrefilling(true);
-      form.fields.type.setInitialValue(instanceBeingEdited.type);
-      form.fields.step.setInitialValue(instanceBeingEdited.step);
-      form.fields.playbook.setInitialValue(instanceBeingEdited.playbook);
+      form.fields.type.prefill(instanceBeingEdited.type);
+      form.fields.step.prefill(instanceBeingEdited.step);
+      form.fields.playbook.prefill(instanceBeingEdited.playbook);
       if (instanceBeingEdited.type === 'image') {
-        form.fields.image.setInitialValue(instanceBeingEdited.image);
+        form.fields.image.prefill(instanceBeingEdited.image);
       }
-      form.fields.prefilledFromHook.setInitialValue(instanceBeingEdited.prefilledFromHook);
+      form.fields.prefilledFromHook.prefill(instanceBeingEdited.prefilledFromHook);
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
         setIsDonePrefilling(true);
