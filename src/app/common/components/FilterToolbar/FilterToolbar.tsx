@@ -50,14 +50,18 @@ export interface IFilterToolbarProps<T> {
   filterCategories: FilterCategory<T>[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
-  toolbarItems?: JSX.Element;
+  beginToolbarItems?: JSX.Element;
+  endToolbarItems?: JSX.Element;
+  pagination?: JSX.Element;
 }
 
 export const FilterToolbar = <T,>({
   filterCategories,
   filterValues,
   setFilterValues,
-  toolbarItems,
+  beginToolbarItems,
+  endToolbarItems,
+  pagination,
 }: React.PropsWithChildren<IFilterToolbarProps<T>>): JSX.Element | null => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = React.useState(filterCategories[0].key);
@@ -75,8 +79,10 @@ export const FilterToolbar = <T,>({
   );
 
   return (
-    <Toolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
+    <Toolbar clearAllFilters={() => setFilterValues({})}>
       <ToolbarContent>
+        {beginToolbarItems && <ToolbarGroup>{beginToolbarItems}</ToolbarGroup>}
+
         <ToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="2xl">
           <ToolbarItem>
             <Dropdown
@@ -105,11 +111,9 @@ export const FilterToolbar = <T,>({
           ))}
         </ToolbarToggleGroup>
 
-        {toolbarItems && (
-          <ToolbarGroup>
-            <ToolbarItem>{toolbarItems}</ToolbarItem>
-          </ToolbarGroup>
-        )}
+        {endToolbarItems && <ToolbarGroup>{endToolbarItems}</ToolbarGroup>}
+
+        {pagination && <ToolbarItem variant="pagination">{pagination}</ToolbarItem>}
       </ToolbarContent>
     </Toolbar>
   );
