@@ -2,13 +2,12 @@ import * as React from 'react';
 import {
   Flex,
   FlexItem,
-  Split,
-  SplitItem,
   Pagination,
   Progress,
   ProgressMeasureLocation,
   ProgressVariant,
   Text,
+  ToolbarItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -359,23 +358,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   return (
     <>
-      <Split>
-        <SplitItem isFilled>
-          <FilterToolbar<IPlan>
-            filterCategories={filterCategories}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-            toolbarItems={<CreatePlanButton variant="secondary" />}
-          />
-        </SplitItem>
-        <SplitItem>
+      <FilterToolbar<IPlan>
+        filterCategories={filterCategories}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+        endToolbarItems={
+          <ToolbarItem>
+            <CreatePlanButton variant="secondary" />
+          </ToolbarItem>
+        }
+        pagination={
           <Pagination
             className={spacing.mtMd}
             {...paginationProps}
             widgetId="plans-table-pagination-top"
           />
-        </SplitItem>
-      </Split>
+        }
+      />
+
       {filteredItems.length > 0 ? (
         <Table
           aria-label="Migration Plans table"

@@ -5,10 +5,14 @@ import {
   Text,
   Level,
   LevelItem,
-  Split,
-  SplitItem,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownToggleCheckbox,
+  DropdownItem,
+  ToolbarItem,
 } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+
 import {
   Table,
   TableHeader,
@@ -20,6 +24,10 @@ import {
   wrappable,
   truncate,
 } from '@patternfly/react-table';
+
+import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import '@app/Plans/components/Wizard/SelectVMsForm.css';
 
 import {
   SourceVM,
@@ -184,7 +192,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
             title: 'Folder path',
             type: FilterType.search,
             placeholderText: 'Filter by folder path ...',
-            getItemValue: (item) => {
+            getItemValue: (item: SourceVM) => {
               const { folderPathStr } = getVMTreeInfo(item);
               return folderPathStr ? folderPathStr : '';
             },
@@ -217,16 +225,29 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   React.useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-  const { isItemSelected, toggleItemSelected, selectAll } = useSelectionState<string>({
+  // manages the selection state
+  const {
+    isItemSelected,
+    toggleItemSelected,
+    selectAll,
+    selectMultiple,
+    areAllSelected,
+    selectedItems,
+  } = useSelectionState<string>({
     items: sortedItems.map((vm) => vm.id),
     externalState: [form.fields.selectedVMIds.value, form.fields.selectedVMIds.setValue],
   });
 
-  const { toggleItemSelected: toggleVMExpanded, isItemSelected: isVMExpanded } =
-    useSelectionState<SourceVM>({
-      items: sortedItems,
-      isEqual: (a, b) => a.selfLink === b.selfLink,
-    });
+  // manages the expanded state
+  const {
+    toggleItemSelected: toggleVMExpanded,
+    isItemSelected: isVMExpanded,
+    selectAll: expandAll,
+    areAllSelected: areAllExpanded,
+  } = useSelectionState<SourceVM>({
+    items: sortedItems,
+    isEqual: (a, b) => a.selfLink === b.selfLink,
+  });
 
   React.useEffect(() => {
     if (filterValues.analysisCondition) {
@@ -259,6 +280,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   currentPageItems.forEach((vm: SourceVM) => {
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
+
     rows.push({
       meta: { vm },
       selected: isItemSelected(vm.id),
@@ -274,6 +296,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         ...(sourceProvider?.type === 'vsphere' ? [folderPathStr || ''] : []),
       ],
     });
+
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
@@ -294,6 +317,76 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       });
     }
   });
+
+  const toggleCollapseAll = (collapse: boolean) => {
+    expandAll(!collapse);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    selectAll(!!checked);
+  };
+
+  const [bulkSelectOpen, setBulkSelectOpen] = React.useState(false);
+
+  const dropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        handleSelectAll(false);
+      }}
+      data-action="none"
+      key="select-none"
+      component="button"
+    >
+      Select none (0)
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        selectMultiple(
+          currentPageItems.map((vm) => vm.id),
+          true
+        );
+      }}
+      data-action="page"
+      key="select-page"
+      component="button"
+    >
+      Select page ({currentPageItems.length})
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        handleSelectAll(true);
+      }}
+      data-action="all"
+      key="select-all"
+      component="button"
+    >
+      Select all ({paginationProps.itemCount})
+    </DropdownItem>,
+  ];
+
+  const getBulkSelectState = () => {
+    let state: boolean | null;
+    if (areAllSelected) {
+      state = true;
+    } else if (selectedItems.length === 0) {
+      state = false;
+    } else {
+      state = null;
+    }
+    return state;
+  };
+
+  const collapseAllBtn = () => (
+    <Button
+      variant="control"
+      title={`${!areAllExpanded ? 'Expand' : 'Collapse'} all`}
+      onClick={() => {
+        toggleCollapseAll(areAllExpanded);
+      }}
+    >
+      {areAllExpanded ? <AngleDownIcon /> : <AngleRightIcon />}
+    </Button>
+  );
 
   return (
     <ResolvedQueries
@@ -324,36 +417,63 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
               analytics service.
             </Text>
           </TextContent>
-          <Split>
-            <SplitItem isFilled>
-              <FilterToolbar<SourceVM>
-                filterCategories={filterCategories}
-                filterValues={filterValues}
-                setFilterValues={setFilterValues}
-              />
-            </SplitItem>
-            <SplitItem>
-              <Pagination
-                className={spacing.mtMd}
-                {...paginationProps}
-                widgetId="vms-table-pagination-top"
-              />
-            </SplitItem>
-          </Split>
+
+          <FilterToolbar<SourceVM>
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+            endToolbarItems={
+              <ToolbarItem>{`${form.values.selectedVMIds.length} selected`}</ToolbarItem>
+            }
+            beginToolbarItems={
+              <>
+                <ToolbarItem>{collapseAllBtn()}</ToolbarItem>
+
+                <ToolbarItem>
+                  <Dropdown
+                    toggle={
+                      <DropdownToggle
+                        splitButtonItems={[
+                          <DropdownToggleCheckbox
+                            id="bulk-selected-vms-checkbox"
+                            key="bulk-select-checkbox"
+                            aria-label="Select all"
+                            onChange={() => {
+                              if (getBulkSelectState() !== false) {
+                                selectAll(false);
+                              } else {
+                                selectAll(true);
+                              }
+                            }}
+                            isChecked={getBulkSelectState()}
+                          />,
+                        ]}
+                        onToggle={(isOpen) => {
+                          setBulkSelectOpen(isOpen);
+                        }}
+                      />
+                    }
+                    isOpen={bulkSelectOpen}
+                    dropdownItems={dropdownItems}
+                  />
+                </ToolbarItem>
+              </>
+            }
+            pagination={
+              <Pagination isCompact {...paginationProps} widgetId="vms-table-pagination-top" />
+            }
+          />
           {filteredItems.length > 0 ? (
             <Table
               aria-label={`${PROVIDER_TYPE_NAMES[sourceProvider?.type || 'vsphere']} VMs table`}
+              canSelectAll={false}
               variant={TableVariant.compact}
               cells={columns}
               rows={rows}
               sortBy={sortBy}
               onSort={onSort}
               onSelect={(_event, isSelected, rowIndex, rowData) => {
-                if (rowIndex === -1) {
-                  selectAll(isSelected);
-                } else {
-                  toggleItemSelected(rowData.meta.vm.id, isSelected);
-                }
+                toggleItemSelected(rowData.meta.vm.id, isSelected);
               }}
               onCollapse={(_event, _rowKey, _isOpen, rowData) => {
                 toggleVMExpanded(rowData.meta.vm);
