@@ -30,14 +30,14 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
 
   const saveLoginToken = (user: string | null, history: History) => {
     setCurrentUser(JSON.stringify(user));
-    history.push('/');
+    history.replace('/');
   };
 
   const checkExpiry = (error: Response | AxiosError<unknown>, history: History) => {
     const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
     if (status === 401) {
       setCurrentUser('');
-      history.push('/');
+      history.replace('/');
     }
   };
 

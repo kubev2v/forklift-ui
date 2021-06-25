@@ -14,6 +14,8 @@ import {
   findMatchingNode,
   findMatchingNodeAndDescendants,
   findNodesMatchingSelectedVMs,
+  flattenInventoryTreeNodes,
+  getAvailableVMs,
   getSelectableNodes,
   getSelectedVMsFromPlan,
   isNodeFullyChecked,
@@ -84,6 +86,18 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     isNodeSelectable,
   ]);
 
+  const getNodeBadgeContent = (node: InventoryTree, isRootNode: boolean) => {
+    const { treeType } = form.values;
+    const { isItemSelected, selectedItems } = treeSelection;
+    const selectedDescendants = flattenInventoryTreeNodes(node).filter(isItemSelected);
+    const numVMs = getAvailableVMs(selectedDescendants, vmsQuery.data || [], treeType).length;
+    const rootNodeSuffix = ` VM${numVMs !== 1 ? 's' : ''}`;
+    if (numVMs || isItemSelected(node) || (isRootNode && selectedItems.length > 0)) {
+      return `${numVMs}${isRootNode ? rootNodeSuffix : ''}`;
+    }
+    return null;
+  };
+
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
@@ -121,10 +135,12 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             searchText,
             treeSelection.isItemSelected,
             treeSelection.areAllSelected,
-            isNodeSelectable
+            isNodeSelectable,
+            getNodeBadgeContent
           )}
           defaultAllExpanded
           hasChecks
+          hasBadges
           onSearch={(event) => setSearchText(event.target.value)}
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {
