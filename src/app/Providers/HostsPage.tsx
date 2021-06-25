@@ -19,6 +19,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useInventoryProvidersQuery } from '@app/queries';
 import { IVMwareProvider } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
+import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 export interface IHostsMatchParams {
   url: string;
@@ -47,7 +48,7 @@ export const HostsPage: React.FunctionComponent = () => {
             <Breadcrumb>
               <BreadcrumbItem>Providers</BreadcrumbItem>
               <BreadcrumbItem>
-                <Link to={`/providers/vsphere`}>VMware</Link>
+                <Link to={`/providers/vsphere`}>{PROVIDER_TYPE_NAMES.vsphere}</Link>
               </BreadcrumbItem>
               <BreadcrumbItem>{match?.params.providerName}</BreadcrumbItem>
               <BreadcrumbItem isActive>Hosts</BreadcrumbItem>
