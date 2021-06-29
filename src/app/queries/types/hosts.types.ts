@@ -1,4 +1,4 @@
-import { ICR, INameNamespaceRef, IStatusCondition, IVMwareObjRef } from './common.types';
+import { ICR, INameNamespaceRef, IStatusCondition } from './common.types';
 
 export interface IHostNetworkAdapter {
   name: string;
@@ -10,44 +10,9 @@ export interface IHostNetworkAdapter {
 
 export interface IHost {
   id: string;
-  parent: IVMwareObjRef;
-  revision: number;
   name: string;
   selfLink: string;
-  inMaintenance: boolean;
   managementServerIp: string;
-  thumbprint: string;
-  cpuSockets: number;
-  cpuCores: number;
-  productName: string;
-  productVersion: string;
-  networking: {
-    vNICs: {
-      key: string;
-      linkSpeed: number;
-    }[];
-    pNICs: {
-      key: string;
-      portGroup: string;
-      dPortGroup: string;
-      ipAddress: string;
-      mtu: number;
-    }[];
-    portGroups: {
-      key: string;
-      name: string;
-      vSwitch: string;
-    }[];
-    switches: {
-      key: string;
-      name: string;
-      portGroups: string[];
-      pNICs: string[];
-    }[];
-  };
-  networks: IVMwareObjRef[];
-  datastores: IVMwareObjRef[];
-  vms: IVMwareObjRef[];
   networkAdapters: IHostNetworkAdapter[];
 }
 
