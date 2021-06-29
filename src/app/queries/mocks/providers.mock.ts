@@ -17,7 +17,6 @@ export let MOCK_CLUSTER_PROVIDERS: IProviderObject[];
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vmwareProvider1: IVMwareProvider = {
     uid: 'mock-uid-vcenter-1',
-    version: '12345',
     namespace: 'openshift-migration',
     name: 'vcenter-1',
     selfLink: '/foo/vmwareprovider/1',
@@ -30,8 +29,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         namespace: 'openshift-migration',
         selfLink: '/foo/bar',
         uid: 'mock-uid-vcenter-1',
-        resourceVersion: '12345',
-        generation: 1,
         creationTimestamp: '2020-08-21T18:36:41.468Z',
       },
       spec: {
@@ -76,10 +73,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             type: 'Ready',
           },
         ],
-        observedGeneration: 1,
       },
     },
-    datacenterCount: 1,
     clusterCount: 2,
     hostCount: 2,
     vmCount: 41,
@@ -110,7 +105,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             reason: '',
           },
         ],
-        observedGeneration: 1,
       },
     },
   };
@@ -154,14 +148,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             type: 'InventoryLoading',
           },
         ],
-        observedGeneration: 1,
       },
     },
   };
 
   const rhvProvider1: IRHVProvider = {
     uid: 'mock-uid-rhv-1',
-    version: '22858995',
     namespace: 'konveyor-forklift',
     name: 'rhv-1',
     selfLink: 'providers/ovirt/foo1',
@@ -175,52 +167,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         selfLink:
           '/apis/forklift.konveyor.io/v1beta1/namespaces/konveyor-forklift/providers/rhv-1/status',
         uid: 'mock-uid-rhv-1',
-        resourceVersion: '22858995',
-        generation: 3,
         creationTimestamp: '2021-05-06T13:35:06Z',
         annotations: {
           'kubectl.kubernetes.io/last-applied-configuration':
             '{"apiVersion":"forklift.konveyor.io/v1beta1","kind":"Provider","metadata":{"annotations":{},"name":"rhv","namespace":"konveyor-forklift"},"spec":{"secret":{"name":"rhv","namespace":"konveyor-forklift"},"type":"ovirt","url":"https://rhvm.v2v.bos.redhat.com/ovirt-engine/api"}}\n',
         },
-        managedFields: [
-          {
-            manager: '___go_build_main_go',
-            operation: 'Update',
-            apiVersion: 'forklift.konveyor.io/v1beta1',
-            time: '2021-05-06T13:34:27Z',
-            fieldsType: 'FieldsV1',
-            fieldsV1: { 'f:status': { '.': {}, 'f:observedGeneration': {} } },
-          },
-          {
-            manager: 'oc',
-            operation: 'Update',
-            apiVersion: 'forklift.konveyor.io/v1beta1',
-            time: '2021-05-11T22:56:26Z',
-            fieldsType: 'FieldsV1',
-            fieldsV1: {
-              'f:metadata': {
-                'f:annotations': {
-                  '.': {},
-                  'f:kubectl.kubernetes.io/last-applied-configuration': {},
-                },
-              },
-              'f:spec': {
-                '.': {},
-                'f:secret': { '.': {}, 'f:name': {}, 'f:namespace': {} },
-                'f:type': {},
-                'f:url': {},
-              },
-            },
-          },
-          {
-            manager: 'manager',
-            operation: 'Update',
-            apiVersion: 'forklift.konveyor.io/v1beta1',
-            time: '2021-05-13T19:16:42Z',
-            fieldsType: 'FieldsV1',
-            fieldsV1: { 'f:status': { 'f:conditions': {}, 'f:observedGeneration': {} } },
-          },
-        ],
       },
       spec: {
         type: 'ovirt',
@@ -261,7 +212,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             lastTransitionTime: '2021-05-17T00:54:58Z',
           },
         ],
-        observedGeneration: 3,
       },
     },
     datacenterCount: 1,
@@ -306,7 +256,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const openshiftProvider1: IOpenShiftProvider = {
     uid: 'mock-uid-ocpv-1',
-    version: '12345',
     namespace: 'openshift-migration',
     name: 'ocpv-1',
     selfLink: '/foo/openshiftprovider/1',
@@ -319,8 +268,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         namespace: 'openshift-migration',
         selfLink: '/foo/bar',
         uid: 'mock-uid-ocpv-1',
-        resourceVersion: '12345',
-        generation: 1,
         creationTimestamp: '2020-08-21T18:36:41.468Z',
         annotations: {
           'forklift.konveyor.io/defaultTransferNetwork': 'ocp-network-3',
@@ -368,10 +315,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             type: 'Ready',
           },
         ],
-        observedGeneration: 1,
       },
     },
-    namespaceCount: 41,
     vmCount: 26,
     networkCount: 8,
   };
@@ -399,7 +344,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             reason: '',
           },
         ],
-        observedGeneration: 1,
       },
     },
   };

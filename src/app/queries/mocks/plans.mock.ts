@@ -175,8 +175,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'plantest-01',
       namespace: 'openshift-migration',
-      generation: 2,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-01',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
@@ -232,7 +230,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -261,8 +258,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'plantest-02',
       namespace: 'openshift-migration',
-      generation: 2,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-02',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
@@ -311,7 +306,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
     },
   };
 
@@ -338,8 +332,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'plantest-03',
       namespace: 'openshift-migration',
-      generation: 2,
-      resourceVersion: '30825023',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-03',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
@@ -379,7 +371,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -408,8 +399,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'plantest-04',
       namespace: 'openshift-migration',
-      generation: 2,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-04',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
@@ -449,7 +438,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -533,7 +521,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -562,8 +549,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'plantest-06',
       namespace: 'openshift-migration',
-      generation: 2,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/plans/plantest-06',
       uid: '28fde094-b667-4d21-8f29-27c18f22178c',
@@ -595,7 +580,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
     },
   };
 
@@ -746,7 +730,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -775,7 +758,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3] },
     status: {
       conditions: plan7.status?.conditions || [],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -821,7 +803,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -860,7 +841,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           type: 'Ready',
         },
       ],
-      observedGeneration: 2,
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',

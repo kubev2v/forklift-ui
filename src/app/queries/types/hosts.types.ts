@@ -62,7 +62,6 @@ export interface IHostConfig extends ICR {
     thumbprint?: string;
   };
   status?: {
-    observedGeneration: string;
     conditions: IStatusCondition[];
   };
 }

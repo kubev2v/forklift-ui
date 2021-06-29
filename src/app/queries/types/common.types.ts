@@ -10,9 +10,7 @@ export interface IObjectReference {
   name: string;
   namespace: string;
   apiVersion?: string;
-  fieldPath?: string;
   kind?: string;
-  resourceVersion?: string;
   uid?: string;
 }
 
@@ -22,15 +20,12 @@ export interface IMetaObjectMeta {
   namespace: string;
   selfLink?: string;
   uid?: string;
-  resourceVersion?: string;
-  generation?: number;
   creationTimestamp?: string; // ISO timestamp
   annotations?: Record<string, string | undefined>;
   labels?: {
     createdForResourceType?: string;
     createdForResource?: string;
   };
-  managedFields?: unknown[];
   ownerReferences?: IObjectReference[];
 }
 

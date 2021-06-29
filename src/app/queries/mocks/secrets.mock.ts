@@ -11,7 +11,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       namespace: 'openshift-migration',
       selfLink: '/foo/secret',
       uid: 'e0f1078b-ce2a-4487-8281-5176267b78c2',
-      resourceVersion: '1128317',
       creationTimestamp: '2020-12-18T17:43:30Z',
     },
     data: {
