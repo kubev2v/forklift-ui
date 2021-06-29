@@ -100,13 +100,13 @@ export interface IStorageMapping extends ICommonMapping {
 
 export type Mapping = INetworkMapping | IStorageMapping;
 
+// An extra network object to represent the default pod network, which is not included in the inventory
 export const POD_NETWORK: IOpenShiftNetwork = {
   name: 'Pod network',
   namespace: 'pod',
   type: 'pod',
   selfLink: 'pod',
   uid: 'pod',
-  version: 'pod',
 };
 export type MappingSource = ISourceStorage | ISourceNetwork;
 export type MappingTarget = IOpenShiftNetwork | IAnnotatedStorageClass;
