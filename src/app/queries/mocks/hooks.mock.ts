@@ -10,8 +10,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'hooktest-01',
       namespace: 'openshift-migration',
-      generation: 1,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/hooks/hooktest-01',
       uid: '28fde094-b667-4d21-8f29-28c18f22178c',
@@ -30,8 +28,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       name: 'hooktest-02',
       namespace: 'openshift-migration',
-      generation: 1,
-      resourceVersion: '30825024',
       selfLink:
         '/apis/forklift.konveyor.io/v1beta1/namespaces/openshift-migration/hooks/hooktest-02',
       uid: '28fde094-b667-4d21-8f29-28c18f22178b',

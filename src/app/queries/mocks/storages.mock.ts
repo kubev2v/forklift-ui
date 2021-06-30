@@ -63,8 +63,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const exampleStorageClasses: IAnnotatedStorageClass[] = [
     {
-      uid: 'foo-sc-uid-1',
-      version: '1',
       namespace: 'foo',
       name: 'standard',
       selfLink: '/foo/sc/1',
@@ -82,8 +80,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
     },
     {
-      uid: 'foo-sc-uid-2',
-      version: '1',
       namespace: 'foo',
       name: 'large',
       selfLink: '/foo/sc/2',
@@ -97,8 +93,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
     },
     {
-      uid: 'foo-sc-uid-3',
-      version: '1',
       namespace: 'foo',
       name: 'small',
       selfLink: '/foo/sc/3',
