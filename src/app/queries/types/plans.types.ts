@@ -74,7 +74,6 @@ export interface IPlanStatus {
     history?: IMigrationHistoryItem[];
   };
   conditions: IStatusCondition[];
-  observedGeneration: number;
 }
 
 export interface IPlan extends ICR {
