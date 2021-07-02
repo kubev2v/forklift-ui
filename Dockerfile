@@ -29,6 +29,8 @@ COPY --from=builder /opt/app-root/src/dist/index.html.ejs /opt/app-root/src/view
 COPY --from=builder /opt/app-root/src/node_modules /opt/app-root/src/node_modules
 COPY --from=builder /opt/app-root/src/package.json /opt/app-root/src
 
+COPY --from=builder /opt/app-root/src/entrypoint.sh /usr/bin/entrypoint.sh
+
 ENV META_FILE="/etc/forklift-ui/meta.json"
 
-ENTRYPOINT ["npm", "run", "-d", "start"]
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
