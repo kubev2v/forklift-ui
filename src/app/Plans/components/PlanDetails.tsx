@@ -60,8 +60,6 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
 
   const hookStepPostfix = plan.spec.warm ? 'cutover' : 'migration';
 
-  const getVMName = (id: string) => vms.find((vm) => (vm.id = id))?.name;
-
   return (
     <DescriptionList isHorizontal>
       <DescriptionListGroup>
@@ -133,8 +131,8 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
             headerContent={<div>Selected VMs</div>}
             bodyContent={
               <List id="details-selected-vms-list">
-                {plan.spec.vms.map((vm, idx) => (
-                  <li key={idx}>{getVMName(vm.id)}</li>
+                {vms.map((vm, idx) => (
+                  <li key={idx}>{vm.name}</li>
                 ))}
               </List>
             }
