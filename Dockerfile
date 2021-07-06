@@ -4,7 +4,7 @@ COPY . .
 RUN npm install && npm run build
 
 # Runner image
-FROM registry.access.redhat.com/ubi8/nodejs-14
+FROM registry.access.redhat.com/ubi8/nodejs-14-minimal
 
 LABEL name="konveyor/forklift-ui" \
       description="Konveyor for Virtualization - User Interface" \
