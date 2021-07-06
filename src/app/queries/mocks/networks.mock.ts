@@ -64,35 +64,30 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   MOCK_OPENSHIFT_NETWORKS = [
     {
       uid: 'foo-network-uid-1',
-      version: '12345',
       namespace: 'openshift-migration',
       name: 'ocp-network-1',
       selfLink: '/foo/openshiftnetwork/1',
     },
     {
       uid: 'foo-network-uid-2',
-      version: '12345',
       namespace: 'openshift-migration',
       name: 'ocp-network-2',
       selfLink: '/foo/openshiftnetwork/2',
     },
     {
       uid: 'foo-network-uid-3',
-      version: '12345',
       namespace: 'openshift-migration',
       name: 'ocp-network-3',
       selfLink: '/foo/openshiftnetwork/3',
     },
     {
       uid: 'foo-network-uid-4',
-      version: '12345',
       namespace: 'openshift-migration',
       name: 'ocp-network-4',
       selfLink: '/foo/openshiftnetwork/4',
     },
     {
       uid: 'foo-network-uid-5',
-      version: '12345',
       namespace: 'openshift-migration',
       name: 'ocp-network-5',
       selfLink: '/foo/openshiftnetwork/5',

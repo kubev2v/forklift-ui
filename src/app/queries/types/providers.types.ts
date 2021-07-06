@@ -17,13 +17,11 @@ export interface IProviderObject extends ICR {
   };
   status?: {
     conditions: IStatusCondition[];
-    observedGeneration: number;
   };
 }
 
 export interface ICommonProvider {
   uid: string;
-  version: string;
   namespace: string;
   name: string;
   selfLink: string;
@@ -32,7 +30,6 @@ export interface ICommonProvider {
 }
 
 export interface IVMwareProvider extends ICommonProvider {
-  datacenterCount: number;
   clusterCount: number;
   hostCount: number;
   vmCount: number;
@@ -52,7 +49,6 @@ export interface IRHVProvider extends ICommonProvider {
 export interface IOpenShiftProvider extends ICommonProvider {
   vmCount: number;
   networkCount: number;
-  namespaceCount: number;
 }
 
 export type InventoryProvider = IVMwareProvider | IRHVProvider | IOpenShiftProvider;

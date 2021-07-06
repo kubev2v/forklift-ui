@@ -5,8 +5,6 @@ export interface ISourceStorage {
 }
 
 export interface IStorageClass {
-  uid: string;
-  version: string;
   namespace: string;
   name: string;
   selfLink: string;
