@@ -53,6 +53,35 @@ const PROVIDER_TYPE_OPTIONS = PROVIDER_TYPES.map((type) => ({
   value: type,
 })) as OptionWithValue<ProviderType>[];
 
+const oVirtLabelPrefix = process.env.BRAND_TYPE === 'RedHat' ? 'RHV Manager' : 'oVirt Engine';
+const vmwareLabelPrefix = 'vCenter';
+const getLabelName = (type: 'hostname' | 'username' | 'pwd', prefix?: string) => {
+  let label = '';
+  switch (type) {
+    case 'hostname': {
+      label = prefix ? `${prefix} host name or IP address` : 'Host name or IP address';
+      break;
+    }
+    case 'username': {
+      label = prefix ? `${prefix} user name` : 'User name';
+      break;
+    }
+    case 'pwd': {
+      label = prefix ? `${prefix} password` : 'Password';
+      break;
+    }
+    default: {
+      label = 'Unknown label';
+    }
+  }
+  return label;
+};
+
+const isVmWare = (providerType: ProviderType | null) => providerType === 'vsphere';
+const isOvirt = (providerType: ProviderType | null) => providerType === 'ovirt';
+const brandPrefix = (providerType: ProviderType | null) =>
+  isOvirt(providerType) ? oVirtLabelPrefix : isVmWare(providerType) ? vmwareLabelPrefix : undefined;
+
 const useAddProviderFormState = (
   clusterProvidersQuery: ReturnType<typeof useClusterProvidersQuery>,
   providerBeingEdited: IProviderObject | null
@@ -76,9 +105,24 @@ const useAddProviderFormState = (
 
   const sourceProviderFields = {
     ...commonProviderFields,
-    hostname: useFormField('', hostnameSchema),
-    username: useFormField('', usernameSchema.required()),
-    password: useFormField('', yup.string().max(256).label('Password').required()),
+    hostname: useFormField(
+      '',
+      hostnameSchema.label(getLabelName('hostname', brandPrefix(providerTypeField.value)))
+    ),
+    username: useFormField(
+      '',
+      usernameSchema
+        .required()
+        .label(getLabelName('username', brandPrefix(providerTypeField.value)))
+    ),
+    password: useFormField(
+      '',
+      yup
+        .string()
+        .max(256)
+        .label(getLabelName('pwd', brandPrefix(providerTypeField.value)))
+        .required()
+    ),
   };
 
   return {
@@ -223,41 +267,34 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 {fields?.name ? (
                   <ValidatedTextInput
                     field={forms[providerType].fields.name}
-                    label="Name"
+                    label={'Name'}
                     isRequired
                     fieldId="name"
                     inputProps={{
                       isDisabled: !!providerBeingEdited,
                     }}
                     formGroupProps={{
-                      labelIcon: (
-                        <Popover bodyContent="User specified name that will be displayed in the UI.">
-                          <Button
-                            variant="plain"
-                            aria-label="More info for name field"
-                            onClick={(e) => e.preventDefault()}
-                            aria-describedby="name-info"
-                            className="pf-c-form__group-label-help"
-                          >
-                            <HelpIcon noVerticalAlign />
-                          </Button>
-                        </Popover>
-                      ),
+                      helperText: 'User specified name to display in the list of providers',
                     }}
                   />
                 ) : null}
                 {fields?.hostname ? (
                   <ValidatedTextInput
                     field={fields.hostname}
-                    label="Hostname or IP address"
+                    label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
                   />
                 ) : null}
                 {fields?.username ? (
                   <ValidatedTextInput
+                    inputProps={{
+                      placeholder: isVmWare(providerType)
+                        ? 'Example, administrator@vsphere.local'
+                        : undefined,
+                    }}
                     field={fields.username}
-                    label="Username"
+                    label={getLabelName('username', brandPrefix(providerType))}
                     isRequired
                     fieldId="username"
                   />
@@ -265,7 +302,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 {fields?.password ? (
                   <ValidatedPasswordInput
                     field={fields.password}
-                    label="Password"
+                    label={getLabelName('pwd', brandPrefix(providerType))}
                     isRequired
                     fieldId="password"
                   />
@@ -273,7 +310,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                 {fields?.fingerprint ? (
                   <ValidatedTextInput
                     field={fields.fingerprint}
-                    label="SHA-1 fingerprint"
+                    label="vCenter SHA-1 fingerprint"
                     isRequired
                     fieldId="fingerprint"
                     formGroupProps={{
@@ -310,11 +347,9 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                       <Popover
                         bodyContent={
                           <div>
-                            See{' '}
-                            <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
-                              {PRODUCT_DOCO_LINK.label}
-                            </a>{' '}
-                            for instructions on how to retrieve the CA certificate.
+                            The CA certificate is the{' '}
+                            <code>/etc/pki/ovirt-engine/apache-ca.pem</code> file on the Manager
+                            machine.
                           </div>
                         }
                       >

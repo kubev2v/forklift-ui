@@ -36,6 +36,45 @@ describe('<AddEditProviderModal />', () => {
     expect(cancelButton).toBeEnabled();
   });
 
+  // oVirt Provider
+
+  it('allows adding a oVirt provider', async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <NetworkContextProvider>
+          <Router history={history}>
+            <AddEditProviderModal {...props} providerBeingEdited={null} />
+          </Router>
+        </NetworkContextProvider>
+      </QueryClientProvider>
+    );
+
+    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    userEvent.click(typeButton);
+    const oVirtButton = await screen.findByRole('option', { name: /ovirt/i, hidden: true });
+    userEvent.click(oVirtButton);
+    const caCertField = screen.getByLabelText(/^File upload/);
+    await waitFor(() => {
+      const name = screen.getByRole('textbox', { name: /Name/ });
+      const hostname = screen.getByRole('textbox', {
+        name: /oVirt Engine host name or IP address/i,
+      });
+      const username = screen.getByRole('textbox', { name: /oVirt Engine user name/i });
+      const password = screen.getByLabelText(/^oVirt Engine password/);
+
+      userEvent.type(name, 'providername');
+      userEvent.type(hostname, 'host.example.com');
+      userEvent.type(username, 'username');
+      userEvent.type(password, 'password');
+      userEvent.type(caCertField, '-----BEGIN CERTIFICATE-----abc-----END CERTIFICATE-----');
+    });
+
+    const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
+    expect(addButton).toBeEnabled();
+    const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
+    expect(cancelButton).toBeEnabled();
+  });
+
   // Vsphere Provider
 
   it('allows adding a vsphere provider', async () => {
@@ -56,11 +95,13 @@ describe('<AddEditProviderModal />', () => {
 
     await waitFor(() => {
       const name = screen.getByRole('textbox', { name: /Name/ });
-      const hostname = screen.getByRole('textbox', { name: /hostname or ip address/i });
-      const username = screen.getByRole('textbox', { name: /username/i });
-      const password = screen.getByLabelText(/^Password/);
+      const hostname = screen.getByRole('textbox', {
+        name: /vCenter host name or IP address/i,
+      });
+      const username = screen.getByRole('textbox', { name: /vCenter user name/i });
+      const password = screen.getByLabelText(/^vCenter password/);
       const certFingerprint = screen.getByRole('textbox', {
-        name: /sha-1 fingerprint/i,
+        name: /vCenter sha-1 fingerprint/i,
       });
 
       userEvent.type(name, 'providername');
@@ -97,11 +138,13 @@ describe('<AddEditProviderModal />', () => {
 
     await waitFor(() => {
       const name = screen.getByRole('textbox', { name: /Name/ });
-      const hostname = screen.getByRole('textbox', { name: /hostname or ip address/i });
-      const username = screen.getByRole('textbox', { name: /username/i });
-      const password = screen.getByLabelText(/^Password/);
+      const hostname = screen.getByRole('textbox', {
+        name: /vCenter host name or IP address/i,
+      });
+      const username = screen.getByRole('textbox', { name: /vCenter user name/i });
+      const password = screen.getByLabelText(/^vCenter password/);
       const certFingerprint = screen.getByRole('textbox', {
-        name: /sha-1 fingerprint/i,
+        name: /vCenter sha-1 fingerprint/i,
       });
 
       userEvent.type(name, 'providername');

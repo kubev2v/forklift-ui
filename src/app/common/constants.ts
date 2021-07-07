@@ -106,7 +106,6 @@ const subdomainRegex = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[
 
 export const hostnameSchema = yup
   .string()
-  .label('Hostname or IP address')
   .max(253)
   .required()
   .test(
@@ -132,7 +131,6 @@ export const fingerprintSchema = yup
 export const usernameSchema = yup
   .string()
   .max(320)
-  .label('Username')
   .matches(/^\S*$/, {
     message: ({ label }) => `${label} must not contain spaces`,
     excludeEmptyString: true,
