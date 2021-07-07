@@ -55,11 +55,12 @@ export class Mapping {
     openSidebarMenu();
 
     // Expanding sidebar mapping menu
-    cy.get(buttonNavLink).then(($mappings) => {
-      if ($mappings.attr('aria-expanded') == 'false') {
-        clickByText(buttonNavLink, mappings);
-      }
-    });
+    // cy.get(buttonNavLink).then(($mappings) => {
+    //   if ($mappings.attr('aria-expanded') == 'false') {
+    //     clickByText(buttonNavLink, mappings);
+    //   }
+    // });
+    clickByText(buttonNavLink, mappings);
   }
 
   protected createMappingPeer(mappingPeer: MappingPeer[]): void {

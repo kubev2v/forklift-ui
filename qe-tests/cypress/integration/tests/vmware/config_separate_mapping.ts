@@ -40,7 +40,7 @@ export const networkMappingPeer: MappingPeer[] = [
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: 'env-esxi67-ims-h02_localdisk',
-    dProvider: storageType.cephRbd,
+    dProvider: storageType.nfs,
   },
 ];
 
@@ -63,7 +63,7 @@ export const planData: PlanData = {
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
-  vmwareSourceFqdn: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
+  sourceClusterName: 'Cluster',
   vmwareSourceVmList: ['v2v-rhel7-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
