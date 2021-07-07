@@ -1,14 +1,14 @@
 import { Mapping } from './mapping';
 import { clickByText } from '../../utils/utils';
 import { network } from '../types/constants';
-import { menuNavLink } from '../views/mapping.view';
+import { menuTabLink } from '../views/mapping.view';
 import { MappingData } from '../types/types';
 
 export class MappingNetwork extends Mapping {
   protected openMenu(): void {
     super.openMenu();
     //Clicking on Network menu item
-    clickByText(menuNavLink, network);
+    clickByText(menuTabLink, network);
   }
 
   create(mappingData: MappingData): void {
