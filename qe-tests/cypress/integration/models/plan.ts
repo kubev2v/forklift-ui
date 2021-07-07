@@ -80,15 +80,15 @@ export class Plan {
   }
 
   protected filterVm(planData: PlanData): void {
-    const { vmwareSourceFqdn } = planData;
-    const selector = `[aria-label="Select Host ${vmwareSourceFqdn}"]`;
+    const { sourceClusterName } = planData;
+    const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
     click(selector);
     next();
   }
 
   protected selectVm(planData: PlanData): void {
     const { vmwareSourceVmList } = planData;
-    const selector = 'button.pf-c-button.pf-m-control';
+    const selector = `[aria-label="search button for search input"]`;
     vmwareSourceVmList.forEach((name) => {
       inputText(searchInput, name);
       click(selector);
@@ -132,6 +132,10 @@ export class Plan {
     if (useExistingStorageMapping) {
       selectFromDroplist(mappingDropdown, name);
     }
+    next();
+  }
+
+  protected hooksStep(): void {
     next();
   }
 
@@ -224,6 +228,7 @@ export class Plan {
     this.networkMappingStep(planData);
     this.storageMappingStep(planData);
     this.selectMigrationTypeStep(planData);
+    this.hooksStep();
     this.finalReviewStep(planData);
   }
 
