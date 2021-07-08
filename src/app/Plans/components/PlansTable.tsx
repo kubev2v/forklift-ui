@@ -5,7 +5,6 @@ import {
   Pagination,
   Progress,
   ProgressMeasureLocation,
-  ProgressVariant,
   Text,
   ToolbarItem,
 } from '@patternfly/react-core';
@@ -34,7 +33,6 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import PlanActionsDropdown from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import { PlanStatusDisplayType, PlanStatusType } from '@app/common/constants';
 import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
@@ -48,12 +46,7 @@ import {
 } from '@app/queries';
 
 import './PlansTable.css';
-import {
-  canPlanBeStarted,
-  getPlanStatusTitle,
-  getWarmPlanState,
-  isPlanBeingStarted,
-} from './helpers';
+import { getPlanStatusTitle, getPlanState, getButtonState, getMigStatusState } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
@@ -126,10 +119,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       ],
       getItemValue: (item) => {
         if (item.status?.conditions) {
-          if (hasCondition(item.status.conditions, PlanStatusType.Failed)) return 'Failed';
-          if (hasCondition(item.status.conditions, PlanStatusType.Ready)) return 'Ready';
-          if (hasCondition(item.status.conditions, PlanStatusType.Executing)) return 'Running';
-          if (hasCondition(item.status.conditions, PlanStatusType.Succeeded)) return 'Succeeded';
+          if (hasCondition(item.status.conditions, 'Failed')) return 'Failed';
+          if (hasCondition(item.status.conditions, 'Ready')) return 'Ready';
+          if (hasCondition(item.status.conditions, 'Executing')) return 'Running';
+          if (hasCondition(item.status.conditions, 'Succeeded')) return 'Succeeded';
         }
         return '';
       },
@@ -196,47 +189,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const rows: IRow[] = [];
 
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonType: PlanActionButtonType | null = null;
-    let title = '';
-    let variant: ProgressVariant | undefined;
-
-    const conditions = plan.status?.conditions || [];
     const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
+    const isWarmPlan = plan.spec.warm;
 
-    // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
-    // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
-    // TODO note, buttonType and title will only be used if <Progress> is shown in the row below, so their values don't matter for pre-cutover.
-    if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
-      buttonType = 'Start';
-    } else if (hasCondition(conditions, PlanStatusType.Executing)) {
-      buttonType = null;
-      title = PlanStatusDisplayType.Executing;
-      if (plan.spec.warm) {
-        title = 'Running cutover';
-        if (!latestMigration?.spec.cutover) {
-          buttonType = 'Cutover';
-        }
-      }
-    } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
-      title = PlanStatusDisplayType.Succeeded;
-      variant = ProgressVariant.success;
-    } else if (hasCondition(conditions, PlanStatusType.Canceled)) {
-      title = PlanStatusDisplayType.Canceled;
-    } else if (hasCondition(conditions, PlanStatusType.Failed)) {
-      title = PlanStatusDisplayType.Failed;
-      variant = ProgressVariant.danger;
-    } else if (plan.status?.migration?.started) {
-      if (canPlanBeStarted(plan)) {
-        title = 'Finished - Incomplete';
-        variant = ProgressVariant.warning;
-      } else {
-        console.warn('Migration plan unexpected status:', plan);
-      }
-    }
-
-    if (buttonType !== 'Start' && canPlanBeStarted(plan)) {
-      buttonType = 'Restart';
-    }
+    const planState = getPlanState(plan, latestMigration, migrationsQuery);
+    const buttonType = getButtonState(planState);
+    const { title, variant } = getMigStatusState(planState, isWarmPlan);
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
 
@@ -247,9 +205,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
 
-    const warmState = getWarmPlanState(plan, latestMigration, migrationsQuery);
-    // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
-    const isBeingStarted = isPlanBeingStarted(plan, latestMigration, migrationsQuery);
+    const isBeingStarted = planState === 'Starting';
 
     rows.push({
       meta: { plan },
@@ -265,34 +221,35 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             </>
           ),
         },
-        plan.spec.warm ? 'Warm' : 'Cold',
+        isWarmPlan ? 'Warm' : 'Cold',
         {
-          title: isBeingStarted ? (
-            <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
-          ) : warmState === 'Starting' ? (
-            <PlanStatusNavLink plan={plan}>
-              Running - preparing for incremental data copies
-            </PlanStatusNavLink>
-          ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
-            <StatusCondition status={plan.status} />
-          ) : warmState === 'Copying' ? (
-            <PlanStatusNavLink plan={plan}>
-              Running - performing incremental data copies
-            </PlanStatusNavLink>
-          ) : warmState === 'StartingCutover' ? (
-            <PlanStatusNavLink plan={plan}>Running - preparing for cutover</PlanStatusNavLink>
-          ) : (
-            <PlanStatusNavLink plan={plan} isInline={false}>
-              <Progress
-                title={title}
-                value={statusValue}
-                label={statusMessage}
-                valueText={statusMessage}
-                variant={variant}
-                measureLocation={ProgressMeasureLocation.top}
-              />
-            </PlanStatusNavLink>
-          ),
+          title:
+            isBeingStarted && !isWarmPlan ? (
+              <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
+            ) : isBeingStarted && isWarmPlan ? (
+              <PlanStatusNavLink plan={plan}>
+                Running - preparing for incremental data copies
+              </PlanStatusNavLink>
+            ) : planState === 'NotStarted' ? (
+              <StatusCondition status={plan.status} />
+            ) : planState === 'Copying' ? (
+              <PlanStatusNavLink plan={plan}>
+                Running - performing incremental data copies
+              </PlanStatusNavLink>
+            ) : planState === 'StartingCutover' ? (
+              <PlanStatusNavLink plan={plan}>Running - preparing for cutover</PlanStatusNavLink>
+            ) : (
+              <PlanStatusNavLink plan={plan} isInline={false}>
+                <Progress
+                  title={title}
+                  value={statusValue}
+                  label={statusMessage}
+                  valueText={statusMessage}
+                  variant={variant}
+                  measureLocation={ProgressMeasureLocation.top}
+                />
+              </PlanStatusNavLink>
+            ),
         },
         {
           title: buttonType ? (

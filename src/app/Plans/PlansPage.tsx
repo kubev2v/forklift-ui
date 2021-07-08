@@ -15,6 +15,7 @@ import {
   useHasSufficientProvidersQuery,
   usePlansQuery,
   useClusterProvidersQuery,
+  useMigrationsQuery,
 } from '@app/queries';
 
 import PlansTable from './components/PlansTable';
@@ -26,6 +27,7 @@ const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
+  const migrationsQuery = useMigrationsQuery();
 
   const errorContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,11 +39,17 @@ const PlansPage: React.FunctionComponent = () => {
       <PageSection>
         <div ref={errorContainerRef} />
         <ResolvedQueries
-          results={[sufficientProvidersQuery.result, clusterProvidersQuery, plansQuery]}
+          results={[
+            sufficientProvidersQuery.result,
+            clusterProvidersQuery,
+            plansQuery,
+            migrationsQuery,
+          ]}
           errorTitles={[
             'Error loading providers',
             'Error loading providers from cluster',
             'Error loading plans',
+            'Error loading migrations',
           ]}
           errorsInline={false}
         >

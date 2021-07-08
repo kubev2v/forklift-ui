@@ -19,7 +19,6 @@ import { getMappingResource } from './mappings';
 import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
-import { useHooksQuery } from './hooks';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -137,7 +136,6 @@ export const usePatchPlanMutation = (
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
   const { pollFasterAfterMutation } = usePollingContext();
-  const hooks = useHooksQuery();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
