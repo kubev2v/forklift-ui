@@ -28,7 +28,7 @@ import {
   numStr,
 } from '@app/common/helpers';
 
-import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
 import { OutlinedHddIcon } from '@patternfly/react-icons';
 
@@ -157,7 +157,7 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
               </>
             );
             return {
-              title: hasCondition(provider.status?.conditions || [], PlanStatusType.Ready) ? (
+              title: hasCondition(provider.status?.conditions || [], 'Ready') ? (
                 <Link to={`/providers/vsphere/${provider.metadata.name}`}>{hostCountWithIcon}</Link>
               ) : (
                 hostCountWithIcon

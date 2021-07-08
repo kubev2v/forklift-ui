@@ -4,6 +4,7 @@
     "lib": ["es5", "dom"],
     "types": ["cypress", "@testing-library/cypress"],
     "skipLibCheck": true,
+    "noEmit": true,
     "allowJs": true
   },
   "include": [

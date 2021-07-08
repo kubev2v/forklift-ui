@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { getMostSeriousCondition } from '@app/common/helpers';
-import { StatusCategoryType, PlanStatusType } from '@app/common/constants';
+import { StatusCategoryType } from '@app/common/constants';
 import { IStatusCondition } from '@app/queries/types';
 import { Button, Popover } from '@patternfly/react-core';
 
@@ -16,7 +16,7 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
 }: IStatusConditionProps) => {
   const getStatusType = (severity: string): StatusType => {
     if (status) {
-      if (severity === PlanStatusType.Ready || severity === StatusCategoryType.Required) {
+      if (severity === 'Ready' || severity === StatusCategoryType.Required) {
         return 'Ok';
       }
       if (severity === StatusCategoryType.Advisory) {

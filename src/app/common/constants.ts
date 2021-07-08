@@ -38,22 +38,25 @@ export enum StatusCategoryType {
   Warn = 'Warn',
 }
 
-export enum PlanStatusType {
-  Ready = 'Ready',
-  Executing = 'Executing',
-  Succeeded = 'Succeeded',
-  Failed = 'Failed',
-  Canceled = 'Canceled',
-}
+export type ConditionType = 'Ready' | 'Executing' | 'Succeeded' | 'Failed' | 'Canceled';
 
-export enum PlanStatusDisplayType {
-  Ready = 'Ready',
-  Executing = 'Running',
-  Succeeded = 'Succeeded',
-  Canceled = 'Canceled',
-  Failed = 'Failed',
-  Pending = 'Pending',
-}
+export type ColdPlanState = Exclude<
+  PlanState,
+  'Copying' | 'FailedCopying' | 'CanceledCopying' | 'StartingCutover'
+>;
+
+export type PlanState =
+  | 'NotStarted' // Just created, no action taken yet
+  | 'Starting' // User clicked start button, Migration CR exists but no status data exists yet
+  | 'Copying' // Warm-specific. "Running incremental copies" in the UI, the first stage of a warm migration
+  | 'FailedCopying' // Warm-specific. Plan was canceled during copying
+  | 'StartingCutover' // Warm-specific. User has clicked the cutover button but the first pipeline step doesn't have a start time yet
+  | 'PipelineRunning' // The migration pipeline is running.
+  | 'Canceled'
+  | 'CanceledCopying'
+  | 'Finished-Succeeded' // Has a completed timestamp
+  | 'Finished-Failed'
+  | 'Finished-Incomplete';
 
 export enum StepType {
   Full = 'Full',
