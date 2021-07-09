@@ -1,6 +1,13 @@
 import * as React from 'react';
 
-import { IHook, IMetaObjectMeta, IPlan, MappingType } from '@app/queries/types';
+import {
+  IHook,
+  IMetaObjectMeta,
+  InventoryProvider,
+  IPlan,
+  MappingType,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingsQuery,
@@ -12,6 +19,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isSameResource } from '@app/queries/helpers';
 import PlanDetails from './PlanDetails';
+import { SOURCE_PROVIDER_TYPES } from '@app/common/constants';
 
 interface IPlanDetailsModalProps {
   plan: IPlan;
@@ -35,9 +43,11 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
     ) || null;
 
   const providers = useInventoryProvidersQuery();
+  const allProviders = providers.data
+    ? (SOURCE_PROVIDER_TYPES.flatMap((key) => providers.data[key]) as SourceInventoryProvider[])
+    : [];
   const provider =
-    providers.data?.vsphere.find((provider) => provider.name === plan.spec.provider.source.name) ||
-    null;
+    allProviders.find((provider) => isSameResource(provider, plan.spec.provider.source)) || null;
 
   const vms = useSourceVMsQuery(provider);
   const selectedVMs =
