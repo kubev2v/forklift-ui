@@ -187,7 +187,7 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
         title="Remove hook?"
         confirmButtonText="Remove"
         body={`${
-          instanceBeingRemoved?.step === 'PreHook' ? 'pre' : 'post'
+          instanceBeingRemoved?.step === 'PreHook' ? 'Pre' : 'Post'
         }-${migrationOrCutover} hook will not be executed when the migration plan is run.`}
       />
     </>
