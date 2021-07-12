@@ -11,6 +11,7 @@ import {
   LocalStorageContextProvider,
   NetworkContextProvider,
 } from '@app/common/context';
+import { RouteGuardOptions } from '@app/common/constants';
 
 const queryCache = new QueryCache();
 const queryClient = new QueryClient({ queryCache });
@@ -20,7 +21,11 @@ const App: React.FunctionComponent = () => (
     <PollingContextProvider>
       <LocalStorageContextProvider>
         <NetworkContextProvider>
-          <Router>
+          <Router
+            getUserConfirmation={(message: string, callback: (ok: boolean) => void) => {
+              callback(message === RouteGuardOptions.permit);
+            }}
+          >
             <AppLayout>
               <AppRoutes />
             </AppLayout>

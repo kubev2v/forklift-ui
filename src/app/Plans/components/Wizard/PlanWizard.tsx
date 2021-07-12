@@ -11,11 +11,11 @@ import {
   WizardStep,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
-import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { UseQueryResult } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
-
+import { RouteGuard } from '@app/common/components/RouteGuard';
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMsForm from './FilterVMsForm';
@@ -410,9 +410,10 @@ const PlanWizard: React.FunctionComponent = () => {
         <Redirect to="/plans" />
       ) : (
         <>
-          <Prompt
+          <RouteGuard
             when={forms.isSomeFormDirty && mutationStatus === 'idle'}
-            message="Leave this page? All unsaved changes will be lost."
+            title="Leave this page?"
+            message="All unsaved changes will be lost."
           />
           <PageSection
             title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`}

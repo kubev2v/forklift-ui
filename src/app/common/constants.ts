@@ -139,3 +139,8 @@ export const usernameSchema = yup
     message: ({ label }) => `${label} must not contain spaces`,
     excludeEmptyString: true,
   });
+
+export enum RouteGuardOptions {
+  permit = 'permit',
+  prevent = 'prevent',
+}
