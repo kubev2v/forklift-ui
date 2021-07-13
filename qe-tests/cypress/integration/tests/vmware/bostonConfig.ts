@@ -10,6 +10,10 @@ import { storageType, vmware } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
+const v2v_vmware_username = Cypress.env('v2v_vmware_username');
+const v2v_vmware_password = Cypress.env('v2v_vmware_password');
+const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
+const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -20,10 +24,10 @@ export const loginData: LoginData = {
 export const providerData: VmwareProviderData = {
   type: vmware,
   name: 'boston-vmware',
-  hostname: 'vcenter.v2v.bos.redhat.com',
-  username: 'administrator@vsphere.local',
-  password: '100Mgmt-',
-  cert: '39:5C:6A:2D:36:38:B2:52:2B:21:EA:74:11:59:89:5E:20:D5:D9:A2',
+  hostname: v2v_vmware_hostname,
+  username: v2v_vmware_username,
+  password: v2v_vmware_password,
+  cert: v2v_vmware_cert,
 };
 
 export const networkMappingPeer: MappingPeer[] = [

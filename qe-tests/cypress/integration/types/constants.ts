@@ -28,17 +28,30 @@ export const selectANetworkMapping = 'Select a network mapping';
 export const selectAStorageMapping = 'Select a storage mapping';
 export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
+export const planCanceledMessage = 'Canceled';
 export const SEC = 1000;
 
-export const CreateNewNetworkMapping = 'Create a new network mapping';
-export const CreateNewStorageMapping = 'Create a new storage mapping';
+export const CreateNewNetworkMapping = 'Create a network mapping';
+export const CreateNewStorageMapping = 'Create a storage mapping';
 
 export enum storageType {
   nfs = 'nfs',
   cephRbd = 'ocs-storagecluster-ceph-rbd',
 }
 
+export enum migrationType {
+  cold = 'Cold migration',
+  warm = 'Warm migration',
+}
+
 export enum providerType {
   vmware = 'VMware',
   ocpv = 'OpenShift Virtualization',
+}
+
+export enum summaryTitle {
+  planName = 'Plan name',
+  sProvider = 'Source provider',
+  tProvider = 'Target provider',
+  tNamespace = 'Target namespace',
 }

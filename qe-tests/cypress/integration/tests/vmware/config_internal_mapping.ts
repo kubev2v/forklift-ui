@@ -10,6 +10,10 @@ import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
+const v2v_vmware_username = Cypress.env('v2v_vmware_username');
+const v2v_vmware_password = Cypress.env('v2v_vmware_password');
+const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
+const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -20,10 +24,10 @@ export const loginData: LoginData = {
 export const providerData: VmwareProviderData = {
   type: providerType.vmware,
   name: 'qe-vmware',
-  hostname: '10.8.58.136',
-  username: 'administrator@vsphere.local',
-  password: 'Tux4Linux!',
-  cert: '7E:E7:4C:5C:3C:0E:51:D2:D7:8B:89:F1:DF:0A:9E:A5:D6:13:98:F6',
+  hostname: v2v_vmware_hostname,
+  username: v2v_vmware_username,
+  password: v2v_vmware_password,
+  cert: v2v_vmware_cert,
 };
 
 export const networkMappingPeer: MappingPeer[] = [
@@ -40,14 +44,14 @@ export const storageMappingPeer: MappingPeer[] = [
   },
 ];
 
-export const networkMappingData: MappingData = {
+export const networkMapping: MappingData = {
   name: 'network-qe-vmware-mapping',
   sProviderName: 'qe-vmware',
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
 
-export const storageMappingData: MappingData = {
+export const storageMapping: MappingData = {
   name: 'storage-qe-vmware-mapping',
   sProviderName: providerData.name,
   tProviderName: 'host',
@@ -55,17 +59,18 @@ export const storageMappingData: MappingData = {
 };
 
 export const planData: PlanData = {
-  name: 'testplan',
+  name: 'testplan-internal-mapping-cold',
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
   vmwareSourceFqdn: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
   vmwareSourceVmList: ['v2v-rhel7-igor'],
-  useExistingNetworkMapping: true,
-  useExistingStorageMapping: true,
+  useExistingNetworkMapping: false,
+  useExistingStorageMapping: false,
   providerData: providerData,
-  networkMappingData: networkMappingData,
-  storageMappingData: storageMappingData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
 };
 
 export const testData: TestData = {

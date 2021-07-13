@@ -1,4 +1,4 @@
-import { testData } from './config';
+import { testData } from './config_separate_mapping';
 import { Plan } from '../../models/plan';
 import { login } from '../../../utils/utils';
 
@@ -17,7 +17,7 @@ describe('Creating plan', () => {
     plan.execute(testData.planData);
   });
 
-  it('Deleting plan', () => {
+  it.skip('Deleting plan', () => {
     plan.delete(testData.planData);
   });
 });
