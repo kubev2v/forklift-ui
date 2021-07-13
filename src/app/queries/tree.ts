@@ -27,7 +27,7 @@ export interface IndexedTree<T extends InventoryTree = InventoryTree> {
   getDescendants: (node: InventoryTree, includeNode?: boolean) => InventoryTree[];
 }
 
-const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
+export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
   const sortedTree = sortTreeItemsByName(tree);
   const flattenedNodes: T[] = [];
   const vmSelfLinks: string[] = [];
@@ -39,6 +39,8 @@ const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
       flattenedNodes.push(node);
       if (node.kind === 'VM') vmSelfLinks.push(node.object.selfLink);
       pathsBySelfLink[node.object.selfLink] = [...ancestors, node];
+      descendantsBySelfLink[node.object.selfLink] = [];
+      vmDescendantsBySelfLink[node.object.selfLink] = [];
     }
     if (node.children) {
       const children = node.children as T[];
