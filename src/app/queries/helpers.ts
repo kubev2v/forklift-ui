@@ -13,7 +13,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef, IProviderObject, ISrcDestRefs } from './types';
-import { InventoryTree } from './types/tree.types';
 import { UnknownResult } from '@app/common/types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?

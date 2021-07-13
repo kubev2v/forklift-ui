@@ -29,14 +29,12 @@ export interface IndexedTree<T extends InventoryTree = InventoryTree> {
 
 export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
   const sortedTree = sortTreeItemsByName(tree);
-  const flattenedNodes: T[] = [];
   const vmSelfLinks: string[] = [];
   const pathsBySelfLink: Record<string, T[] | undefined> = {};
   const descendantsBySelfLink: Record<string, T[] | undefined> = {};
   const vmDescendantsBySelfLink: Record<string, T[] | undefined> = {};
   const walk = (node: T, ancestors: T[] = []): T[] => {
     if (node.object) {
-      flattenedNodes.push(node);
       if (node.kind === 'VM') vmSelfLinks.push(node.object.selfLink);
       pathsBySelfLink[node.object.selfLink] = [...ancestors, node];
       descendantsBySelfLink[node.object.selfLink] = [];
@@ -51,7 +49,7 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
       if (node.object) {
         descendantsBySelfLink[node.object.selfLink] = flattenedDescendants;
         vmDescendantsBySelfLink[node.object.selfLink] = flattenedDescendants.filter(
-          (node) => node.kind === 'VM'
+          (n) => n.kind === 'VM'
         );
       }
       return flattenedDescendants;
@@ -84,7 +82,7 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
         ? '/tree/host' // TODO in the future, this vsphere tree will also be at /tree/cluster
         : '/tree/cluster'
       : '/tree/vm';
-  const result = useMockableQuery<T, unknown, IndexedTree<T>>(
+  return useMockableQuery<T, unknown, IndexedTree<T>>(
     {
       queryKey: ['inventory-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
@@ -98,5 +96,4 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
         : MOCK_RHV_HOST_TREE
       : MOCK_VMWARE_VM_TREE) as T
   );
-  return result;
 };

@@ -42,7 +42,7 @@ export const useSourceVMsQuery = (
   let mockVMs: SourceVM[] = [];
   if (provider?.type === 'vsphere') mockVMs = MOCK_VMWARE_VMS;
   if (provider?.type === 'ovirt') mockVMs = MOCK_RHV_VMS;
-  const result = useMockableQuery<SourceVM[], unknown, IndexedSourceVMs>(
+  return useMockableQuery<SourceVM[], unknown, IndexedSourceVMs>(
     {
       queryKey: ['vms', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
@@ -52,6 +52,4 @@ export const useSourceVMsQuery = (
     },
     mockVMs
   );
-
-  return result;
 };

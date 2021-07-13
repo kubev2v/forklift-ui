@@ -332,8 +332,7 @@ export const findMatchingSelectableDescendants = (
   indexedTree: IndexedTree,
   node: InventoryTree,
   isNodeSelectable: (node: InventoryTree) => boolean
-): InventoryTree[] =>
-  indexedTree.getDescendants(node, true).filter((node) => isNodeSelectable(node));
+): InventoryTree[] => indexedTree.getDescendants(node, true).filter((n) => isNodeSelectable(n));
 
 export const findNodesMatchingSelectedVMs = (
   indexedTree: IndexedTree,
