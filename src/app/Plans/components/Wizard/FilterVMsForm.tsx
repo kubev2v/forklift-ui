@@ -40,7 +40,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const [searchText, setSearchText] = React.useState('');
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
+  const clusterTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Cluster);
+  const vmTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.VM);
+  const treeQuery =
+    form.values.treeType === InventoryTreeType.Cluster ? clusterTreeQuery : vmTreeQuery;
 
   const isNodeSelectable = useIsNodeSelectableCallback(form.values.treeType);
 
