@@ -85,7 +85,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     if (!treeQuery.data) return null;
     const { treeType } = form.values;
     const { isItemSelected, selectedItems } = treeSelection;
-    const selectedDescendants = treeQuery.data.getDescendants(node, true).filter(isItemSelected);
+    const allDescendants = isRootNode
+      ? treeQuery.data.flattenedNodes
+      : treeQuery.data.getDescendants(node, true);
+    const selectedDescendants = allDescendants.filter(isItemSelected);
     const numVMs = getAvailableVMs(
       treeQuery.data,
       selectedDescendants,
