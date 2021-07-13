@@ -19,7 +19,7 @@ export interface IndexedSourceVMs {
 const findVMsInRecord = (record: SourceVMsRecord, keys: string[]) =>
   keys.flatMap((key) => (record[key] ? [record[key]] : [])) as SourceVM[];
 
-const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
+export const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
   const sortedVMs = sortByName(vms.filter((vm) => !(vm as IVMwareVM).isTemplate));
   const vmsById: SourceVMsRecord = {};
   const vmsBySelfLink: SourceVMsRecord = {};
@@ -28,7 +28,7 @@ const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
     vmsBySelfLink[vm.selfLink] = vm;
   });
   return {
-    vms,
+    vms: sortedVMs,
     vmsById,
     vmsBySelfLink,
     findVMsByIds: (ids) => findVMsInRecord(vmsById, ids),
