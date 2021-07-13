@@ -56,7 +56,6 @@ import VMConcernsIcon from './VMConcernsIcon';
 import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import { useAsyncMemo } from 'use-async-memo';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -88,8 +87,8 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
   const selectedVMsOnMount = React.useRef(selectedVMs);
-  const availableVMs = useAsyncMemo(
-    async () =>
+  const availableVMs = React.useMemo(
+    () =>
       getAvailableVMs(
         indexedTree,
         selectedTreeNodes,
@@ -97,7 +96,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         treeType,
         selectedVMsOnMount.current
       ),
-    [selectedTreeNodes, vmsQuery.data, treeType]
+    [indexedTree, selectedTreeNodes, vmsQuery.data, treeType]
   );
 
   const getVMInfo = (vm: SourceVM) =>
