@@ -184,11 +184,11 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
           );
           toggleRemoveModal();
         }}
-        title="Remove hook?"
-        confirmButtonText="Remove"
-        body={`${
+        title="Permanently remove hook?"
+        body={`This ${
           instanceBeingRemoved?.step === 'PreHook' ? 'Pre' : 'Post'
-        }-${migrationOrCutover} hook will not be executed when the migration plan is run.`}
+        }-${migrationOrCutover} hook won't be executed when you run your migration plan.`}
+        confirmButtonText="Remove"
       />
     </>
   );

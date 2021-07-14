@@ -412,7 +412,7 @@ const PlanWizard: React.FunctionComponent = () => {
         <>
           <Prompt
             when={forms.isSomeFormDirty && mutationStatus === 'idle'}
-            message="Leave this page? Your unsaved changes will be lost."
+            message="Leave this page? All unsaved changes will be lost."
           />
           <PageSection
             title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`}

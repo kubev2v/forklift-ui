@@ -93,10 +93,10 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deleteProviderMutation.mutate(provider)}
         mutateResult={deleteProviderMutation}
-        title="Remove provider?"
+        title="Permanently remove provider?"
+        body={`${PROVIDER_TYPE_NAMES[providerType]} provider "${provider.metadata.name}" will no longer be selectable as a migration target.`}
         confirmButtonText="Remove"
-        body={`${PROVIDER_TYPE_NAMES[providerType]} provider "${provider.metadata.name}" will not be selectable as a migration target.`}
-        errorText="Error removing provider"
+        errorText="Could not remove provider"
       />
     </>
   );

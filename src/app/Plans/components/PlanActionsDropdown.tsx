@@ -103,10 +103,10 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deletePlanMutation.mutate(plan)}
         mutateResult={deletePlanMutation}
-        title="Delete migration plan?"
+        title="Permanently delete migration plan?"
         confirmButtonText="Delete"
-        body={`Migration plan "${plan.metadata.name}" will be deleted.`}
-        errorText="Error deleting plan"
+        body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
+        errorText="Could not delete migration plan"
       />
       <Modal
         variant="medium"
