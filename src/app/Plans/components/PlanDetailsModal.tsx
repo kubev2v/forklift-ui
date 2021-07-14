@@ -3,7 +3,6 @@ import * as React from 'react';
 import {
   IHook,
   IMetaObjectMeta,
-  InventoryProvider,
   IPlan,
   MappingType,
   SourceInventoryProvider,
