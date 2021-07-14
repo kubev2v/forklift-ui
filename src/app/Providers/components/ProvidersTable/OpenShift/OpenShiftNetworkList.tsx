@@ -8,7 +8,6 @@ import { useOpenShiftNetworksQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
 import { isSameResource } from '@app/queries/helpers';
 import { hasCondition } from '@app/common/helpers';
-import { PlanStatusType } from '@app/common/constants';
 import { Alert } from '@patternfly/react-core';
 
 interface IOpenShiftNetworkListProps {
@@ -23,7 +22,7 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
   const defaultNetworkName = provider.metadata.annotations
     ? provider.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']
     : '';
-  const isProviderReady = hasCondition(provider.status?.conditions || [], PlanStatusType.Ready);
+  const isProviderReady = hasCondition(provider.status?.conditions || [], 'Ready');
   if (!isProviderReady) {
     return (
       <Alert variant="warning" isInline title="Cannot view networks" className={spacing.mMd}>

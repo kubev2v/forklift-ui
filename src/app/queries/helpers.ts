@@ -1,5 +1,5 @@
 import { KubeClientError, IKubeList } from '@app/client/types';
-import { CLUSTER_API_VERSION, PlanStatusType } from '@app/common/constants';
+import { CLUSTER_API_VERSION } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import {
   UseQueryOptions,
@@ -172,7 +172,7 @@ export const areAssociatedProvidersReady = (
   const areProvidersReady =
     associatedProviders.length === 2 &&
     associatedProviders.every((provider) =>
-      hasCondition(provider.status?.conditions || [], PlanStatusType.Ready)
+      hasCondition(provider.status?.conditions || [], 'Ready')
     );
   return areProvidersReady;
 };

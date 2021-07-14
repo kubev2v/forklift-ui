@@ -10,7 +10,6 @@ import {
 import { useHistory } from 'react-router-dom';
 
 import { IPlan } from '@app/queries/types';
-import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
 import ConfirmModal from '@app/common/components/ConfirmModal';
@@ -68,11 +67,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           </ConditionalTooltip>,
           <ConditionalTooltip
             key="Delete"
-            isTooltipEnabled={
-              hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
-            }
+            isTooltipEnabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
             content={
-              hasCondition(conditions, PlanStatusType.Executing)
+              hasCondition(conditions, 'Executing')
                 ? 'This plan cannot be deleted because it is running'
                 : deletePlanMutation.isLoading
                 ? 'This plan cannot be deleted because it is deleting'
@@ -80,9 +77,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             }
           >
             <DropdownItem
-              isDisabled={
-                hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
-              }
+              isDisabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
               onClick={() => {
                 setKebabIsOpen(false);
                 toggleDeleteModal();

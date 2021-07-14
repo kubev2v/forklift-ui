@@ -54,9 +54,8 @@ import {
 } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
-import { getWarmPlanState } from './helpers';
+import { getPlanState } from './helpers';
 import VMStatusPrecopyTable from './VMStatusPrecopyTable';
 import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
@@ -103,12 +102,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
-  const warmPlanState = getWarmPlanState(plan || null, latestMigration, migrationsQuery);
+  const planState = getPlanState(plan || null, latestMigration, migrationsQuery);
   const isShowingPrecopyView =
     !!plan?.spec.warm &&
-    (warmPlanState === 'Starting' ||
-      warmPlanState === 'Copying' ||
-      warmPlanState === 'AbortedCopying');
+    (planState === 'Starting' ||
+      planState === 'Copying' ||
+      planState === 'CanceledCopying' ||
+      planState === 'FailedCopying');
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
@@ -212,7 +212,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const isVMCanceled = (vm: IVMStatus) =>
     !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
-  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], 'Executing')
     ? []
     : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
   const selectAllCancelable = (isSelected: boolean) =>
