@@ -36,7 +36,6 @@ import { IPlan } from '@app/queries/types';
 import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
-import { hasCondition } from '@app/common/helpers';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import {
   findLatestMigration,
@@ -112,19 +111,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title: 'Status',
       type: FilterType.select,
       selectOptions: [
-        { key: 'Failed', value: 'Failed' },
         { key: 'Ready', value: 'Ready' },
+        { key: 'Not Ready', value: 'Not Ready' },
         { key: 'Running', value: 'Running' },
         { key: 'Succeeded', value: 'Succeeded' },
+        { key: 'Failed', value: 'Failed' },
+        { key: 'Canceled', value: 'Canceled' },
+        { key: 'Finished - Incomplete', value: 'Finished - Incomplete' },
       ],
-      getItemValue: (item) => {
-        if (item.status?.conditions) {
-          if (hasCondition(item.status.conditions, 'Failed')) return 'Failed';
-          if (hasCondition(item.status.conditions, 'Ready')) return 'Ready';
-          if (hasCondition(item.status.conditions, 'Executing')) return 'Running';
-          if (hasCondition(item.status.conditions, 'Succeeded')) return 'Succeeded';
-        }
-        return '';
+      getItemValue: (plan) => {
+        const latestMigration = findLatestMigration(
+          plan || null,
+          migrationsQuery.data?.items || null
+        );
+        return getMigStatusState(
+          getPlanState(plan, latestMigration, migrationsQuery),
+          plan.spec.warm
+        ).filterValue;
       },
     },
   ];
@@ -230,7 +233,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               <PlanStatusNavLink plan={plan}>
                 Running - preparing for incremental data copies
               </PlanStatusNavLink>
-            ) : planState === 'NotStarted' ? (
+            ) : planState === 'NotStarted-Ready' || planState === 'NotStarted-NotReady' ? (
               <StatusCondition status={plan.status} />
             ) : planState === 'Copying' ? (
               <PlanStatusNavLink plan={plan}>
