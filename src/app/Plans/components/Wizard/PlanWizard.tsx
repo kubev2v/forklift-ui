@@ -240,9 +240,9 @@ const PlanWizard: React.FunctionComponent = () => {
     ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapMutation] : []),
   ];
   const allMutationErrorTitles = [
-    !editRouteMatch ? 'Error creating migration plan' : 'Error saving migration plan',
-    ...(forms.networkMapping.values.isSaveNewMapping ? ['Error creating network mapping'] : []),
-    ...(forms.storageMapping.values.isSaveNewMapping ? ['Error creating storage mapping'] : []),
+    !editRouteMatch ? 'Could not create migration plan' : 'Could not save migration plan',
+    ...(forms.networkMapping.values.isSaveNewMapping ? ['Could not create network mapping'] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? ['Could not create storage mapping'] : []),
   ];
   const mutationStatus = getAggregateQueryStatus(allMutationResults);
 
@@ -395,9 +395,9 @@ const PlanWizard: React.FunctionComponent = () => {
     <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
       errorTitles={[
-        'Error loading plans',
-        'Error loading network mappings',
-        'Error loading storage mappings',
+        'Could not load plans',
+        'Could not load network mappings',
+        'Could not load storage mappings',
         ...prefillErrorTitles,
       ]}
       errorsInline={false}

@@ -38,9 +38,9 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     <ResolvedQueries
       results={mappingResourceQueries.queries}
       errorTitles={[
-        'Error loading providers',
-        'Error loading source provider resources',
-        'Error loading target provider resources',
+        'Could not load providers',
+        'Could not load source provider resources',
+        'Could not load target provider resources',
       ]}
       className={className}
     >

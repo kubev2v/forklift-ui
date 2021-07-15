@@ -94,7 +94,7 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
         <Stack hasGutter>
           <ResolvedQuery
             result={configureHostMutation}
-            errorTitle="Error configuring hosts"
+            errorTitle="Could not configure hosts"
             spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>

@@ -605,16 +605,16 @@ export const useEditingPlanPrefillEffect = (
     hooksQuery,
   ];
   const errorTitles = [
-    'Error loading providers',
-    'Error loading VMs',
-    'Error loading inventory tree data',
-    'Error loading source networks',
-    'Error loading target networks',
-    'Error loading source storages',
-    'Error loading target storage classes',
-    'Error loading network mappings',
-    'Error loading storage mappings',
-    'Error loading hooks',
+    'Could not load providers',
+    'Could not load VMs',
+    'Could not load inventory tree data',
+    'Could not load source networks',
+    'Could not load target networks',
+    'Could not load source storages',
+    'Could not load target storage classes',
+    'Could not load network mappings',
+    'Could not load storage mappings',
+    'Could not load hooks',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
