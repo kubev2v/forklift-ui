@@ -119,8 +119,8 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
     <ResolvedQueries
       results={[inventoryProvidersQuery, clusterProvidersQuery]}
       errorTitles={[
-        'Error loading provider inventory data',
-        'Error loading providers from cluster',
+        'Could not load provider inventory data',
+        'Could not load providers from cluster',
       ]}
       spinnerMode={QuerySpinnerMode.Inline}
     >

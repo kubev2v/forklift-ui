@@ -107,8 +107,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     <ResolvedQueries
       results={[inventoryProvidersQuery, clusterProvidersQuery]}
       errorTitles={[
-        'Error loading provider inventory data',
-        'Error loading providers from cluster',
+        'Could not load provider inventory data',
+        'Could not load providers from cluster',
       ]}
     >
       <Form className={spacing.pbXl}>
@@ -142,7 +142,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         >
           <ResolvedQueries
             results={[namespacesQuery, openshiftNetworksQuery]}
-            errorTitles={['Error loading namespaces', 'Error loading networks']}
+            errorTitles={['Could not load namespaces', 'Could not load networks']}
             spinnerProps={{ className: spacing.mXs }}
             spinnerMode={QuerySpinnerMode.Inline}
           >

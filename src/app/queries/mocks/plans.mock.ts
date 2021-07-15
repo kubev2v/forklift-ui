@@ -468,14 +468,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         ...vmStatus1.pipeline[0],
         error: {
           phase: 'DiskTransferFailed',
-          reasons: ['Error transferring disks'],
+          reasons: ['Could not transfer disks'],
         },
       },
       { ...vmStatus1.pipeline[1], started: undefined },
     ],
     error: {
       phase: 'DiskTransfer',
-      reasons: ['Error transferring disks'],
+      reasons: ['Could not transfer disks'],
     },
   };
 
@@ -488,13 +488,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T15:58:10Z',
         error: {
           phase: 'ImageConversionFailed',
-          reasons: ['Error converting image'],
+          reasons: ['Could not convert image'],
         },
       },
     ],
     error: {
       phase: 'ImageConversion',
-      reasons: ['Error converting image'],
+      reasons: ['Could not convert image'],
     },
   };
 

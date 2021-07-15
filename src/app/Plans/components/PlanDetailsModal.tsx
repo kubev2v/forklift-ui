@@ -72,9 +72,9 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
   const networkMappingResources = useResourceQueriesForMapping(MappingType.Network, networkMapping);
   const storageMappingResources = useResourceQueriesForMapping(MappingType.Storage, storageMapping);
   const mappingResourceQueryErrors = [
-    'Error loading providers',
-    'Error loading source provider resources',
-    'Error loading target provider resources',
+    'Could not load providers',
+    'Could not load source provider resources',
+    'Could not load target provider resources',
   ];
 
   return (
@@ -88,10 +88,10 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
         ...storageMappingResources.queries,
       ]}
       errorTitles={[
-        'Error loading network mappings',
-        'Error loading storage mappings',
-        'Error loading providers',
-        'Error loading VMs',
+        'Could not load network mappings',
+        'Could not load storage mappings',
+        'Could not load providers',
+        'Could not load VMs',
         ...mappingResourceQueryErrors,
         ...mappingResourceQueryErrors,
       ]}

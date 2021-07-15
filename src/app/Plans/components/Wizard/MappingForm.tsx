@@ -171,9 +171,9 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     <ResolvedQueries
       results={[...mappingResourceQueries.queries, mappingsQuery]}
       errorTitles={[
-        'Error loading source provider resources',
-        'Error loading target provider resources',
-        'Error loading mappings',
+        'Could not load source provider resources',
+        'Could not load target provider resources',
+        'Could not load mappings',
       ]}
     >
       <Form>

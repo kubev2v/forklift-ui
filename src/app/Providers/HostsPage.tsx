@@ -64,7 +64,7 @@ export const HostsPage: React.FunctionComponent = () => {
       <PageSection>
         <ResolvedQueries
           results={[hostsQuery, providersQuery]}
-          errorTitles={['Error loading hosts', 'Error loading providers']}
+          errorTitles={['Could not load hosts', 'Could not load providers']}
           errorsInline={false}
         >
           {!match?.params?.providerName ? (
