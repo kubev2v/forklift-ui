@@ -327,9 +327,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <ResolvedQueries
           results={[plansQuery, providersQuery, vmsQuery]}
           errorTitles={[
-            'Error loading plan details',
-            'Error loading providers',
-            'Error loading VMs',
+            'Could not load plan details',
+            'Could not load providers',
+            'Could not load VMs',
           ]}
           errorsInline={false}
           emptyStateBody={LONG_LOADING_MESSAGE}
@@ -422,7 +422,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             </List>
           </>
         }
-        errorText="Error canceling migrations"
+        errorText="Could not cancel migrations"
       />
     </>
   );

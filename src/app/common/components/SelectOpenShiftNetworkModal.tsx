@@ -92,7 +92,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
           {mutationResult ? (
             <ResolvedQuery
               result={mutationResult}
-              errorTitle="Error setting migration network"
+              errorTitle="Could not set migration network"
               spinnerMode={QuerySpinnerMode.Inline}
             />
           ) : null}
@@ -122,7 +122,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
         </Stack>
       }
     >
-      <ResolvedQuery result={networksQuery} errorTitle="Error loading networks">
+      <ResolvedQuery result={networksQuery} errorTitle="Could not load networks">
         <Form>
           <TextContent>
             <Text component="p">{instructions}</Text>

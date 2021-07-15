@@ -51,14 +51,14 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
             <>
               <ResolvedQuery
                 result={createMigrationMutation}
-                errorTitle="Error starting migration"
+                errorTitle="Could not start migration"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}
                 className={spacing.mbMd}
               />
               <ResolvedQuery
                 result={setCutoverMutation}
-                errorTitle="Error setting cutover time"
+                errorTitle="Could not set cutover time"
                 errorsInline={false}
                 spinnerMode={QuerySpinnerMode.None}
                 className={spacing.mbMd}
