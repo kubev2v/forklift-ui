@@ -22,47 +22,61 @@ export const getPlanStatusTitle = (plan: IPlan): string => {
 export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) => {
   let title: string;
   let variant: ProgressVariant | undefined;
+  let filterValue: string;
 
   switch (true) {
     case state === 'Starting': {
       title = 'Running';
+      filterValue = 'Running';
       break;
     }
     case state === 'Finished-Failed':
     case state === 'FailedCopying': {
       title = 'Failed';
       variant = ProgressVariant.danger;
+      filterValue = 'Failed';
       break;
     }
     case state === 'Canceled':
     case state === 'CanceledCopying': {
       title = 'Canceled';
+      filterValue = 'Canceled';
       break;
     }
     case state === 'Finished-Succeeded': {
       title = 'Succeeded';
+      filterValue = 'Succeeded';
       variant = ProgressVariant.success;
       break;
     }
     case state === 'Copying':
     case state === 'PipelineRunning': {
       title = isWarmPlan ? 'Running cutover' : 'Running';
+      filterValue = 'Running';
       break;
     }
     case state === 'Finished-Incomplete': {
       title = 'Finished - Incomplete';
       variant = ProgressVariant.warning;
+      filterValue = 'Finished - Incomplete';
       break;
     }
-    case state === 'NotStarted':
+    case state === 'NotStarted-NotReady': {
+      title = '';
+      filterValue = 'Not Ready';
+      break;
+    }
+    case state === 'NotStarted-Ready':
     default: {
       title = '';
+      filterValue = 'Ready';
     }
   }
 
   return {
     title,
     variant,
+    filterValue,
   };
 };
 
@@ -70,7 +84,7 @@ export const getButtonState = (state: PlanState | null): PlanActionButtonType | 
   let type: PlanActionButtonType | null;
 
   switch (true) {
-    case state === 'NotStarted': {
+    case state === 'NotStarted-Ready': {
       type = 'Start';
       break;
     }
@@ -105,11 +119,12 @@ export const getPlanState = (
 ): PlanState | null => {
   if (!plan) return null;
   const isWarm = plan.spec.warm;
-
-  if (!migration || !plan.status?.migration?.started) return 'NotStarted';
-  if (isPlanBeingStarted(plan, migration, migrationQuery)) return 'Starting';
-
   const conditions = plan.status?.conditions || [];
+  if (!migration || !plan.status?.migration?.started) {
+    if (hasCondition(conditions, 'Ready')) return 'NotStarted-Ready';
+    return 'NotStarted-NotReady';
+  }
+  if (isPlanBeingStarted(plan, migration, migrationQuery)) return 'Starting';
 
   if (isWarm && !migration.spec.cutover) {
     if (hasCondition(conditions, 'Canceled')) {
