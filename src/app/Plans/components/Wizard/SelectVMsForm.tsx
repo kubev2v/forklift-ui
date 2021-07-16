@@ -396,9 +396,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         vmsQuery,
       ]}
       errorTitles={[
-        'Error loading inventory host tree data',
-        ...(sourceProvider?.type === 'vsphere' ? ['Error loading inventory VM tree data'] : []),
-        'Error loading VMs',
+        'Could not load inventory host tree data',
+        ...(sourceProvider?.type === 'vsphere' ? ['Could not load inventory VM tree data'] : []),
+        'Could not load VMs',
       ]}
       emptyStateBody={LONG_LOADING_MESSAGE}
       forceLoadingState={!availableVMs}

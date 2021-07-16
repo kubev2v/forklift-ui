@@ -85,12 +85,12 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deleteMappingMutation.mutate(mapping)}
         mutateResult={deleteMappingMutation}
-        title={`Delete ${mappingType.toLowerCase()} mapping?`}
-        confirmButtonText="Delete"
-        body={`${mappingType} mapping "${
+        title={`Permanently delete ${mappingType.toLowerCase()} mapping?`}
+        body={`You will no longer be able to select ${mappingType.toLowerCase()} mapping "${
           (mapping.metadata as IMetaObjectMeta).name
-        }" will not be selectable when creating a migration plan.`}
-        errorText="Error deleting mapping"
+        }" when you create a migration plan.`}
+        confirmButtonText="Delete"
+        errorText="Could not delete network mapping"
       />
     </>
   );
