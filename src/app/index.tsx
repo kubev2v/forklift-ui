@@ -23,7 +23,15 @@ const App: React.FunctionComponent = () => (
         <NetworkContextProvider>
           <Router
             getUserConfirmation={(message: string, callback: (ok: boolean) => void) => {
-              callback(message === RouteGuardOptions.permit);
+              const isAllowed = (message === RouteGuardOptions.permit) || message === '';
+              if (
+                message !== RouteGuardOptions.prevent &&
+                message !== RouteGuardOptions.permit &&
+                message !== ''
+                ) {
+                confirm(message) ? callback(true) : callback(false);
+              }
+              callback(isAllowed);
             }}
           >
             <AppLayout>
