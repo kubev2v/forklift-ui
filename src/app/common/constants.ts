@@ -140,7 +140,5 @@ export const usernameSchema = yup
     excludeEmptyString: true,
   });
 
-export enum RouteGuardOptions {
-  permit = 'permit',
-  prevent = 'prevent',
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const unBlockRoute = () => {};

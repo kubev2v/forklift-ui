@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import ConfirmModal from '@app/common/components/ConfirmModal';
-import { RouteGuardOptions } from '@app/common/constants';
+import { unBlockRoute } from '@app/common/constants';
 interface IRouteGuard {
   when: boolean;
   title: string;
@@ -20,25 +20,24 @@ const RouteGuard: React.FunctionComponent<IRouteGuard> = ({
   const history = useHistory();
   const [showRouteGuard, setShowRouteGuard] = React.useState(when);
   const [currentPath, setCurrentPath] = React.useState('');
-  const unBlock = () => RouteGuardOptions.permit;
 
   React.useEffect(() => {
     if (when) {
       history.block((prompt) => {
         setCurrentPath(prompt.pathname);
         setShowRouteGuard(true);
-        return RouteGuardOptions.prevent;
+        return false;
       });
     } else {
-      history.block(unBlock());
+      history.block(unBlockRoute);
     }
     return () => {
-      history.block(unBlock());
+      history.block(unBlockRoute);
     };
   }, [history, when]);
 
   const handleOk = React.useCallback(() => {
-    history.block(unBlock());
+    history.block(unBlockRoute);
     history.push(currentPath);
   }, [currentPath, history]);
 
