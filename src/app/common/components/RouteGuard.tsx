@@ -3,6 +3,13 @@ import { useHistory } from 'react-router';
 import { UnregisterCallback } from 'history';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 
+const blockUnload = (event: BeforeUnloadEvent) => {
+  // The beforeunload event is weird in different browsers.
+  // See: https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload#example
+  event.preventDefault();
+  event.returnValue = '';
+};
+
 interface IRouteGuard {
   when: boolean;
   title: string;
@@ -32,13 +39,19 @@ const RouteGuard: React.FunctionComponent<IRouteGuard> = ({
 
   React.useEffect(() => {
     if (when) {
+      // When browser history routing happens (clicking links, back/forward) we can handle it with our custom modal.
       unblockFnRef.current = history.block((prompt) => {
         setCurrentPath(prompt.pathname);
         setShowRouteGuard(true);
         return false;
       });
+      // When the page is being unloaded (closing or reloading tab), we have to trigger a native JS confirm dialog.
+      window.addEventListener('beforeunload', blockUnload);
     }
-    return unblock;
+    return () => {
+      unblock();
+      window.removeEventListener('beforeunload', blockUnload);
+    };
   }, [history, when]);
 
   const handleOk = React.useCallback(() => {
