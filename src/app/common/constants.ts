@@ -139,3 +139,6 @@ export const usernameSchema = yup
     message: ({ label }) => `${label} must not contain spaces`,
     excludeEmptyString: true,
   });
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const unBlockRoute = () => {};
