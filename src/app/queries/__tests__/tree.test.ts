@@ -64,8 +64,8 @@ describe('indexTree', () => {
     ]);
   });
 
-  it('indexes all tree paths by selfLink', () => {
-    expect(indexedTree.pathsBySelfLink).toEqual({
+  it('indexes all tree ancestors by selfLink', () => {
+    expect(indexedTree.ancestorsBySelfLink).toEqual({
       '/providers/vsphere/test4/datacenters/datacenter-2760': walk([0]),
       '/providers/vsphere/test4/datacenters/datacenter-21': walk([1]),
       '/providers/vsphere/test4/clusters/domain-c2758': walk([1, 0]),

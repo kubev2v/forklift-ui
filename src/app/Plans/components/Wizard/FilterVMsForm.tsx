@@ -155,9 +155,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else if (treeQuery.data) {
-              const matchingPath = treeQuery.data.pathsBySelfLink[treeViewItem.id || ''];
-              if (matchingPath) {
-                const matchingNode = matchingPath[matchingPath.length - 1];
+              const ancestors = treeQuery.data.ancestorsBySelfLink[treeViewItem.id || ''];
+              if (ancestors) {
+                const matchingNode = ancestors[ancestors.length - 1];
                 const isFullyChecked = isNodeFullyChecked(
                   treeQuery.data,
                   matchingNode,

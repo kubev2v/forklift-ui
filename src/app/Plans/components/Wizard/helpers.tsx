@@ -59,15 +59,17 @@ export const isIncludedLeafNode = (node: InventoryTree): boolean =>
     node.children.every((child) => !isIncludedNode(child)));
 
 // Helper for filterAndConvertInventoryTree
-const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
+const subtreeMatchesSearch = (
+  node: InventoryTree,
+  searchText: string,
+  indexedTree: IndexedTree
+) => {
   if (!isIncludedNode(node)) return false;
-  if (
-    searchText === '' ||
-    (node.object?.name || '').toLowerCase().includes(searchText.toLowerCase())
-  ) {
-    return true;
-  }
-  return node.children?.some((child) => subtreeMatchesSearch(child, searchText)) || false;
+  if (searchText === '') return true;
+  const descendants = indexedTree.getDescendants(node, true);
+  return descendants.some((descendant) =>
+    (descendant.object?.name || '').toLowerCase().includes(searchText.toLowerCase())
+  );
 };
 
 export const useIsNodeSelectableCallback = (
@@ -159,13 +161,7 @@ const convertInventoryTreeNode = (
       checked: isPartiallyChecked ? null : isFullyChecked,
     },
     icon:
-      node.kind === 'Cluster' ? (
-        <ClusterIcon />
-      ) : node.kind === 'Host' ? (
-        <OutlinedHddIcon />
-      ) : node.kind === 'Folder' ? (
-        <FolderIcon />
-      ) : null,
+      node.kind === 'Cluster' ? <ClusterIcon /> : node.kind === 'Folder' ? <FolderIcon /> : null,
     customBadgeContent: badge,
     hasBadge: !!badge,
   };
@@ -181,7 +177,7 @@ const filterAndConvertInventoryTreeChildren = (
   getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem[] | undefined => {
   const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
-    subtreeMatchesSearch(node, searchText)
+    subtreeMatchesSearch(node, searchText, indexedTree)
   );
   if (filteredChildren.length > 0)
     return filteredChildren.map((node) =>
@@ -291,9 +287,9 @@ export const getVMTreePathInfo = (
   hostTree?: IndexedTree<IInventoryHostTree>,
   vmTree?: IndexedTree<IVMwareFolderTree>
 ): IVMTreePathInfo => {
-  const hostTreePath = hostTree?.pathsBySelfLink[vmSelfLink];
-  const vmTreePath = vmTree?.pathsBySelfLink[vmSelfLink];
-  if (!hostTreePath) {
+  const hostTreeAncestors = hostTree?.ancestorsBySelfLink[vmSelfLink];
+  const vmTreeAncestors = vmTree?.ancestorsBySelfLink[vmSelfLink];
+  if (!hostTreeAncestors) {
     return {
       datacenter: null,
       cluster: null,
@@ -303,16 +299,16 @@ export const getVMTreePathInfo = (
     };
   }
   let folders: ICommonTreeObject[] = [];
-  if (vmTreePath) {
+  if (vmTreeAncestors) {
     folders =
-      (vmTreePath
+      (vmTreeAncestors
         ?.filter((node) => !!node && node.kind === 'Folder')
         .map((node) => node.object) as ICommonTreeObject[]) || null;
   }
   return {
-    datacenter: hostTreePath?.find((node) => node.kind === 'Datacenter')?.object || null,
-    cluster: hostTreePath?.find((node) => node.kind === 'Cluster')?.object || null,
-    host: hostTreePath?.find((node) => node.kind === 'Host')?.object || null,
+    datacenter: hostTreeAncestors?.find((node) => node.kind === 'Datacenter')?.object || null,
+    cluster: hostTreeAncestors?.find((node) => node.kind === 'Cluster')?.object || null,
+    host: hostTreeAncestors?.find((node) => node.kind === 'Host')?.object || null,
     folders,
     folderPathStr: folders?.map((folder) => folder.name).join('/') || null,
   };
@@ -323,8 +319,8 @@ export const findMatchingSelectableNode = (
   vmSelfLink: string,
   isNodeSelectable: (node: InventoryTree) => boolean
 ): InventoryTree | null => {
-  const matchingPath = indexedTree.pathsBySelfLink[vmSelfLink];
-  const matchingNode = matchingPath?.slice().reverse().find(isNodeSelectable);
+  const ancestors = indexedTree.ancestorsBySelfLink[vmSelfLink];
+  const matchingNode = ancestors?.slice().reverse().find(isNodeSelectable);
   return matchingNode || null;
 };
 

@@ -21,22 +21,22 @@ export interface IndexedTree<T extends InventoryTree = InventoryTree> {
   tree: T;
   flattenedNodes: T[];
   vmSelfLinks: string[];
-  pathsBySelfLink: Record<string, T[] | undefined>; // Flattened list of nodes leading to each node
+  ancestorsBySelfLink: Record<string, T[] | undefined>; // Flattened list of nodes leading to each node
   descendantsBySelfLink: Record<string, T[] | undefined>; // Flattened list of nodes under each node
   vmDescendantsBySelfLink: Record<string, T[] | undefined>; // Flattened list of only VM nodes under each node
-  getDescendants: (node: InventoryTree, includeNode?: boolean) => InventoryTree[];
+  getDescendants: (node: InventoryTree, includeSelf?: boolean) => InventoryTree[];
 }
 
 export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
   const sortedTree = sortTreeItemsByName(tree);
   const vmSelfLinks: string[] = [];
-  const pathsBySelfLink: Record<string, T[] | undefined> = {};
+  const ancestorsBySelfLink: Record<string, T[] | undefined> = {};
   const descendantsBySelfLink: Record<string, T[] | undefined> = {};
   const vmDescendantsBySelfLink: Record<string, T[] | undefined> = {};
   const walk = (node: T, ancestors: T[] = []): T[] => {
     if (node.object) {
       if (node.kind === 'VM') vmSelfLinks.push(node.object.selfLink);
-      pathsBySelfLink[node.object.selfLink] = [...ancestors, node];
+      ancestorsBySelfLink[node.object.selfLink] = [...ancestors, node];
       descendantsBySelfLink[node.object.selfLink] = [];
       vmDescendantsBySelfLink[node.object.selfLink] = [];
     }
@@ -60,12 +60,12 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
     tree: sortedTree,
     flattenedNodes: walk(sortedTree),
     vmSelfLinks,
-    pathsBySelfLink,
+    ancestorsBySelfLink,
     descendantsBySelfLink,
     vmDescendantsBySelfLink,
-    getDescendants: (node: InventoryTree, includeNode = true) => {
+    getDescendants: (node: InventoryTree, includeSelf = true) => {
       const descendants = descendantsBySelfLink[node.object?.selfLink || ''] || [];
-      return includeNode ? [node, ...descendants] : descendants;
+      return includeSelf ? [node, ...descendants] : descendants;
     },
   };
 };
