@@ -181,4 +181,15 @@ describe('indexTree', () => {
     expect(indexedTree.getDescendants(dc21, true)).toEqual([dc21, ...descendantsOfDC21]);
     expect(indexedTree.getDescendants(dc21, false)).toEqual(descendantsOfDC21);
   });
+
+  it('gets descendants of the root node even though it has no object/selfLink', () => {
+    const descendantsIncludingRoot = indexedTree.getDescendants(MOCK_VMWARE_HOST_TREE, true);
+    const descendantsNotIncludingRoot = indexedTree.getDescendants(MOCK_VMWARE_HOST_TREE, false);
+    expect(descendantsIncludingRoot.map((node) => node.object?.name)).toEqual(
+      [MOCK_VMWARE_HOST_TREE, ...indexedTree.flattenedNodes].map((node) => node.object?.name)
+    );
+    expect(descendantsNotIncludingRoot.map((node) => node.object?.name)).toEqual(
+      indexedTree.flattenedNodes.map((node) => node.object?.name)
+    );
+  });
 });

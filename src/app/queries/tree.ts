@@ -56,6 +56,13 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
     }
     return [];
   };
+  const getDescendants = (node: InventoryTree, includeSelf = true) => {
+    // The root node is likely the only node with no `object`, so this will probably never recurse more than once.
+    const descendants = node.object
+      ? descendantsBySelfLink[node.object.selfLink || ''] || []
+      : node.children?.flatMap((child: InventoryTree) => getDescendants(child, true)) || [];
+    return includeSelf ? [node, ...descendants] : descendants;
+  };
   return {
     tree: sortedTree,
     flattenedNodes: walk(sortedTree),
@@ -63,10 +70,7 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
     ancestorsBySelfLink,
     descendantsBySelfLink,
     vmDescendantsBySelfLink,
-    getDescendants: (node: InventoryTree, includeSelf = true) => {
-      const descendants = descendantsBySelfLink[node.object?.selfLink || ''] || [];
-      return includeSelf ? [node, ...descendants] : descendants;
-    },
+    getDescendants,
   };
 };
 
