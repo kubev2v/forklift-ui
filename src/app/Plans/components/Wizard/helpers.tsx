@@ -266,12 +266,14 @@ export const getAvailableVMs = (
 ): SourceVM[] => {
   if (!indexedTree) return [];
   const treeVMNodes = getAllVMChildren(indexedTree, selectedTreeNodes, treeType);
-  const vmSelfLinks = treeVMNodes.flatMap(({ object }) => (object ? [object.selfLink] : []));
-  const matchingVMs = indexedVMs?.findVMsBySelfLinks(vmSelfLinks) || [];
-  return [
-    ...includeExtraVMs,
-    ...matchingVMs?.filter((vm) => !includeExtraVMs.some((extraVM) => vm.id === extraVM.id)),
+  const vmSelfLinks = [
+    ...includeExtraVMs.map((vm) => vm.selfLink),
+    ...treeVMNodes
+      .flatMap(({ object }) => (object ? [object.selfLink] : []))
+      .filter((selfLink) => !includeExtraVMs.some((extraVM) => selfLink === extraVM.selfLink)),
   ];
+  const matchingVMs = indexedVMs?.findVMsBySelfLinks(vmSelfLinks) || [];
+  return matchingVMs;
 };
 
 export interface IVMTreePathInfo {
