@@ -89,13 +89,14 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   const [availableVMs, setAvailableVMs] = React.useState<SourceVM[] | null>(null);
   React.useEffect(() => {
     if (vmsQuery.data) {
-      const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || [], treeType);
-      setAvailableVMs([
-        ...selectedVMsOnMount.current,
-        ...filteredVMs.filter(
-          (vm) => !selectedVMsOnMount.current.some((selectedVM) => vm.id === selectedVM.id)
-        ),
-      ]);
+      setAvailableVMs(
+        getAvailableVMs(
+          selectedTreeNodes,
+          vmsQuery.data || [],
+          treeType,
+          selectedVMsOnMount.current
+        )
+      );
     }
   }, [vmsQuery.data, selectedTreeNodes, treeType]);
 

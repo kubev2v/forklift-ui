@@ -258,13 +258,18 @@ export const getAllVMChildren = (
 export const getAvailableVMs = (
   selectedTreeNodes: InventoryTree[],
   allVMs: SourceVM[],
-  treeType: InventoryTreeType
+  treeType: InventoryTreeType,
+  includeExtraVMs: SourceVM[] = []
 ): SourceVM[] => {
-  const treeVMs = getAllVMChildren(selectedTreeNodes, treeType)
-    .map((node) => node.object)
-    .filter((object) => !!object) as ICommonTreeObject[];
-  const vmSelfLinks = treeVMs.map((object) => object.selfLink);
-  return allVMs.filter((vm) => vmSelfLinks.includes(vm.selfLink));
+  const treeVMNodes = getAllVMChildren(selectedTreeNodes, treeType);
+  const extraVMSelfLinks = includeExtraVMs.map((vm) => vm.selfLink);
+  const treeVMSelfLinks = treeVMNodes
+    .flatMap(({ object }) => (object ? [object.selfLink] : []))
+    .filter((selfLink) => !includeExtraVMs.some((extraVM) => selfLink === extraVM.selfLink));
+  return [
+    ...allVMs.filter((vm) => extraVMSelfLinks.includes(vm.selfLink)),
+    ...allVMs.filter((vm) => treeVMSelfLinks.includes(vm.selfLink)),
+  ];
 };
 
 // Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
