@@ -18,7 +18,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useHistory } from 'react-router-dom';
 
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { ProviderType, PROVIDER_TYPE_NAMES, PROVIDER_TYPES } from '@app/common/constants';
 import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
 
 import ProvidersTable from './components/ProvidersTable';
@@ -72,13 +72,13 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const activeProviderType = match?.params.providerType || null;
 
+  const isValidProviderType = !!(activeProviderType && PROVIDER_TYPES.includes(activeProviderType));
+
   React.useEffect(() => {
-    if (
-      (!activeProviderType && availableProviderTypes.length > 0) ||
-      (activeProviderType && !availableProviderTypes.includes(activeProviderType))
-    )
+    if ((!isValidProviderType || !activeProviderType) && availableProviderTypes.length > 0) {
       history.replace(`/providers/${availableProviderTypes[0]}`);
-  }, [activeProviderType, availableProviderTypes, history]);
+    }
+  }, [activeProviderType, availableProviderTypes, history, isValidProviderType]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [providerBeingEdited, setProviderBeingEdited] = React.useState<IProviderObject | null>(

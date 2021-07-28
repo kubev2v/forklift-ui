@@ -259,7 +259,7 @@ export const useDeleteProviderMutation = (
             ? {
                 ...oldData,
                 items: oldData.items.filter(
-                  (item) => item.metadata.name !== provider.metadata.name
+                  (item) => !isSameResource(item.metadata, provider.metadata)
                 ),
               }
             : mockKubeList([], 'Providers')
@@ -271,7 +271,7 @@ export const useDeleteProviderMutation = (
               ...oldData,
               [providerType]: (
                 (oldData ? oldData[providerType] : []) as InventoryProvider[]
-              ).filter((p) => p.name !== provider.metadata.name),
+              ).filter((p) => !isSameResource(p, provider.metadata)),
             } as IProvidersByType)
         );
         onSuccess && onSuccess();
