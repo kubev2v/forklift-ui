@@ -308,7 +308,9 @@ export const getVMTreePathInfo = (
         .map((node) => node.object) as ICommonTreeObject[]) || null;
   }
   return {
-    datacenter: hostTreeAncestors?.find((node) => node.kind === 'Datacenter')?.object || null,
+    datacenter:
+      hostTreeAncestors?.find((node) => node.kind === 'Datacenter' || node.kind === 'DataCenter')
+        ?.object || null,
     cluster: hostTreeAncestors?.find((node) => node.kind === 'Cluster')?.object || null,
     host: hostTreeAncestors?.find((node) => node.kind === 'Host')?.object || null,
     folders,

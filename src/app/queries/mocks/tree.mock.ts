@@ -142,7 +142,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     object: null,
     children: [
       {
-        kind: 'Datacenter',
+        kind: 'DataCenter',
         object: {
           id: '30528e0a-23eb-11e8-805f-00163e18b6f7',
           name: 'Default',
