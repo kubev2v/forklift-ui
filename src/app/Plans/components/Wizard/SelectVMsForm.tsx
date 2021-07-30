@@ -274,7 +274,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         vm.name,
         datacenter?.name || '',
         cluster?.name || '',
-        host?.name || '',
+        host?.name || 'N/A',
         ...(sourceProvider?.type === 'vsphere' ? [folderPathStr || ''] : []),
       ],
     });
