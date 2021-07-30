@@ -258,8 +258,14 @@ export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
   planBeingEdited: IPlan | null
 ): yup.StringSchema =>
-  dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {
-    if (planBeingEdited?.metadata.name === value) return true;
-    if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
-    return true;
-  });
+  dnsLabelNameSchema
+    .test('unique-name', 'A plan with this name already exists', (value) => {
+      if (planBeingEdited?.metadata.name === value) return true;
+      if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
+      return true;
+    })
+    .test(
+      'non-reserved-name',
+      'This name is reserved due to a path conflict and cannot be used',
+      (value) => value !== 'create'
+    );
