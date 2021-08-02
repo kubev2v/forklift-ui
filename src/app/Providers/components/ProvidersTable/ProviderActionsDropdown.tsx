@@ -8,6 +8,8 @@ import { EditProviderContext } from '@app/Providers/ProvidersPage';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
+import { useHistory } from 'react-router-dom';
+import { useClusterProvidersQuery } from '@app/queries';
 
 interface IProviderActionsDropdownProps {
   provider: ICorrelatedProvider<InventoryProvider>;
@@ -18,12 +20,23 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
   provider,
   providerType,
 }: IProviderActionsDropdownProps) => {
+  const history = useHistory();
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-
-  const deleteProviderMutation = useDeleteProviderMutation(providerType, toggleDeleteModal);
-
   const { openEditProviderModal, plans } = React.useContext(EditProviderContext);
+  const clusterProvidersQuery = useClusterProvidersQuery();
+  const clusterProviders = clusterProvidersQuery.data?.items || [];
+
+  const deleteProviderMutation = useDeleteProviderMutation(providerType, () => {
+    toggleDeleteModal();
+    const numProviders = clusterProviders.filter(
+      (clusterProvider) => clusterProvider.spec.type === providerType
+    ).length;
+    if (numProviders === 1) {
+      history.replace(`/providers`);
+    }
+  });
+
   const hasRunningMigration = !!plans
     .filter((plan) => hasCondition(plan.status?.conditions || [], 'Executing'))
     .find((runningPlan) => {
@@ -33,6 +46,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
       );
     });
   const isEditDeleteDisabled = !provider.spec.url || hasRunningMigration;
+
   return (
     <>
       <Dropdown

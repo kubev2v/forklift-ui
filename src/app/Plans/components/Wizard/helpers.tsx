@@ -18,7 +18,7 @@ import {
   IVMwareVM,
   IRHVVM,
 } from '@app/queries/types';
-import { ClusterIcon, OutlinedHddIcon, FolderIcon } from '@patternfly/react-icons';
+import { ClusterIcon, FolderIcon } from '@patternfly/react-icons';
 import {
   getBuilderItemsFromMappingItems,
   getBuilderItemsWithMissingSources,
