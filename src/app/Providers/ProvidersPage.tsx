@@ -134,7 +134,12 @@ const ProvidersPage: React.FunctionComponent = () => {
         <ResolvedQueries results={allQueries} errorTitles={allErrorTitles} errorsInline={false}>
           <Card>
             <CardBody>
-              {!clusterProvidersQuery.data || !inventoryProvidersQuery.data || areProvidersEmpty ? (
+              {!clusterProvidersQuery.data ||
+              !inventoryProvidersQuery.data ||
+              areProvidersEmpty ||
+              !clusterProvidersQuery.data?.items
+                .map((provider) => provider.spec.type)
+                .includes(activeProviderType) ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">
