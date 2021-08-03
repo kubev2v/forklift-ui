@@ -79,7 +79,7 @@ export const useIsNodeSelectableCallback = (
     (node: InventoryTree) => {
       if (isIncludedLeafNode(node)) return true;
       if (treeType === InventoryTreeType.VM) {
-        return node.kind === 'Folder' || node.kind === 'Datacenter';
+        return node.kind === 'Folder' || node.kind.toLowerCase() === 'datacenter';
       }
       return false;
     },
@@ -246,7 +246,7 @@ const getAllVMChildren = (
         // Only include direct children of nodes in the folder tree so we can exclude subfolders
         if (
           node.kind === 'Folder' ||
-          (treeType === InventoryTreeType.VM && node.kind === 'Datacenter')
+          (treeType === InventoryTreeType.VM && node.kind.toLowerCase() === 'datacenter')
         ) {
           return node.children?.filter((child) => child.kind === 'VM') || [];
         }
@@ -308,7 +308,8 @@ export const getVMTreePathInfo = (
         .map((node) => node.object) as ICommonTreeObject[]) || null;
   }
   return {
-    datacenter: hostTreeAncestors?.find((node) => node.kind === 'Datacenter')?.object || null,
+    datacenter:
+      hostTreeAncestors?.find((node) => node.kind.toLowerCase() === 'datacenter')?.object || null,
     cluster: hostTreeAncestors?.find((node) => node.kind === 'Cluster')?.object || null,
     host: hostTreeAncestors?.find((node) => node.kind === 'Host')?.object || null,
     folders,
