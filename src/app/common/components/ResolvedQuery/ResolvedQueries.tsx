@@ -7,6 +7,7 @@ import {
   AlertActionCloseButton,
   SpinnerProps,
   AlertProps,
+  AlertGroup,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { KubeClientError } from '@app/client/types';
@@ -61,10 +62,9 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
       {status === 'loading' || forceLoadingState ? (
         spinner
       ) : status === 'error' ? (
-        <div>
+        <AlertGroup aria-live="assertive">
           {erroredResults.map((result, index) => (
             <Alert
-              isLiveRegion
               key={`error-${index}`}
               variant="danger"
               isInline={errorsInline}
@@ -99,7 +99,7 @@ export const ResolvedQueries: React.FunctionComponent<IResolvedQueriesProps> = (
               ) : null}
             </Alert>
           ))}
-        </div>
+        </AlertGroup>
       ) : (
         children
       )}
