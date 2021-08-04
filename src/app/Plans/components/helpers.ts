@@ -154,18 +154,21 @@ export const getPlanState = (
     const cutoverTimePassed =
       migration?.spec.cutover && new Date(migration.spec.cutover).getTime() < new Date().getTime();
 
-    if (cutoverTimePassed && pipelineHasStarted) {
-      return 'PipelineRunning';
-    }
-
     if (isWarm) {
-      if (cutoverTimePassed && !pipelineHasStarted) {
-        return 'StartingCutover';
+      if (cutoverTimePassed) {
+        if (!pipelineHasStarted) {
+          return 'StartingCutover';
+        } else {
+          return 'PipelineRunning';
+        }
       }
 
       if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {
         return 'Copying';
       }
+
+      // Warm migration executing, cutover time not passed, no precopy data: show Starting until copy data appears
+      return 'Starting';
     }
 
     return 'PipelineRunning';
