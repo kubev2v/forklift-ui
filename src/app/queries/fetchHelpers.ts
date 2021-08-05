@@ -1,4 +1,3 @@
-import { META } from '@app/common/constants';
 import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
 import { QueryFunction, MutateFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
@@ -10,12 +9,13 @@ import { IKubeResponse, IKubeStatus } from '@app/client/types';
 interface IFetchContext {
   history: History<LocationState>;
   checkExpiry: INetworkContext['checkExpiry'];
+  currentUser: INetworkContext['currentUser'];
 }
 
-export const useFetchContext = (): IFetchContext => ({
-  history: useHistory(),
-  checkExpiry: useNetworkContext().checkExpiry,
-});
+export const useFetchContext = (): IFetchContext => {
+  const { checkExpiry, currentUser } = useNetworkContext();
+  return { history: useHistory(), checkExpiry, currentUser };
+};
 
 export const authorizedFetch = async <T>(
   url: string,
@@ -26,7 +26,7 @@ export const authorizedFetch = async <T>(
   try {
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${META.oauth.clientSecret}`,
+        Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
         ...extraHeaders,
       },
     });
