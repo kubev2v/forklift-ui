@@ -43,10 +43,28 @@ const FORKLIFT_ENV = [
   'FORKLIFT_VALIDATION_GIT_COMMIT',
   'FORKLIFT_CLUSTER_VERSION',
 ];
+const FORKLIFT_SERVER_ONLY_ENV = [
+  'META_FILE',
+  'EXPRESS_PORT',
+  'STATIC_DIR',
+  'UI_TLS_ENABLED',
+  'UI_TLS_KEY',
+  'UI_TLS_CERTIFICATE',
+];
 
-const getEnv = () =>
-  FORKLIFT_ENV.reduce((newObj, varName) => ({ ...newObj, [varName]: process.env[varName] }), {});
+const getEnv = (vars = FORKLIFT_ENV) =>
+  vars.reduce((newObj, varName) => ({ ...newObj, [varName]: process.env[varName] }), {});
+const getServerOnlyEnv = () => getEnv(FORKLIFT_SERVER_ONLY_ENV);
+const getBuildEnv = () => getEnv([...FORKLIFT_ENV, ...FORKLIFT_SERVER_ONLY_ENV]);
 
 const getEncodedEnv = () => Buffer.from(JSON.stringify(getEnv())).toString('base64');
 
-module.exports = { getDevMeta, sanitizeAndEncodeMeta, getAppTitle, getEnv, getEncodedEnv };
+module.exports = {
+  getDevMeta,
+  sanitizeAndEncodeMeta,
+  getAppTitle,
+  getEnv,
+  getServerOnlyEnv,
+  getBuildEnv,
+  getEncodedEnv,
+};
