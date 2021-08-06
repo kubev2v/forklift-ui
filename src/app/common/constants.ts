@@ -74,7 +74,7 @@ export const META: IMetaVars =
         devServerPort: 'mock-port',
         oauth: {
           clientId: 'mock-client-id',
-          redirectUri: '/mock/redirect/uri',
+          redirectUrl: '/mock/redirect/uri',
           userScope: '/mock/user-scope',
           clientSecret: 'mock-client-secret',
         },

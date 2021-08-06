@@ -4,7 +4,7 @@
   "devServerPort": 9000,
   "oauth": {
     "clientId": "forklift-ui-dev",
-    "redirectUri": "http://localhost:9000/login/callback",
+    "redirectUrl": "http://localhost:9000/login/callback",
     "userScope": "user:full",
     "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
   },

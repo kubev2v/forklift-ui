@@ -6,7 +6,7 @@ export interface IMetaVars {
   devServerPort: string;
   oauth: {
     clientId: string;
-    redirectUri: string;
+    redirectUrl: string;
     userScope: string;
     clientSecret: string;
   };
