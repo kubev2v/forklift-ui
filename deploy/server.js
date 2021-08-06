@@ -36,7 +36,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     try {
       const clusterAuth = await getClusterAuth(meta);
       const authorizationUri = clusterAuth.authorizeURL({
-        redirect_uri: meta.oauth.redirectUri,
+        redirect_uri: meta.oauth.redirectUrl,
         scope: meta.oauth.userScope,
       });
 
@@ -54,7 +54,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     const { code } = req.query;
     const options = {
       code,
-      redirect_uri: meta.oauth.redirectUri,
+      redirect_uri: meta.oauth.redirectUrl,
     };
     try {
       const clusterAuth = await getClusterAuth(meta);

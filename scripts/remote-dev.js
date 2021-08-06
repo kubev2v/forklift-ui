@@ -21,7 +21,7 @@ try {
 
 function setupOAuthClient() {
   const meta = helpers.getDevMeta();
-  const oauthRedirectUri = `http://localhost:${meta.devServerPort}/login/callback`;
+  const oauthRedirectUrl = `http://localhost:${meta.devServerPort}/login/callback`;
 
   const oauthClientName = meta.oauth.clientId;
   const remoteDevSecret = meta.oauth.clientSecret;
@@ -51,7 +51,7 @@ function setupOAuthClient() {
       name: oauthClientName,
     },
     grantMethod: 'auto', // consider 'prompt'?
-    redirectURIs: [oauthRedirectUri],
+    redirectURIs: [oauthRedirectUrl],
     secret: remoteDevSecret,
   };
 
