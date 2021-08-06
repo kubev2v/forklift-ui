@@ -28,7 +28,6 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
   const setCutoverMutation = useSetCutoverMutation();
-
   if (isBeingStarted || createMigrationMutation.isLoading || setCutoverMutation.isLoading) {
     return <Spinner size="md" className={spacing.mxLg} />;
   }
@@ -37,7 +36,7 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
       <Button
         variant="secondary"
         onClick={() => {
-          if (buttonType === 'Start' || buttonType === 'Restart') {
+          if (buttonType === 'Start') {
             createMigrationMutation.mutate(plan);
           } else if (buttonType === 'Cutover') {
             setCutoverMutation.mutate({ plan, cutover: new Date().toISOString() });

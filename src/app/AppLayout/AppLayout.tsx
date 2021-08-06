@@ -22,6 +22,8 @@ import { APP_BRAND, BrandType } from '@app/global-flags';
 import './AppLayout.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import HelpDropdown from './HelpDropdown';
+import { Notifications } from '@app/common/components/Notifications';
+import { MustGatherModal } from '@app/common/components/MustGatherModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -146,7 +148,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}
     >
-      {children}
+      <>
+        {children}
+        <MustGatherModal />
+        <Notifications />
+      </>
     </Page>
   );
 };

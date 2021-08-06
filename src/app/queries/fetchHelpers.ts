@@ -1,5 +1,5 @@
 import { INetworkContext, useNetworkContext } from '@app/common/context/NetworkContext';
-import { QueryFunction, MutateFunction } from 'react-query/types/core/types';
+import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
@@ -20,7 +20,10 @@ export const useFetchContext = (): IFetchContext => {
 export const authorizedFetch = async <T>(
   url: string,
   fetchContext: IFetchContext,
-  extraHeaders: RequestInit['headers'] = {}
+  extraHeaders: RequestInit['headers'] = {},
+  method: 'get' | 'post' = 'get',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any // TODO: type this
 ): Promise<T> => {
   const { history, checkExpiry } = fetchContext;
   try {
@@ -29,13 +32,18 @@ export const authorizedFetch = async <T>(
         Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
         ...extraHeaders,
       },
+      method,
+      ...(data &&
+        method !== 'get' && {
+          body: JSON.stringify(data),
+        }),
     });
     if (response.ok && response.json) {
       return response.json();
     } else {
       throw response;
     }
-  } catch (error) {
+  } catch (error: unknown) {
     checkExpiry(error, history);
     throw error;
   }
@@ -44,17 +52,6 @@ export const authorizedFetch = async <T>(
 export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
   const fetchContext = useFetchContext();
   return () => authorizedFetch(url, fetchContext);
-};
-
-export const authorizedPost = async <T, TData>(
-  url: string,
-  fetchContext: IFetchContext,
-  data?: TData
-): Promise<T> => authorizedFetch(url, fetchContext, { body: JSON.stringify(data) });
-
-export const useAuthorizedPost = <T, TData>(url: string, data: TData): MutateFunction<T, TData> => {
-  const fetchContext = useFetchContext();
-  return () => authorizedPost(url, fetchContext, data);
 };
 
 export const authorizedK8sRequest = async <T>(
@@ -70,7 +67,7 @@ export const authorizedK8sRequest = async <T>(
     } else {
       throw response;
     }
-  } catch (error) {
+  } catch (error: unknown) {
     checkExpiry(error, history);
     throw error;
   }

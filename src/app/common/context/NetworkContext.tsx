@@ -11,7 +11,7 @@ export interface ICurrentUser {
 export interface INetworkContext {
   saveLoginToken: (user: string, history: History) => void;
   currentUser: ICurrentUser;
-  checkExpiry: (error: Response | AxiosError<unknown>, history: History) => void;
+  checkExpiry: (error: Response | AxiosError<unknown> | unknown, history: History) => void;
 }
 
 const NetworkContext = React.createContext<INetworkContext>({
@@ -38,7 +38,7 @@ export const NetworkContextProvider: React.FunctionComponent<INetworkContextProv
     history.replace('/');
   };
 
-  const checkExpiry = (error: Response | AxiosError<unknown>, history: History) => {
+  const checkExpiry = (error: Response | AxiosError<unknown> | unknown, history: History) => {
     const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
     if (status === 401) {
       setCurrentUserStr('');

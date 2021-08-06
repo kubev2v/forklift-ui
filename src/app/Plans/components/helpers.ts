@@ -85,6 +85,16 @@ export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) 
   };
 };
 
+export const canBeRestarted = (planState: PlanState | null) => {
+  return (
+    planState === 'Finished-Incomplete' ||
+    planState === 'Finished-Failed' ||
+    planState === 'Canceled' ||
+    planState === 'FailedCopying' ||
+    planState === 'CanceledCopying'
+  );
+};
+
 export const getButtonState = (state: PlanState | null): PlanActionButtonType | null => {
   let type: PlanActionButtonType | null;
 
@@ -97,18 +107,15 @@ export const getButtonState = (state: PlanState | null): PlanActionButtonType | 
       type = 'Cutover';
       break;
     }
-    case state === 'Finished-Incomplete':
-    case state === 'Finished-Failed':
-    case state === 'Canceled':
-    case state === 'FailedCopying':
-    case state === 'CanceledCopying': {
-      type = 'Restart';
+    case state === 'Finished-Succeeded':
+    case state === 'Archived':
+    case canBeRestarted(state): {
+      type = 'MustGather';
       break;
     }
     case state === 'Starting':
     case state === 'StartingCutover':
     case state === 'PipelineRunning':
-    case state === 'Finished-Succeeded':
     default: {
       type = null;
     }
