@@ -29,33 +29,32 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
 }: IPlanDetailsModalProps) => {
   usePausedPollingEffect();
 
-  const networkMappingsQuery = useMappingsQuery(MappingType.Network);
+  const networkMappings = useMappingsQuery(MappingType.Network);
   const networkMapping =
-    networkMappingsQuery.data?.items.find((mapping) =>
+    networkMappings.data?.items.find((mapping) =>
       isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.network)
     ) || null;
 
-  const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
+  const storageMappings = useMappingsQuery(MappingType.Storage);
   const storageMapping =
-    storageMappingsQuery.data?.items.find((mapping) =>
+    storageMappings.data?.items.find((mapping) =>
       isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.storage)
     ) || null;
 
-  const providersQuery = useInventoryProvidersQuery();
-  const allProviders = providersQuery.data
-    ? (SOURCE_PROVIDER_TYPES.flatMap(
-        (key) => providersQuery.data[key]
-      ) as SourceInventoryProvider[])
+  const providers = useInventoryProvidersQuery();
+  const allProviders = providers.data
+    ? (SOURCE_PROVIDER_TYPES.flatMap((key) => providers.data[key]) as SourceInventoryProvider[])
     : [];
   const provider =
     allProviders.find((provider) => isSameResource(provider, plan.spec.provider.source)) || null;
 
-  const vmsQuery = useSourceVMsQuery(provider);
-  const selectedVMs = vmsQuery.data?.findVMsByIds(plan.spec.vms.map(({ id }) => id)) || [];
+  const vms = useSourceVMsQuery(provider);
+  const selectedVMs =
+    vms.data?.filter((vm) => plan.spec.vms.find((planVM) => planVM.id === vm.id)) || [];
 
-  const hooksQuery = useHooksQuery();
+  const hooks = useHooksQuery();
   const selectedHooks =
-    hooksQuery.data?.items.filter((hook) =>
+    hooks.data?.items.filter((hook) =>
       plan.spec.vms.find((vm) =>
         vm.hooks?.find(
           (VMHook) =>
@@ -81,10 +80,10 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
   return (
     <ResolvedQueries
       results={[
-        networkMappingsQuery,
-        storageMappingsQuery,
-        providersQuery,
-        vmsQuery,
+        networkMappings,
+        storageMappings,
+        providers,
+        vms,
         ...networkMappingResources.queries,
         ...storageMappingResources.queries,
       ]}

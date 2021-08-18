@@ -40,8 +40,6 @@ import {
   useMappingsQuery,
   useHooksQuery,
   useSourceVMsQuery,
-  IndexedTree,
-  IndexedSourceVMs,
 } from '@app/queries';
 import { UseQueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -59,17 +57,15 @@ export const isIncludedLeafNode = (node: InventoryTree): boolean =>
     node.children.every((child) => !isIncludedNode(child)));
 
 // Helper for filterAndConvertInventoryTree
-const subtreeMatchesSearch = (
-  node: InventoryTree,
-  searchText: string,
-  indexedTree: IndexedTree
-) => {
+const subtreeMatchesSearch = (node: InventoryTree, searchText: string) => {
   if (!isIncludedNode(node)) return false;
-  if (searchText === '') return true;
-  const descendants = indexedTree.getDescendants(node, true);
-  return descendants.some((descendant) =>
-    (descendant.object?.name || '').toLowerCase().includes(searchText.toLowerCase())
-  );
+  if (
+    searchText === '' ||
+    (node.object?.name || '').toLowerCase().includes(searchText.toLowerCase())
+  ) {
+    return true;
+  }
+  return node.children?.some((child) => subtreeMatchesSearch(child, searchText)) || false;
 };
 
 export const useIsNodeSelectableCallback = (
@@ -87,26 +83,24 @@ export const useIsNodeSelectableCallback = (
   );
 
 const areSomeDescendantsSelected = (
-  indexedTree: IndexedTree,
   node: InventoryTree,
   isNodeSelected: (node: InventoryTree) => boolean
 ) => {
   if (isNodeSelected(node)) return true;
-  return indexedTree.getDescendants(node).some(isNodeSelected);
+  return node.children?.some((child) => areSomeDescendantsSelected(child, isNodeSelected)) || false;
 };
 
 const areAllSelectableDescendantsSelected = (
-  indexedTree: IndexedTree,
   node: InventoryTree,
   isNodeSelected: (node: InventoryTree) => boolean,
   isNodeSelectable: (node: InventoryTree) => boolean
 ) => {
-  if (!node.children) return isNodeSelected(node);
-  return indexedTree.getDescendants(node).filter(isNodeSelectable).every(isNodeSelected);
+  if (!node.children) return isNodeSelectable(node) && isNodeSelected(node);
+  const selectableDescendants = getSelectableNodes(node, isNodeSelectable);
+  return selectableDescendants.every(isNodeSelected);
 };
 
 export const isNodeFullyChecked = (
-  indexedTree: IndexedTree,
   node: InventoryTree | null,
   isNodeSelected: (node: InventoryTree) => boolean,
   isNodeSelectable: (node: InventoryTree) => boolean
@@ -114,42 +108,34 @@ export const isNodeFullyChecked = (
   if (!node) return false;
   return (
     isNodeSelected(node) ||
-    areAllSelectableDescendantsSelected(indexedTree, node, isNodeSelected, isNodeSelectable)
+    areAllSelectableDescendantsSelected(node, isNodeSelected, isNodeSelectable)
   );
 };
 
 export const isNodePartiallyChecked = (
-  indexedTree: IndexedTree,
   node: InventoryTree | null,
   isNodeSelected: (node: InventoryTree) => boolean,
   isFullyChecked: boolean
 ): boolean => {
   if (!node) return false;
-  return !isFullyChecked && areSomeDescendantsSelected(indexedTree, node, isNodeSelected);
+  return !isFullyChecked && areSomeDescendantsSelected(node, isNodeSelected);
 };
 
 // Helper for filterAndConvertInventoryTree
 const convertInventoryTreeNode = (
-  indexedTree: IndexedTree,
   node: InventoryTree,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   isNodeSelectable: (node: InventoryTree) => boolean,
   getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem => {
-  const isFullyChecked = isNodeFullyChecked(indexedTree, node, isNodeSelected, isNodeSelectable);
-  const isPartiallyChecked = isNodePartiallyChecked(
-    indexedTree,
-    node,
-    isNodeSelected,
-    isFullyChecked
-  );
+  const isFullyChecked = isNodeFullyChecked(node, isNodeSelected, isNodeSelectable);
+  const isPartiallyChecked = isNodePartiallyChecked(node, isNodeSelected, isFullyChecked);
   const badge = getNodeBadgeContent(node, false);
   return {
     name: node.object?.name || '',
     id: node.object?.selfLink,
     children: filterAndConvertInventoryTreeChildren(
-      indexedTree,
       node.children,
       searchText,
       isNodeSelected,
@@ -161,7 +147,13 @@ const convertInventoryTreeNode = (
       checked: isPartiallyChecked ? null : isFullyChecked,
     },
     icon:
-      node.kind === 'Cluster' ? <ClusterIcon /> : node.kind === 'Folder' ? <FolderIcon /> : null,
+      node.kind === 'Cluster' ? (
+        <ClusterIcon />
+      ) : node.kind === 'Host' ? (
+        <OutlinedHddIcon />
+      ) : node.kind === 'Folder' ? (
+        <FolderIcon />
+      ) : null,
     customBadgeContent: badge,
     hasBadge: !!badge,
   };
@@ -169,7 +161,6 @@ const convertInventoryTreeNode = (
 
 // Helper for filterAndConvertInventoryTree
 const filterAndConvertInventoryTreeChildren = (
-  indexedTree: IndexedTree,
   children: InventoryTree[] | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
@@ -177,12 +168,11 @@ const filterAndConvertInventoryTreeChildren = (
   getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem[] | undefined => {
   const filteredChildren = ((children || []) as InventoryTree[]).filter((node) =>
-    subtreeMatchesSearch(node, searchText, indexedTree)
+    subtreeMatchesSearch(node, searchText)
   );
   if (filteredChildren.length > 0)
     return filteredChildren.map((node) =>
       convertInventoryTreeNode(
-        indexedTree,
         node,
         searchText,
         isNodeSelected,
@@ -195,21 +185,15 @@ const filterAndConvertInventoryTreeChildren = (
 
 // Convert the API tree structure to the PF TreeView structure, while filtering by the user's search text.
 export const filterAndConvertInventoryTree = (
-  indexedTree: IndexedTree | null,
+  rootNode: InventoryTree | null,
   searchText: string,
   isNodeSelected: (node: InventoryTree) => boolean,
   areAllSelected: boolean,
   isNodeSelectable: (node: InventoryTree) => boolean,
   getNodeBadgeContent: (node: InventoryTree, isRootNode: boolean) => React.ReactNode
 ): TreeViewDataItem[] => {
-  if (!indexedTree?.tree) return [];
-  const rootNode = indexedTree.tree;
-  const isPartiallyChecked = isNodePartiallyChecked(
-    indexedTree,
-    rootNode,
-    isNodeSelected,
-    areAllSelected
-  );
+  if (!rootNode) return [];
+  const isPartiallyChecked = isNodePartiallyChecked(rootNode, isNodeSelected, areAllSelected);
   const badge = getNodeBadgeContent(rootNode, true);
   return [
     {
@@ -220,7 +204,6 @@ export const filterAndConvertInventoryTree = (
         checked: isPartiallyChecked ? null : areAllSelected,
       },
       children: filterAndConvertInventoryTreeChildren(
-        indexedTree,
         rootNode.children,
         searchText,
         isNodeSelected,
@@ -233,9 +216,25 @@ export const filterAndConvertInventoryTree = (
   ];
 };
 
+// To get the list of all available selectable nodes, we have to flatten the tree into a single array of nodes.
+export const flattenInventoryTreeNodes = (rootNode: InventoryTree | null): InventoryTree[] => {
+  if (rootNode?.children) {
+    const children = (rootNode.children as InventoryTree[]).filter(isIncludedNode);
+    return [rootNode, ...children.flatMap((child) => flattenInventoryTreeNodes(child))];
+  }
+  return rootNode ? [rootNode] : [];
+};
+
+export const getSelectableNodes = (
+  rootNode: InventoryTree | null,
+  isNodeSelectable: (node: InventoryTree) => boolean
+): InventoryTree[] => flattenInventoryTreeNodes(rootNode).filter(isNodeSelectable);
+
+export const getDirectVMChildren = (node: InventoryTree): InventoryTree[] =>
+  node.children?.filter((node) => node.kind === 'VM') || [];
+
 // From the flattened selected nodes list, get all the unique VMs.
-const getAllVMChildren = (
-  indexedTree: IndexedTree,
+export const getAllVMChildren = (
   nodes: InventoryTree[],
   treeType: InventoryTreeType
 ): InventoryTree[] => {
@@ -246,34 +245,37 @@ const getAllVMChildren = (
         // Only include direct children of nodes in the folder tree so we can exclude subfolders
         if (
           node.kind === 'Folder' ||
-          (treeType === InventoryTreeType.VM && node.kind.toLowerCase() === 'datacenter')
-        ) {
-          return node.children?.filter((child) => child.kind === 'VM') || [];
-        }
+          (treeType === InventoryTreeType.VM && node.kind === 'Datacenter')
+        )
+          return getDirectVMChildren(node);
         // Otherwise, we might have VMs under hidden descendants like hosts
-        return (node.object && indexedTree.vmDescendantsBySelfLink[node.object.selfLink]) || [];
+        return [...getDirectVMChildren(node), ...getAllVMChildren(node.children || [], treeType)];
       })
     )
   );
 };
 
 export const getAvailableVMs = (
-  indexedTree: IndexedTree | undefined,
   selectedTreeNodes: InventoryTree[],
-  indexedVMs: IndexedSourceVMs | undefined,
-  treeType: InventoryTreeType,
-  includeExtraVMs: SourceVM[] = []
+  allVMs: SourceVM[],
+  treeType: InventoryTreeType
 ): SourceVM[] => {
-  if (!indexedTree) return [];
-  const treeVMNodes = getAllVMChildren(indexedTree, selectedTreeNodes, treeType);
-  const vmSelfLinks = [
-    ...includeExtraVMs.map((vm) => vm.selfLink),
-    ...treeVMNodes
-      .flatMap(({ object }) => (object ? [object.selfLink] : []))
-      .filter((selfLink) => !includeExtraVMs.some((extraVM) => selfLink === extraVM.selfLink)),
-  ];
-  const matchingVMs = indexedVMs?.findVMsBySelfLinks(vmSelfLinks) || [];
-  return matchingVMs;
+  const treeVMs = getAllVMChildren(selectedTreeNodes, treeType)
+    .map((node) => node.object)
+    .filter((object) => !!object) as ICommonTreeObject[];
+  const vmSelfLinks = treeVMs.map((object) => object.selfLink);
+  return allVMs.filter((vm) => vmSelfLinks.includes(vm.selfLink));
+};
+
+// Given a tree and a vm, get a flattened breadcrumb of nodes from the root to the VM.
+export const findVMTreePath = (node: InventoryTree, vmSelfLink: string): InventoryTree[] | null => {
+  if (node.object?.selfLink === vmSelfLink) return [node];
+  if (!node.children) return null;
+  for (const i in node.children) {
+    const childPath = findVMTreePath(node.children[i], vmSelfLink);
+    if (childPath) return [node, ...childPath];
+  }
+  return null;
 };
 
 export interface IVMTreePathInfo {
@@ -284,14 +286,13 @@ export interface IVMTreePathInfo {
   folderPathStr: string | null;
 }
 
-export const getVMTreePathInfo = (
+// Using the breadcrumbs for the VM in each tree, grab the column values for the Select VMs table.
+export const findVMTreePathInfo = (
   vmSelfLink: string,
-  hostTree?: IndexedTree<IInventoryHostTree>,
-  vmTree?: IndexedTree<IVMwareFolderTree>
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
 ): IVMTreePathInfo => {
-  const hostTreeAncestors = hostTree?.ancestorsBySelfLink[vmSelfLink];
-  const vmTreeAncestors = vmTree?.ancestorsBySelfLink[vmSelfLink];
-  if (!hostTreeAncestors) {
+  if (!hostTree) {
     return {
       datacenter: null,
       cluster: null,
@@ -300,49 +301,81 @@ export const getVMTreePathInfo = (
       folderPathStr: null,
     };
   }
+  const hostTreePath = findVMTreePath(hostTree, vmSelfLink);
   let folders: ICommonTreeObject[] = [];
-  if (vmTreeAncestors) {
+  if (vmTree) {
+    const vmTreePath = findVMTreePath(vmTree, vmSelfLink);
     folders =
-      (vmTreeAncestors
+      (vmTreePath
         ?.filter((node) => !!node && node.kind === 'Folder')
         .map((node) => node.object) as ICommonTreeObject[]) || null;
   }
   return {
-    datacenter:
-      hostTreeAncestors?.find((node) => node.kind.toLowerCase() === 'datacenter')?.object || null,
-    cluster: hostTreeAncestors?.find((node) => node.kind === 'Cluster')?.object || null,
-    host: hostTreeAncestors?.find((node) => node.kind === 'Host')?.object || null,
+    datacenter: hostTreePath?.find((node) => node.kind === 'Datacenter')?.object || null,
+    cluster: hostTreePath?.find((node) => node.kind === 'Cluster')?.object || null,
+    host: hostTreePath?.find((node) => node.kind === 'Host')?.object || null,
     folders,
     folderPathStr: folders?.map((folder) => folder.name).join('/') || null,
   };
 };
 
-export const findMatchingSelectableNode = (
-  indexedTree: IndexedTree,
-  vmSelfLink: string,
-  isNodeSelectable: (node: InventoryTree) => boolean
+export interface IVMTreePathInfoByVM {
+  [vmSelfLink: string]: IVMTreePathInfo;
+}
+
+// TODO index this at query load time with one full tree walk
+export const getVMTreePathInfoByVM = (
+  vmSelfLinks: string[],
+  hostTree: IInventoryHostTree | null,
+  vmTree: IVMwareFolderTree | null
+): IVMTreePathInfoByVM | null => {
+  if (vmSelfLinks.length === 0) return null;
+  return vmSelfLinks.reduce(
+    (newObj, vmSelfLink) => ({
+      ...newObj,
+      [vmSelfLink]: findVMTreePathInfo(vmSelfLink, hostTree, vmTree),
+    }),
+    {}
+  );
+};
+
+export const findMatchingNode = (
+  tree: InventoryTree | null,
+  vmSelfLink: string
 ): InventoryTree | null => {
-  const ancestors = indexedTree.ancestorsBySelfLink[vmSelfLink];
-  const matchingNode = ancestors?.slice().reverse().find(isNodeSelectable);
+  const matchingPath = tree && findVMTreePath(tree, vmSelfLink);
+  const matchingNode = matchingPath?.slice().reverse().find(isIncludedNode);
   return matchingNode || null;
 };
 
-export const findMatchingSelectableDescendants = (
-  indexedTree: IndexedTree,
-  node: InventoryTree,
+export const findMatchingNodeAndDescendants = (
+  tree: InventoryTree | null,
+  vmSelfLink: string,
   isNodeSelectable: (node: InventoryTree) => boolean
-): InventoryTree[] => indexedTree.getDescendants(node, true).filter((n) => isNodeSelectable(n));
+): InventoryTree[] => {
+  const matchingNode = findMatchingNode(tree, vmSelfLink);
+  if (!matchingNode) return [];
+  const nodeAndDescendants: InventoryTree[] = [];
+  const pushNodeAndDescendants = (n: InventoryTree) => {
+    if (isNodeSelectable(n)) nodeAndDescendants.push(n);
+    if (n.children) {
+      n.children.filter(isIncludedNode).forEach(pushNodeAndDescendants);
+    }
+  };
+  pushNodeAndDescendants(matchingNode);
+  return nodeAndDescendants;
+};
 
 export const findNodesMatchingSelectedVMs = (
-  indexedTree: IndexedTree,
+  tree: InventoryTree | null,
   selectedVMs: SourceVM[],
   isNodeSelectable: (node: InventoryTree) => boolean
 ): InventoryTree[] =>
   Array.from(
     new Set(
-      selectedVMs
-        .map((vm) => findMatchingSelectableNode(indexedTree, vm.selfLink, isNodeSelectable))
-        .filter((node) => !!node) as InventoryTree[]
+      selectedVMs.flatMap((vm) =>
+        findMatchingNodeAndDescendants(tree, vm.selfLink, isNodeSelectable)
+      )
     )
   );
 
@@ -506,12 +539,22 @@ export const generatePlan = (
   },
 });
 
+export const getSelectedVMsFromIds = (
+  vmIds: string[],
+  vmsQuery: UseQueryResult<SourceVM[]>
+): SourceVM[] =>
+  vmIds.flatMap((id) => {
+    const matchingVM = vmsQuery.data?.find((vm) => vm.id === id);
+    return matchingVM ? [matchingVM] : [];
+  });
+
 export const getSelectedVMsFromPlan = (
   planBeingEdited: IPlan | null,
-  indexedVMs: IndexedSourceVMs | undefined
+  vmsQuery: UseQueryResult<SourceVM[]>
 ): SourceVM[] => {
-  if (!planBeingEdited || !indexedVMs) return [];
-  return indexedVMs.findVMsByIds(planBeingEdited?.spec.vms.map(({ id }) => id));
+  if (!planBeingEdited) return [];
+  const vmIds = planBeingEdited.spec.vms.map(({ id }) => id);
+  return getSelectedVMsFromIds(vmIds, vmsQuery);
 };
 
 interface IEditingPrefillResults {
@@ -584,16 +627,11 @@ export const useEditingPlanPrefillEffect = (
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
 
   React.useEffect(() => {
-    if (
-      !isStartedPrefilling &&
-      queryStatus === 'success' &&
-      planBeingEdited &&
-      hostTreeQuery.data
-    ) {
+    if (!isStartedPrefilling && queryStatus === 'success' && planBeingEdited) {
       setIsStartedPrefilling(true);
-      const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery.data);
+      const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
       const selectedTreeNodes = findNodesMatchingSelectedVMs(
-        hostTreeQuery.data,
+        hostTreeQuery.data || null,
         selectedVMs,
         isNodeSelectable
       );

@@ -19,6 +19,7 @@ import { IPlan, POD_NETWORK, InventoryTreeType } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
+  useSourceVMsQuery,
   useInventoryTreeQuery,
   useOpenShiftNetworksQuery,
   useNamespacesQuery,
@@ -98,6 +99,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   };
 
   // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
+  useSourceVMsQuery(form.values.sourceProvider);
   useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Cluster);
   useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM);
 
