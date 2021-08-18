@@ -24,7 +24,7 @@ export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host
 export const useHostsQuery = (provider: IVMwareProvider | null) => {
   const result = useMockableQuery<IHost[]>(
     {
-      queryKey: 'hosts',
+      queryKey: ['hosts', provider?.selfLink],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=1`)),
       enabled: !!provider,
       refetchInterval: usePollingContext().refetchInterval,
@@ -137,7 +137,6 @@ export const useConfigureHostsMutation = (
 > => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
@@ -187,7 +186,6 @@ export const useConfigureHostsMutation = (
     onSuccess: () => {
       queryClient.invalidateQueries('hosts');
       queryClient.invalidateQueries('hostconfigs');
-      pollFasterAfterMutation();
       onSuccess && onSuccess();
     },
   });

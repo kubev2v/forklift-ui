@@ -48,6 +48,8 @@ export const useSourceVMsQuery = (
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
       enabled: !!provider,
       refetchInterval: usePollingContext().refetchInterval,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       select: indexVMs,
     },
     mockVMs

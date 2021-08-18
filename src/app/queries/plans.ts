@@ -44,7 +44,6 @@ export const useCreatePlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState>(
     async (forms) => {
       await checkIfResourceExists(
@@ -118,7 +117,6 @@ export const useCreatePlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('mappings');
         queryClient.invalidateQueries('hooks');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
@@ -135,7 +133,6 @@ export const usePatchPlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
@@ -230,7 +227,6 @@ export const usePatchPlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('hooks');
         queryClient.invalidateQueries('mappings');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }

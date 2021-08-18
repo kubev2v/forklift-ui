@@ -25,7 +25,6 @@ export const useCreateMigrationMutation = (
 ): UseMutationResult<IKubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       const migration: IMigration = {
@@ -52,7 +51,6 @@ export const useCreateMigrationMutation = (
       onSuccess: ({ data }) => {
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('migrations');
-        pollFasterAfterMutation();
         onSuccess && onSuccess(data);
       },
     }

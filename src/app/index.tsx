@@ -14,7 +14,15 @@ import {
 import { noop } from '@app/common/constants';
 
 const queryCache = new QueryCache();
-const queryClient = new QueryClient({ queryCache });
+const queryClient = new QueryClient({
+  queryCache,
+  defaultOptions: {
+    queries: {
+      staleTime: 15000,
+      keepPreviousData: true,
+    },
+  },
+});
 
 const App: React.FunctionComponent = () => (
   <QueryClientProvider client={queryClient}>

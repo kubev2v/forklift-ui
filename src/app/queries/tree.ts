@@ -86,12 +86,15 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
         ? '/tree/host' // TODO in the future, this vsphere tree will also be at /tree/cluster
         : '/tree/cluster'
       : '/tree/vm';
+
   return useMockableQuery<T, unknown, IndexedTree<T>>(
     {
       queryKey: ['inventory-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       enabled: isValidQuery && !!provider,
       refetchInterval: usePollingContext().refetchInterval,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       select: indexTree,
     },
     (treeType === InventoryTreeType.Cluster
