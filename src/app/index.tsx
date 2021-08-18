@@ -18,8 +18,8 @@ const queryClient = new QueryClient({
   queryCache,
   defaultOptions: {
     queries: {
-      staleTime: 15000,
-      keepPreviousData: true,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     },
   },
 });
