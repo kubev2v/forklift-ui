@@ -15,11 +15,10 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan, POD_NETWORK, InventoryTreeType } from '@app/queries/types';
+import { IPlan, POD_NETWORK } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
-  useInventoryTreeQuery,
   useOpenShiftNetworksQuery,
   useNamespacesQuery,
 } from '@app/queries';
@@ -96,10 +95,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       form.fields.migrationNetwork.prefill(matchingNetwork?.name || null);
     }
   };
-
-  // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Cluster);
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM);
 
   return (
     <ResolvedQueries

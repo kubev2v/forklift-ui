@@ -1,3 +1,4 @@
+import * as React from 'react';
 import * as yup from 'yup';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
@@ -27,12 +28,16 @@ const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namesp
 
 export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<IPlan> => sortKubeListByName(data),
+    []
+  );
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
@@ -44,7 +49,6 @@ export const useCreatePlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState>(
     async (forms) => {
       await checkIfResourceExists(
@@ -118,7 +122,6 @@ export const useCreatePlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('mappings');
         queryClient.invalidateQueries('hooks');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
@@ -135,7 +138,6 @@ export const usePatchPlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
@@ -230,7 +232,6 @@ export const usePatchPlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('hooks');
         queryClient.invalidateQueries('mappings');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
