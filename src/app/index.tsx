@@ -13,7 +13,15 @@ import {
 } from '@app/common/context';
 
 const queryCache = new QueryCache();
-const queryClient = new QueryClient({ queryCache });
+const queryClient = new QueryClient({
+  queryCache,
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App: React.FunctionComponent = () => (
   <QueryClientProvider client={queryClient}>

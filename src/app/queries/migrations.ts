@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import { ForkliftResource, ForkliftResourceKind, checkIfResourceExists } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, KubeClientError } from '@app/client/types';
@@ -25,7 +26,6 @@ export const useCreateMigrationMutation = (
 ): UseMutationResult<IKubeResponse<IMigration>, KubeClientError, IPlan, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, IPlan>(
     async (plan: IPlan) => {
       const migration: IMigration = {
@@ -52,7 +52,6 @@ export const useCreateMigrationMutation = (
       onSuccess: ({ data }) => {
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('migrations');
-        pollFasterAfterMutation();
         onSuccess && onSuccess(data);
       },
     }
@@ -61,12 +60,16 @@ export const useCreateMigrationMutation = (
 
 export const useMigrationsQuery = (): UseQueryResult<IKubeList<IMigration>> => {
   const client = useAuthorizedK8sClient();
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<IMigration> => sortKubeListByName(data),
+    []
+  );
   const result = useMockableQuery<IKubeList<IMigration>>(
     {
       queryKey: 'migrations',
       queryFn: async () => (await client.list<IKubeList<IMigration>>(migrationResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mockKubeList(MOCK_MIGRATIONS, 'Migration')
   );

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
+import { IndexedTree, useSourceVMsQuery } from '@app/queries';
 import {
   IPlan,
   SourceInventoryProvider,
@@ -23,15 +23,18 @@ import { PlanWizardFormState } from './PlanWizard';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+import { UseQueryResult } from 'react-query';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
+  treeQuery: UseQueryResult<IndexedTree<InventoryTree>, unknown>;
   sourceProvider: SourceInventoryProvider | null;
   planBeingEdited: IPlan | null;
 }
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
+  treeQuery,
   sourceProvider,
   planBeingEdited,
 }: IFilterVMsFormProps) => {
@@ -40,10 +43,6 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   const [searchText, setSearchText] = React.useState('');
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const clusterTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.Cluster);
-  const vmTreeQuery = useInventoryTreeQuery(sourceProvider, InventoryTreeType.VM);
-  const treeQuery =
-    form.values.treeType === InventoryTreeType.Cluster ? clusterTreeQuery : vmTreeQuery;
 
   const isNodeSelectable = useIsNodeSelectableCallback(form.values.treeType);
 

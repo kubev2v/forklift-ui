@@ -33,6 +33,7 @@ import {
   SourceInventoryProvider,
   InventoryTree,
   InventoryTreeType,
+  IVMwareFolderTree,
 } from '@app/queries/types';
 import {
   IMappingBuilderItem,
@@ -48,6 +49,8 @@ import {
   usePlansQuery,
   useCreateMappingMutations,
   useSourceVMsQuery,
+  useInventoryTreeQuery,
+  IndexedTree,
 } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -253,6 +256,15 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const selectedVMs = vmsQuery.data?.findVMsByIds(forms.selectVMs.values.selectedVMIds) || [];
 
+  const clusterTreeQuery = useInventoryTreeQuery(
+    forms.general.values.sourceProvider,
+    InventoryTreeType.Cluster
+  );
+  const vmTreeQuery = useInventoryTreeQuery(
+    forms.general.values.sourceProvider,
+    InventoryTreeType.VM
+  );
+
   const steps: WizardStep[] = [
     {
       id: StepId.General,
@@ -273,6 +285,11 @@ const PlanWizard: React.FunctionComponent = () => {
           component: (
             <WizardStepContainer title="Filter by VM location">
               <FilterVMsForm
+                treeQuery={
+                  forms.filterVMs.values.treeType === InventoryTreeType.Cluster
+                    ? clusterTreeQuery
+                    : vmTreeQuery
+                }
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
                 planBeingEdited={planBeingEdited}
@@ -288,6 +305,8 @@ const PlanWizard: React.FunctionComponent = () => {
           component: (
             <WizardStepContainer title="Select VMs">
               <SelectVMsForm
+                hostTreeQuery={clusterTreeQuery}
+                vmTreeQuery={vmTreeQuery as UseQueryResult<IndexedTree<IVMwareFolderTree>, unknown>}
                 form={forms.selectVMs}
                 treeType={forms.filterVMs.values.treeType}
                 selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
