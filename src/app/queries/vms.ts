@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { usePollingContext } from '@app/common/context';
 import { UseQueryResult } from 'react-query';
 import { useAuthorizedFetch } from './fetchHelpers';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
@@ -48,6 +49,7 @@ export const useSourceVMsQuery = (
       queryKey: ['vms', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
       enabled: !!provider,
+      refetchInterval: usePollingContext().refetchInterval,
       select: indexVmsCallback,
     },
     mockVMs
