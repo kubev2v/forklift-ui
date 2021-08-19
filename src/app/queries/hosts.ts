@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import {
@@ -22,13 +23,14 @@ import { isManagementNetworkSelected } from '@app/Providers/components/VMwarePro
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
 export const useHostsQuery = (provider: IVMwareProvider | null) => {
+  const sortByNameCallback = React.useCallback((data): IHost[] => sortByName(data), []);
   const result = useMockableQuery<IHost[]>(
     {
-      queryKey: 'hosts',
+      queryKey: ['hosts', provider?.selfLink],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=1`)),
       enabled: !!provider,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortByName,
+      select: sortByNameCallback,
     },
     MOCK_HOSTS
   );
@@ -137,7 +139,6 @@ export const useConfigureHostsMutation = (
 > => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   const configureHosts = (values: SelectNetworkFormValues) => {
     const existingHostConfigs = getExistingHostConfigs(selectedHosts, allHostConfigs, provider);
@@ -187,7 +188,6 @@ export const useConfigureHostsMutation = (
     onSuccess: () => {
       queryClient.invalidateQueries('hosts');
       queryClient.invalidateQueries('hostconfigs');
-      pollFasterAfterMutation();
       onSuccess && onSuccess();
     },
   });

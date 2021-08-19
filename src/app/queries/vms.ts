@@ -1,5 +1,6 @@
-import { UseQueryResult } from 'react-query';
+import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
+import { UseQueryResult } from 'react-query';
 import { useAuthorizedFetch } from './fetchHelpers';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import { MOCK_RHV_VMS, MOCK_VMWARE_VMS } from './mocks/vms.mock';
@@ -39,6 +40,7 @@ export const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
 export const useSourceVMsQuery = (
   provider: SourceInventoryProvider | null
 ): UseQueryResult<IndexedSourceVMs> => {
+  const indexVmsCallback = React.useCallback((data) => indexVMs(data), []);
   let mockVMs: SourceVM[] = [];
   if (provider?.type === 'vsphere') mockVMs = MOCK_VMWARE_VMS;
   if (provider?.type === 'ovirt') mockVMs = MOCK_RHV_VMS;
@@ -48,7 +50,7 @@ export const useSourceVMsQuery = (
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/vms?detail=1`)),
       enabled: !!provider,
       refetchInterval: usePollingContext().refetchInterval,
-      select: indexVMs,
+      select: indexVmsCallback,
     },
     mockVMs
   );
