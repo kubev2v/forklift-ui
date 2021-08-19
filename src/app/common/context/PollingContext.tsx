@@ -26,8 +26,6 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
 
   const refetchInterval = !isPollingEnabled ? false : POLLING_INTERVAL;
 
-  const timeoutRef = React.useRef<number | null>(null);
-
   return (
     <PollingContext.Provider
       value={{

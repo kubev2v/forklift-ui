@@ -78,7 +78,7 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
   provider: SourceInventoryProvider | null,
   treeType: InventoryTreeType
 ): UseQueryResult<IndexedTree<T>> => {
-  const indexTreeCallback = React.useCallback((data) => indexTree(data), []);
+  const indexTreeCallback = React.useCallback((data): IndexedTree<T> => indexTree(data), []);
   // VMware providers have both Host and VM trees, but RHV only has Host trees.
   const isValidQuery = provider?.type === 'vsphere' || treeType === InventoryTreeType.Cluster;
   const apiSlug =
@@ -93,8 +93,8 @@ export const useInventoryTreeQuery = <T extends InventoryTree>(
       queryKey: ['inventory-tree', provider?.name, treeType],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       enabled: isValidQuery && !!provider,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      cacheTime: 0,
       select: indexTreeCallback,
     },
     (treeType === InventoryTreeType.Cluster

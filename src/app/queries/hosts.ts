@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import { usePollingContext } from '@app/common/context';
 import {
@@ -22,13 +23,14 @@ import { isManagementNetworkSelected } from '@app/Providers/components/VMwarePro
 export const hostConfigResource = new ForkliftResource(ForkliftResourceKind.Host, META.namespace);
 
 export const useHostsQuery = (provider: IVMwareProvider | null) => {
+  const sortByNameCallback = React.useCallback((data): IHost[] => sortByName(data), []);
   const result = useMockableQuery<IHost[]>(
     {
       queryKey: ['hosts', provider?.selfLink],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}/hosts?detail=1`)),
       enabled: !!provider,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortByName,
+      select: sortByNameCallback,
     },
     MOCK_HOSTS
   );

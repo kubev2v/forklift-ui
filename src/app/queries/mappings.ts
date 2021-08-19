@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseMutationResult, useQueryClient, UseQueryResult, QueryStatus } from 'react-query';
 import * as yup from 'yup';
 import {
@@ -41,13 +42,17 @@ export const getMappingResource = (
 
 export const useMappingsQuery = (mappingType: MappingType): UseQueryResult<IKubeList<Mapping>> => {
   const client = useAuthorizedK8sClient();
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<Mapping> => sortKubeListByName(data),
+    []
+  );
   const result = useMockableQuery<IKubeList<Mapping>>(
     {
       queryKey: ['mappings', mappingType],
       queryFn: async () =>
         (await client.list<IKubeList<Mapping>>(getMappingResource(mappingType).resource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mappingType === MappingType.Network
       ? mockKubeList(MOCK_NETWORK_MAPPINGS, 'NetworkMapList')

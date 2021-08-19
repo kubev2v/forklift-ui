@@ -48,7 +48,7 @@ import {
   getVMTreePathInfo,
   vmMatchesConcernFilter,
 } from './helpers';
-import { IndexedTree, useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
+import { IndexedTree, useSourceVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -56,6 +56,7 @@ import VMConcernsIcon from './VMConcernsIcon';
 import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { UseQueryResult } from 'react-query';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -63,6 +64,8 @@ interface ISelectVMsFormProps {
   selectedTreeNodes: InventoryTree[];
   sourceProvider: SourceInventoryProvider | null;
   selectedVMs: SourceVM[];
+  hostTreeQuery: UseQueryResult<IndexedTree<IInventoryHostTree>, unknown>;
+  vmTreeQuery: UseQueryResult<IndexedTree<IVMwareFolderTree>, unknown>;
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
@@ -71,15 +74,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   selectedTreeNodes,
   sourceProvider,
   selectedVMs,
+  hostTreeQuery,
+  vmTreeQuery,
 }: ISelectVMsFormProps) => {
-  const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
-    sourceProvider,
-    InventoryTreeType.Cluster
-  );
-  const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
-    sourceProvider,
-    InventoryTreeType.VM
-  );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
 
   const indexedTree: IndexedTree | undefined =

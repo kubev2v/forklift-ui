@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
 import * as yup from 'yup';
 import Q from 'q';
@@ -51,12 +52,16 @@ export const useClusterProvidersQuery = (): UseQueryResult<IKubeList<IProviderOb
 };
 
 export const useInventoryProvidersQuery = () => {
+  const sortIndexedDataByNameCallback = React.useCallback(
+    (data): IProvidersByType => sortIndexedDataByName(data),
+    []
+  );
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'inventory-providers',
       queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=1')),
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortIndexedDataByName,
+      select: sortIndexedDataByNameCallback,
     },
     MOCK_INVENTORY_PROVIDERS
   );

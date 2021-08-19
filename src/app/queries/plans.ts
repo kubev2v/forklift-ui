@@ -1,3 +1,4 @@
+import * as React from 'react';
 import * as yup from 'yup';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
@@ -27,12 +28,16 @@ const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namesp
 
 export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<IPlan> => sortKubeListByName(data),
+    []
+  );
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );

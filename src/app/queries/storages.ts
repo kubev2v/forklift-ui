@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import {
@@ -20,13 +21,14 @@ export const useSourceStoragesQuery = (
   mappingType: MappingType
 ) => {
   const apiSlug = provider?.type === 'vsphere' ? '/datastores' : '/storagedomains';
+  const sortByNameCallback = React.useCallback((data): ISourceStorage[] => sortByName(data), []);
   const result = useMockableQuery<ISourceStorage[]>(
     {
       queryKey: ['source-storages', provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       enabled: !!provider && mappingType === MappingType.Storage,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortByName,
+      select: sortByNameCallback,
     },
     provider?.type === 'vsphere' ? MOCK_VMWARE_DATASTORES : MOCK_RHV_STORAGE_DOMAINS
   );
