@@ -4,6 +4,11 @@ export interface ISourceNetwork {
   selfLink: string;
 }
 
+export interface IOvirtNetwork extends ISourceNetwork {
+  dataCenter: string;
+  description: string;
+}
+
 export interface IOpenShiftNetwork {
   uid: string;
   namespace: string;
