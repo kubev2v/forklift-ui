@@ -15,7 +15,6 @@ import {
   SourceInventoryProvider,
 } from './types';
 import { useAuthorizedFetch } from './fetchHelpers';
-// import { useDataCentersQuery } from '@app/queries';
 
 export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
   provider: InventoryProvider | null,
@@ -25,10 +24,7 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
 ) => {
   const apiSlug =
     providerRole === 'source' ? '/networks?detail=1' : '/networkattachmentdefinitions';
-  const sortByNameCallback = React.useCallback((data): T[] => {
-    // console.log('networkQuery callback', data);
-    return sortByName(data);
-  }, []);
+  const sortByNameCallback = React.useCallback((data): T[] => sortByName(data), []);
   const result = useMockableQuery<T[]>(
     {
       queryKey: ['networks', providerRole, provider?.name],
@@ -45,14 +41,12 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
 export const useSourceNetworksQuery = (
   provider: SourceInventoryProvider | null,
   mappingType?: MappingType
-) => {
-  return useNetworksQuery(
-    provider,
-    'source',
-    mappingType || null,
-    provider?.type === 'vsphere' ? MOCK_VMWARE_NETWORKS : MOCK_RHV_NETWORKS
-  );
-};
+) => useNetworksQuery(
+  provider,
+  'source',
+  mappingType || null,
+  provider?.type === 'vsphere' ? MOCK_VMWARE_NETWORKS : MOCK_RHV_NETWORKS
+);
 
 export const useOpenShiftNetworksQuery = (
   provider: IOpenShiftProvider | null,
