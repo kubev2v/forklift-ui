@@ -41,12 +41,13 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
 export const useSourceNetworksQuery = (
   provider: SourceInventoryProvider | null,
   mappingType?: MappingType
-) => useNetworksQuery(
-  provider,
-  'source',
-  mappingType || null,
-  provider?.type === 'vsphere' ? MOCK_VMWARE_NETWORKS : MOCK_RHV_NETWORKS
-);
+) =>
+  useNetworksQuery(
+    provider,
+    'source',
+    mappingType || null,
+    provider?.type === 'vsphere' ? MOCK_VMWARE_NETWORKS : MOCK_RHV_NETWORKS
+  );
 
 export const useOpenShiftNetworksQuery = (
   provider: IOpenShiftProvider | null,
