@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MappingSource, SourceInventoryProvider } from '@app/queries/types';
+import { MappingSource } from '@app/queries/types';
 import SimpleSelect, {
   ISimpleSelectProps,
   OptionWithValue,
