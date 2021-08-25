@@ -420,18 +420,20 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
                     isRequired
                     fieldId="openshift-sa-token"
                     formGroupProps={{
+                      helperText: 'Input a service account token with cluster-admin privileges.',
                       labelIcon: (
                         <Popover
                           bodyContent={
                             <>
-                              To obtain SA token, run the following command:
-                              <br />
-                              <i>
+                              <div className="pf-u-mb-md">
+                                To obtain SA token, run the following command:
+                              </div>
+                              <code>
                                 $ oc serviceaccounts get-token serviceaccount_name -n namespace_name
-                              </i>
-                              <br />
-                              <br />
-                              <b>** Be sure to use the namespace in which you created the SA.</b>
+                              </code>
+                              <div className="pf-u-mt-md">
+                                <b>** Be sure to use the namespace in which you created the SA.</b>
+                              </div>
                             </>
                           }
                         >
