@@ -42,7 +42,7 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
     toString: () => source.name,
     props: {
       children: <TruncatedText>{source.name}</TruncatedText>,
-      description: source.path,
+      description: <TruncatedText>{source.path}</TruncatedText>,
     },
   }));
   const selectedOption = options.filter(
