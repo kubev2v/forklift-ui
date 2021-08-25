@@ -35,7 +35,6 @@ export const mappingBuilderItemsSchema = yup
 interface IMappingBuilderProps {
   mappingType: MappingType;
   sourceProviderType: ProviderType;
-  sourceProvider: SourceInventoryProvider | null;
   availableSources: MappingSource[];
   availableTargets: MappingTarget[];
   builderItems: IMappingBuilderItem[];
@@ -46,7 +45,6 @@ interface IMappingBuilderProps {
 export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
   mappingType,
   sourceProviderType,
-  sourceProvider,
   availableSources,
   availableTargets,
   builderItems,
@@ -119,7 +117,6 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 </Bullseye>
               ) : (
                 <MappingSourceSelect
-                  sourceProvider={sourceProvider}
                   id={`mapping-sources-for-${key}`}
                   builderItems={builderItems}
                   itemIndex={itemIndex}

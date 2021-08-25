@@ -20,7 +20,7 @@ export const useSourceStoragesQuery = (
   provider: SourceInventoryProvider | null,
   mappingType: MappingType
 ) => {
-  const apiSlug = provider?.type === 'vsphere' ? '/datastores' : '/storagedomains?detail=1';
+  const apiSlug = provider?.type === 'vsphere' ? '/datastores' : '/storagedomains';
   const sortByNameCallback = React.useCallback((data): ISourceStorage[] => sortByName(data), []);
   const result = useMockableQuery<ISourceStorage[]>(
     {

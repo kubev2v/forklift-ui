@@ -2,6 +2,7 @@ export interface ISourceStorage {
   id: string;
   name: string;
   selfLink: string;
+  path: string | undefined;
 }
 
 export interface IStorageClass {

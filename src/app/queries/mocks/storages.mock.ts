@@ -10,26 +10,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       id: '1',
       name: 'vmware-datastore-1',
       selfLink: '/foo/vmwaredatastore/1',
+      path: '/V2V-DC/datastore/datastore-01',
     },
     {
       id: '2',
       name: 'vmware-datastore-2',
       selfLink: '/foo/vmwaredatastore/2',
+      path: '/V2V-DC/datastore/datastore-01',
     },
     {
       id: '3',
       name: 'vmware-datastore-3',
       selfLink: '/foo/vmwaredatastore/3',
+      path: '/V2V-DC/datastore/datastore-01',
     },
     {
       id: '4',
       name: 'vmware-datastore-4',
       selfLink: '/foo/vmwaredatastore/4',
+      path: '/V2V-DC/datastore/datastore-01',
     },
     {
       id: '5',
       name: 'vmware-datastore-5',
       selfLink: '/foo/vmwaredatastore/5',
+      path: '/V2V-DC/datastore/datastore-01',
     },
   ];
 
@@ -38,26 +43,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       id: '1',
       name: 'rhv-storage-1',
       selfLink: '/foo/rhvstorage/1',
+      path: 'Default/V2V-NFS4-Data-01',
     },
     {
       id: '2',
       name: 'rhv-datastore-2',
       selfLink: '/foo/rhvstorage/2',
+      path: 'Default/V2V-NFS4-Data-01',
     },
     {
       id: '3',
       name: 'rhv-datastore-3',
       selfLink: '/foo/rhvstorage/3',
+      path: 'Default/V2V-NFS4-Data-01',
     },
     {
       id: '4',
       name: 'rhv-datastore-4',
       selfLink: '/foo/rhvstorage/4',
+      path: 'Default/V2V-NFS4-Data-01',
     },
     {
       id: '5',
       name: 'rhv-datastore-5',
       selfLink: '/foo/rhvstorage/5',
+      path: 'Default/V2V-NFS4-Data-01',
     },
   ];
 

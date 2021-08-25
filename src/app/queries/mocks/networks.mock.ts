@@ -10,26 +10,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       id: '1',
       name: 'vmware-network-1',
       selfLink: '/foo/vmwarenetwork/1',
+      path: '/V2V-DC/network/vDS-00',
     },
     {
       id: '2',
       name: 'vmware-network-2',
       selfLink: '/foo/vmwarenetwork/2',
+      path: '/V2V-DC/network/vDS-00',
     },
     {
       id: '3',
       name: 'vmware-network-3',
       selfLink: '/foo/vmwarenetwork/3',
+      path: '/V2V-DC/network/vDS-00',
     },
     {
       id: '4',
       name: 'vmware-network-4',
       selfLink: '/foo/vmwarenetwork/4',
+      path: '/V2V-DC/network/vDS-00',
     },
     {
       id: '5',
       name: 'vmware-network-5',
       selfLink: '/foo/vmwarenetwork/5',
+      path: '/V2V-DC/network/vDS-00',
     },
   ];
 
@@ -38,26 +43,31 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       id: '1',
       name: 'rhv-network-1',
       selfLink: '/foo/rhvnetwork/1',
+      path: 'Default/VM_Isolated_00',
     },
     {
       id: '2',
       name: 'rhv-network-2',
       selfLink: '/foo/rhvnetwork/2',
+      path: 'Primary/VM_Isolated_00',
     },
     {
       id: '3',
       name: 'rhv-network-3',
       selfLink: '/foo/rhvnetwork/3',
+      path: 'Default/VM_Isolated_00',
     },
     {
       id: '4',
       name: 'rhv-network-4',
       selfLink: '/foo/rhvnetwork/4',
+      path: 'Default/VM_Isolated_00',
     },
     {
       id: '5',
       name: 'rhv-network-5',
       selfLink: '/foo/rhvnetwork/5',
+      path: 'Default/VM_Isolated_00',
     },
   ];
 

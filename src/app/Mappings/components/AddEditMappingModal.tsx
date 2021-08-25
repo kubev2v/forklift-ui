@@ -252,7 +252,6 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 >
                   <MappingBuilder
                     mappingType={mappingType}
-                    sourceProvider={form.values.sourceProvider}
                     sourceProviderType={form.values.sourceProvider?.type || 'vsphere'}
                     availableSources={mappingResourceQueries.availableSources}
                     availableTargets={mappingResourceQueries.availableTargets}

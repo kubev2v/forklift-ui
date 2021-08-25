@@ -11,4 +11,3 @@ export * from './migrations';
 export * from './secrets';
 export * from './namespaces';
 export * from './provisioners';
-export * from './datacenters';

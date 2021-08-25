@@ -22,8 +22,7 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
   mappingType: MappingType | null,
   mockNetworks: T[]
 ) => {
-  const apiSlug =
-    providerRole === 'source' ? '/networks?detail=1' : '/networkattachmentdefinitions';
+  const apiSlug = providerRole === 'source' ? '/networks' : '/networkattachmentdefinitions';
   const sortByNameCallback = React.useCallback((data): T[] => sortByName(data), []);
   const result = useMockableQuery<T[]>(
     {
