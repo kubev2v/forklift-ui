@@ -2,6 +2,12 @@ export interface ISourceNetwork {
   id: string;
   name: string;
   selfLink: string;
+  path: string | undefined;
+}
+
+export interface IOvirtNetwork extends ISourceNetwork {
+  dataCenter: string;
+  description: string;
 }
 
 export interface IOpenShiftNetwork {
