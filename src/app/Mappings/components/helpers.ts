@@ -48,10 +48,10 @@ export const getMappingSourceTitle = (
   providerType: ProviderType
 ): string => {
   if (mappingType === MappingType.Network) {
-    return 'Source networks';
+    return 'Source datacenters / networks';
   }
   if (mappingType === MappingType.Storage) {
-    return `Source ${getStorageTitle(providerType)}`;
+    return `Source datacenters / ${getStorageTitle(providerType)}`;
   }
   return '';
 };
