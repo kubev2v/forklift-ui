@@ -39,8 +39,6 @@ import {
   selectTargetNamespace,
   targetNetwork,
 } from '../views/plan.view';
-import { kebabDropDownItem } from '../views/provider.view';
-// import { networkMappingPeer } from '../tests/vmware/config';
 
 export class Plan {
   protected static openList(): void {
@@ -236,9 +234,7 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     applyAction(name, deleteButton);
-    clickByText(kebabDropDownItem, deleteButton);
-    // clickByText(button, deleteButton);
-    click('#modal-confirm-button');
+    cy.wait(2 * SEC);
   }
 
   execute(planData: PlanData): void {
