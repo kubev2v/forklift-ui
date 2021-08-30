@@ -25,6 +25,15 @@ export type VmwareProviderData = {
   cert?: string;
 };
 
+export type RhvProviderData = {
+  type: string;
+  name: string;
+  hostname?: string;
+  username?: string;
+  password?: string;
+  cert?: string;
+};
+
 export type OcpVirtData = {
   type: string;
   name: string;
@@ -32,7 +41,7 @@ export type OcpVirtData = {
   saToken?: string;
 };
 
-export type ProviderData = VmwareProviderData | OcpVirtData;
+export type ProviderData = VmwareProviderData | RhvProviderData | OcpVirtData;
 
 export type PlanData = {
   name: string;
