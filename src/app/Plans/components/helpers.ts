@@ -124,8 +124,7 @@ export const getPlanState = (
     if (hasCondition(conditions, 'Ready')) return 'NotStarted-Ready';
     return 'NotStarted-NotReady';
   }
-  if (isPlanBeingStarted(plan, migration, migrationQuery) && !hasCondition(conditions, 'Succeeded'))
-    return 'Starting';
+  if (isPlanBeingStarted(plan, migration, migrationQuery)) return 'Starting';
 
   if (isWarm && !migration.spec.cutover) {
     if (hasCondition(conditions, 'Canceled')) {
