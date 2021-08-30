@@ -2,7 +2,7 @@ export const instanceName = '#name';
 export const instanceHostname = '#hostname';
 export const instanceUsername = '#username';
 export const instancePassword = '#password';
-export const instanceFingerprint = '#fingerprint';
+export const instanceCaCert = '#caCert';
 export const addButtonModal = '#modal-confirm-button';
 
 export enum dataLabel {
@@ -12,6 +12,6 @@ export enum dataLabel {
   hosts = '[data-label=Hosts]',
   vms = '[data-label=VMs]',
   networks = '[data-label=Networks]',
-  datastors = '[data-label=Name]',
+  storageDomains = '[data-label="Storage domains"]',
   status = '[data-label=Status]',
 }
