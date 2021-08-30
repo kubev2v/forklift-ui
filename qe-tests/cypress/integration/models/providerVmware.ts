@@ -1,14 +1,6 @@
 import { Provider } from './provider';
-import { applyAction, clickByText, inputText } from '../../utils/utils';
-import {
-  addButton,
-  editButton,
-  removeButton,
-  saveButton,
-  SEC,
-  trTag,
-  vmware,
-} from '../types/constants';
+import { applyAction, clickByText, click, inputText } from '../../utils/utils';
+import { editButton, removeButton, saveButton, SEC, trTag, vmware } from '../types/constants';
 import {
   addButtonModal,
   instanceName,
@@ -16,9 +8,9 @@ import {
   instanceHostname,
   instancePassword,
   instanceUsername,
-  vmwareMenu,
   dataLabel,
 } from '../views/providerVmware.view';
+import { providerMenu } from '../views/provider.view';
 import { VmwareProviderData } from '../types/types';
 
 export class ProviderVmware extends Provider {
@@ -44,7 +36,7 @@ export class ProviderVmware extends Provider {
 
   protected static openList(): void {
     super.openList();
-    clickByText(vmwareMenu, vmware);
+    clickByText(providerMenu, vmware);
   }
 
   protected runWizard(providerData: VmwareProviderData): void {
@@ -55,7 +47,7 @@ export class ProviderVmware extends Provider {
     this.fillUsername(username);
     this.fillPassword(password);
     this.fillFingerprint(cert);
-    clickByText(addButtonModal, addButton);
+    click(addButtonModal);
   }
 
   protected populate(providerData: VmwareProviderData): void {

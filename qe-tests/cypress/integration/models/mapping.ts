@@ -54,12 +54,6 @@ export class Mapping {
     // Checking if sidebar is collapsed and opening it if required
     openSidebarMenu();
 
-    // Expanding sidebar mapping menu
-    // cy.get(buttonNavLink).then(($mappings) => {
-    //   if ($mappings.attr('aria-expanded') == 'false') {
-    //     clickByText(buttonNavLink, mappings);
-    //   }
-    // });
     clickByText(buttonNavLink, mappings);
   }
 
