@@ -24,7 +24,7 @@ import {
   getBuilderItemsWithMissingSources,
   getMappingFromBuilderItems,
 } from '@app/Mappings/components/MappingBuilder/helpers';
-import { PlanWizardFormState } from './PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
@@ -525,7 +525,7 @@ interface IEditingPrefillResults {
 export const useEditingPlanPrefillEffect = (
   forms: PlanWizardFormState,
   planBeingPrefilled: IPlan | null,
-  isEditMode: boolean
+  wizardMode: PlanWizardMode
 ): IEditingPrefillResults => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
@@ -578,7 +578,7 @@ export const useEditingPlanPrefillEffect = (
   const queryError = getFirstQueryError(queries);
 
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
-  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(wizardMode === 'create');
 
   const defaultTreeType = InventoryTreeType.Cluster;
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
@@ -604,7 +604,9 @@ export const useEditingPlanPrefillEffect = (
         isSameResource(mapping.metadata, planBeingPrefilled.spec.map.storage)
       );
 
-      forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
+      if (wizardMode === 'edit') {
+        forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
+      }
       if (planBeingPrefilled.spec.description) {
         forms.general.fields.planDescription.prefill(planBeingPrefilled.spec.description);
       }
@@ -671,6 +673,7 @@ export const useEditingPlanPrefillEffect = (
     queryStatus,
     forms,
     planBeingPrefilled,
+    wizardMode,
     sourceProvider,
     targetProvider,
     networkMappingResourceQueries,

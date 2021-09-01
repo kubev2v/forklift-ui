@@ -62,6 +62,8 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import './PlanWizard.css';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
+export type PlanWizardMode = 'create' | 'edit' | 'clone';
+
 const useMappingFormState = (mappingsQuery: UseQueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
   const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
@@ -82,13 +84,14 @@ const usePlanWizardFormState = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
   networkMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   storageMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
-  planBeingPrefilled: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ) => {
   const forms = {
     general: useFormState({
       planName: useFormField(
         '',
-        getPlanNameSchema(plansQuery, planBeingPrefilled).label('Plan name').required()
+        getPlanNameSchema(plansQuery, planBeingPrefilled, wizardMode).label('Plan name').required()
       ),
       planDescription: useFormField('', yup.string().label('Plan description').defined()),
       sourceProvider: useFormField<SourceInventoryProvider | null>(
@@ -153,15 +156,25 @@ const PlanWizard: React.FunctionComponent = () => {
     strict: true,
     sensitive: true,
   });
+  const cloneRouteMatch = useRouteMatch<{ planName: string }>({
+    path: '/plans/:planName/clone',
+    strict: true,
+    sensitive: true,
+  });
+  let wizardMode: PlanWizardMode = 'create';
+  if (editRouteMatch) wizardMode = 'edit';
+  if (cloneRouteMatch) wizardMode = 'clone';
+
+  const prefillPlanName = editRouteMatch?.params.planName || cloneRouteMatch?.params.planName;
   const planBeingPrefilled =
-    plansQuery.data?.items.find((plan) => plan.metadata.name === editRouteMatch?.params.planName) ||
-    null;
+    plansQuery.data?.items.find((plan) => plan.metadata.name === prefillPlanName) || null;
 
   const forms = usePlanWizardFormState(
     plansQuery,
     networkMappingsQuery,
     storageMappingsQuery,
-    planBeingPrefilled
+    planBeingPrefilled,
+    wizardMode
   );
 
   const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
@@ -169,7 +182,7 @@ const PlanWizard: React.FunctionComponent = () => {
   const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
     forms,
     planBeingPrefilled,
-    !!editRouteMatch
+    wizardMode
   );
 
   enum StepId {
@@ -229,10 +242,10 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const onSave = () => {
-    if (!planBeingPrefilled) {
+    if (wizardMode === 'create' || wizardMode === 'clone') {
       createPlanMutation.mutate(forms);
-    } else {
-      patchPlanMutation.mutate({ planBeingPrefilled, forms });
+    } else if (wizardMode === 'edit' && planBeingPrefilled) {
+      patchPlanMutation.mutate({ planBeingEdited: planBeingPrefilled, forms });
     }
     createSharedMappings();
   };
@@ -271,7 +284,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} planBeingPrefilled={planBeingPrefilled} />
+          <GeneralForm form={forms.general} wizardMode={wizardMode} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
@@ -393,7 +406,7 @@ const PlanWizard: React.FunctionComponent = () => {
             forms={forms}
             allMutationResults={allMutationResults}
             allMutationErrorTitles={allMutationErrorTitles}
-            planBeingPrefilled={planBeingPrefilled}
+            wizardMode={wizardMode}
             selectedVMs={selectedVMs}
           />
         </WizardStepContainer>
@@ -410,6 +423,8 @@ const PlanWizard: React.FunctionComponent = () => {
     }
   };
 
+  const wizardTitle = `${wizardMode === 'edit' ? 'Edit' : 'Create'} migration plan`;
+
   return (
     <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
@@ -425,8 +440,9 @@ const PlanWizard: React.FunctionComponent = () => {
     >
       {!isDonePrefilling ? (
         <LoadingEmptyState />
-      ) : editRouteMatch &&
+      ) : wizardMode === 'edit' &&
         (!planBeingPrefilled || planBeingPrefilled?.status?.migration?.started) ? (
+        // Trying to edit a plan that doesn't exist or is running
         <Redirect to="/plans" />
       ) : (
         <>
@@ -435,10 +451,7 @@ const PlanWizard: React.FunctionComponent = () => {
             title="Leave this page?"
             message="All unsaved changes will be lost."
           />
-          <PageSection
-            title={`${!planBeingPrefilled ? 'Create' : 'Edit'} Migration Plan`}
-            variant="light"
-          >
+          <PageSection title={wizardTitle} variant="light">
             <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
               <BreadcrumbItem>
                 <Link to={`/plans`}>Migration plans</Link>
@@ -446,13 +459,13 @@ const PlanWizard: React.FunctionComponent = () => {
               {planBeingPrefilled ? (
                 <BreadcrumbItem>{planBeingPrefilled.metadata.name}</BreadcrumbItem>
               ) : null}
-              <BreadcrumbItem>{!planBeingPrefilled ? 'Create' : 'Edit'}</BreadcrumbItem>
+              <BreadcrumbItem>
+                {wizardMode === 'edit' ? 'Edit' : wizardMode === 'clone' ? 'Clone' : 'Create'}
+              </BreadcrumbItem>
             </Breadcrumb>
             <Level>
               <LevelItem>
-                <Title headingLevel="h1">
-                  {!planBeingPrefilled ? 'Create' : 'Edit'} migration plan
-                </Title>
+                <Title headingLevel="h1">{wizardTitle}</Title>
               </LevelItem>
             </Level>
           </PageSection>

@@ -17,7 +17,7 @@ import { MOCK_PLANS } from './mocks/plans.mock';
 import { IHook, IPlan, Mapping, MappingType } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
-import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
 
@@ -129,7 +129,7 @@ export const useCreatePlanMutation = (
 };
 
 interface IPatchPlanArgs {
-  planBeingPrefilled: IPlan;
+  planBeingEdited: IPlan;
   forms: PlanWizardFormState;
 }
 
@@ -140,13 +140,12 @@ export const usePatchPlanMutation = (
   const queryClient = useQueryClient();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
-    async ({ planBeingPrefilled, forms }) => {
+    async ({ planBeingEdited, forms }) => {
       const { networkMapping, storageMapping } = generateMappings({
         forms,
-        owner: planBeingPrefilled,
+        owner: planBeingEdited,
       });
-      const { network: networkMappingRef, storage: storageMappingRef } =
-        planBeingPrefilled.spec.map;
+      const { network: networkMappingRef, storage: storageMappingRef } = planBeingEdited.spec.map;
 
       // Add or update hooks
       const planHooks = forms.hooks.values.instances.map((instance) => {
@@ -190,7 +189,7 @@ export const usePatchPlanMutation = (
         storageMapping &&
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapping),
 
-        client.patch<IPlan>(planResource, planBeingPrefilled.metadata.name, updatedPlan),
+        client.patch<IPlan>(planResource, planBeingEdited.metadata.name, updatedPlan),
       ]);
 
       // Patch new hooks with ownerReferences to the edited plan
@@ -198,7 +197,7 @@ export const usePatchPlanMutation = (
       for (let i = 0; i < hooksRef.length; i++) {
         if (!hooksRef[i].instance.prefilledFromHook) {
           hooksWithOwnerRef.push(
-            generateHook(hooksRef[i].instance, hooksRef[i].ref, '', planBeingPrefilled)
+            generateHook(hooksRef[i].instance, hooksRef[i].ref, '', planBeingEdited)
           );
         }
       }
@@ -213,7 +212,7 @@ export const usePatchPlanMutation = (
       await Promise.all(newHooksWithOwnerRef);
 
       // Delete hooks removed from plan
-      const planHooksToDelete = planBeingPrefilled.spec.vms[0].hooks?.filter(
+      const planHooksToDelete = planBeingEdited.spec.vms[0].hooks?.filter(
         (vmsHook) =>
           !forms.hooks.values.instances.find((instance) =>
             isSameResource(instance.prefilledFromHook?.metadata, vmsHook.hook)
@@ -258,11 +257,12 @@ export const useDeletePlanMutation = (
 
 export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
-  planBeingPrefilled: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ): yup.StringSchema =>
   dnsLabelNameSchema
     .test('unique-name', 'A plan with this name already exists', (value) => {
-      if (planBeingPrefilled?.metadata.name === value) return true;
+      if (wizardMode === 'edit' && planBeingPrefilled?.metadata.name === value) return true;
       if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
       return true;
     })
