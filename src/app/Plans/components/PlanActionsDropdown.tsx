@@ -65,6 +65,15 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
               Edit
             </DropdownItem>
           </ConditionalTooltip>,
+          <DropdownItem
+            key="clone"
+            onClick={() => {
+              setKebabIsOpen(false);
+              history.push(`/plans/${plan.metadata.name}/clone`);
+            }}
+          >
+            Clone
+          </DropdownItem>,
           <ConditionalTooltip
             key="Delete"
             isTooltipEnabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
