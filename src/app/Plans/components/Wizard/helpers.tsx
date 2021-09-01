@@ -607,6 +607,9 @@ export const useEditingPlanPrefillEffect = (
       if (wizardMode === 'edit') {
         forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
       }
+      if (wizardMode === 'clone') {
+        forms.general.fields.planName.setIsTouched(true); // Call attention to the only empty field
+      }
       if (planBeingPrefilled.spec.description) {
         forms.general.fields.planDescription.prefill(planBeingPrefilled.spec.description);
       }
