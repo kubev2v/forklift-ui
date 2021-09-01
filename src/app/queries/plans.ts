@@ -129,7 +129,7 @@ export const useCreatePlanMutation = (
 };
 
 interface IPatchPlanArgs {
-  planBeingEdited: IPlan;
+  planBeingPrefilled: IPlan;
   forms: PlanWizardFormState;
 }
 
@@ -140,12 +140,13 @@ export const usePatchPlanMutation = (
   const queryClient = useQueryClient();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
-    async ({ planBeingEdited, forms }) => {
+    async ({ planBeingPrefilled, forms }) => {
       const { networkMapping, storageMapping } = generateMappings({
         forms,
-        owner: planBeingEdited,
+        owner: planBeingPrefilled,
       });
-      const { network: networkMappingRef, storage: storageMappingRef } = planBeingEdited.spec.map;
+      const { network: networkMappingRef, storage: storageMappingRef } =
+        planBeingPrefilled.spec.map;
 
       // Add or update hooks
       const planHooks = forms.hooks.values.instances.map((instance) => {
@@ -189,7 +190,7 @@ export const usePatchPlanMutation = (
         storageMapping &&
           client.patch<Mapping>(storageMapResource, storageMappingRef.name, storageMapping),
 
-        client.patch<IPlan>(planResource, planBeingEdited.metadata.name, updatedPlan),
+        client.patch<IPlan>(planResource, planBeingPrefilled.metadata.name, updatedPlan),
       ]);
 
       // Patch new hooks with ownerReferences to the edited plan
@@ -197,7 +198,7 @@ export const usePatchPlanMutation = (
       for (let i = 0; i < hooksRef.length; i++) {
         if (!hooksRef[i].instance.prefilledFromHook) {
           hooksWithOwnerRef.push(
-            generateHook(hooksRef[i].instance, hooksRef[i].ref, '', planBeingEdited)
+            generateHook(hooksRef[i].instance, hooksRef[i].ref, '', planBeingPrefilled)
           );
         }
       }
@@ -212,7 +213,7 @@ export const usePatchPlanMutation = (
       await Promise.all(newHooksWithOwnerRef);
 
       // Delete hooks removed from plan
-      const planHooksToDelete = planBeingEdited.spec.vms[0].hooks?.filter(
+      const planHooksToDelete = planBeingPrefilled.spec.vms[0].hooks?.filter(
         (vmsHook) =>
           !forms.hooks.values.instances.find((instance) =>
             isSameResource(instance.prefilledFromHook?.metadata, vmsHook.hook)
@@ -257,11 +258,11 @@ export const useDeletePlanMutation = (
 
 export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
-  planBeingEdited: IPlan | null
+  planBeingPrefilled: IPlan | null
 ): yup.StringSchema =>
   dnsLabelNameSchema
     .test('unique-name', 'A plan with this name already exists', (value) => {
-      if (planBeingEdited?.metadata.name === value) return true;
+      if (planBeingPrefilled?.metadata.name === value) return true;
       if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
       return true;
     })

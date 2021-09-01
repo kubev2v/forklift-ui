@@ -14,7 +14,7 @@ interface IReviewProps {
   forms: PlanWizardFormState;
   allMutationResults: UnknownResult[];
   allMutationErrorTitles: string[];
-  planBeingEdited: IPlan | null;
+  planBeingPrefilled: IPlan | null;
   selectedVMs: SourceVM[];
 }
 
@@ -22,7 +22,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   allMutationResults,
   allMutationErrorTitles,
-  planBeingEdited,
+  planBeingPrefilled,
   selectedVMs,
 }: IReviewProps) => {
   usePausedPollingEffect();
@@ -46,7 +46,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
     <Form>
       <TextContent>
         <Text component="p">
-          Review the information below and click Finish to {!planBeingEdited ? 'create' : 'save'}{' '}
+          Review the information below and click Finish to {!planBeingPrefilled ? 'create' : 'save'}{' '}
           your migration plan. Use the Back button to make changes.
         </Text>
       </TextContent>

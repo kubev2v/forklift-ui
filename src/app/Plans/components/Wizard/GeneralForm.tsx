@@ -33,12 +33,12 @@ import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
-  planBeingEdited: IPlan | null;
+  planBeingPrefilled: IPlan | null;
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
-  planBeingEdited,
+  planBeingPrefilled,
 }: IGeneralFormProps) => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -113,7 +113,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           label="Plan name"
           isRequired
           fieldId="plan-name"
-          inputProps={{ isDisabled: !!planBeingEdited }}
+          inputProps={{ isDisabled: !!planBeingPrefilled }}
         />
         <ValidatedTextInput
           component={TextArea}
