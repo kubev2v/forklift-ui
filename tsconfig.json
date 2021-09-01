@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "outDir": "dist",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es5",
     "lib": ["es6", "dom", "es2019"],
     "sourceMap": true,
@@ -24,6 +24,6 @@
     "importHelpers": true,
     "skipLibCheck": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.jsx", "**/*.js"],
-  "exclude": ["node_modules", "qe-tests"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.jsx", "src/**/*.js"],
+  "exclude": ["node_modules", "qe-tests", "deploy", "scripts"]
 }

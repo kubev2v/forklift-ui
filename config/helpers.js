@@ -22,7 +22,7 @@ const getDevMeta = () => {
     );
     process.exit(1);
   }
-  return JSON.parse(fs.readFileSync(configPath));
+  return JSON.parse(fs.readFileSync(configPath).toString());
 };
 
 const sanitizeAndEncodeMeta = (meta) =>

@@ -1,21 +1,30 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const express = require('express');
-const https = require('https');
-const fs = require('fs');
-const dayjs = require('dayjs');
+import path from 'path';
+import express from 'express';
+import { createServer } from 'https';
+import { readFileSync } from 'fs';
+import dayjs from 'dayjs';
 
-const helpers = require('../config/helpers');
+import helpers from '../config/helpers';
 const { getClusterAuth } = require('./oAuthHelpers');
+// import { getClusterAuth } from './oAuthHelpers';
 
-const { createProxyMiddleware } = require('http-proxy-middleware');
+import { createProxyMiddleware } from 'http-proxy-middleware';
+interface IProxyConfigObj {
+  target: string;
+  changeOrigin: boolean;
+  pathRewrite: {
+    [apiPart: string]: string;
+  };
+  logLevel: 'debug' | 'info';
+  secure?: boolean;
+}
 
 let metaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
   metaStr = '{ "oauth": {} }';
 } else {
   const metaFile = process.env['META_FILE'] || '/srv/meta.json';
-  metaStr = fs.readFileSync(metaFile, 'utf8');
+  metaStr = readFileSync(metaFile, 'utf8');
 }
 
 console.log('\nEnvironment at run time:\n');
@@ -60,6 +69,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     };
     try {
       const clusterAuth = await getClusterAuth(meta);
+      // TODO: type for options/getToken mismatch
       const accessToken = await clusterAuth.getToken(options);
       const currentUnixTime = dayjs().unix();
       const user = {
@@ -78,7 +88,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 }
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
-  let clusterApiProxyOptions = {
+  let clusterApiProxyOptions: IProxyConfigObj = {
     target: meta.clusterApi,
     changeOrigin: true,
     pathRewrite: {
@@ -87,7 +97,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
 
-  let inventoryApiProxyOptions = {
+  let inventoryApiProxyOptions: IProxyConfigObj = {
     target: meta.inventoryApi,
     changeOrigin: true,
     pathRewrite: {
@@ -156,14 +166,14 @@ if (
   process.env['DATA_SOURCE'] !== 'mock'
 ) {
   const options = {
-    key: fs.readFileSync(
+    key: readFileSync(
       process.env['UI_TLS_KEY'] || '/var/run/secrets/forklift-ui-serving-cert/tls.key'
     ),
-    cert: fs.readFileSync(
+    cert: readFileSync(
       process.env['UI_TLS_CERTIFICATE'] || '/var/run/secrets/forklift-ui-serving-cert/tls.crt'
     ),
   };
-  https.createServer(options, app).listen(port);
+  createServer(options, app).listen(port);
 } else {
   app.listen(port, () => console.log(`Listening on port ${port}`));
 }

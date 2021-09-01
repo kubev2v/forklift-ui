@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const execSync = require('child_process').execSync;
-const helpers = require('../config/helpers');
+import { execSync } from 'child_process';
+import helpers from '../config/helpers';
 
 try {
   execSync('hash oc');

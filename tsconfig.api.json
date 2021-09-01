@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "module": "CommonJS",
+    "sourceMap": true,
+    "target": "ES6",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "files": true,
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "files": [
+    "./deploy/server.ts",
+  ],
+  "include": [
+    "./deploy/server.ts",
+  ],
+  "exclude": ["node_modules", "qe-tests", "dist"]
+}
