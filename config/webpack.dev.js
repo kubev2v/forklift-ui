@@ -11,14 +11,14 @@ module.exports = merge(common('development'), {
   mode: 'development',
   devtool: 'eval-source-map',
   devServer: {
-    contentBase: './dist',
+    // contentBase: './dist',
     host: HOST,
     port: PORT,
     compress: true,
-    inline: true,
+    // inline: true,
     historyApiFallback: true,
     hot: true,
-    overlay: true,
+    // overlay: true,
     open: true,
     proxy: [
       {

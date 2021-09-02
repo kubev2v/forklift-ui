@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 // import { AuthorizationCode } from 'simple-oauth2';
 // import fetch from 'node-fetch';
 
-let cachedOAuthMeta = null;
+let cachedOAuthMeta: any = null;
 
 const getOAuthMeta = async (meta) => {
   if (cachedOAuthMeta) {

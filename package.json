@@ -12,7 +12,7 @@
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock FORKLIFT_UI_GIT_COMMIT=$(git rev-parse --short HEAD) npm run build && npm run dr:surge",
     "build:api": "tsc -p ./tsconfig.api.json",
-    "setup:dev:remote": "nodemon --experimental-modules --trace-warnings --config ./deploy/nodemon.json ./scripts/remote-dev.js",
+    "setup:dev:remote": "node --experimental-modules --trace-warnings ./scripts/remote-dev.js",
     "print:ui:config": "tsc --showConfig -p ./tsconfig.json",
     "print:api:config": "tsc --showConfig -p ./tsconfig.api.json",
     "start": "node dist/deploy/server.js",
