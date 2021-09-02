@@ -69,7 +69,7 @@ export const useMockableMutation = <
       ? async (vars: TVariables) => {
           try {
             return await mutationFn(vars);
-          } catch (error) {
+          } catch (error: any) {
             console.error(error.response);
             checkExpiry(error, history);
             throw error;

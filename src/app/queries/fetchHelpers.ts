@@ -35,7 +35,7 @@ export const authorizedFetch = async <T>(
     } else {
       throw response;
     }
-  } catch (error) {
+  } catch (error: any) {
     checkExpiry(error, history);
     throw error;
   }
@@ -70,7 +70,7 @@ export const authorizedK8sRequest = async <T>(
     } else {
       throw response;
     }
-  } catch (error) {
+  } catch (error: any) {
     checkExpiry(error, history);
     throw error;
   }

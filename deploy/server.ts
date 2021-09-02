@@ -7,10 +7,7 @@ import dayjs from 'dayjs';
 import { renderFile } from 'ejs';
 
 import helpers from '../config/helpers';
-// const { getClusterAuth } = require('./oAuthHelpers');
-// import { getClusterAuth } from './oAuthHelpers';
-import oAuthHelpers from './oAuthHelpers';
-
+import { getClusterAuth } from './oAuthHelpers';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 interface IProxyConfigObj {
   target: string;
@@ -48,7 +45,7 @@ app.use(express.static(staticDir));
 if (process.env['DATA_SOURCE'] !== 'mock') {
   app.get('/login', async (req, res, next) => {
     try {
-      const clusterAuth = await oAuthHelpers.getClusterAuth(meta);
+      const clusterAuth = await getClusterAuth(meta);
       const authorizationUri = clusterAuth.authorizeURL({
         redirect_uri: meta.oauth.redirectUrl,
         scope: meta.oauth.userScope,
@@ -71,7 +68,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       redirect_uri: meta.oauth.redirectUrl,
     };
     try {
-      const clusterAuth = await oAuthHelpers.getClusterAuth(meta);
+      const clusterAuth = await getClusterAuth(meta);
       // TODO: type for options/getToken mismatch
       const accessToken = await clusterAuth.getToken(options.redirect_uri);
       const currentUnixTime = dayjs().unix();

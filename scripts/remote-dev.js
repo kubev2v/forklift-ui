@@ -1,6 +1,6 @@
 process.traceDeprecation = true;
 // import { execSync } from 'child_process';
-// import helpers from '../config/helpers';
+// import helpers from '../config/helpers.js';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const execSync = require('child_process').execSync;

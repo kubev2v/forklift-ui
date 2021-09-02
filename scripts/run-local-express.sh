@@ -5,7 +5,7 @@ export STATIC_DIR="$_dir/../dist"
 mkdir -p "$STATIC_DIR"
 cd $_dir/..
 if [ "$1" == "--auto-reload" ]; then
-  node --trace-warnings $_dir/../node_modules/nodemon/bin/nodemon.js $_dir/../deploy/server.ts
+  node --trace-warnings --trace-deprecation $_dir/../node_modules/nodemon/bin/nodemon.js $_dir/../deploy/server.ts
 else
-  npm run build:api && node --trace-warnings $_dir/../dist/deploy/server.js
+  npm run build:api && node --trace-warnings --trace-deprecation $_dir/../dist/deploy/server.js
 fi

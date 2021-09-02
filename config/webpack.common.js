@@ -17,7 +17,7 @@ module.exports = (env) => {
     module: {
       rules: [
         {
-          test: /\.(tsx|ts|jsx)?$/,
+          test: /\.(tsx|ts)?$/,
           use: [
             {
               loader: 'ts-loader',
@@ -27,6 +27,7 @@ module.exports = (env) => {
               },
             },
           ],
+          // exclude: [path.resolve(__dirname), path.resolve(__dirname, '../scripts')]
         },
         {
           test: /\.(svg|ttf|eot|woff|woff2)$/,
@@ -172,7 +173,7 @@ module.exports = (env) => {
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
-      extensions: ['.js', '.ts', '.tsx', '.jsx'],
+      extensions: ['.js', '.ts', '.tsx', '.json'],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: path.resolve(__dirname, '../tsconfig.json'),

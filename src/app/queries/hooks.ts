@@ -38,7 +38,7 @@ export const playbookSchema = yup
   .test('valid-yaml', 'Playbook must be valid YAML', (value, context) => {
     try {
       yaml.load(value || '');
-    } catch (e) {
+    } catch (e: any) {
       if (e.reason && e.mark) {
         return context.createError({
           message: `Invalid YAML: ${e.reason} (${e.mark.line + 1}:${e.mark.column + 1})`,
