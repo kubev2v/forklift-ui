@@ -10,15 +10,12 @@
   },
   "ts-node": {
     "files": true,
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
   },
   "files": [
-    "./deploy/server.ts",
+    "./deploy/*.ts",
   ],
   "include": [
-    "./deploy/server.ts",
+    "./deploy/*.ts",
   ],
   "exclude": ["node_modules", "qe-tests", "dist"]
 }

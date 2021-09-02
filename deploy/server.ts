@@ -1,12 +1,15 @@
+process.traceDeprecation = true;
 import path from 'path';
 import express from 'express';
 import { createServer } from 'https';
 import { readFileSync } from 'fs';
 import dayjs from 'dayjs';
+import { renderFile } from 'ejs';
 
 import helpers from '../config/helpers';
-const { getClusterAuth } = require('./oAuthHelpers');
+// const { getClusterAuth } = require('./oAuthHelpers');
 // import { getClusterAuth } from './oAuthHelpers';
+import oAuthHelpers from './oAuthHelpers';
 
 import { createProxyMiddleware } from 'http-proxy-middleware';
 interface IProxyConfigObj {
@@ -39,13 +42,13 @@ const port =
   process.env['EXPRESS_PORT'] || (process.env['UI_TLS_ENABLED'] !== 'false' ? 8443 : 8080);
 const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
 
-app.engine('ejs', require('ejs').renderFile);
+app.engine('ejs', renderFile);
 app.use(express.static(staticDir));
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
   app.get('/login', async (req, res, next) => {
     try {
-      const clusterAuth = await getClusterAuth(meta);
+      const clusterAuth = await oAuthHelpers.getClusterAuth(meta);
       const authorizationUri = clusterAuth.authorizeURL({
         redirect_uri: meta.oauth.redirectUrl,
         scope: meta.oauth.userScope,
@@ -68,9 +71,9 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       redirect_uri: meta.oauth.redirectUrl,
     };
     try {
-      const clusterAuth = await getClusterAuth(meta);
+      const clusterAuth = await oAuthHelpers.getClusterAuth(meta);
       // TODO: type for options/getToken mismatch
-      const accessToken = await clusterAuth.getToken(options);
+      const accessToken = await clusterAuth.getToken(options.redirect_uri);
       const currentUnixTime = dayjs().unix();
       const user = {
         ...accessToken.token,
@@ -80,10 +83,11 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       const params = new URLSearchParams({ user: JSON.stringify(user) });
       const uri = `/handle-login?${params.toString()}`;
       res.redirect(uri);
-    } catch (error) {
-      console.error('Access Token Error', error.message);
+    } catch (error: unknown) {
+      console.error('Access Token Error', (error as Error).message);
       return res.status(500).json('Authentication failed');
     }
+    return Promise.resolve(true);
   });
 }
 

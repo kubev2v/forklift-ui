@@ -1,10 +1,16 @@
-import { execSync } from 'child_process';
-import helpers from '../config/helpers';
+process.traceDeprecation = true;
+// import { execSync } from 'child_process';
+// import helpers from '../config/helpers';
+
+/* eslint-disable @typescript-eslint/no-var-requires */
+const execSync = require('child_process').execSync;
+const helpers = require('../config/helpers');
 
 try {
   execSync('hash oc');
 } catch (error) {
-  console.error(error.stdout.toString());
+  console.log('-----------1-----------');
+  // console.error(error.stdout.toString());
   process.exit(1);
 }
 
@@ -33,11 +39,12 @@ function setupOAuthClient() {
     execSync(`oc delete oauthclient ${oauthClientName}`);
   } catch (error) {
     // Some error other than the client not existing occurred
-    if (!error.stderr.toString().includes('not found')) {
-      console.error('ERROR: Something went wrong while trying to get the remote-dev oauthclient:');
-      console.error(error.stdout.toString());
-      process.exit(1);
-    }
+    // if (!error.stderr.toString().includes('not found')) {
+    //   console.error('ERROR: Something went wrong while trying to get the remote-dev oauthclient:');
+    //   console.log('-----------2-----------');
+    //   // console.error(error.stdout.toString());
+    //   process.exit(1);
+    // }
   }
 
   console.log(`Attempting to create oauthclient for ${oauthClientName} ...`);
@@ -59,7 +66,8 @@ function setupOAuthClient() {
     execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`);
   } catch (error) {
     console.error('ERROR: Something went wrong trying to create a new OAuthClient:');
-    console.error(error.stdout.toString());
+    console.log('-----------3-----------');
+    // console.error(error.stdout.toString());
     process.exit(1);
   }
 }

@@ -15,7 +15,6 @@
     "noImplicitAny": false,
     "allowJs": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "paths": {
       "@app/*": ["src/app/*"],
@@ -25,5 +24,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.jsx", "src/**/*.js"],
-  "exclude": ["node_modules", "qe-tests", "deploy", "scripts"]
+  "exclude": ["node_modules", "qe-tests", "dist", "coverage", "__mocks__", "deploy", "config", "scripts"]
 }
