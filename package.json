@@ -21,7 +21,7 @@
     "test": "npm run test:unit -- --coverage",
     "test:unit": "DATA_SOURCE=mock $(npm bin)/jest --rootDir=. --config=config/jest.config.js",
     "test:watch": "npm run test:unit -- --watch",
-    "lint": "$(npm bin)/eslint --ext .tsx,.ts,.js ./src/ ./qe-tests/",
+    "lint": "$(npm bin)/eslint .",
     "lint:fix": "npm run lint -- --fix",
     "format": "$(npm bin)/prettier --check --write ./src/**/*.{tsx,ts} ./qe-tests/**/*.{ts,js}",
     "tsc-src": "$(npm bin)/tsc --project ./tsconfig.json --noEmit",
