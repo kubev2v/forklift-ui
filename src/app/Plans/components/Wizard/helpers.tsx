@@ -42,6 +42,7 @@ import {
   useSourceVMsQuery,
   IndexedTree,
   IndexedSourceVMs,
+  usePlansQuery,
 } from '@app/queries';
 import { UseQueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -550,6 +551,7 @@ export const usePlanWizardPrefillEffect = (
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
 
   const hooksQuery = useHooksQuery();
+  const plansQuery = usePlansQuery();
 
   const queries = [
     providersQuery,
@@ -560,6 +562,7 @@ export const usePlanWizardPrefillEffect = (
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
+    plansQuery,
   ];
   const errorTitles = [
     'Could not load providers',
@@ -572,6 +575,7 @@ export const usePlanWizardPrefillEffect = (
     'Could not load network mappings',
     'Could not load storage mappings',
     'Could not load hooks',
+    'Could not load plans',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
@@ -606,9 +610,10 @@ export const usePlanWizardPrefillEffect = (
 
       if (wizardMode === 'edit') {
         forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
-      }
-      if (wizardMode === 'clone') {
-        forms.general.fields.planName.setIsTouched(true); // Call attention to the only empty field
+      } else if (wizardMode === 'clone') {
+        forms.general.fields.planName.prefill(
+          getClonedPlanDefaultName(planBeingPrefilled, plansQuery)
+        );
       }
       if (planBeingPrefilled.spec.description) {
         forms.general.fields.planDescription.prefill(planBeingPrefilled.spec.description);
@@ -686,6 +691,7 @@ export const usePlanWizardPrefillEffect = (
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
+    plansQuery,
     defaultTreeType,
     isNodeSelectable,
   ]);
@@ -697,6 +703,20 @@ export const usePlanWizardPrefillEffect = (
     prefillQueries: queries,
     prefillErrorTitles: errorTitles,
   };
+};
+
+export const getClonedPlanDefaultName = (
+  planBeingPrefilled: IPlan,
+  plansQuery: UseQueryResult<IKubeList<IPlan>>
+) => {
+  let name = `Copy of ${planBeingPrefilled.metadata.name}`;
+  // Make sure the new name is also unique; if it is already in use put a number at the end of it.
+  let increment = 0;
+  while (plansQuery.data?.items.find((plan) => plan.metadata.name === name)) {
+    increment++;
+    name = `Copy of ${planBeingPrefilled.metadata.name} (${increment})`;
+  }
+  return name;
 };
 
 export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: string): boolean =>
