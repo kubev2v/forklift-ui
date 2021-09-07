@@ -10,8 +10,15 @@ import {
   PollingContextProvider,
   LocalStorageContextProvider,
   NetworkContextProvider,
+  WebSocketContextProvider
 } from '@app/common/context';
 import { noop } from '@app/common/constants';
+import {
+  // useVmsSocketMutation,
+  // useTestSubscription,
+} from '@app/queries';
+import { getInventoryApiSocketUrl } from '@app/queries/helpers';
+import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
 
 const queryCache = new QueryCache();
 const queryClient = new QueryClient({
@@ -24,21 +31,26 @@ const queryClient = new QueryClient({
   },
 });
 
-const App: React.FunctionComponent = () => (
-  <QueryClientProvider client={queryClient}>
-    <PollingContextProvider>
-      <LocalStorageContextProvider>
-        <NetworkContextProvider>
-          <Router getUserConfirmation={noop}>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </Router>
-        </NetworkContextProvider>
-      </LocalStorageContextProvider>
-    </PollingContextProvider>
-    {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
-  </QueryClientProvider>
-);
+const App: React.FunctionComponent = () => {
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WebSocketContextProvider queryClient={queryClient}>
+        <PollingContextProvider>
+          <LocalStorageContextProvider>
+            <NetworkContextProvider>
+              <Router getUserConfirmation={noop}>
+                <AppLayout>
+                  <AppRoutes />
+                </AppLayout>
+              </Router>
+            </NetworkContextProvider>
+          </LocalStorageContextProvider>
+        </PollingContextProvider>
+        {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
+      </WebSocketContextProvider>
+    </QueryClientProvider>
+  )
+};
 
 export { App };

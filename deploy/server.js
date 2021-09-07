@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const express = require('express');
+// import express from 'express';
+// import { WebSocketServer } from 'ws';
+const WebSocketServer = require('ws');
+// const WebSocketServer = require('websocket').server;
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const dayjs = require('dayjs');
 
@@ -77,6 +82,23 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 }
 
+let inventoryApiProxyOptions$ = {
+  target: meta.inventoryApi,
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: {
+    '^/inventory-api-socket/': '/',
+  },
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
+};
+
+inventoryApiProxyOptions$ = {
+  ...inventoryApiProxyOptions$,
+  secure: false,
+};
+
+const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
+
 if (process.env['DATA_SOURCE'] !== 'mock') {
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
@@ -133,6 +155,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   app.use('/cluster-api/', clusterApiProxy);
   app.use('/inventory-api/', inventoryApiProxy);
+  app.use('/inventory-api-socket/', inventoryApiSocketProxy);
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
 }
@@ -165,5 +188,71 @@ if (
   };
   https.createServer(options, app).listen(port);
 } else {
-  app.listen(port, () => console.log(`Listening on port ${port}`));
+
+  const server = http.createServer(app);
+  const wss = new WebSocketServer.Server({
+    server: app,
+    // port: port
+    // noServer: true
+  });
+
+  wss.on('connection', (ws) => {
+    console.log('==================');
+    console.log('connection EVENT RAN');
+
+    ws.on('upgrade', () => {
+      console.log('UPGRADE INSIDE WS');
+    })
+
+    ws.on('message', (msg) => {
+      console.log('MESSAGE INSIDE WS');
+    })
+
+    ws.on('open', (msg) => {
+      console.log('OPEN INSIDE WS');
+    })
+
+    ws.on('close', (msg) => {
+      console.log('CLOSE INSIDE WS');
+    })
+
+  })
+
+  server.listen(port, () => console.log(`Listening on port ${port}`));
+
+  server.on('error', event => {
+    console.log('????????????????????????????????');
+    console.log(event);
+    console.log('express THERE WAS AN ERROR WITH THE WS CONNECTION');
+  })
+
+  server.on('connection', socket => {
+    console.log('-------------------------------');
+    console.log('express connection');
+    // socket.on('connect', event => {
+    //   console.log('CONNECT event');
+    // })
+  });
+
+  server.on('close', event => {
+    console.log('===============================');
+    console.log('express WS connection CLOSED');
+  })
+
+  server.on('listening', () => {
+    console.log('----------------------------');
+    console.log('express WS listening');
+  })
+
+  server.on('upgrade', (request, socket, head) => {
+    console.log('----------------------------');
+    console.log('express WS upgrade');
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    })
+
+  })
+
+  // server.on('upgrade', inventoryApiSocketProxy.upgrade)
+
 }

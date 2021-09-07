@@ -51,6 +51,7 @@
     "@types/react-syntax-highlighter": "^13.5.0",
     "@types/simple-oauth2": "^4.1.0",
     "@types/victory": "^33.1.4",
+    "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
     "@typescript-eslint/parser": "^4.26.1",
     "concurrently": "^6.2.0",
@@ -116,6 +117,8 @@
     "react-dom": "^17.0.2",
     "react-router-last-location": "^2.0.1",
     "react-syntax-highlighter": "^15.4.3",
+    "websocket": "^1.0.34",
+    "ws": "^8.2.1",
     "yup": "^0.32.9"
   }
 }
