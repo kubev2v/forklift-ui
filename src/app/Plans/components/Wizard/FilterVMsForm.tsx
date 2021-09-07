@@ -138,8 +138,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             aria-label="Search inventory"
           />
           <Button
-            variant="link"
-            isInline
+            variant="tertiary"
             icon={allExpanded ? <AngleDownIcon /> : <AngleRightIcon />}
             onClick={() => setExpandButton()}
           >
@@ -188,6 +187,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
           hasChecks
           hasBadges
           onCheck={(_event, treeViewItem) => {
+            // setExpandButton();
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else if (treeQuery.data) {
