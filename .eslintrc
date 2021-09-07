@@ -1,8 +1,8 @@
 {
-  // tells eslint to use the TypeScript parser
+  "root": true,
   "parser": "@typescript-eslint/parser",
-  // tell the TypeScript parser that we want to use JSX syntax
   "parserOptions": {
+    "ecmaVersion": 2015,
     "tsx": true,
     "jsx": true,
     "js": true,
@@ -10,12 +10,13 @@
     "project": ["./tsconfig.json", "./qe-tests/tsconfig.json"],
     "tsconfigRootDir": "."
   },
-  // we want to use the recommended rules provided from the typescript plugin
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "prettier"
   ],
   "globals": {
     "window": "readonly",
@@ -31,8 +32,7 @@
       "version": "^16.11.0"
     }
   },
-  // includes the typescript specific rules found here: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
-  "plugins": ["@typescript-eslint", "react-hooks", "eslint-plugin-react-hooks"],
+  "plugins": ["prettier", "@typescript-eslint", "react-hooks", "eslint-plugin-react-hooks"],
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -42,7 +42,13 @@
     "import/no-unresolved": "off",
     "import/extensions": "off",
     "react/prop-types": "off",
-    "prettier/prettier": "error"
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "semi": true
+      }
+    ]  
   },
   "env": {
     "browser": true,
