@@ -514,7 +514,7 @@ export const getSelectedVMsFromPlan = (
   return indexedVMs.findVMsByIds(planBeingPrefilled?.spec.vms.map(({ id }) => id));
 };
 
-interface IEditingPrefillResults {
+interface IPlanWizardPrefillResults {
   prefillQueryStatus: QueryStatus;
   prefillQueryError: unknown;
   isDonePrefilling: boolean;
@@ -522,11 +522,11 @@ interface IEditingPrefillResults {
   prefillErrorTitles: string[];
 }
 
-export const useEditingPlanPrefillEffect = (
+export const usePlanWizardPrefillEffect = (
   forms: PlanWizardFormState,
   planBeingPrefilled: IPlan | null,
   wizardMode: PlanWizardMode
-): IEditingPrefillResults => {
+): IPlanWizardPrefillResults => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
     planBeingPrefilled?.spec.provider || null,

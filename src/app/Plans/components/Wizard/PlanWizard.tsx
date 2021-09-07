@@ -39,7 +39,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, useEditingPlanPrefillEffect } from './helpers';
+import { generateMappings, usePlanWizardPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
   useMappingsQuery,
@@ -179,7 +179,7 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
 
-  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
+  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = usePlanWizardPrefillEffect(
     forms,
     planBeingPrefilled,
     wizardMode
