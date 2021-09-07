@@ -1,5 +1,17 @@
 import * as React from 'react';
-import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
+import {
+  Button,
+  TreeView,
+  Tabs,
+  Tab,
+  TabTitleText,
+  TextContent,
+  Text,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  TreeViewSearch,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { IndexedTree, useSourceVMsQuery } from '@app/queries';
@@ -24,6 +36,7 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { UseQueryResult } from 'react-query';
+import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -113,6 +126,30 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     getNodeBadgeContent
   );
 
+  const [allExpanded, setExpandButton] = React.useReducer((allExpanded) => !allExpanded, true);
+  const toolbar = (
+    <Toolbar style={{ padding: 0 }}>
+      <ToolbarContent style={{ padding: 0 }}>
+        <ToolbarItem widths={{ default: '100%' }}>
+          <TreeViewSearch
+            onSearch={(event) => setSearchText(event.target.value)}
+            id="inventory-search"
+            name="search-inventory"
+            aria-label="Search inventory"
+          />
+          <Button
+            variant="link"
+            isInline
+            icon={allExpanded ? <AngleDownIcon /> : <AngleRightIcon />}
+            onClick={() => setExpandButton()}
+          >
+            {allExpanded ? 'Collapse all' : 'Expand all'}
+          </Button>
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  );
+
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
@@ -147,9 +184,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         <TreeView
           data={treeViewData}
           defaultAllExpanded
+          allExpanded={allExpanded}
           hasChecks
           hasBadges
-          onSearch={(event) => setSearchText(event.target.value)}
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
@@ -174,11 +211,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
               }
             }
           }}
-          searchProps={{
-            id: 'inventory-search',
-            name: 'search-inventory',
-            'aria-label': 'Search inventory',
-          }}
+          toolbar={toolbar}
         />
       </ResolvedQueries>
     </div>
