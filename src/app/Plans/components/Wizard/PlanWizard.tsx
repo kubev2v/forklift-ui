@@ -161,9 +161,7 @@ const PlanWizard: React.FunctionComponent = () => {
     strict: true,
     sensitive: true,
   });
-  let wizardMode: PlanWizardMode = 'create';
-  if (editRouteMatch) wizardMode = 'edit';
-  if (cloneRouteMatch) wizardMode = 'clone';
+  const wizardMode = editRouteMatch ? 'edit' : cloneRouteMatch ? 'clone' : 'create';
 
   const prefillPlanName = editRouteMatch?.params.planName || cloneRouteMatch?.params.planName;
   const planBeingPrefilled =
