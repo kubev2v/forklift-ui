@@ -710,7 +710,6 @@ export const clonedPlanDefaultName = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>
 ) => {
   let name = `Copy of ${planBeingPrefilled.metadata.name}`;
-  // Make sure the new name is also unique; if it is already in use put a number at the end of it.
   let increment = 0;
   while (plansQuery.data?.items.find((plan) => plan.metadata.name === name)) {
     increment++;
