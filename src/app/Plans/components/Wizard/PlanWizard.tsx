@@ -456,9 +456,7 @@ const PlanWizard: React.FunctionComponent = () => {
               {planBeingPrefilled ? (
                 <BreadcrumbItem>{planBeingPrefilled.metadata.name}</BreadcrumbItem>
               ) : null}
-              <BreadcrumbItem>
-                {wizardMode === 'edit' ? 'Edit' : wizardMode === 'clone' ? 'Clone' : 'Create'}
-              </BreadcrumbItem>
+              <BreadcrumbItem>{wizardMode.replace(/^\w/, (c) => c.toUpperCase())}</BreadcrumbItem>
             </Breadcrumb>
             <Level>
               <LevelItem>
