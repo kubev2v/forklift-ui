@@ -709,11 +709,11 @@ export const clonedPlanDefaultName = (
   planBeingPrefilled: IPlan,
   plansQuery: UseQueryResult<IKubeList<IPlan>>
 ) => {
-  let name = `Copy of ${planBeingPrefilled.metadata.name}`;
+  let name = `copy-of-${planBeingPrefilled.metadata.name}`;
   let increment = 0;
   while (plansQuery.data?.items.find((plan) => plan.metadata.name === name)) {
     increment++;
-    name = `Copy of ${planBeingPrefilled.metadata.name} (${increment})`;
+    name = `copy-of-${planBeingPrefilled.metadata.name}-${increment}`;
   }
   return name;
 };
