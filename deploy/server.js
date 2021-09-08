@@ -94,7 +94,7 @@ let inventoryApiProxyOptions$ = {
 
 inventoryApiProxyOptions$ = {
   ...inventoryApiProxyOptions$,
-  secure: false,
+  secure: true,
 };
 
 const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
@@ -218,6 +218,12 @@ if (
 
   })
 
+  wss.on('upgrade', (request, socket, head) => {
+    console.log('----------------------------');
+    console.log('WS upgrade!!!!!!');
+
+  })
+
   server.listen(port, () => console.log(`Listening on port ${port}`));
 
   server.on('error', event => {
@@ -247,12 +253,13 @@ if (
   server.on('upgrade', (request, socket, head) => {
     console.log('----------------------------');
     console.log('express WS upgrade');
+
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     })
 
   })
 
-  // server.on('upgrade', inventoryApiSocketProxy.upgrade)
+  server.on('upgrade', inventoryApiSocketProxy.upgrade)
 
 }

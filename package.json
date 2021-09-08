@@ -94,7 +94,6 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@hot-loader/react-dom": "^17.0.1",
     "@konveyor/lib-ui": "^5.0.0",
     "@patternfly/react-core": "^4.152.4",
     "@patternfly/react-icons": "^4.11.14",

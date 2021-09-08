@@ -42,7 +42,7 @@ export const WebSocketContextProvider: React.FunctionComponent<IWebSocketContext
     console.log('setting up WebSocket instance');
 
     // const websocket = new WebSocket(`${getInventoryApiSocketUrl('providers')}`);
-    const websocket = new WebSocket(`ws://localhost:9000${getInventoryApiSocketUrl('providers')}`);
+    const websocket = new WebSocket(`ws://localhost:9001${getInventoryApiSocketUrl('providers')}`);
 
     // console.log('websocket', websocket);
 
