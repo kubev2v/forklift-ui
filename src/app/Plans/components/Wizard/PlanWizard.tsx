@@ -440,7 +440,6 @@ const PlanWizard: React.FunctionComponent = () => {
         <LoadingEmptyState />
       ) : wizardMode === 'edit' &&
         (!planBeingPrefilled || planBeingPrefilled?.status?.migration?.started) ? (
-        // Trying to edit a plan that doesn't exist or is running
         <Redirect to="/plans" />
       ) : (
         <>
