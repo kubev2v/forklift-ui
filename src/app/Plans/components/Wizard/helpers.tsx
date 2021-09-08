@@ -612,7 +612,7 @@ export const usePlanWizardPrefillEffect = (
         forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
       } else if (wizardMode === 'clone') {
         forms.general.fields.planName.prefill(
-          getClonedPlanDefaultName(planBeingPrefilled, plansQuery)
+          clonedPlanDefaultName(planBeingPrefilled, plansQuery)
         );
       }
       if (planBeingPrefilled.spec.description) {
@@ -705,7 +705,7 @@ export const usePlanWizardPrefillEffect = (
   };
 };
 
-export const getClonedPlanDefaultName = (
+export const clonedPlanDefaultName = (
   planBeingPrefilled: IPlan,
   plansQuery: UseQueryResult<IKubeList<IPlan>>
 ) => {
