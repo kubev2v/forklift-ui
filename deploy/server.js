@@ -4,6 +4,8 @@ const express = require('express');
 // import express from 'express';
 // import { WebSocketServer } from 'ws';
 const WebSocketServer = require('ws');
+const HttpsProxyAgent = require('https-proxy-agent');
+const url = require('url');
 // const WebSocketServer = require('websocket').server;
 const https = require('https');
 const http = require('http');
@@ -99,6 +101,13 @@ inventoryApiProxyOptions$ = {
 
 const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
 
+const parsed = url.parse(`wss://localhost:${port}`);
+console.log('attempting to connect to WebSocket %j', parsed.href);
+
+// create an instance of the `HttpsProxyAgent` class with the proxy server information
+// var options = url.parse(proxy);
+const agent = new HttpsProxyAgent(parsed.href);
+
 if (process.env['DATA_SOURCE'] !== 'mock') {
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
@@ -192,9 +201,10 @@ if (
   const server = http.createServer(app);
   const wss = new WebSocketServer.Server({
     server: app,
-    // port: port
-    // noServer: true
+    agent
   });
+
+  // const wss = new WebSocketServer(parsed.href, agent);
 
   wss.on('connection', (ws) => {
     console.log('==================');
@@ -260,6 +270,6 @@ if (
 
   })
 
-  server.on('upgrade', inventoryApiSocketProxy.upgrade)
+  // server.on('upgrade', inventoryApiSocketProxy.upgrade)
 
 }
