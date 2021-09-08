@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const express = require('express');
-// import express from 'express';
-// import { WebSocketServer } from 'ws';
 const WebSocketServer = require('ws');
 const HttpsProxyAgent = require('https-proxy-agent');
 const url = require('url');
-// const WebSocketServer = require('websocket').server;
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
@@ -88,21 +85,31 @@ let inventoryApiProxyOptions$ = {
   target: meta.inventoryApi,
   changeOrigin: true,
   ws: true,
+  // headers: {
+  //   "X-Watch": ''
+  // },
   pathRewrite: {
     '^/inventory-api-socket/': '/',
   },
   logLevel: process.env.DEBUG ? 'debug' : 'info',
+  secure: true
 };
 
-inventoryApiProxyOptions$ = {
-  ...inventoryApiProxyOptions$,
-  secure: true,
-};
+// inventoryApiProxyOptions$ = {
+//   ...inventoryApiProxyOptions$,
+//   secure: true,
+// };
 
 const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
 
-const parsed = url.parse(`wss://localhost:${port}`);
-console.log('attempting to connect to WebSocket %j', parsed.href);
+// const parsed = url.parse(`ws://localhost:${port}`);
+// const parsed = url.parse(inventoryApiProxyOptions$.target);
+const parsed = url.parse(`foo://bar:9009/baz`);
+// const parsed = url.parse('wss://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com/providers');
+console.log('\n');
+console.log('*******************************');
+console.log('attempting to set up Https Proxy Agent for: ', parsed);
+console.log('*******************************', '\n');
 
 // create an instance of the `HttpsProxyAgent` class with the proxy server information
 // var options = url.parse(proxy);
@@ -199,40 +206,57 @@ if (
 } else {
 
   const server = http.createServer(app);
-  const wss = new WebSocketServer.Server({
-    server: app,
-    agent
-  });
+  const wss = new WebSocketServer.Server({ server: app });
+  wss.options = {
+    headers: {
+      'X-Watch': ''
+    },
+    agent: agent
+  };
+
+  // const wss = new WebSocketServer(`wss://localhost:${port}`, {
+  //   headers: {
+  //     'X-Watch': ''
+  //   },
+  //   agent: agent
+  // });
 
   // const wss = new WebSocketServer(parsed.href, agent);
 
   wss.on('connection', (ws) => {
     console.log('==================');
-    console.log('connection EVENT RAN');
+    console.log('WebSocketServer CONNECTION');
 
     ws.on('upgrade', () => {
-      console.log('UPGRADE INSIDE WS');
+      console.log('===============================');
+      console.log('WSS UPGRADE');
     })
 
     ws.on('message', (msg) => {
-      console.log('MESSAGE INSIDE WS');
+      console.log('===============================');
+      console.log('WSS MESSAGE');
     })
 
     ws.on('open', (msg) => {
-      console.log('OPEN INSIDE WS');
+      console.log('===============================');
+      console.log('WSS OPEN');
     })
 
     ws.on('close', (msg) => {
-      console.log('CLOSE INSIDE WS');
+      console.log('===============================');
+      console.log('WSS CLOSE');
     })
+
+    ws.send('ping');
+    ws.send('pong');
 
   })
 
   wss.on('upgrade', (request, socket, head) => {
-    console.log('----------------------------');
+    console.log('===============================');
     console.log('WS upgrade!!!!!!');
-
   })
+
 
   server.listen(port, () => console.log(`Listening on port ${port}`));
 
@@ -250,26 +274,30 @@ if (
     // })
   });
 
-  server.on('close', event => {
-    console.log('===============================');
-    console.log('express WS connection CLOSED');
-  })
+  // server.on('close', event => {
+  //   console.log('-------------------------------');
+  //   console.log('express close');
+  // })
 
   server.on('listening', () => {
     console.log('----------------------------');
-    console.log('express WS listening');
+    console.log('express listening');
   })
 
   server.on('upgrade', (request, socket, head) => {
+    // const pathname = url.parse(request.url).pathname;
     console.log('----------------------------');
-    console.log('express WS upgrade');
+    console.log('express upgrade', request.url);
+
 
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     })
 
+    // wss.handleUpgrade(inventoryApiSocketProxy.upgrade);
+    // inventoryApiSocketProxy.upgrade(request, socket, head);
   })
 
-  // server.on('upgrade', inventoryApiSocketProxy.upgrade)
+  // wss.on('upgrade', inventoryApiSocketProxy.upgrade)
 
 }

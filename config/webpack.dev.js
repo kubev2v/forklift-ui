@@ -35,7 +35,7 @@ module.exports = merge(common('development'), {
         context: [
           '/inventory-api-socket',
         ],
-        target: `wss://localhost:${EXPRESS_PORT}`,
+        target: `ws://localhost:${EXPRESS_PORT}`,
         secure: true,
       }
     ],
