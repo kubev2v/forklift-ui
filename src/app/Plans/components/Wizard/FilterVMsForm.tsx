@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  Button,
   TreeView,
   Tabs,
   Tab,
@@ -36,7 +35,6 @@ import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { UseQueryResult } from 'react-query';
-import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
@@ -126,7 +124,6 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     getNodeBadgeContent
   );
 
-  const [allExpanded, setExpandButton] = React.useReducer((allExpanded) => !allExpanded, true);
   const toolbar = (
     <Toolbar style={{ padding: 0 }}>
       <ToolbarContent style={{ padding: 0 }}>
@@ -137,13 +134,6 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
             name="search-inventory"
             aria-label="Search inventory"
           />
-          <Button
-            variant="tertiary"
-            icon={allExpanded ? <AngleDownIcon /> : <AngleRightIcon />}
-            onClick={() => setExpandButton()}
-          >
-            {allExpanded ? 'Collapse all' : 'Expand all'}
-          </Button>
         </ToolbarItem>
       </ToolbarContent>
     </Toolbar>
@@ -183,11 +173,9 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         <TreeView
           data={treeViewData}
           defaultAllExpanded
-          allExpanded={allExpanded}
           hasChecks
           hasBadges
           onCheck={(_event, treeViewItem) => {
-            // setExpandButton();
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
             } else if (treeQuery.data) {
