@@ -610,9 +610,9 @@ export const usePlanWizardPrefillEffect = (
 
       if (wizardMode === 'edit') {
         forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
-      } else if (wizardMode === 'clone') {
+      } else if (wizardMode === 'duplicate') {
         forms.general.fields.planName.prefill(
-          clonedPlanDefaultName(planBeingPrefilled, plansQuery)
+          duplicatedPlanDefaultName(planBeingPrefilled, plansQuery)
         );
       }
       if (planBeingPrefilled.spec.description) {
@@ -705,7 +705,7 @@ export const usePlanWizardPrefillEffect = (
   };
 };
 
-export const clonedPlanDefaultName = (
+export const duplicatedPlanDefaultName = (
   planBeingPrefilled: IPlan,
   plansQuery: UseQueryResult<IKubeList<IPlan>>
 ) => {

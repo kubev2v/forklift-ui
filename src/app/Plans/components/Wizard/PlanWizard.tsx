@@ -62,7 +62,7 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import './PlanWizard.css';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
-export type PlanWizardMode = 'create' | 'edit' | 'clone';
+export type PlanWizardMode = 'create' | 'edit' | 'duplicate';
 
 const useMappingFormState = (mappingsQuery: UseQueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -156,14 +156,14 @@ const PlanWizard: React.FunctionComponent = () => {
     strict: true,
     sensitive: true,
   });
-  const cloneRouteMatch = useRouteMatch<{ planName: string }>({
-    path: '/plans/:planName/clone',
+  const duplicateRouteMatch = useRouteMatch<{ planName: string }>({
+    path: '/plans/:planName/duplicate',
     strict: true,
     sensitive: true,
   });
-  const wizardMode = editRouteMatch ? 'edit' : cloneRouteMatch ? 'clone' : 'create';
+  const wizardMode = editRouteMatch ? 'edit' : duplicateRouteMatch ? 'duplicate' : 'create';
 
-  const prefillPlanName = editRouteMatch?.params.planName || cloneRouteMatch?.params.planName;
+  const prefillPlanName = editRouteMatch?.params.planName || duplicateRouteMatch?.params.planName;
   const planBeingPrefilled =
     plansQuery.data?.items.find((plan) => plan.metadata.name === prefillPlanName) || null;
 
@@ -240,7 +240,7 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const onSave = () => {
-    if (wizardMode === 'create' || wizardMode === 'clone') {
+    if (wizardMode === 'create' || wizardMode === 'duplicate') {
       createPlanMutation.mutate(forms);
     } else if (wizardMode === 'edit' && planBeingPrefilled) {
       patchPlanMutation.mutate({ planBeingEdited: planBeingPrefilled, forms });

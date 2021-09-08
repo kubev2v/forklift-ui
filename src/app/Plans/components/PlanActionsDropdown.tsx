@@ -66,13 +66,13 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             </DropdownItem>
           </ConditionalTooltip>,
           <DropdownItem
-            key="clone"
+            key="duplicate"
             onClick={() => {
               setKebabIsOpen(false);
-              history.push(`/plans/${plan.metadata.name}/clone`);
+              history.push(`/plans/${plan.metadata.name}/duplicate`);
             }}
           >
-            Clone
+            Duplicate
           </DropdownItem>,
           <ConditionalTooltip
             key="Delete"
