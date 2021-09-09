@@ -83,37 +83,63 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
 let inventoryApiProxyOptions$ = {
   target: meta.inventoryApi,
+  // target: 'http://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com',
+  // target: 'http://localhost:9001',
   changeOrigin: true,
-  ws: true,
+  // ws: true,
   // headers: {
   //   "X-Watch": ''
   // },
   pathRewrite: {
     '^/inventory-api-socket/': '/',
   },
-  logLevel: process.env.DEBUG ? 'debug' : 'info',
-  secure: true
+  // logLevel: process.env.DEBUG ? 'debug' : 'info',
+  logLevel: 'debug',
+  secure: false,
+  onError: (error) => {
+    console.log('error', error);
+  },
+  onProxyReqWs: (proxyReq, req, socket, options, head) => {
+    console.log('---------');
+    console.log('onProxyReqWs');
+    // console.log('onProxyReqWs', { proxyReq, req, socket, options, head });
+    console.log('onProxyReqWs', options);
+    // add custom header
+    proxyReq.setHeader('X-Watch', 'snapshop');
+
+    // Write out body changes to the proxyReq stream
+    // proxyReq.end();
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    console.log('---------');
+    console.log('onProxyReq :)');
+    // console.log('onProxyReqWs', { proxyReq, req, socket, options, head });
+    // add custom header
+    proxyReq.setHeader('X-Watch', 'snapshop');
+
+    // Write out body changes to the proxyReq stream
+    // proxyReq.end();
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    console.log('---------');
+    console.log('onProxyRes');
+    proxyRes.headers['X-Watch'] = 'snapshot'; // add new header to response
+    // proxyReq.setHeader('X-Watch', 'snapshop');
+    // delete proxyRes.headers['x-removed']; // remove header from response
+  },
+  onOpen: (proxySocket) => {
+    console.log('onOpen -----', proxySocket);
+    // listen for messages coming FROM the target here
+    // proxySocket.on('data', (d) => {
+    //   console.log('data', d);
+    // });
+  },
+  onClose: () => {
+    console.log('onClose');
+  }
 };
 
-// inventoryApiProxyOptions$ = {
-//   ...inventoryApiProxyOptions$,
-//   secure: true,
-// };
-
 const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
-
-// const parsed = url.parse(`ws://localhost:${port}`);
-// const parsed = url.parse(inventoryApiProxyOptions$.target);
-const parsed = url.parse(`foo://bar:9009/baz`);
-// const parsed = url.parse('wss://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com/providers');
-console.log('\n');
-console.log('*******************************');
-console.log('attempting to set up Https Proxy Agent for: ', parsed);
-console.log('*******************************', '\n');
-
-// create an instance of the `HttpsProxyAgent` class with the proxy server information
-// var options = url.parse(proxy);
-const agent = new HttpsProxyAgent(parsed.href);
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
   let clusterApiProxyOptions = {
@@ -206,22 +232,9 @@ if (
 } else {
 
   const server = http.createServer(app);
-  const wss = new WebSocketServer.Server({ server: app });
-  wss.options = {
-    headers: {
-      'X-Watch': ''
-    },
-    agent: agent
-  };
-
-  // const wss = new WebSocketServer(`wss://localhost:${port}`, {
-  //   headers: {
-  //     'X-Watch': ''
-  //   },
-  //   agent: agent
-  // });
-
-  // const wss = new WebSocketServer(parsed.href, agent);
+  const wss = new WebSocketServer.Server({
+    server: app
+  });
 
   wss.on('connection', (ws) => {
     console.log('==================');
@@ -254,11 +267,21 @@ if (
 
   wss.on('upgrade', (request, socket, head) => {
     console.log('===============================');
-    console.log('WS upgrade!!!!!!');
+    console.log('WSS upgrade!!!!!!');
+  })
+
+  wss.on('open', (request, socket, head) => {
+    console.log('===============================');
+    console.log('WSS open!!!!!!');
+  })
+
+  wss.on('message', (request, socket, head) => {
+    console.log('===============================');
+    console.log('WSS message!!!!!!');
   })
 
 
-  server.listen(port, () => console.log(`Listening on port ${port}`));
+  app.listen(port, () => console.log(`Express listening on port ${port}`));
 
   server.on('error', event => {
     console.log('????????????????????????????????');
@@ -291,6 +314,7 @@ if (
 
 
     wss.handleUpgrade(request, socket, head, (ws) => {
+      console.log('handleUpgrade was called');
       wss.emit('connection', ws, request);
     })
 

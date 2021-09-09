@@ -3,6 +3,7 @@ import {
   // useVmsSocketMutation,
   // useTestSubscription,
 } from '@app/queries';
+import { useNetworkContext } from '@app/common/context/NetworkContext';
 import { getInventoryApiSocketUrl } from '@app/queries/helpers';
 import { QueryClient } from 'react-query';
 
@@ -23,8 +24,9 @@ export const WebSocketContextProvider: React.FunctionComponent<IWebSocketContext
   children,
   queryClient
 }: IWebSocketContextProviderProps) => {
-
+  const { currentUser } = useNetworkContext();
   React.useEffect(() => {
+
 
     // const options = 'snapshot';
     // document.cookie = 'X-Watch=' + options + '; path=/';
@@ -39,36 +41,44 @@ export const WebSocketContextProvider: React.FunctionComponent<IWebSocketContext
     //     console.log('result', result);
     //   })
 
-    console.log('setting up WebSocket instance');
+    let websocket: WebSocket | null = null;
 
-    // const websocket = new WebSocket(`${getInventoryApiSocketUrl('providers')}`);
-    const websocket = new WebSocket(`ws://localhost:9001${getInventoryApiSocketUrl('providers')}`);
+    if (currentUser) {
+      console.log('setting up WebSocket instance');
 
-    // console.log('websocket', websocket);
+      // const websocket = new WebSocket(`${getInventoryApiSocketUrl('providers')}`);
+      // const websocket = new WebSocket(`ws://localhost:9001${getInventoryApiSocketUrl('providers/openshift/b245f43c-8448-4643-b697-c2e9d21e40a9/vms')}`);
+      websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/providers/vsphere/c872d364-d62b-46f0-bd42-16799f40324e/hosts`);
 
-    websocket.onerror = (error) => {
-      console.log('ERROR CONNECTION', error)
+
+      // console.log('websocket', websocket);
+
+      websocket.onerror = (error) => {
+        console.log('ERROR CONNECTION', error)
+      }
+
+      websocket.onopen = () => {
+        console.log('OPENED CONNECTION')
+      }
+
+      websocket.onclose = () => {
+        console.log('CLOSED CONNECTION');
+      }
+
+      websocket.onmessage = (event) => {
+        console.log('ONMESSAGE', event.data);
+          // event.type == ''
+        // queryClient.invalidateQueries('');
+      }
     }
 
-    websocket.onopen = () => {
-      console.log('OPENED CONNECTION')
-    }
 
-    websocket.onclose = () => {
-      console.log('CLOSED CONNECTION');
-    }
-
-    websocket.onmessage = (event) => {
-      console.log('ONMESSAGE', event.data);
-        // event.type == ''
-      // queryClient.invalidateQueries('');
-    }
 
     return () => {
       console.log('tearing down WebSocket instance');
-      websocket.close()
+      websocket?.close()
     }
-  }, [queryClient]);
+  }, [currentUser]);
 
   return (
     <WebSocketContext.Provider
