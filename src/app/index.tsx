@@ -12,6 +12,7 @@ import {
   NetworkContextProvider,
 } from '@app/common/context';
 import { noop } from '@app/common/constants';
+import { WebSocketContextProvider } from './common/context/WebSocketContext';
 
 const queryCache = new QueryCache();
 const queryClient = new QueryClient({
@@ -29,11 +30,13 @@ const App: React.FunctionComponent = () => (
     <PollingContextProvider>
       <LocalStorageContextProvider>
         <NetworkContextProvider>
-          <Router getUserConfirmation={noop}>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </Router>
+          <WebSocketContextProvider>
+            <Router getUserConfirmation={noop}>
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
+            </Router>
+          </WebSocketContextProvider>
         </NetworkContextProvider>
       </LocalStorageContextProvider>
     </PollingContextProvider>

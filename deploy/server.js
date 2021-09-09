@@ -33,6 +33,8 @@ const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
 app.engine('ejs', require('ejs').renderFile);
 app.use(express.static(staticDir));
 
+let hacky_global_access_token = null;
+
 if (process.env['DATA_SOURCE'] !== 'mock') {
   app.get('/login', async (req, res, next) => {
     try {
@@ -68,6 +70,8 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
         expiry_time: currentUnixTime + accessToken.token.expires_in,
       };
       const params = new URLSearchParams({ user: JSON.stringify(user) });
+      console.log('HANDLE LOGIN?', user);
+      hacky_global_access_token = user.access_token; // This will be a TS issue to figure out with the Token type, but I promise it exists
       const uri = `/handle-login?${params.toString()}`;
       res.redirect(uri);
     } catch (error) {
@@ -94,6 +98,16 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       '^/inventory-api/': '/',
     },
     logLevel: process.env.DEBUG ? 'debug' : 'info',
+    ws: true,
+    /*headers: {
+      'X-Watch': 'snapshot',
+      Authorization: `Bearer ${hacky_global_access_token}`, // Note: temporary, also breaks if you restart Express and don't re-login
+    },*/
+    onProxyReqWs: (proxyReq, req, socket, options, head) => {
+      proxyReq.setHeader('X-Watch', 'snapshot');
+      //proxyReq.setHeader('Authorization', `Bearer ${hacky_global_access_token}`); // Note: temporary, also breaks if you restart Express and don't re-login
+      console.log('onProxyReqWs', { proxyReq, req, socket, options, head });
+    },
   };
 
   /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
