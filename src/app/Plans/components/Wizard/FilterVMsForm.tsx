@@ -172,9 +172,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       >
         <TreeView
           data={treeViewData}
-          defaultAllExpanded
+          allExpanded={true}
           hasChecks
           hasBadges
+          hasGuides
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
