@@ -39,7 +39,7 @@ import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, useEditingPlanPrefillEffect } from './helpers';
+import { generateMappings, usePlanWizardPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
   useMappingsQuery,
@@ -62,6 +62,8 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 import './PlanWizard.css';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 
+export type PlanWizardMode = 'create' | 'edit' | 'duplicate';
+
 const useMappingFormState = (mappingsQuery: UseQueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
   const newMappingNameSchema = getMappingNameSchema(mappingsQuery, null).label('Name');
@@ -82,13 +84,14 @@ const usePlanWizardFormState = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
   networkMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   storageMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
-  planBeingEdited: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ) => {
   const forms = {
     general: useFormState({
       planName: useFormField(
         '',
-        getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
+        getPlanNameSchema(plansQuery, planBeingPrefilled, wizardMode).label('Plan name').required()
       ),
       planDescription: useFormField('', yup.string().label('Plan description').defined()),
       sourceProvider: useFormField<SourceInventoryProvider | null>(
@@ -153,23 +156,31 @@ const PlanWizard: React.FunctionComponent = () => {
     strict: true,
     sensitive: true,
   });
-  const planBeingEdited =
-    plansQuery.data?.items.find((plan) => plan.metadata.name === editRouteMatch?.params.planName) ||
-    null;
+  const duplicateRouteMatch = useRouteMatch<{ planName: string }>({
+    path: '/plans/:planName/duplicate',
+    strict: true,
+    sensitive: true,
+  });
+  const wizardMode = editRouteMatch ? 'edit' : duplicateRouteMatch ? 'duplicate' : 'create';
+
+  const prefillPlanName = editRouteMatch?.params.planName || duplicateRouteMatch?.params.planName;
+  const planBeingPrefilled =
+    plansQuery.data?.items.find((plan) => plan.metadata.name === prefillPlanName) || null;
 
   const forms = usePlanWizardFormState(
     plansQuery,
     networkMappingsQuery,
     storageMappingsQuery,
-    planBeingEdited
+    planBeingPrefilled,
+    wizardMode
   );
 
   const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
 
-  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
+  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = usePlanWizardPrefillEffect(
     forms,
-    planBeingEdited,
-    !!editRouteMatch
+    planBeingPrefilled,
+    wizardMode
   );
 
   enum StepId {
@@ -229,10 +240,10 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const onSave = () => {
-    if (!planBeingEdited) {
+    if (wizardMode === 'create' || wizardMode === 'duplicate') {
       createPlanMutation.mutate(forms);
-    } else {
-      patchPlanMutation.mutate({ planBeingEdited, forms });
+    } else if (wizardMode === 'edit' && planBeingPrefilled) {
+      patchPlanMutation.mutate({ planBeingEdited: planBeingPrefilled, forms });
     }
     createSharedMappings();
   };
@@ -271,7 +282,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} planBeingEdited={planBeingEdited} />
+          <GeneralForm form={forms.general} wizardMode={wizardMode} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
@@ -292,7 +303,7 @@ const PlanWizard: React.FunctionComponent = () => {
                 }
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
-                planBeingEdited={planBeingEdited}
+                planBeingPrefilled={planBeingPrefilled}
               />
             </WizardStepContainer>
           ),
@@ -332,7 +343,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
             selectedVMs={selectedVMs}
-            planBeingEdited={planBeingEdited}
+            planBeingPrefilled={planBeingPrefilled}
           />
         </WizardStepContainer>
       ),
@@ -351,7 +362,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
             selectedVMs={selectedVMs}
-            planBeingEdited={planBeingEdited}
+            planBeingPrefilled={planBeingPrefilled}
           />
         </WizardStepContainer>
       ),
@@ -393,7 +404,7 @@ const PlanWizard: React.FunctionComponent = () => {
             forms={forms}
             allMutationResults={allMutationResults}
             allMutationErrorTitles={allMutationErrorTitles}
-            planBeingEdited={planBeingEdited}
+            wizardMode={wizardMode}
             selectedVMs={selectedVMs}
           />
         </WizardStepContainer>
@@ -410,6 +421,8 @@ const PlanWizard: React.FunctionComponent = () => {
     }
   };
 
+  const wizardTitle = `${wizardMode === 'edit' ? 'Edit' : 'Create'} migration plan`;
+
   return (
     <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
@@ -425,7 +438,8 @@ const PlanWizard: React.FunctionComponent = () => {
     >
       {!isDonePrefilling ? (
         <LoadingEmptyState />
-      ) : editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started) ? (
+      ) : wizardMode === 'edit' &&
+        (!planBeingPrefilled || planBeingPrefilled?.status?.migration?.started) ? (
         <Redirect to="/plans" />
       ) : (
         <>
@@ -434,24 +448,19 @@ const PlanWizard: React.FunctionComponent = () => {
             title="Leave this page?"
             message="All unsaved changes will be lost."
           />
-          <PageSection
-            title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`}
-            variant="light"
-          >
+          <PageSection title={wizardTitle} variant="light">
             <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
               <BreadcrumbItem>
                 <Link to={`/plans`}>Migration plans</Link>
               </BreadcrumbItem>
-              {planBeingEdited ? (
-                <BreadcrumbItem>{planBeingEdited.metadata.name}</BreadcrumbItem>
+              {planBeingPrefilled ? (
+                <BreadcrumbItem>{planBeingPrefilled.metadata.name}</BreadcrumbItem>
               ) : null}
-              <BreadcrumbItem>{!planBeingEdited ? 'Create' : 'Edit'}</BreadcrumbItem>
+              <BreadcrumbItem>{wizardMode.replace(/^\w/, (c) => c.toUpperCase())}</BreadcrumbItem>
             </Breadcrumb>
             <Level>
               <LevelItem>
-                <Title headingLevel="h1">
-                  {!planBeingEdited ? 'Create' : 'Edit'} migration plan
-                </Title>
+                <Title headingLevel="h1">{wizardTitle}</Title>
               </LevelItem>
             </Level>
           </PageSection>

@@ -24,7 +24,7 @@ import {
   getBuilderItemsWithMissingSources,
   getMappingFromBuilderItems,
 } from '@app/Mappings/components/MappingBuilder/helpers';
-import { PlanWizardFormState } from './PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import {
   getAggregateQueryStatus,
@@ -42,6 +42,7 @@ import {
   useSourceVMsQuery,
   IndexedTree,
   IndexedSourceVMs,
+  usePlansQuery,
 } from '@app/queries';
 import { UseQueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -507,14 +508,14 @@ export const generatePlan = (
 });
 
 export const getSelectedVMsFromPlan = (
-  planBeingEdited: IPlan | null,
+  planBeingPrefilled: IPlan | null,
   indexedVMs: IndexedSourceVMs | undefined
 ): SourceVM[] => {
-  if (!planBeingEdited || !indexedVMs) return [];
-  return indexedVMs.findVMsByIds(planBeingEdited?.spec.vms.map(({ id }) => id));
+  if (!planBeingPrefilled || !indexedVMs) return [];
+  return indexedVMs.findVMsByIds(planBeingPrefilled?.spec.vms.map(({ id }) => id));
 };
 
-interface IEditingPrefillResults {
+interface IPlanWizardPrefillResults {
   prefillQueryStatus: QueryStatus;
   prefillQueryError: unknown;
   isDonePrefilling: boolean;
@@ -522,14 +523,14 @@ interface IEditingPrefillResults {
   prefillErrorTitles: string[];
 }
 
-export const useEditingPlanPrefillEffect = (
+export const usePlanWizardPrefillEffect = (
   forms: PlanWizardFormState,
-  planBeingEdited: IPlan | null,
-  isEditMode: boolean
-): IEditingPrefillResults => {
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
+): IPlanWizardPrefillResults => {
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider, targetProvider } = findProvidersByRefs(
-    planBeingEdited?.spec.provider || null,
+    planBeingPrefilled?.spec.provider || null,
     providersQuery
   );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
@@ -550,6 +551,7 @@ export const useEditingPlanPrefillEffect = (
   const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
 
   const hooksQuery = useHooksQuery();
+  const plansQuery = usePlansQuery();
 
   const queries = [
     providersQuery,
@@ -560,6 +562,7 @@ export const useEditingPlanPrefillEffect = (
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
+    plansQuery,
   ];
   const errorTitles = [
     'Could not load providers',
@@ -572,13 +575,14 @@ export const useEditingPlanPrefillEffect = (
     'Could not load network mappings',
     'Could not load storage mappings',
     'Could not load hooks',
+    'Could not load plans',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);
   const queryError = getFirstQueryError(queries);
 
   const [isStartedPrefilling, setIsStartedPrefilling] = React.useState(false);
-  const [isDonePrefilling, setIsDonePrefilling] = React.useState(!isEditMode);
+  const [isDonePrefilling, setIsDonePrefilling] = React.useState(wizardMode === 'create');
 
   const defaultTreeType = InventoryTreeType.Cluster;
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
@@ -587,32 +591,38 @@ export const useEditingPlanPrefillEffect = (
     if (
       !isStartedPrefilling &&
       queryStatus === 'success' &&
-      planBeingEdited &&
+      planBeingPrefilled &&
       hostTreeQuery.data
     ) {
       setIsStartedPrefilling(true);
-      const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery.data);
+      const selectedVMs = getSelectedVMsFromPlan(planBeingPrefilled, vmsQuery.data);
       const selectedTreeNodes = findNodesMatchingSelectedVMs(
         hostTreeQuery.data,
         selectedVMs,
         isNodeSelectable
       );
       const networkMapping = networkMappingsQuery.data?.items.find((mapping) =>
-        isSameResource(mapping.metadata, planBeingEdited.spec.map.network)
+        isSameResource(mapping.metadata, planBeingPrefilled.spec.map.network)
       );
       const storageMapping = storageMappingsQuery.data?.items.find((mapping) =>
-        isSameResource(mapping.metadata, planBeingEdited.spec.map.storage)
+        isSameResource(mapping.metadata, planBeingPrefilled.spec.map.storage)
       );
 
-      forms.general.fields.planName.prefill(planBeingEdited.metadata.name);
-      if (planBeingEdited.spec.description) {
-        forms.general.fields.planDescription.prefill(planBeingEdited.spec.description);
+      if (wizardMode === 'edit') {
+        forms.general.fields.planName.prefill(planBeingPrefilled.metadata.name);
+      } else if (wizardMode === 'duplicate') {
+        forms.general.fields.planName.prefill(
+          duplicatedPlanDefaultName(planBeingPrefilled, plansQuery)
+        );
+      }
+      if (planBeingPrefilled.spec.description) {
+        forms.general.fields.planDescription.prefill(planBeingPrefilled.spec.description);
       }
       forms.general.fields.sourceProvider.prefill(sourceProvider);
       forms.general.fields.targetProvider.prefill(targetProvider);
-      forms.general.fields.targetNamespace.prefill(planBeingEdited.spec.targetNamespace);
+      forms.general.fields.targetNamespace.prefill(planBeingPrefilled.spec.targetNamespace);
       forms.general.fields.migrationNetwork.prefill(
-        planBeingEdited.spec.transferNetwork?.name || null
+        planBeingPrefilled.spec.transferNetwork?.name || null
       );
 
       forms.filterVMs.fields.treeType.prefill(defaultTreeType);
@@ -655,9 +665,11 @@ export const useEditingPlanPrefillEffect = (
       );
       forms.storageMapping.fields.isPrefilled.prefill(true);
 
-      forms.type.fields.type.prefill(planBeingEdited.spec.warm ? 'Warm' : 'Cold');
+      forms.type.fields.type.prefill(planBeingPrefilled.spec.warm ? 'Warm' : 'Cold');
 
-      forms.hooks.fields.instances.prefill(getPlanHookFormInstances(planBeingEdited, hooksQuery));
+      forms.hooks.fields.instances.prefill(
+        getPlanHookFormInstances(planBeingPrefilled, hooksQuery)
+      );
 
       // Wait for effects to run based on field changes first
       window.setTimeout(() => {
@@ -668,7 +680,8 @@ export const useEditingPlanPrefillEffect = (
     isStartedPrefilling,
     queryStatus,
     forms,
-    planBeingEdited,
+    planBeingPrefilled,
+    wizardMode,
     sourceProvider,
     targetProvider,
     networkMappingResourceQueries,
@@ -678,6 +691,7 @@ export const useEditingPlanPrefillEffect = (
     networkMappingsQuery,
     storageMappingsQuery,
     hooksQuery,
+    plansQuery,
     defaultTreeType,
     isNodeSelectable,
   ]);
@@ -689,6 +703,19 @@ export const useEditingPlanPrefillEffect = (
     prefillQueries: queries,
     prefillErrorTitles: errorTitles,
   };
+};
+
+export const duplicatedPlanDefaultName = (
+  planBeingPrefilled: IPlan,
+  plansQuery: UseQueryResult<IKubeList<IPlan>>
+) => {
+  let name = `copy-of-${planBeingPrefilled.metadata.name}`;
+  let increment = 0;
+  while (plansQuery.data?.items.find((plan) => plan.metadata.name === name)) {
+    increment++;
+    name = `copy-of-${planBeingPrefilled.metadata.name}-${increment}`;
+  }
+  return name;
 };
 
 export const concernMatchesFilter = (concern: ISourceVMConcern, filterText?: string): boolean =>

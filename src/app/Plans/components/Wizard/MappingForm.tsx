@@ -50,7 +50,7 @@ interface IMappingFormProps {
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
   selectedVMs: SourceVM[];
-  planBeingEdited: IPlan | null;
+  planBeingPrefilled: IPlan | null;
 }
 
 const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
@@ -59,7 +59,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   targetProvider,
   mappingType,
   selectedVMs,
-  planBeingEdited,
+  planBeingPrefilled,
 }: IMappingFormProps) => {
   usePausedPollingEffect();
 
@@ -150,10 +150,10 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     form.fields.isSaveNewMapping.setValue(false);
   };
 
-  const mappingInPlanRef = planBeingEdited
+  const mappingInPlanRef = planBeingPrefilled
     ? mappingType === MappingType.Network
-      ? planBeingEdited.spec.map.network
-      : planBeingEdited.spec.map.storage
+      ? planBeingPrefilled.spec.map.network
+      : planBeingPrefilled.spec.map.storage
     : null;
   const mappingInPlan =
     (mappingInPlanRef &&
@@ -163,7 +163,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     null;
   const hasAddedItems = form.values.selectedExistingMapping
     ? form.values.selectedExistingMapping.spec.map.length < form.values.builderItems.length
-    : planBeingEdited && mappingInPlan
+    : planBeingPrefilled && mappingInPlan
     ? mappingInPlan.spec.map.length < form.values.builderItems.length
     : false;
 

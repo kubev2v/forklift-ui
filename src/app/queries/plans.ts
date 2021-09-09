@@ -17,7 +17,7 @@ import { MOCK_PLANS } from './mocks/plans.mock';
 import { IHook, IPlan, Mapping, MappingType } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
-import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
 
@@ -257,11 +257,12 @@ export const useDeletePlanMutation = (
 
 export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
-  planBeingEdited: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ): yup.StringSchema =>
   dnsLabelNameSchema
     .test('unique-name', 'A plan with this name already exists', (value) => {
-      if (planBeingEdited?.metadata.name === value) return true;
+      if (wizardMode === 'edit' && planBeingPrefilled?.metadata.name === value) return true;
       if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
       return true;
     })

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextContent, Text, Form } from '@patternfly/react-core';
 
-import { PlanWizardFormState } from './PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { IPlan, SourceVM } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
@@ -14,7 +14,7 @@ interface IReviewProps {
   forms: PlanWizardFormState;
   allMutationResults: UnknownResult[];
   allMutationErrorTitles: string[];
-  planBeingEdited: IPlan | null;
+  wizardMode: PlanWizardMode;
   selectedVMs: SourceVM[];
 }
 
@@ -22,7 +22,7 @@ const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   allMutationResults,
   allMutationErrorTitles,
-  planBeingEdited,
+  wizardMode,
   selectedVMs,
 }: IReviewProps) => {
   usePausedPollingEffect();
@@ -46,8 +46,9 @@ const Review: React.FunctionComponent<IReviewProps> = ({
     <Form>
       <TextContent>
         <Text component="p">
-          Review the information below and click Finish to {!planBeingEdited ? 'create' : 'save'}{' '}
-          your migration plan. Use the Back button to make changes.
+          Review the information below and click Finish to{' '}
+          {wizardMode === 'edit' ? 'save' : 'create'} your migration plan. Use the Back button to
+          make changes.
         </Text>
       </TextContent>
       <PlanDetails

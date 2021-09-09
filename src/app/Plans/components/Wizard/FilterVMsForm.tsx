@@ -29,14 +29,14 @@ interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
   treeQuery: UseQueryResult<IndexedTree<InventoryTree>, unknown>;
   sourceProvider: SourceInventoryProvider | null;
-  planBeingEdited: IPlan | null;
+  planBeingPrefilled: IPlan | null;
 }
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   treeQuery,
   sourceProvider,
-  planBeingEdited,
+  planBeingPrefilled,
 }: IFilterVMsFormProps) => {
   usePausedPollingEffect();
 
@@ -58,11 +58,11 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     // Clear or reset selection when the tree type tab changes
     const treeTypeChanged = form.values.treeType !== lastTreeType.current;
     if (!isFirstRender.current && treeTypeChanged) {
-      if (!planBeingEdited || !form.values.isPrefilled) {
+      if (!planBeingPrefilled || !form.values.isPrefilled) {
         treeSelection.selectAll(false);
         lastTreeType.current = form.values.treeType;
       } else if (vmsQuery.isSuccess && treeQuery.isSuccess) {
-        const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery.data);
+        const selectedVMs = getSelectedVMsFromPlan(planBeingPrefilled, vmsQuery.data);
         const selectedTreeNodes = findNodesMatchingSelectedVMs(
           treeQuery.data,
           selectedVMs,
@@ -76,7 +76,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   }, [
     form.values.treeType,
     form.values.isPrefilled,
-    planBeingEdited,
+    planBeingPrefilled,
     treeQuery,
     vmsQuery,
     treeSelection,
