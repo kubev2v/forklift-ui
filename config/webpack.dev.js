@@ -27,19 +27,16 @@ module.exports = merge(common('development'), {
           '/login/callback',
           '/cluster-api',
           '/inventory-api',
-          '/inventory-api-socket',
           '/inventory-payload-api',
         ],
         target: `http://localhost:${EXPRESS_PORT}`,
-        // ws: true
       },
       // {
       //   context: [
       //     '/inventory-api-socket',
       //   ],
       //   target: `http://localhost:${EXPRESS_PORT}`,
-      //   ws: true,
-      //   secure: true,
+      //   ws: true
       // }
     ],
   },

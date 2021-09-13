@@ -36,6 +36,7 @@ export const authorizedFetch = async <T>(
       throw response;
     }
   } catch (error: any) {
+    console.log('error with authorized fetch', error);
     checkExpiry(error, history);
     throw error;
   }

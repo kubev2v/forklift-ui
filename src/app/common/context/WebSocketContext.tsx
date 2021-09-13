@@ -6,14 +6,11 @@ import {
 import { useNetworkContext } from '@app/common/context/NetworkContext';
 import { getInventoryApiSocketUrl } from '@app/queries/helpers';
 import { QueryClient } from 'react-query';
+import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
 
-interface IWebSocketContext {
-  // isPollingEnabled: boolean;
-}
+interface IWebSocketContext {}
 
-const WebSocketContext = React.createContext<IWebSocketContext>({
-  // isPollingEnabled: true,
-});
+const WebSocketContext = React.createContext<IWebSocketContext>({});
 
 interface IWebSocketContextProviderProps {
   children: React.ReactNode;
@@ -24,68 +21,46 @@ export const WebSocketContextProvider: React.FunctionComponent<IWebSocketContext
   children,
   queryClient
 }: IWebSocketContextProviderProps) => {
-  const { currentUser } = useNetworkContext();
+
   React.useEffect(() => {
-
-
-    // const options = 'snapshot';
-    // document.cookie = 'X-Watch=' + options + '; path=/';
-
-    // authorizedFetch(
-    //   `${getInventoryApiSocketUrl('providers')}`,
-    //   fetchContext,
-    //   {
-    //     // 'X-Watch': ''
-    //   }
-    //   ).then((result) => {
-    //     console.log('result', result);
-    //   })
 
     let websocket: WebSocket | null = null;
 
-    if (currentUser) {
-      console.log('setting up WebSocket instance');
 
-      // const websocket = new WebSocket(`${getInventoryApiSocketUrl('providers')}`);
+    if (queryClient) {
+
       // const websocket = new WebSocket(`ws://localhost:9001${getInventoryApiSocketUrl('providers/openshift/b245f43c-8448-4643-b697-c2e9d21e40a9/vms')}`);
-      websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/providers/vsphere/c872d364-d62b-46f0-bd42-16799f40324e/hosts`);
-
-
-      // console.log('websocket', websocket);
+      // websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/providers/vsphere/c872d364-d62b-46f0-bd42-16799f40324e/hosts`);
+      websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/health/watch`);
 
       websocket.onerror = (error) => {
-        console.log('ERROR CONNECTION', error)
+        console.log('[ws] ERROR CONNECTION', error);
       }
 
       websocket.onopen = () => {
-        console.log('OPENED CONNECTION')
+        console.log('[ws] OPENED CONNECTION');
+        websocket?.send('test from client');
       }
 
       websocket.onclose = () => {
-        console.log('CLOSED CONNECTION');
+        console.log('[ws] CLOSED CONNECTION');
       }
 
       websocket.onmessage = (event) => {
-        console.log('ONMESSAGE', event.data);
-          // event.type == ''
+        console.log('[ws] ONMESSAGE', event.data);
+        // if (event.type === '') {}
         // queryClient.invalidateQueries('');
       }
     }
 
-
-
     return () => {
-      console.log('tearing down WebSocket instance');
+      console.log('[ws] destroying WS instance');
       websocket?.close()
     }
-  }, [currentUser]);
+  }, [queryClient]);
 
   return (
-    <WebSocketContext.Provider
-      value={{
-        // isPollingEnabled,
-      }}
-    >
+    <WebSocketContext.Provider value={{}}>
       {children}
     </WebSocketContext.Provider>
   );

@@ -12,7 +12,7 @@ const dayjs = require('dayjs');
 const helpers = require('../config/helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
 
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware, fixRequestBody, responseInterceptor } = require('http-proxy-middleware');
 
 let metaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
@@ -83,65 +83,77 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
 let inventoryApiProxyOptions$ = {
   target: meta.inventoryApi,
-  // target: 'http://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com',
-  // target: 'http://localhost:9001',
   changeOrigin: true,
-  // ws: true,
-  // headers: {
-  //   "X-Watch": ''
-  // },
+  ws: true,
+  headers: {
+    'X-Watch': 'snapshot',
+    // 'Connection': 'Upgrade',
+    // 'Upgrade': 'websocket'
+  },
+  // pathRewrite: (path, req) => path.replace('/foo', '/bar'),
+  // toProxy: true,
   pathRewrite: {
     '^/inventory-api-socket/': '/',
   },
   // logLevel: process.env.DEBUG ? 'debug' : 'info',
   logLevel: 'debug',
   secure: false,
+  // https://www.npmjs.com/package/http-proxy#listening-for-proxy-events
   onError: (error) => {
-    console.log('error', error);
+    console.log('inventoryApiProxyOptions$ onError', error);
   },
   onProxyReqWs: (proxyReq, req, socket, options, head) => {
-    console.log('---------');
-    console.log('onProxyReqWs');
+    // console.log('---------');
+    // console.log('onProxyReqWs');
     // console.log('onProxyReqWs', { proxyReq, req, socket, options, head });
-    console.log('onProxyReqWs', options);
+    // console.log('onProxyReqWs', options);
     // add custom header
-    proxyReq.setHeader('X-Watch', 'snapshop');
-
-    // Write out body changes to the proxyReq stream
-    // proxyReq.end();
+    proxyReq.setHeader('X-Watch', 'snapshot');
+    proxyReq.setHeader('Connection', 'Upgrade');
+    proxyReq.setHeader('Upgrade', 'websocket');
   },
   onProxyReq: (proxyReq, req, res) => {
-    console.log('---------');
-    console.log('onProxyReq :)');
+    // console.log('---------');
+    // console.log('onProxyReq ran (set X-Watch)');
     // console.log('onProxyReqWs', { proxyReq, req, socket, options, head });
     // add custom header
-    proxyReq.setHeader('X-Watch', 'snapshop');
-
-    // Write out body changes to the proxyReq stream
-    // proxyReq.end();
+    proxyReq.setHeader('X-Watch', 'snapshot');
+    proxyReq.setHeader('Connection', 'Upgrade');
+    proxyReq.setHeader('Upgrade', 'websocket');
   },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log('---------');
-    console.log('onProxyRes');
-    proxyRes.headers['X-Watch'] = 'snapshot'; // add new header to response
-    // proxyReq.setHeader('X-Watch', 'snapshop');
-    // delete proxyRes.headers['x-removed']; // remove header from response
-  },
-  onOpen: (proxySocket) => {
-    console.log('onOpen -----', proxySocket);
-    // listen for messages coming FROM the target here
-    // proxySocket.on('data', (d) => {
-    //   console.log('data', d);
-    // });
-  },
-  onClose: () => {
-    console.log('onClose');
-  }
+  // followRedirects: true,
+  // selfHandleResponse: true,
+  // onProxyRes: responseInterceptor(async () => {
+  //   // log original request and proxied request info
+  //   const exchange = `[DEBUG] ${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`;
+  //   console.log(exchange); // [DEBUG] GET / -> http://www.example.com [200]
+  //   // log complete response
+  //   const response = responseBuffer.toString('utf8');
+  //   console.log(response);
+  //   return responseBuffer;
+  // }),
+  // onProxyRes: (proxyRes, req, res) => {
+  //   // console.log('---------');
+  //   // console.log('onProxyRes');
+  //   proxyRes.headers['X-Watch'] = 'snapshot'; // add new header to response
+  //   // delete proxyRes.headers['x-removed']; // remove header from response
+  // },
+  // onOpen: (proxySocket) => {
+  //   console.log('onOpen inventoryApiProxyOptions$', proxySocket);
+  //   // listen for messages coming FROM the target here
+  //   // proxySocket.on('data', (d) => {
+  //   //   console.log('data', d);
+  //   // });
+  // },
+  // onClose: () => {
+  //   console.log('onClose');
+  // }
 };
 
 const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiProxyOptions$);
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
+
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
     changeOrigin: true,
@@ -182,6 +194,11 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       secure: false,
     };
 
+    // inventoryApiProxyOptions$ = {
+    //   ...inventoryApiProxyOptions,
+    //   secure: false,
+    // };
+
     /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     inventoryPayloadApiProxyOptions = {
       ...inventoryPayloadApiProxyOptions,
@@ -192,6 +209,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
   const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
+
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
 
@@ -231,97 +249,59 @@ if (
   https.createServer(options, app).listen(port);
 } else {
 
-  const server = http.createServer(app);
+  const httpServer = http.createServer(app);
+  const expressServer = app.listen(port, () => console.log(`Express listening on port ${port}`));
+
+  // https://github.com/websockets/ws/issues/1787
   const wss = new WebSocketServer.Server({
-    server: app
+    // server: httpServer, // allows for calling // wss.handleUpgrade() manually
+    server: expressServer, // works without handleUpgrade
+    // noServer: true // allows for calling // wss.handleUpgrade() manually
   });
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws, request) => {
     console.log('==================');
-    console.log('WebSocketServer CONNECTION');
+    console.log('[wss] CONNECTION');
 
     ws.on('upgrade', () => {
       console.log('===============================');
-      console.log('WSS UPGRADE');
+      console.log('[wss] UPGRADE');
     })
 
     ws.on('message', (msg) => {
       console.log('===============================');
-      console.log('WSS MESSAGE');
+      console.log('[wss] MESSAGE', msg.toString());
     })
 
     ws.on('open', (msg) => {
       console.log('===============================');
-      console.log('WSS OPEN');
+      console.log('[wss] OPEN');
     })
 
     ws.on('close', (msg) => {
       console.log('===============================');
-      console.log('WSS CLOSE');
+      console.log('[wss] CLOSE');
     })
 
     ws.send('ping');
     ws.send('pong');
-
-  })
-
-  wss.on('upgrade', (request, socket, head) => {
-    console.log('===============================');
-    console.log('WSS upgrade!!!!!!');
-  })
-
-  wss.on('open', (request, socket, head) => {
-    console.log('===============================');
-    console.log('WSS open!!!!!!');
-  })
-
-  wss.on('message', (request, socket, head) => {
-    console.log('===============================');
-    console.log('WSS message!!!!!!');
   })
 
 
-  app.listen(port, () => console.log(`Express listening on port ${port}`));
+  // httpServer.on('upgrade', (request, socket, head) => {
+  //   console.log('httpServer upgraded');
+  //   // wss.handleUpgrade(request, socket, head, (ws) => {
+  //   //   wss.emit('connection', ws, request);
+  //   // })
+  // });
 
-  server.on('error', event => {
-    console.log('????????????????????????????????');
-    console.log(event);
-    console.log('express THERE WAS AN ERROR WITH THE WS CONNECTION');
-  })
+  // expressServer.on('upgrade', (request, socket, head) => {
+  //   console.log('expressServer upgraded');
+  //   // wss.handleUpgrade(request, socket, head, (ws) => {
+  //   //   wss.emit('connection', ws, request);
+  //   // })
+  // });
 
-  server.on('connection', socket => {
-    console.log('-------------------------------');
-    console.log('express connection');
-    // socket.on('connect', event => {
-    //   console.log('CONNECT event');
-    // })
-  });
-
-  // server.on('close', event => {
-  //   console.log('-------------------------------');
-  //   console.log('express close');
-  // })
-
-  server.on('listening', () => {
-    console.log('----------------------------');
-    console.log('express listening');
-  })
-
-  server.on('upgrade', (request, socket, head) => {
-    // const pathname = url.parse(request.url).pathname;
-    console.log('----------------------------');
-    console.log('express upgrade', request.url);
-
-
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      console.log('handleUpgrade was called');
-      wss.emit('connection', ws, request);
-    })
-
-    // wss.handleUpgrade(inventoryApiSocketProxy.upgrade);
-    // inventoryApiSocketProxy.upgrade(request, socket, head);
-  })
-
-  // wss.on('upgrade', inventoryApiSocketProxy.upgrade)
+  expressServer.on('upgrade', inventoryApiSocketProxy.upgrade);
 
 }
