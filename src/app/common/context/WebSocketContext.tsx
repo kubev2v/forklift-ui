@@ -32,6 +32,7 @@ export const WebSocketContextProvider: React.FunctionComponent<IWebSocketContext
       // const websocket = new WebSocket(`ws://localhost:9001${getInventoryApiSocketUrl('providers/openshift/b245f43c-8448-4643-b697-c2e9d21e40a9/vms')}`);
       // websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/providers/vsphere/c872d364-d62b-46f0-bd42-16799f40324e/hosts`);
       websocket = new WebSocket(`ws://localhost:9001/inventory-api-socket/health/watch`);
+      // websocket = new WebSocket(`/inventory-api-socket/health/watch`);
 
       websocket.onerror = (error) => {
         console.log('[ws] ERROR CONNECTION', error);

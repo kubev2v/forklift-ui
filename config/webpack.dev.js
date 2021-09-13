@@ -31,13 +31,13 @@ module.exports = merge(common('development'), {
         ],
         target: `http://localhost:${EXPRESS_PORT}`,
       },
-      // {
-      //   context: [
-      //     '/inventory-api-socket',
-      //   ],
-      //   target: `http://localhost:${EXPRESS_PORT}`,
-      //   ws: true
-      // }
+      {
+        context: [
+          '/inventory-api-socket',
+        ],
+        target: `ws://[::1]:${EXPRESS_PORT}`, // [::1] instead of localhost
+        ws: true
+      }
     ],
   },
   module: {

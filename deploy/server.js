@@ -254,38 +254,47 @@ if (
 
   // https://github.com/websockets/ws/issues/1787
   const wss = new WebSocketServer.Server({
+    // clientTracking: true,
+    // path: 'inventory-api-socket',
     // server: httpServer, // allows for calling // wss.handleUpgrade() manually
     server: expressServer, // works without handleUpgrade
     // noServer: true // allows for calling // wss.handleUpgrade() manually
   });
 
-  wss.on('connection', (ws, request) => {
-    console.log('==================');
-    console.log('[wss] CONNECTION');
+  // wss.on('message', (msg) => {
+  //   console.log('wss received a message');
+  // });
 
-    ws.on('upgrade', () => {
-      console.log('===============================');
-      console.log('[wss] UPGRADE');
-    })
+  // wss.on('connection', (ws, request) => {
+  //   console.log('==================');
+  //   console.log('[wss] CONNECTION');
 
-    ws.on('message', (msg) => {
-      console.log('===============================');
-      console.log('[wss] MESSAGE', msg.toString());
-    })
+  //   ws.on('upgrade', () => {
+  //     console.log('===============================');
+  //     console.log('[wss] UPGRADE');
+  //   })
 
-    ws.on('open', (msg) => {
-      console.log('===============================');
-      console.log('[wss] OPEN');
-    })
+  //   ws.on('message', (msg) => {
+  //     console.log('===============================');
+  //     console.log('[wss] MESSAGE', msg.toString());
+  //     // wss.clients.forEach(client => {
+  //     //   client.send(msg.toString());
+  //     // });
+  //   })
 
-    ws.on('close', (msg) => {
-      console.log('===============================');
-      console.log('[wss] CLOSE');
-    })
+  //   ws.on('open', (msg) => {
+  //     console.log('===============================');
+  //     console.log('[wss] OPEN');
+  //   })
 
-    ws.send('ping');
-    ws.send('pong');
-  })
+  //   ws.on('close', (msg) => {
+  //     console.log('===============================');
+  //     console.log('[wss] CLOSE');
+  //   })
+
+  //   ws.send('ping');
+  //   ws.send('pong');
+  // })
 
 
   // httpServer.on('upgrade', (request, socket, head) => {
@@ -302,6 +311,8 @@ if (
   //   // })
   // });
 
-  expressServer.on('upgrade', inventoryApiSocketProxy.upgrade);
+  expressServer.on('upgrade', (request, socket, head) => {
+    inventoryApiSocketProxy.upgrade(request, socket, head);
+  });
 
 }
