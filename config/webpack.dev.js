@@ -27,6 +27,7 @@ module.exports = merge(common('development'), {
           '/login/callback',
           '/cluster-api',
           '/inventory-api',
+          '/inventory-socket-api',
           '/inventory-payload-api',
         ],
         target: `http://localhost:${EXPRESS_PORT}`,
