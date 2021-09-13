@@ -69,7 +69,7 @@ export const useMockableMutation = <
       ? async (vars: TVariables) => {
           try {
             return await mutationFn(vars);
-          } catch (error) {
+          } catch (error: any) {
             console.error(error.response);
             checkExpiry(error, history);
             throw error;
@@ -84,6 +84,9 @@ export const useMockableMutation = <
 };
 export const getInventoryApiUrl = (relativePath: string): string =>
   `/inventory-api/${relativePath}`;
+
+export const getInventoryApiSocketUrl = (relativePath: string): string =>
+  `/inventory-socket-api/${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: UnknownResult[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return 'error';

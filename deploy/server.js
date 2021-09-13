@@ -96,6 +96,15 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
 
+  let inventorySocketApiProxyOptions = {
+    target: meta.inventoryApi,
+    changeOrigin: true,
+    pathRewrite: {
+      '^/inventory-socket-api/': '/',
+    },
+    logLevel: process.env.DEBUG ? 'debug' : 'info',
+  };
+
   /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   let inventoryPayloadApiProxyOptions = {
     target: meta.inventoryPayloadApi,
@@ -118,6 +127,11 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       secure: false,
     };
 
+    inventorySocketApiProxyOptions = {
+      ...inventorySocketApiProxyOptions,
+      secure: false,
+    };
+
     /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
     inventoryPayloadApiProxyOptions = {
       ...inventoryPayloadApiProxyOptions,
@@ -128,11 +142,13 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
   const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
+  const inventorySocketApiProxy = createProxyMiddleware(inventorySocketApiProxyOptions);
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
 
   app.use('/cluster-api/', clusterApiProxy);
   app.use('/inventory-api/', inventoryApiProxy);
+  app.use('/inventory-socket-api/', inventorySocketApiProxy);
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
 }
