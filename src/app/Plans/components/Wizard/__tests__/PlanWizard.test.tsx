@@ -46,7 +46,7 @@ describe('<AddEditProviderModal />', () => {
     expect(namespace).toBeDisabled();
 
     userEvent.type(name, 'planname');
-    userEvent.type(description, 'plan descripton');
+    userEvent.type(description, 'plan description');
 
     userEvent.click(providers[0]);
     await screen.findByRole('option', {

@@ -1,5 +1,16 @@
 import * as React from 'react';
-import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
+import {
+  TreeView,
+  Tabs,
+  Tab,
+  TabTitleText,
+  TextContent,
+  Text,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  TreeViewSearch,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { IndexedTree, useSourceVMsQuery } from '@app/queries';
@@ -113,6 +124,21 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     getNodeBadgeContent
   );
 
+  const toolbar = (
+    <Toolbar style={{ padding: 0 }}>
+      <ToolbarContent style={{ padding: 0 }}>
+        <ToolbarItem widths={{ default: '100%' }}>
+          <TreeViewSearch
+            onSearch={(event) => setSearchText(event.target.value)}
+            id="inventory-search"
+            name="search-inventory"
+            aria-label="Search inventory"
+          />
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  );
+
   return (
     <div className="plan-wizard-filter-vms-form">
       <TextContent>
@@ -147,9 +173,10 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         <TreeView
           data={treeViewData}
           defaultAllExpanded
+          allExpanded={true}
           hasChecks
           hasBadges
-          onSearch={(event) => setSearchText(event.target.value)}
+          hasGuides
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
@@ -174,11 +201,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
               }
             }
           }}
-          searchProps={{
-            id: 'inventory-search',
-            name: 'search-inventory',
-            'aria-label': 'Search inventory',
-          }}
+          toolbar={toolbar}
         />
       </ResolvedQueries>
     </div>
