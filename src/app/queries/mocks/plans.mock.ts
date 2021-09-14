@@ -782,7 +782,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan9: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-09' },
+    metadata: {
+      ...plan1.metadata,
+      name: 'plantest-09',
+      annotations: {
+        'forklift.konveyor.io/archived': 'true',
+      },
+    },
     spec: { ...plan7.spec, description: 'failed before cutover' },
     status: {
       conditions: [

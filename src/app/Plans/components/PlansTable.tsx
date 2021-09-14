@@ -7,6 +7,7 @@ import {
   ProgressMeasureLocation,
   Text,
   ToolbarItem,
+  Switch,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -25,12 +26,14 @@ import {
   Tr,
   truncate,
 } from '@patternfly/react-table';
+import { ArchiveIcon } from '@patternfly/react-icons';
+import { useAppLayoutContext } from '@app/common/context/AppLayoutContext';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
-import PlanActionsDropdown from './PlanActionsDropdown';
+import { PlansActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
 import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
@@ -61,6 +64,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   errorContainerRef,
 }: IPlansTableProps) => {
+  const appLayoutContext = useAppLayoutContext();
+  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((isOpen) => !isOpen, true);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
@@ -207,27 +212,31 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     );
 
     const isExpanded = isPlanExpanded(plan);
-
     const isBeingStarted = planState === 'Starting';
+    const isPlanArchived = plan.metadata.annotations?.['forklift.konveyor.io/archived'] === 'true';
 
-    rows.push({
-      meta: { plan },
-      isOpen: isExpanded,
-      cells: [
-        {
-          title: (
-            <>
-              <Link to={`/plans/${plan.metadata.name}`}>{plan.metadata.name}</Link>
-              <Flex>
-                <Text component="small">{plan.spec.description}</Text>
-              </Flex>
-            </>
-          ),
-        },
-        isWarmPlan ? 'Warm' : 'Cold',
-        {
-          title:
-            isBeingStarted && !isWarmPlan ? (
+    if (!isPlanArchived || showArchivedPlans) {
+      rows.push({
+        meta: { plan },
+        isOpen: isExpanded,
+        cells: [
+          {
+            title: (
+              <>
+                <Link to={`/plans/${plan.metadata.name}`}>{plan.metadata.name}</Link>
+                <Flex>
+                  <Text component="small">{plan.spec.description}</Text>
+                </Flex>
+              </>
+            ),
+          },
+          isWarmPlan ? 'Warm' : 'Cold',
+          {
+            title: isPlanArchived ? (
+              <PlanStatusNavLink plan={plan}>
+                <ArchiveIcon /> Archived
+              </PlanStatusNavLink>
+            ) : isBeingStarted && !isWarmPlan ? (
               <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
             ) : isBeingStarted && isWarmPlan ? (
               <PlanStatusNavLink plan={plan}>
@@ -253,35 +262,37 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 />
               </PlanStatusNavLink>
             ),
-        },
-        {
-          title: buttonType ? (
-            <>
-              <Flex
-                flex={{ default: 'flex_2' }}
-                spaceItems={{ default: 'spaceItemsNone' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-                flexWrap={{ default: 'nowrap' }}
-              >
-                <FlexItem align={{ default: 'alignRight' }}>
-                  <MigrateOrCutoverButton
-                    plan={plan}
-                    buttonType={buttonType}
-                    isBeingStarted={isBeingStarted}
-                    errorContainerRef={errorContainerRef}
-                  />
-                </FlexItem>
-                <FlexItem>
-                  <PlanActionsDropdown plan={plan} />
-                </FlexItem>
-              </Flex>
-            </>
-          ) : !isBeingStarted ? (
-            <PlanActionsDropdown plan={plan} />
-          ) : null,
-        },
-      ],
-    });
+          },
+          {
+            title: buttonType ? (
+              <>
+                <Flex
+                  flex={{ default: 'flex_2' }}
+                  spaceItems={{ default: 'spaceItemsNone' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  flexWrap={{ default: 'nowrap' }}
+                >
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    <MigrateOrCutoverButton
+                      plan={plan}
+                      buttonType={buttonType}
+                      isBeingStarted={isBeingStarted}
+                      errorContainerRef={errorContainerRef}
+                    />
+                  </FlexItem>
+                  <FlexItem>
+                    <PlansActionsDropdown planState={planState} plan={plan} />
+                  </FlexItem>
+                </Flex>
+              </>
+            ) : !isBeingStarted ? (
+              <PlansActionsDropdown planState={planState} plan={plan} />
+            ) : null,
+          },
+        ],
+      });
+    }
+
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
@@ -323,9 +334,21 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         filterValues={filterValues}
         setFilterValues={setFilterValues}
         endToolbarItems={
-          <ToolbarItem>
-            <CreatePlanButton variant="secondary" />
-          </ToolbarItem>
+          <>
+            <ToolbarItem>
+              <CreatePlanButton variant="secondary" />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Switch
+                className="pf-u-pt-xs"
+                id="archive-results-switch"
+                label={appLayoutContext.isMobileView ? null : 'Show archived'}
+                labelOff={appLayoutContext.isMobileView ? null : 'Hide archived'}
+                isChecked={showArchivedPlans}
+                onChange={toggleShowArchivedPlans}
+              />
+            </ToolbarItem>
+          </>
         }
         pagination={
           <Pagination

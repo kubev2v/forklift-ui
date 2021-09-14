@@ -10,6 +10,7 @@ import {
   PollingContextProvider,
   LocalStorageContextProvider,
   NetworkContextProvider,
+  AppLayoutContextProvider,
 } from '@app/common/context';
 import { noop } from '@app/common/constants';
 
@@ -30,9 +31,11 @@ const App: React.FunctionComponent = () => (
       <LocalStorageContextProvider>
         <NetworkContextProvider>
           <Router getUserConfirmation={noop}>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
+            <AppLayoutContextProvider>
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
+            </AppLayoutContextProvider>
           </Router>
         </NetworkContextProvider>
       </LocalStorageContextProvider>

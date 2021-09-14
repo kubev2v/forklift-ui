@@ -255,6 +255,32 @@ export const useDeletePlanMutation = (
   );
 };
 
+export const useArchivePlanMutation = (
+  onSuccess?: () => void
+): UseMutationResult<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryClient = useQueryClient();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
+    (plan: IPlan) => {
+      const planWithArchiveAnnotation = plan;
+      const isArchived = plan.metadata.annotations?.['forklift.konveyor.io/archived'] === 'true';
+      if (!isArchived) {
+        planWithArchiveAnnotation.metadata.annotations = {
+          ...plan.metadata.annotations,
+          'forklift.konveyor.io/archived': 'true',
+        };
+      }
+      return client.patch(planResource, plan.metadata.name, planWithArchiveAnnotation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('plans');
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
 export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
   planBeingPrefilled: IPlan | null,
