@@ -46,7 +46,7 @@ describe('<AddEditProviderModal />', () => {
     expect(namespace).toBeDisabled();
 
     userEvent.type(name, 'planname');
-    userEvent.type(description, 'plan descripton');
+    userEvent.type(description, 'plan description');
 
     userEvent.click(providers[0]);
     await screen.findByRole('option', {
@@ -110,7 +110,6 @@ describe('<AddEditProviderModal />', () => {
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Filter by VM location/ })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: /Select Cluster V2V_Cluster/ })).toBeChecked();
     expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);
 
