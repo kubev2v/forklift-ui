@@ -77,6 +77,22 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 }
 
+let inventoryApiSocketProxyOptions = {
+  target: meta.inventoryApi,
+  changeOrigin: true,
+  ws: true,
+  headers: {
+    'X-Watch': 'snapshot',
+  },
+  pathRewrite: {
+    '^/inventory-api-socket/': '/',
+  },
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
+  onError: (error) => {
+    console.log('inventoryApiProxyOptions onError', error);
+  },
+};
+
 if (process.env['DATA_SOURCE'] !== 'mock') {
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
@@ -92,15 +108,6 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     changeOrigin: true,
     pathRewrite: {
       '^/inventory-api/': '/',
-    },
-    logLevel: process.env.DEBUG ? 'debug' : 'info',
-  };
-
-  let inventorySocketApiProxyOptions = {
-    target: meta.inventoryApi,
-    changeOrigin: true,
-    pathRewrite: {
-      '^/inventory-socket-api/': '/',
     },
     logLevel: process.env.DEBUG ? 'debug' : 'info',
   };
@@ -127,8 +134,8 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       secure: false,
     };
 
-    inventorySocketApiProxyOptions = {
-      ...inventorySocketApiProxyOptions,
+    inventoryApiSocketProxyOptions = {
+      ...inventoryApiSocketProxyOptions,
       secure: false,
     };
 
@@ -142,16 +149,18 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
   const inventoryApiProxy = createProxyMiddleware(inventoryApiProxyOptions);
-  const inventorySocketApiProxy = createProxyMiddleware(inventorySocketApiProxyOptions);
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // const inventoryPayloadApiProxy = createProxyMiddleware(inventoryPayloadApiProxyOptions);
 
   app.use('/cluster-api/', clusterApiProxy);
   app.use('/inventory-api/', inventoryApiProxy);
-  app.use('/inventory-socket-api/', inventorySocketApiProxy);
+
   // TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
   // app.use('/inventory-payload-api/', inventoryPayloadApiProxy);
 }
+
+const inventoryApiSocketProxy = createProxyMiddleware(inventoryApiSocketProxyOptions);
+app.use('/inventory-api-socket/', inventoryApiSocketProxy);
 
 app.get('*', (_, res) => {
   if (process.env['NODE_ENV'] === 'development' || process.env['DATA_SOURCE'] === 'mock') {

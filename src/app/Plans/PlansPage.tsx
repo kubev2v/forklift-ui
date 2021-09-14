@@ -10,7 +10,6 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import WebSocket from 'isomorphic-ws';
 
 import {
   useHasSufficientProvidersQuery,
@@ -31,23 +30,6 @@ const PlansPage: React.FunctionComponent = () => {
   const migrationsQuery = useMigrationsQuery();
 
   const errorContainerRef = React.useRef<HTMLDivElement>(null);
-
-  // "wss://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com/providers/ovirt/acd5584c-fe75-453f-b970-b29a8c290254/vms";
-  const url =
-    'wss://forklift-inventory-konveyor-forklift.apps.cluster-jortel.v2v.bos.redhat.com/providers/ovirt/acd5584c-fe75-453f-b970-b29a8c290254/hosts';
-
-  const ws = new WebSocket(url, {
-    rejectUnauthorized: false,
-    headers: { 'X-Watch': 'snapshot' },
-  });
-
-  ws.on('open', function open() {
-    ws.send('something');
-  });
-
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-  });
 
   return (
     <>

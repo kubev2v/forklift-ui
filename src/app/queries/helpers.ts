@@ -86,7 +86,7 @@ export const getInventoryApiUrl = (relativePath: string): string =>
   `/inventory-api/${relativePath}`;
 
 export const getInventoryApiSocketUrl = (relativePath: string): string =>
-  `/inventory-socket-api/${relativePath}`;
+  `ws://localhost:9001/inventory-api-socket/${relativePath}`;
 
 export const getAggregateQueryStatus = (queryResults: UnknownResult[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return 'error';
