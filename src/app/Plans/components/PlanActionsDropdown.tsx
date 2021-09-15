@@ -24,7 +24,7 @@ import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
-import { PlanState } from '@app/common/constants';
+import { PlanState, archivedPlanLabel } from '@app/common/constants';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -52,7 +52,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
     [kebabIsOpen, clusterProvidersQuery, plan.spec.provider]
   );
   const isPlanStarted = !!plan.status?.migration?.started;
-  const isPlanArchived = plan.metadata.annotations?.['forklift.konveyor.io/archived'] === 'true';
+  const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
   const isPlanCompleted =
     !planState?.toLowerCase().includes('finished') &&
     !planState?.toLowerCase().includes('failed') &&

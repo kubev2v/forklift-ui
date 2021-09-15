@@ -1,6 +1,6 @@
 import { IPlan, IPlanVM, IVMStatus } from '../types';
 import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META, archivedPlanLabel } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
 import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
@@ -786,7 +786,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ...plan1.metadata,
       name: 'plantest-09',
       annotations: {
-        'forklift.konveyor.io/archived': 'true',
+        [`${archivedPlanLabel}`]: 'true',
       },
     },
     spec: { ...plan7.spec, description: 'failed before cutover' },

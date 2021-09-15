@@ -57,7 +57,8 @@ export type PlanState =
   | 'Canceled'
   | 'Finished-Succeeded' // Has a completed timestamp
   | 'Finished-Failed'
-  | 'Finished-Incomplete';
+  | 'Finished-Incomplete'
+  | 'Archived';
 
 export enum StepType {
   Full = 'Full',
@@ -142,3 +143,5 @@ export const usernameSchema = yup
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
+
+export const archivedPlanLabel = 'forklift.konveyor.io/archived';

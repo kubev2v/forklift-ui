@@ -33,6 +33,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
+import { archivedPlanLabel } from '@app/common/constants';
 import { PlansActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
@@ -65,7 +66,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   errorContainerRef,
 }: IPlansTableProps) => {
   const appLayoutContext = useAppLayoutContext();
-  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((isOpen) => !isOpen, true);
+  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((isOpen) => !isOpen, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
@@ -123,6 +124,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         { key: 'Failed', value: 'Failed' },
         { key: 'Canceled', value: 'Canceled' },
         { key: 'Finished - Incomplete', value: 'Finished - Incomplete' },
+        { key: 'Archived', value: 'Archived' },
       ],
       getItemValue: (plan) => {
         const latestMigration = findLatestMigration(
@@ -137,7 +139,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
+  const filteredPlans = showArchivedPlans
+    ? plans
+    : plans.filter((plan) => !(plan.metadata.annotations?.[archivedPlanLabel] === 'true'));
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    filteredPlans,
+    filterCategories
+  );
   const getSortValues = (plan: IPlan) => [
     '', // Expand/collapse column
     plan.metadata.name,
@@ -213,26 +221,26 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
     const isBeingStarted = planState === 'Starting';
-    const isPlanArchived = plan.metadata.annotations?.['forklift.konveyor.io/archived'] === 'true';
+    const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
 
-    if (!isPlanArchived || showArchivedPlans) {
-      rows.push({
-        meta: { plan },
-        isOpen: isExpanded,
-        cells: [
-          {
-            title: (
-              <>
-                <Link to={`/plans/${plan.metadata.name}`}>{plan.metadata.name}</Link>
-                <Flex>
-                  <Text component="small">{plan.spec.description}</Text>
-                </Flex>
-              </>
-            ),
-          },
-          isWarmPlan ? 'Warm' : 'Cold',
-          {
-            title: isPlanArchived ? (
+    rows.push({
+      meta: { plan },
+      isOpen: isExpanded,
+      cells: [
+        {
+          title: (
+            <>
+              <Link to={`/plans/${plan.metadata.name}`}>{plan.metadata.name}</Link>
+              <Flex>
+                <Text component="small">{plan.spec.description}</Text>
+              </Flex>
+            </>
+          ),
+        },
+        isWarmPlan ? 'Warm' : 'Cold',
+        {
+          title:
+            planState === 'Archived' ? (
               <PlanStatusNavLink plan={plan}>
                 <ArchiveIcon /> Archived
               </PlanStatusNavLink>
@@ -262,9 +270,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 />
               </PlanStatusNavLink>
             ),
-          },
-          {
-            title: buttonType ? (
+        },
+        {
+          title:
+            buttonType && !isPlanArchived ? (
               <>
                 <Flex
                   flex={{ default: 'flex_2' }}
@@ -288,10 +297,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             ) : !isBeingStarted ? (
               <PlansActionsDropdown planState={planState} plan={plan} />
             ) : null,
-          },
-        ],
-      });
-    }
+        },
+      ],
+    });
 
     if (isExpanded) {
       rows.push({
@@ -345,7 +353,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 label={appLayoutContext.isMobileView ? null : 'Show archived'}
                 labelOff={appLayoutContext.isMobileView ? null : 'Hide archived'}
                 isChecked={showArchivedPlans}
-                onChange={toggleShowArchivedPlans}
+                onChange={() => {
+                  toggleShowArchivedPlans();
+                }}
               />
             </ToolbarItem>
           </>
@@ -377,7 +387,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       ) : (
         <TableEmptyState
           titleText="No migration plans found"
-          bodyText="No results match your filter."
+          bodyText={
+            !showArchivedPlans && filterValues.status?.[0] === 'Archived'
+              ? 'No results match your filters. When filtering by archived plans, ensure the hide/show archived plans switch is enabled in the toolbar above.'
+              : 'No results match your filter.'
+          }
         />
       )}
       <Pagination {...paginationProps} widgetId="plans-table-pagination-bottom" variant="bottom" />
