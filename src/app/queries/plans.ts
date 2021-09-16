@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-import { dnsLabelNameSchema, META } from '@app/common/constants';
+import { dnsLabelNameSchema, META, archivedPlanLabel } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import {
@@ -249,6 +249,32 @@ export const useDeletePlanMutation = (
       onSuccess: () => {
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('mappings');
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
+export const useArchivePlanMutation = (
+  onSuccess?: () => void
+): UseMutationResult<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryClient = useQueryClient();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
+    (plan: IPlan) => {
+      const planWithArchiveAnnotation = plan;
+      const isArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
+      if (!isArchived) {
+        planWithArchiveAnnotation.metadata.annotations = {
+          ...plan.metadata.annotations,
+          archivedPlanLabel: 'true',
+        };
+      }
+      return client.patch(planResource, plan.metadata.name, planWithArchiveAnnotation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('plans');
         onSuccess && onSuccess();
       },
     }

@@ -12,6 +12,7 @@ import {
   NavExpandable,
   PageHeaderTools,
 } from '@patternfly/react-core';
+import { useAppLayoutContext } from '@app/common/context/AppLayoutContext';
 import { routes, IAppRoute, IAppRouteGroup } from '@app/routes';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { APP_TITLE } from '@app/common/constants';
@@ -27,8 +28,8 @@ interface IAppLayout {
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
+  const appLayoutContext = useAppLayoutContext();
   const [isNavOpen, setIsNavOpen] = React.useState(true);
-  const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -37,7 +38,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     setIsNavOpen(!isNavOpen);
   };
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
-    setIsMobileView(props.mobileView);
+    appLayoutContext.setIsMobileView(props.mobileView);
   };
 
   const location = useLocation();
@@ -62,7 +63,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       logoComponent="span"
       showNavToggle={isNavEnabled}
       isNavOpen={isNavEnabled && isNavOpen}
-      onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+      onNavToggle={appLayoutContext.isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={
         <PageHeaderTools>
           <HelpDropdown className={spacing.mrMd} />
@@ -81,7 +82,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <NavItem
       key={`${route.label}-${index}`}
       id={`${route.label}-${index}`}
-      onClick={isMobileView ? onNavToggleMobile : undefined}
+      onClick={appLayoutContext.isMobileView ? onNavToggleMobile : undefined}
     >
       <NavLink exact to={route.path} activeClassName="pf-m-current">
         {route.label}
@@ -120,7 +121,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <PageSidebar
       theme="dark"
       nav={Navigation}
-      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+      isNavOpen={appLayoutContext.isMobileView ? isNavOpenMobile : isNavOpen}
     />
   );
 

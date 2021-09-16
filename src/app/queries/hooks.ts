@@ -38,6 +38,7 @@ export const playbookSchema = yup
   .test('valid-yaml', 'Playbook must be valid YAML', (value, context) => {
     try {
       yaml.load(value || '');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.reason && e.mark) {
         return context.createError({
