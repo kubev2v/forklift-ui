@@ -69,6 +69,7 @@ export const useMockableMutation = <
       ? async (vars: TVariables) => {
           try {
             return await mutationFn(vars);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } catch (error: any) {
             console.error(error.response);
             checkExpiry(error, history);

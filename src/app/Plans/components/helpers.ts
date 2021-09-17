@@ -1,5 +1,5 @@
 import { ProgressVariant } from '@patternfly/react-core';
-import { PlanState } from '@app/common/constants';
+import { PlanState, archivedPlanLabel } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { IPlan } from '@app/queries/types';
 import { IMigration } from '@app/queries/types/migrations.types';
@@ -61,6 +61,11 @@ export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) 
       filterValue = 'Finished - Incomplete';
       break;
     }
+    case state === 'Archived': {
+      title = 'Archived';
+      filterValue = 'Archived';
+      break;
+    }
     case state === 'NotStarted-NotReady': {
       title = '';
       filterValue = 'Not Ready';
@@ -120,6 +125,11 @@ export const getPlanState = (
   if (!plan) return null;
   const isWarm = plan.spec.warm;
   const conditions = plan.status?.conditions || [];
+
+  if (plan.metadata.annotations?.[archivedPlanLabel] === 'true') {
+    return 'Archived';
+  }
+
   if (!migration || !plan.status?.migration?.started) {
     if (hasCondition(conditions, 'Ready')) return 'NotStarted-Ready';
     return 'NotStarted-NotReady';
