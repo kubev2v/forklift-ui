@@ -6,6 +6,11 @@ RUN npm install && npm run build
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-14-minimal
 
+# Add tar package to allow copying files with kubectl scp
+USER root
+RUN dnf -y install tar && dnf clean all
+USER 1001
+
 LABEL name="konveyor/forklift-ui" \
       description="Konveyor for Virtualization - User Interface" \
       help="For more information visit https://konveyor.io" \
