@@ -1,5 +1,5 @@
 import { KubeClientError, IKubeList } from '@app/client/types';
-import { CLUSTER_API_VERSION, PlanStatusType } from '@app/common/constants';
+import { CLUSTER_API_VERSION } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import {
   UseQueryOptions,
@@ -13,7 +13,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useFetchContext } from './fetchHelpers';
 import { INameNamespaceRef, IProviderObject, ISrcDestRefs } from './types';
-import { InventoryTree } from './types/tree.types';
 import { UnknownResult } from '@app/common/types';
 
 // TODO what about usePaginatedQuery, useInfiniteQuery?
@@ -70,7 +69,8 @@ export const useMockableMutation = <
       ? async (vars: TVariables) => {
           try {
             return await mutationFn(vars);
-          } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (error: any) {
             console.error(error.response);
             checkExpiry(error, history);
             throw error;
@@ -136,17 +136,6 @@ export const sortKubeListByName = <T>(result: IKubeList<T>) => ({
   items: sortByName(result.items || []),
 });
 
-export const sortTreeItemsByName = <T extends InventoryTree>(tree: T): T => ({
-  ...tree,
-  children:
-    tree.children &&
-    (tree.children as T[]).map(sortTreeItemsByName).sort((a?: T, b?: T) => {
-      if (!a || !a.object) return -1;
-      if (!b || !b.object) return 1;
-      return a.object.name < b.object.name ? -1 : 1;
-    }),
-});
-
 export const nameAndNamespace = (
   ref: Partial<INameNamespaceRef> | null | undefined
 ): INameNamespaceRef => ({
@@ -172,7 +161,7 @@ export const areAssociatedProvidersReady = (
   const areProvidersReady =
     associatedProviders.length === 2 &&
     associatedProviders.every((provider) =>
-      hasCondition(provider.status?.conditions || [], PlanStatusType.Ready)
+      hasCondition(provider.status?.conditions || [], 'Ready')
     );
   return areProvidersReady;
 };

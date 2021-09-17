@@ -18,14 +18,16 @@ if (process.env['DATA_SOURCE'] === 'mock') {
   metaStr = fs.readFileSync(metaFile, 'utf8');
 }
 
-console.log('\nEnvironment at run time:');
-console.log(helpers.getEnv());
+console.log('\nEnvironment at run time:\n');
+console.log('Available to server and browser:', helpers.getEnv());
+console.log('Available to server only:', helpers.getServerOnlyEnv());
 
-console.log(`\nValues from meta.json:\n${metaStr}\n\n`);
 const meta = JSON.parse(metaStr);
+console.log('\nValues from meta.json:', meta);
 
 const app = express();
-const port = process.env['EXPRESS_PORT'] || 8080;
+const port =
+  process.env['EXPRESS_PORT'] || (process.env['UI_TLS_ENABLED'] !== 'false' ? 8443 : 8080);
 const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
 
 app.engine('ejs', require('ejs').renderFile);
@@ -36,7 +38,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     try {
       const clusterAuth = await getClusterAuth(meta);
       const authorizationUri = clusterAuth.authorizeURL({
-        redirect_uri: meta.oauth.redirectUri,
+        redirect_uri: meta.oauth.redirectUrl,
         scope: meta.oauth.userScope,
       });
 
@@ -54,7 +56,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     const { code } = req.query;
     const options = {
       code,
-      redirect_uri: meta.oauth.redirectUri,
+      redirect_uri: meta.oauth.redirectUrl,
     };
     try {
       const clusterAuth = await getClusterAuth(meta);
@@ -148,12 +150,20 @@ app.get('*', (_, res) => {
   }
 });
 
-if (process.env['NODE_ENV'] !== 'development' && process.env['DATA_SOURCE'] !== 'mock') {
+if (
+  process.env['UI_TLS_ENABLED'] !== 'false' &&
+  process.env['NODE_ENV'] !== 'development' &&
+  process.env['DATA_SOURCE'] !== 'mock'
+) {
   const options = {
-    key: fs.readFileSync('/var/run/secrets/forklift-ui-serving-cert/tls.key'),
-    cert: fs.readFileSync('/var/run/secrets/forklift-ui-serving-cert/tls.crt'),
+    key: fs.readFileSync(
+      process.env['UI_TLS_KEY'] || '/var/run/secrets/forklift-ui-serving-cert/tls.key'
+    ),
+    cert: fs.readFileSync(
+      process.env['UI_TLS_CERTIFICATE'] || '/var/run/secrets/forklift-ui-serving-cert/tls.crt'
+    ),
   };
-  https.createServer(options, app).listen(8443);
+  https.createServer(options, app).listen(port);
 } else {
   app.listen(port, () => console.log(`Listening on port ${port}`));
 }

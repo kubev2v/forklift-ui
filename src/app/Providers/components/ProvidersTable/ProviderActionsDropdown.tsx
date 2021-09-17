@@ -2,12 +2,14 @@ import * as React from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { useDeleteProviderMutation } from '@app/queries';
 import { ICorrelatedProvider, InventoryProvider } from '@app/queries/types';
-import { PlanStatusType, ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
+import { useHistory } from 'react-router-dom';
+import { useClusterProvidersQuery } from '@app/queries';
 
 interface IProviderActionsDropdownProps {
   provider: ICorrelatedProvider<InventoryProvider>;
@@ -18,14 +20,25 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
   provider,
   providerType,
 }: IProviderActionsDropdownProps) => {
+  const history = useHistory();
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
-
-  const deleteProviderMutation = useDeleteProviderMutation(providerType, toggleDeleteModal);
-
   const { openEditProviderModal, plans } = React.useContext(EditProviderContext);
+  const clusterProvidersQuery = useClusterProvidersQuery();
+  const clusterProviders = clusterProvidersQuery.data?.items || [];
+
+  const deleteProviderMutation = useDeleteProviderMutation(providerType, () => {
+    toggleDeleteModal();
+    const numProviders = clusterProviders.filter(
+      (clusterProvider) => clusterProvider.spec.type === providerType
+    ).length;
+    if (numProviders === 1) {
+      history.replace(`/providers`);
+    }
+  });
+
   const hasRunningMigration = !!plans
-    .filter((plan) => hasCondition(plan.status?.conditions || [], PlanStatusType.Executing))
+    .filter((plan) => hasCondition(plan.status?.conditions || [], 'Executing'))
     .find((runningPlan) => {
       const { source, destination } = runningPlan.spec.provider;
       return (
@@ -33,6 +46,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
       );
     });
   const isEditDeleteDisabled = !provider.spec.url || hasRunningMigration;
+
   return (
     <>
       <Dropdown
@@ -93,15 +107,10 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deleteProviderMutation.mutate(provider)}
         mutateResult={deleteProviderMutation}
-        title="Remove provider"
+        title="Permanently remove provider?"
+        body={`${PROVIDER_TYPE_NAMES[providerType]} provider "${provider.metadata.name}" will no longer be selectable as a migration target.`}
         confirmButtonText="Remove"
-        body={
-          <>
-            Are you sure you want to remove the {PROVIDER_TYPE_NAMES[providerType]} provider &quot;
-            <strong>{provider.metadata.name}</strong>&quot;?
-          </>
-        }
-        errorText="Error removing provider"
+        errorText="Could not remove provider"
       />
     </>
   );

@@ -18,7 +18,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useHistory } from 'react-router-dom';
 
-import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { ProviderType, PROVIDER_TYPE_NAMES, PROVIDER_TYPES } from '@app/common/constants';
 import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
 
 import ProvidersTable from './components/ProvidersTable';
@@ -53,9 +53,9 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const allQueries = [clusterProvidersQuery, inventoryProvidersQuery, plansQuery];
   const allErrorTitles = [
-    'Error loading providers from cluster API',
-    'Error loading providers from inventory API',
-    'Error loading plans',
+    'Could not load providers from cluster API',
+    'Could not load providers from inventory API',
+    'Could not load plans',
   ];
   const queryStatus = getAggregateQueryStatus(allQueries);
 
@@ -72,13 +72,13 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const activeProviderType = match?.params.providerType || null;
 
+  const isValidProviderType = !!(activeProviderType && PROVIDER_TYPES.includes(activeProviderType));
+
   React.useEffect(() => {
-    if (
-      (!activeProviderType && availableProviderTypes.length > 0) ||
-      (activeProviderType && !availableProviderTypes.includes(activeProviderType))
-    )
-      history.push(`/providers/${availableProviderTypes[0]}`);
-  }, [activeProviderType, availableProviderTypes, history]);
+    if ((!isValidProviderType || !activeProviderType) && availableProviderTypes.length > 0) {
+      history.replace(`/providers/${availableProviderTypes[0]}`);
+    }
+  }, [activeProviderType, availableProviderTypes, history, isValidProviderType]);
 
   const [isAddEditModalOpen, toggleAddEditModal] = React.useReducer((isOpen) => !isOpen, false);
   const [providerBeingEdited, setProviderBeingEdited] = React.useState<IProviderObject | null>(
@@ -134,7 +134,12 @@ const ProvidersPage: React.FunctionComponent = () => {
         <ResolvedQueries results={allQueries} errorTitles={allErrorTitles} errorsInline={false}>
           <Card>
             <CardBody>
-              {!clusterProvidersQuery.data || !inventoryProvidersQuery.data || areProvidersEmpty ? (
+              {!clusterProvidersQuery.data ||
+              !inventoryProvidersQuery.data ||
+              areProvidersEmpty ||
+              !clusterProvidersQuery.data?.items
+                .map((provider) => provider.spec.type)
+                .includes(activeProviderType) ? (
                 <EmptyState className={spacing.my_2xl}>
                   <EmptyStateIcon icon={PlusCircleIcon} />
                   <Title headingLevel="h2" size="lg">

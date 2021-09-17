@@ -38,22 +38,27 @@ export enum StatusCategoryType {
   Warn = 'Warn',
 }
 
-export enum PlanStatusType {
-  Ready = 'Ready',
-  Executing = 'Executing',
-  Succeeded = 'Succeeded',
-  Failed = 'Failed',
-  Canceled = 'Canceled',
-}
+export type ConditionType = 'Ready' | 'Executing' | 'Succeeded' | 'Failed' | 'Canceled';
 
-export enum PlanStatusDisplayType {
-  Ready = 'Ready',
-  Executing = 'Running',
-  Succeeded = 'Succeeded',
-  Canceled = 'Canceled',
-  Failed = 'Failed',
-  Pending = 'Pending',
-}
+export type ColdPlanState = Exclude<
+  PlanState,
+  'Copying' | 'FailedCopying' | 'CanceledCopying' | 'StartingCutover'
+>;
+
+export type PlanState =
+  | 'NotStarted-Ready' // Just created, no action taken yet
+  | 'NotStarted-NotReady' // Not ready for migration, likely a critical condition was encountered
+  | 'Starting' // User clicked start button, Migration CR exists but no status data exists yet
+  | 'Copying' // Warm-specific. "Running incremental copies" in the UI, the first stage of a warm migration
+  | 'FailedCopying' // Warm-specific. Plan failed during copying
+  | 'CanceledCopying' // Warm-specific. Plan was canceled during copying
+  | 'StartingCutover' // Warm-specific. User has clicked the cutover button but the first pipeline step doesn't have a start time yet
+  | 'PipelineRunning' // The migration pipeline is running.
+  | 'Canceled'
+  | 'Finished-Succeeded' // Has a completed timestamp
+  | 'Finished-Failed'
+  | 'Finished-Incomplete'
+  | 'Archived';
 
 export enum StepType {
   Full = 'Full',
@@ -70,7 +75,7 @@ export const META: IMetaVars =
         devServerPort: 'mock-port',
         oauth: {
           clientId: 'mock-client-id',
-          redirectUri: '/mock/redirect/uri',
+          redirectUrl: '/mock/redirect/uri',
           userScope: '/mock/user-scope',
           clientSecret: 'mock-client-secret',
         },
@@ -106,7 +111,6 @@ const subdomainRegex = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[
 
 export const hostnameSchema = yup
   .string()
-  .label('Hostname or IP address')
   .max(253)
   .required()
   .test(
@@ -132,8 +136,12 @@ export const fingerprintSchema = yup
 export const usernameSchema = yup
   .string()
   .max(320)
-  .label('Username')
   .matches(/^\S*$/, {
     message: ({ label }) => `${label} must not contain spaces`,
     excludeEmptyString: true,
   });
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const noop = () => {};
+
+export const archivedPlanLabel = 'forklift.konveyor.io/archived';

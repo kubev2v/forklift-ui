@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { UseQueryResult } from 'react-query';
 import * as yup from 'yup';
 import yaml from 'js-yaml';
@@ -14,13 +15,17 @@ import { useAuthorizedK8sClient } from './fetchHelpers';
 const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namespace);
 
 export const useHooksQuery = (): UseQueryResult<IKubeList<IHook>> => {
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<IHook> => sortKubeListByName(data),
+    []
+  );
   const client = useAuthorizedK8sClient();
   const result = useMockableQuery<IKubeList<IHook>>(
     {
       queryKey: 'hooks',
       queryFn: async () => (await client.list<IKubeList<IHook>>(hookResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mockKubeList(MOCK_HOOKS, 'Hook')
   );
@@ -33,7 +38,8 @@ export const playbookSchema = yup
   .test('valid-yaml', 'Playbook must be valid YAML', (value, context) => {
     try {
       yaml.load(value || '');
-    } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
       if (e.reason && e.mark) {
         return context.createError({
           message: `Invalid YAML: ${e.reason} (${e.mark.line + 1}:${e.mark.column + 1})`,

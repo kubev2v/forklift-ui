@@ -1,92 +1,195 @@
-import { IKubeList } from '@app/client/types';
-import { PlanStatusType, PlanStatusDisplayType } from '@app/common/constants';
+import { ProgressVariant } from '@patternfly/react-core';
+import { PlanState, archivedPlanLabel } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { isSameResource } from '@app/queries/helpers';
 import { IPlan } from '@app/queries/types';
 import { IMigration } from '@app/queries/types/migrations.types';
+import { PlanActionButtonType } from '@app/Plans/components/PlansTable';
+import { IKubeList } from '@app/client/types';
 import { UseQueryResult } from 'react-query';
+import { isSameResource } from '@app/queries/helpers';
 
 export const getPlanStatusTitle = (plan: IPlan): string => {
   const condition = plan.status?.conditions.find(
     (condition) =>
-      condition.type === PlanStatusType.Ready ||
-      condition.type === PlanStatusType.Executing ||
-      condition.type === PlanStatusType.Succeeded ||
-      condition.type === PlanStatusType.Failed
+      condition.type === 'Ready' ||
+      condition.type === 'Executing' ||
+      condition.type === 'Succeeded' ||
+      condition.type === 'Failed'
   );
-  return condition ? PlanStatusDisplayType[condition.type] : '';
+  return condition ? condition.type : '';
 };
 
-// TODO maybe generalize this for cold migrations too
-type WarmPlanState =
-  | 'NotStarted'
-  | 'Starting'
-  | 'Copying'
-  | 'AbortedCopying'
-  | 'StartingCutover'
-  | 'Cutover'
-  | 'Finished';
+export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) => {
+  let title: string;
+  let variant: ProgressVariant | undefined;
+  let filterValue: string;
 
-export const getWarmPlanState = (
+  switch (true) {
+    case state === 'Starting': {
+      title = 'Running';
+      filterValue = 'Running';
+      break;
+    }
+    case state === 'Finished-Failed':
+    case state === 'FailedCopying': {
+      title = 'Failed';
+      variant = ProgressVariant.danger;
+      filterValue = 'Failed';
+      break;
+    }
+    case state === 'Canceled':
+    case state === 'CanceledCopying': {
+      title = 'Canceled';
+      filterValue = 'Canceled';
+      break;
+    }
+    case state === 'Finished-Succeeded': {
+      title = 'Succeeded';
+      filterValue = 'Succeeded';
+      variant = ProgressVariant.success;
+      break;
+    }
+    case state === 'Copying':
+    case state === 'PipelineRunning': {
+      title = isWarmPlan ? 'Running cutover' : 'Running';
+      filterValue = 'Running';
+      break;
+    }
+    case state === 'Finished-Incomplete': {
+      title = 'Finished - Incomplete';
+      variant = ProgressVariant.warning;
+      filterValue = 'Finished - Incomplete';
+      break;
+    }
+    case state === 'Archived': {
+      title = 'Archived';
+      filterValue = 'Archived';
+      break;
+    }
+    case state === 'NotStarted-NotReady': {
+      title = '';
+      filterValue = 'Not Ready';
+      break;
+    }
+    case state === 'NotStarted-Ready':
+    default: {
+      title = '';
+      filterValue = 'Ready';
+    }
+  }
+
+  return {
+    title,
+    variant,
+    filterValue,
+  };
+};
+
+export const getButtonState = (state: PlanState | null): PlanActionButtonType | null => {
+  let type: PlanActionButtonType | null;
+
+  switch (true) {
+    case state === 'NotStarted-Ready': {
+      type = 'Start';
+      break;
+    }
+    case state === 'Copying': {
+      type = 'Cutover';
+      break;
+    }
+    case state === 'Finished-Incomplete':
+    case state === 'Finished-Failed':
+    case state === 'Canceled':
+    case state === 'FailedCopying':
+    case state === 'CanceledCopying': {
+      type = 'Restart';
+      break;
+    }
+    case state === 'Starting':
+    case state === 'StartingCutover':
+    case state === 'PipelineRunning':
+    case state === 'Finished-Succeeded':
+    default: {
+      type = null;
+    }
+  }
+
+  return type;
+};
+
+export const getPlanState = (
   plan: IPlan | null,
   migration: IMigration | null,
-  migrationsQuery: UseQueryResult<IKubeList<IMigration>>
-): WarmPlanState | null => {
-  if (!plan || !plan.spec.warm) return null;
-  if (!migration) return 'NotStarted';
-  if (isPlanBeingStarted(plan, migration, migrationsQuery)) {
-    return 'Starting';
-  }
+  migrationQuery: UseQueryResult<IKubeList<IMigration>>
+): PlanState | null => {
+  if (!plan) return null;
+  const isWarm = plan.spec.warm;
   const conditions = plan.status?.conditions || [];
-  if (
-    (hasCondition(conditions, PlanStatusType.Canceled) ||
-      hasCondition(conditions, PlanStatusType.Failed)) &&
-    !migration.spec.cutover
-  ) {
-    return 'AbortedCopying';
+
+  if (plan.metadata.annotations?.[archivedPlanLabel] === 'true') {
+    return 'Archived';
   }
-  if (!!migration && !!plan.status?.migration?.completed) return 'Finished';
-  if (hasCondition(conditions, PlanStatusType.Executing)) {
+
+  if (!migration || !plan.status?.migration?.started) {
+    if (hasCondition(conditions, 'Ready')) return 'NotStarted-Ready';
+    return 'NotStarted-NotReady';
+  }
+  if (isPlanBeingStarted(plan, migration, migrationQuery) && !hasCondition(conditions, 'Succeeded'))
+    return 'Starting';
+
+  if (isWarm && !migration.spec.cutover) {
+    if (hasCondition(conditions, 'Canceled')) {
+      return 'CanceledCopying';
+    }
+    if (hasCondition(conditions, 'Failed')) {
+      return 'FailedCopying';
+    }
+  }
+
+  if (hasCondition(conditions, 'Canceled')) {
+    return 'Canceled';
+  }
+
+  if (hasCondition(conditions, 'Failed')) {
+    return 'Finished-Failed';
+  }
+
+  if (!!plan.status?.migration?.started && canPlanBeStarted(plan)) {
+    return 'Finished-Incomplete';
+  }
+
+  if (hasCondition(conditions, 'Executing')) {
     const pipelineHasStarted = plan.status?.migration?.vms?.some((vm) =>
       vm.pipeline.some((step) => !!step.started)
     );
     const cutoverTimePassed =
       migration?.spec.cutover && new Date(migration.spec.cutover).getTime() < new Date().getTime();
-    if (cutoverTimePassed && !pipelineHasStarted) {
-      return 'StartingCutover';
-    }
-    if (cutoverTimePassed && pipelineHasStarted) {
-      return 'Cutover';
-    }
-    if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {
-      return 'Copying';
-    }
-    return 'Starting';
-  }
-  if (
-    hasCondition(conditions, PlanStatusType.Succeeded) ||
-    hasCondition(conditions, PlanStatusType.Canceled) ||
-    hasCondition(conditions, PlanStatusType.Failed)
-  ) {
-    return 'Finished';
-  }
-  return null;
-};
 
-export const canPlanBeStarted = (plan: IPlan): boolean => {
-  const conditions = plan.status?.conditions || [];
-  if (
-    !hasCondition(conditions, PlanStatusType.Ready) ||
-    hasCondition(conditions, PlanStatusType.Executing)
-  ) {
-    return false;
+    if (isWarm) {
+      if (cutoverTimePassed) {
+        if (!pipelineHasStarted) {
+          return 'StartingCutover';
+        } else {
+          return 'PipelineRunning';
+        }
+      }
+
+      if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {
+        return 'Copying';
+      }
+
+      // Warm migration executing, cutover time not passed, no precopy data: show Starting until copy data appears
+      return 'Starting';
+    }
+
+    return 'PipelineRunning';
   }
-  const hasEverStarted = plan.status?.migration?.started;
-  const hasSomeIncompleteVM =
-    plan.status?.migration?.vms?.some(
-      (vm) => !hasCondition(vm.conditions || [], PlanStatusType.Succeeded)
-    ) || false;
-  return !hasEverStarted || hasSomeIncompleteVM;
+
+  if (hasCondition(conditions, 'Succeeded')) {
+    return 'Finished-Succeeded';
+  }
+
+  return null;
 };
 
 export const isPlanBeingStarted = (
@@ -119,4 +222,16 @@ export const isPlanBeingStarted = (
     (!latestMigrationInHistory ||
       !isSameResource(latestMigrationInHistory.metadata, latestMatchingMigration.metadata))
   );
+};
+
+export const canPlanBeStarted = (plan: IPlan): boolean => {
+  const conditions = plan.status?.conditions || [];
+  if (!hasCondition(conditions, 'Ready') || hasCondition(conditions, 'Executing')) {
+    return false;
+  }
+  const hasEverStarted = plan.status?.migration?.started;
+  const hasSomeIncompleteVM =
+    plan.status?.migration?.vms?.some((vm) => !hasCondition(vm.conditions || [], 'Succeeded')) ||
+    false;
+  return !hasEverStarted || hasSomeIncompleteVM;
 };

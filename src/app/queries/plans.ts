@@ -1,7 +1,8 @@
+import * as React from 'react';
 import * as yup from 'yup';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-import { dnsLabelNameSchema, META } from '@app/common/constants';
+import { dnsLabelNameSchema, META, archivedPlanLabel } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import {
@@ -16,10 +17,9 @@ import { MOCK_PLANS } from './mocks/plans.mock';
 import { IHook, IPlan, Mapping, MappingType } from './types';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import { getMappingResource } from './mappings';
-import { PlanWizardFormState } from '@app/Plans/components/Wizard/PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
-import { useHooksQuery } from './hooks';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -28,12 +28,16 @@ const hookResource = new ForkliftResource(ForkliftResourceKind.Hook, META.namesp
 
 export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
   const client = useAuthorizedK8sClient();
+  const sortKubeListByNameCallback = React.useCallback(
+    (data): IKubeList<IPlan> => sortKubeListByName(data),
+    []
+  );
   const result = useMockableQuery<IKubeList<IPlan>>(
     {
       queryKey: 'plans',
       queryFn: async () => (await client.list<IKubeList<IPlan>>(planResource)).data,
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortKubeListByName,
+      select: sortKubeListByNameCallback,
     },
     mockKubeList(MOCK_PLANS, 'Plan')
   );
@@ -45,7 +49,6 @@ export const useCreatePlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState>(
     async (forms) => {
       await checkIfResourceExists(
@@ -119,7 +122,6 @@ export const useCreatePlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('mappings');
         queryClient.invalidateQueries('hooks');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
@@ -136,8 +138,6 @@ export const usePatchPlanMutation = (
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
-  const hooks = useHooksQuery();
 
   return useMockableMutation<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs>(
     async ({ planBeingEdited, forms }) => {
@@ -232,7 +232,6 @@ export const usePatchPlanMutation = (
         queryClient.invalidateQueries('plans');
         queryClient.invalidateQueries('hooks');
         queryClient.invalidateQueries('mappings');
-        pollFasterAfterMutation();
         onSuccess && onSuccess();
       },
     }
@@ -256,12 +255,45 @@ export const useDeletePlanMutation = (
   );
 };
 
+export const useArchivePlanMutation = (
+  onSuccess?: () => void
+): UseMutationResult<IKubeResponse<IKubeStatus>, KubeClientError, IPlan, unknown> => {
+  const client = useAuthorizedK8sClient();
+  const queryClient = useQueryClient();
+  return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
+    (plan: IPlan) => {
+      const planWithArchiveAnnotation = plan;
+      const isArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
+      if (!isArchived) {
+        planWithArchiveAnnotation.metadata.annotations = {
+          ...plan.metadata.annotations,
+          archivedPlanLabel: 'true',
+        };
+      }
+      return client.patch(planResource, plan.metadata.name, planWithArchiveAnnotation);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('plans');
+        onSuccess && onSuccess();
+      },
+    }
+  );
+};
+
 export const getPlanNameSchema = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
-  planBeingEdited: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ): yup.StringSchema =>
-  dnsLabelNameSchema.test('unique-name', 'A plan with this name already exists', (value) => {
-    if (planBeingEdited?.metadata.name === value) return true;
-    if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
-    return true;
-  });
+  dnsLabelNameSchema
+    .test('unique-name', 'A plan with this name already exists', (value) => {
+      if (wizardMode === 'edit' && planBeingPrefilled?.metadata.name === value) return true;
+      if (plansQuery.data?.items.find((plan) => plan.metadata.name === value)) return false;
+      return true;
+    })
+    .test(
+      'non-reserved-name',
+      'This name is reserved due to a path conflict and cannot be used',
+      (value) => value !== 'create'
+    );

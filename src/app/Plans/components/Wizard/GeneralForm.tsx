@@ -15,16 +15,14 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
 
-import { IPlan, POD_NETWORK, InventoryTreeType } from '@app/queries/types';
+import { POD_NETWORK } from '@app/queries/types';
 import {
   useClusterProvidersQuery,
   useInventoryProvidersQuery,
-  useSourceVMsQuery,
-  useInventoryTreeQuery,
   useOpenShiftNetworksQuery,
   useNamespacesQuery,
 } from '@app/queries';
-import { PlanWizardFormState } from './PlanWizard';
+import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import ProviderSelect from '@app/common/components/ProviderSelect';
 import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
@@ -35,12 +33,12 @@ import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
-  planBeingEdited: IPlan | null;
+  wizardMode: PlanWizardMode;
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
-  planBeingEdited,
+  wizardMode,
 }: IGeneralFormProps) => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -98,17 +96,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     }
   };
 
-  // Cache these queries as soon as a source provider is selected so they are ready in later wizard steps
-  useSourceVMsQuery(form.values.sourceProvider);
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.Cluster);
-  useInventoryTreeQuery(form.values.sourceProvider, InventoryTreeType.VM);
-
   return (
     <ResolvedQueries
       results={[inventoryProvidersQuery, clusterProvidersQuery]}
       errorTitles={[
-        'Error loading provider inventory data',
-        'Error loading providers from cluster',
+        'Could not load provider inventory data',
+        'Could not load providers from cluster',
       ]}
     >
       <Form className={spacing.pbXl}>
@@ -120,7 +113,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           label="Plan name"
           isRequired
           fieldId="plan-name"
-          inputProps={{ isDisabled: !!planBeingEdited }}
+          inputProps={{ isDisabled: wizardMode === 'edit' }}
         />
         <ValidatedTextInput
           component={TextArea}
@@ -142,7 +135,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         >
           <ResolvedQueries
             results={[namespacesQuery, openshiftNetworksQuery]}
-            errorTitles={['Error loading namespaces', 'Error loading networks']}
+            errorTitles={['Could not load namespaces', 'Could not load networks']}
             spinnerProps={{ className: spacing.mXs }}
             spinnerMode={QuerySpinnerMode.Inline}
           >

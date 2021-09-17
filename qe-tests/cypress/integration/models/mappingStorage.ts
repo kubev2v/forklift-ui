@@ -1,7 +1,7 @@
 import { Mapping } from './mapping';
 import { clickByText } from '../../utils/utils';
 import { storage } from '../types/constants';
-import { menuNavLink } from '../views/mapping.view';
+import { menuTabLink } from '../views/mapping.view';
 import { MappingData } from '../types/types';
 
 export class MappingStorage extends Mapping {
@@ -9,7 +9,7 @@ export class MappingStorage extends Mapping {
     super.openMenu();
 
     //Clicking on Network menu item
-    clickByText(menuNavLink, storage);
+    clickByText(menuTabLink, storage);
   }
 
   create(mappingData: MappingData): void {
@@ -17,7 +17,7 @@ export class MappingStorage extends Mapping {
     this.openMenu();
 
     //Clicking on Network menu item
-    clickByText(menuNavLink, storage);
+    clickByText(menuTabLink, storage);
 
     //Creating new mapping instance
     this.createDialog(mappingData);

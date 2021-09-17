@@ -21,7 +21,8 @@ export enum FilterType {
 
 export type FilterValue = string[] | undefined | null;
 
-export interface OptionPropsWithKey extends SelectOptionProps {
+// TODO workaround until https://github.com/patternfly/patternfly-react/pull/6147 is GA
+export interface OptionPropsWithKey extends Omit<SelectOptionProps, 'isLastOptionBeforeFooter'> {
   key: string;
 }
 

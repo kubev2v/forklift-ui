@@ -14,8 +14,8 @@
 
 /**
  * @type {Cypress.PluginConfig}
+ * @param on: used to hook into various events Cypress emits
+ * @param config: the resolved Cypress config
  */
-module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-};
+// eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+module.exports = (on, config) => {};

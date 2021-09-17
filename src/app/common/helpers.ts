@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { StatusCategoryType, PlanStatusType, StepType, ProviderType } from '@app/common/constants';
+import { StatusCategoryType, ConditionType, StepType, ProviderType } from '@app/common/constants';
 import {
   ICR,
   IObjectReference,
@@ -18,7 +18,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
 
-export const hasCondition = (conditions: IStatusCondition[], type: string): boolean => {
+export const hasCondition = (conditions: IStatusCondition[], type: ConditionType): boolean => {
   return !!conditions.find((condition) => condition.type === type);
 };
 
@@ -45,10 +45,10 @@ export const getMostSeriousCondition = (conditions: IStatusCondition[]): string 
     return 'Pending';
   }
   if (
-    hasCondition(conditions, PlanStatusType.Ready) ||
+    hasCondition(conditions, 'Ready') ||
     conditions.find((condition) => condition.reason === 'Completed')
   ) {
-    return PlanStatusType.Ready;
+    return 'Ready';
   }
   if (findConditionByCategory(conditions, StatusCategoryType.Required)) {
     return StatusCategoryType.Required;

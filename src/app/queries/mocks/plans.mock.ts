@@ -1,6 +1,6 @@
 import { IPlan, IPlanVM, IVMStatus } from '../types';
 import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META, archivedPlanLabel } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
 import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
@@ -468,14 +468,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         ...vmStatus1.pipeline[0],
         error: {
           phase: 'DiskTransferFailed',
-          reasons: ['Error transferring disks'],
+          reasons: ['Could not transfer disks'],
         },
       },
       { ...vmStatus1.pipeline[1], started: undefined },
     ],
     error: {
       phase: 'DiskTransfer',
-      reasons: ['Error transferring disks'],
+      reasons: ['Could not transfer disks'],
     },
   };
 
@@ -488,13 +488,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         completed: '2020-10-10T15:58:10Z',
         error: {
           phase: 'ImageConversionFailed',
-          reasons: ['Error converting image'],
+          reasons: ['Could not convert image'],
         },
       },
     ],
     error: {
       phase: 'ImageConversion',
-      reasons: ['Error converting image'],
+      reasons: ['Could not convert image'],
     },
   };
 
@@ -782,7 +782,13 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const plan9: IPlan = {
     ...plan1,
-    metadata: { ...plan1.metadata, name: 'plantest-09' },
+    metadata: {
+      ...plan1.metadata,
+      name: 'plantest-09',
+      annotations: {
+        [`${archivedPlanLabel}`]: 'true',
+      },
+    },
     spec: { ...plan7.spec, description: 'failed before cutover' },
     status: {
       conditions: [

@@ -16,7 +16,6 @@ import {
   SelectProps,
 } from '@patternfly/react-core';
 import {
-  PlanStatusType,
   ProviderType,
   PROVIDER_TYPE_NAMES,
   SOURCE_PROVIDER_TYPES,
@@ -93,8 +92,7 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
     const clusterProvider = option.value;
     const inventoryProvider = getMatchingInventoryProvider(clusterProvider);
     const isReady =
-      !!inventoryProvider &&
-      hasCondition(clusterProvider.status?.conditions || [], PlanStatusType.Ready);
+      !!inventoryProvider && hasCondition(clusterProvider.status?.conditions || [], 'Ready');
     return (
       <SelectOption
         key={clusterProvider.metadata.name}
@@ -121,8 +119,8 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
     <ResolvedQueries
       results={[inventoryProvidersQuery, clusterProvidersQuery]}
       errorTitles={[
-        'Error loading provider inventory data',
-        'Error loading providers from cluster',
+        'Could not load provider inventory data',
+        'Could not load providers from cluster',
       ]}
       spinnerMode={QuerySpinnerMode.Inline}
     >

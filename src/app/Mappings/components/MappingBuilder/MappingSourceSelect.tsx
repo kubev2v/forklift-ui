@@ -36,11 +36,13 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
         (item, index) => item.source?.selfLink === source.selfLink && index !== itemIndex
       )
   );
+
   const options: OptionWithValue<MappingSource>[] = filteredSources.map((source) => ({
     value: source,
     toString: () => source.name,
     props: {
       children: <TruncatedText>{source.name}</TruncatedText>,
+      description: <TruncatedText>{source.path}</TruncatedText>,
     },
   }));
   const selectedOption = options.filter(

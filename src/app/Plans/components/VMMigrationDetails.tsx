@@ -41,7 +41,7 @@ import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
 import TableEmptyState from '@app/common/components/TableEmptyState';
-import { SourceVM, IVMStatus } from '@app/queries/types';
+import { IVMStatus } from '@app/queries/types';
 import {
   findLatestMigration,
   useCancelVMsMutation,
@@ -50,13 +50,11 @@ import {
   useInventoryProvidersQuery,
   findProvidersByRefs,
   useSourceVMsQuery,
-  findVMById,
 } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import { PlanStatusType } from '@app/common/constants';
 import ConfirmModal from '@app/common/components/ConfirmModal';
-import { getWarmPlanState } from './helpers';
+import { getPlanState } from './helpers';
 import VMStatusPrecopyTable from './VMStatusPrecopyTable';
 import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
@@ -100,20 +98,22 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
+  const getVMName = (vmStatus: IVMStatus) => vmsQuery.data?.vmsById[vmStatus.id]?.name || '';
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
-  const warmPlanState = getWarmPlanState(plan || null, latestMigration, migrationsQuery);
+  const planState = getPlanState(plan || null, latestMigration, migrationsQuery);
   const isShowingPrecopyView =
     !!plan?.spec.warm &&
-    (warmPlanState === 'Starting' ||
-      warmPlanState === 'Copying' ||
-      warmPlanState === 'AbortedCopying');
+    (planState === 'Starting' ||
+      planState === 'Copying' ||
+      planState === 'CanceledCopying' ||
+      planState === 'FailedCopying');
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
       '', // Expand/collapse control column
-      findVMById(vmStatus.id, vmsQuery)?.name || '',
+      getVMName(vmStatus),
       ...(!isShowingPrecopyView
         ? [
             vmStatus.started || '',
@@ -131,9 +131,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       title: 'Name',
       type: FilterType.search,
       placeholderText: 'Filter by name ...',
-      getItemValue: (item) => {
-        return findVMById(item.id, vmsQuery)?.name || '';
-      },
+      getItemValue: getVMName,
     },
     ...(!isShowingPrecopyView
       ? [
@@ -212,7 +210,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
 
   const isVMCanceled = (vm: IVMStatus) =>
     !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
-  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], PlanStatusType.Executing)
+  const cancelableVMs = !hasCondition(plan?.status?.conditions || [], 'Executing')
     ? []
     : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
   const selectAllCancelable = (isSelected: boolean) =>
@@ -280,7 +278,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       disableSelection: !cancelableVMs.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
-        findVMById(vmStatus.id, vmsQuery)?.name || '',
+        getVMName(vmStatus),
         ...(!isShowingPrecopyView
           ? [
               formatTimestamp(vmStatus.started),
@@ -327,9 +325,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         <ResolvedQueries
           results={[plansQuery, providersQuery, vmsQuery]}
           errorTitles={[
-            'Error loading plan details',
-            'Error loading providers',
-            'Error loading VMs',
+            'Could not load plan details',
+            'Could not load providers',
+            'Could not load VMs',
           ]}
           errorsInline={false}
           emptyStateBody={LONG_LOADING_MESSAGE}
@@ -401,9 +399,8 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}
         mutateFn={() => {
-          const vmsToCancel = selectedItems.map((vmStatus) => findVMById(vmStatus.id, vmsQuery));
-          if (vmsToCancel.some((vm) => !vm)) return;
-          cancelVMsMutation.mutate(vmsToCancel as SourceVM[]);
+          const vmsToCancel = vmsQuery.data?.findVMsByIds(selectedItems.map(({ id }) => id)) || [];
+          cancelVMsMutation.mutate(vmsToCancel);
         }}
         mutateResult={cancelVMsMutation}
         title="Cancel migrations?"
@@ -414,15 +411,15 @@ const VMMigrationDetails: React.FunctionComponent = () => {
             Migration of the following VMs will be stopped, and any partially created resources on
             the target provider will be deleted.
             <List className={spacing.mtSm}>
-              {selectedItems.map((vm) => (
-                <ListItem key={vm.id}>
-                  <strong>{findVMById(vm.id, vmsQuery)?.name || ''}</strong>
+              {selectedItems.map((vmStatus) => (
+                <ListItem key={vmStatus.id}>
+                  <strong>{getVMName(vmStatus)}</strong>
                 </ListItem>
               ))}
             </List>
           </>
         }
-        errorText="Error canceling migrations"
+        errorText="Could not cancel migrations"
       />
     </>
   );

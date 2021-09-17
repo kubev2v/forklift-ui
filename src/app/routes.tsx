@@ -98,7 +98,14 @@ export const routes: AppRouteConfig[] = [
     component: PlanWizard,
     exact: false,
     path: '/plans/:planName/edit',
-    title: `${APP_TITLE} | Create Migration Plan`,
+    title: `${APP_TITLE} | Edit Migration Plan`,
+    isProtected: true,
+  },
+  {
+    component: PlanWizard,
+    exact: false,
+    path: '/plans/:planName/duplicate',
+    title: `${APP_TITLE} | Duplicate Migration Plan`,
     isProtected: true,
   },
   {

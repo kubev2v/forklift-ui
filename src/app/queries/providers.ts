@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
 import * as yup from 'yup';
 import Q from 'q';
@@ -51,12 +52,16 @@ export const useClusterProvidersQuery = (): UseQueryResult<IKubeList<IProviderOb
 };
 
 export const useInventoryProvidersQuery = () => {
+  const sortIndexedDataByNameCallback = React.useCallback(
+    (data): IProvidersByType => sortIndexedDataByName(data),
+    []
+  );
   const result = useMockableQuery<IProvidersByType>(
     {
       queryKey: 'inventory-providers',
       queryFn: useAuthorizedFetch(getInventoryApiUrl('/providers?detail=1')),
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortIndexedDataByName,
+      select: sortIndexedDataByNameCallback,
     },
     MOCK_INVENTORY_PROVIDERS
   );
@@ -74,7 +79,6 @@ export const useCreateProviderMutation = (
 > => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   const postProvider = async (values: AddProviderFormValues) => {
     const providerWithoutSecret: IProviderObject = convertFormValuesToProvider(
@@ -184,7 +188,6 @@ export const useCreateProviderMutation = (
     onSuccess: () => {
       queryClient.invalidateQueries('cluster-providers');
       queryClient.invalidateQueries('inventory-providers');
-      pollFasterAfterMutation();
       onSuccess(providerType);
     },
   });
@@ -202,7 +205,6 @@ export const usePatchProviderMutation = (
 > => {
   const client = useAuthorizedK8sClient();
   const queryClient = useQueryClient();
-  const { pollFasterAfterMutation } = usePollingContext();
 
   const patchProvider = async (values: AddProviderFormValues) => {
     const providerWithoutSecret: IProviderObject = convertFormValuesToProvider(
@@ -237,7 +239,6 @@ export const usePatchProviderMutation = (
     onSuccess: () => {
       queryClient.invalidateQueries('cluster-providers');
       queryClient.invalidateQueries('inventory-providers');
-      pollFasterAfterMutation();
       onSuccess && onSuccess();
     },
   });
@@ -259,7 +260,7 @@ export const useDeleteProviderMutation = (
             ? {
                 ...oldData,
                 items: oldData.items.filter(
-                  (item) => item.metadata.name !== provider.metadata.name
+                  (item) => !isSameResource(item.metadata, provider.metadata)
                 ),
               }
             : mockKubeList([], 'Providers')
@@ -271,7 +272,7 @@ export const useDeleteProviderMutation = (
               ...oldData,
               [providerType]: (
                 (oldData ? oldData[providerType] : []) as InventoryProvider[]
-              ).filter((p) => p.name !== provider.metadata.name),
+              ).filter((p) => !isSameResource(p, provider.metadata)),
             } as IProvidersByType)
         );
         onSuccess && onSuccess();

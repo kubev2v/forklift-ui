@@ -6,29 +6,44 @@ import {
   DropdownPosition,
   Modal,
   Button,
+  TextContent,
+  Text,
+  List,
+  ListItem,
 } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
 import { IPlan } from '@app/queries/types';
-import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { useClusterProvidersQuery, useDeletePlanMutation } from '@app/queries';
+import {
+  useClusterProvidersQuery,
+  useDeletePlanMutation,
+  useArchivePlanMutation,
+} from '@app/queries';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
+import { PlanState, archivedPlanLabel } from '@app/common/constants';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
+  planState: PlanState | null;
 }
 
 const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> = ({
   plan,
+  planState,
 }: IPlansActionDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [isArchivePlanModalOpen, toggleArchivePlanModal] = React.useReducer(
+    (isOpen) => !isOpen,
+    false
+  );
   const deletePlanMutation = useDeletePlanMutation(toggleDeleteModal);
+  const archivePlanMutation = useArchivePlanMutation(toggleArchivePlanModal);
   const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -37,6 +52,11 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
     [kebabIsOpen, clusterProvidersQuery, plan.spec.provider]
   );
   const isPlanStarted = !!plan.status?.migration?.started;
+  const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
+  const isPlanCompleted =
+    !planState?.toLowerCase().includes('finished') &&
+    !planState?.toLowerCase().includes('failed') &&
+    !planState?.toLowerCase().includes('canceled');
   return (
     <>
       <Dropdown
@@ -49,7 +69,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             key="edit"
             isTooltipEnabled={isPlanStarted || !areProvidersReady}
             content={
-              isPlanStarted
+              isPlanArchived
+                ? 'This plan cannot be edited because it has been archived'
+                : isPlanStarted
                 ? 'This plan cannot be edited because it has been started'
                 : !areProvidersReady
                 ? 'This plan cannot be edited because the inventory data for its associated providers is not ready'
@@ -57,7 +79,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             }
           >
             <DropdownItem
-              isDisabled={isPlanStarted || !areProvidersReady}
+              isDisabled={isPlanStarted || !areProvidersReady || isPlanArchived}
               onClick={() => {
                 setKebabIsOpen(false);
                 history.push(`/plans/${plan.metadata.name}/edit`);
@@ -66,13 +88,40 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
               Edit
             </DropdownItem>
           </ConditionalTooltip>,
+          <DropdownItem
+            key="duplicate"
+            onClick={() => {
+              setKebabIsOpen(false);
+              history.push(`/plans/${plan.metadata.name}/duplicate`);
+            }}
+          >
+            Duplicate
+          </DropdownItem>,
+          <ConditionalTooltip
+            key="archive-tooltip"
+            isTooltipEnabled={isPlanCompleted || isPlanArchived}
+            content={
+              isPlanArchived
+                ? 'Plans cannot be unarchived.'
+                : 'This plan cannot be archived because it is not completed.'
+            }
+          >
+            <DropdownItem
+              isDisabled={isPlanCompleted || isPlanArchived}
+              key="archive"
+              onClick={() => {
+                setKebabIsOpen(false);
+                toggleArchivePlanModal();
+              }}
+            >
+              Archive
+            </DropdownItem>
+          </ConditionalTooltip>,
           <ConditionalTooltip
             key="Delete"
-            isTooltipEnabled={
-              hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
-            }
+            isTooltipEnabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
             content={
-              hasCondition(conditions, PlanStatusType.Executing)
+              hasCondition(conditions, 'Executing')
                 ? 'This plan cannot be deleted because it is running'
                 : deletePlanMutation.isLoading
                 ? 'This plan cannot be deleted because it is deleting'
@@ -80,9 +129,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             }
           >
             <DropdownItem
-              isDisabled={
-                hasCondition(conditions, PlanStatusType.Executing) || deletePlanMutation.isLoading
-              }
+              isDisabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
               onClick={() => {
                 setKebabIsOpen(false);
                 toggleDeleteModal();
@@ -108,15 +155,10 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
         toggleOpen={toggleDeleteModal}
         mutateFn={() => deletePlanMutation.mutate(plan)}
         mutateResult={deletePlanMutation}
-        title="Delete migration plan"
+        title="Permanently delete migration plan?"
         confirmButtonText="Delete"
-        body={
-          <>
-            Are you sure you want to delete the migration plan &quot;
-            <strong>{plan.metadata.name}</strong>&quot;?
-          </>
-        }
-        errorText="Error deleting plan"
+        body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
+        errorText="Could not delete migration plan"
       />
       <Modal
         variant="medium"
@@ -131,8 +173,39 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
       >
         <PlanDetailsModal plan={plan} />
       </Modal>
+      <Modal
+        variant="medium"
+        title="Archive plan"
+        isOpen={isArchivePlanModalOpen}
+        onClose={toggleArchivePlanModal}
+        actions={[
+          <Button
+            key="archive"
+            variant="primary"
+            onClick={() => {
+              archivePlanMutation.mutate(plan);
+            }}
+          >
+            Archive
+          </Button>,
+          <Button key="cancel-archive" variant="secondary" onClick={toggleArchivePlanModal}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        <TextContent>
+          <Text>Archiving a plan means:</Text>
+          <List>
+            <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
+            <ListItem>Migration logs are deleted.</ListItem>
+            <ListItem>
+              The plan can no longer be edited or restarted, but it can be viewed.
+            </ListItem>
+          </List>
+        </TextContent>
+      </Modal>
     </>
   );
 };
 
-export default PlansActionsDropdown;
+export { PlansActionsDropdown };

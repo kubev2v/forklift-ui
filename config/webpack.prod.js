@@ -9,9 +9,7 @@ module.exports = merge(common('production'), {
   mode: 'production',
   devtool: 'source-map',
   optimization: {
-    minimizer: [
-      new TerserJSPlugin({}),
-    ],
+    minimizer: [new TerserJSPlugin({})],
   },
   plugins: [
     new MiniCssExtractPlugin({
@@ -24,10 +22,7 @@ module.exports = merge(common('production'), {
       {
         test: /\.css$/,
         include: [...stylePaths],
-        use: [
-          { loader: MiniCssExtractPlugin.loader },
-          { loader: 'css-loader' },
-        ],
+        use: [{ loader: MiniCssExtractPlugin.loader }, { loader: 'css-loader' }],
       },
     ],
   },

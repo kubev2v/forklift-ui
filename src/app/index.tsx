@@ -10,20 +10,32 @@ import {
   PollingContextProvider,
   LocalStorageContextProvider,
   NetworkContextProvider,
+  AppLayoutContextProvider,
 } from '@app/common/context';
+import { noop } from '@app/common/constants';
 
 const queryCache = new QueryCache();
-const queryClient = new QueryClient({ queryCache });
+const queryClient = new QueryClient({
+  queryCache,
+  defaultOptions: {
+    queries: {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App: React.FunctionComponent = () => (
   <QueryClientProvider client={queryClient}>
     <PollingContextProvider>
       <LocalStorageContextProvider>
         <NetworkContextProvider>
-          <Router>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
+          <Router getUserConfirmation={noop}>
+            <AppLayoutContextProvider>
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
+            </AppLayoutContextProvider>
           </Router>
         </NetworkContextProvider>
       </LocalStorageContextProvider>

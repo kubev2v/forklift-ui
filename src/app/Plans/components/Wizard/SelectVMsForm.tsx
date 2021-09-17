@@ -45,12 +45,10 @@ import {
   getAvailableVMs,
   getMostSevereVMConcern,
   getVMConcernStatusLabel,
-  getVMTreePathInfoByVM,
-  IVMTreePathInfo,
-  IVMTreePathInfoByVM,
+  getVMTreePathInfo,
   vmMatchesConcernFilter,
 } from './helpers';
-import { useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
+import { IndexedTree, useSourceVMsQuery } from '@app/queries';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -58,6 +56,7 @@ import VMConcernsIcon from './VMConcernsIcon';
 import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { UseQueryResult } from 'react-query';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -65,6 +64,8 @@ interface ISelectVMsFormProps {
   selectedTreeNodes: InventoryTree[];
   sourceProvider: SourceInventoryProvider | null;
   selectedVMs: SourceVM[];
+  hostTreeQuery: UseQueryResult<IndexedTree<IInventoryHostTree>, unknown>;
+  vmTreeQuery: UseQueryResult<IndexedTree<IVMwareFolderTree>, unknown>;
 }
 
 const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
@@ -73,52 +74,30 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   selectedTreeNodes,
   sourceProvider,
   selectedVMs,
+  hostTreeQuery,
+  vmTreeQuery,
 }: ISelectVMsFormProps) => {
-  const hostTreeQuery = useInventoryTreeQuery<IInventoryHostTree>(
-    sourceProvider,
-    InventoryTreeType.Cluster
-  );
-  const vmTreeQuery = useInventoryTreeQuery<IVMwareFolderTree>(
-    sourceProvider,
-    InventoryTreeType.VM
-  );
   const vmsQuery = useSourceVMsQuery(sourceProvider);
+
+  const indexedTree: IndexedTree | undefined =
+    treeType === InventoryTreeType.Cluster ? hostTreeQuery.data : vmTreeQuery.data;
 
   // Even if some of the already-selected VMs don't match the filter, include them in the list.
   const selectedVMsOnMount = React.useRef(selectedVMs);
-  const [availableVMs, setAvailableVMs] = React.useState<SourceVM[] | null>(null);
-  React.useEffect(() => {
-    if (vmsQuery.data) {
-      const filteredVMs = getAvailableVMs(selectedTreeNodes, vmsQuery.data || [], treeType);
-      setAvailableVMs([
-        ...selectedVMsOnMount.current,
-        ...filteredVMs.filter(
-          (vm) => !selectedVMsOnMount.current.some((selectedVM) => vm.id === selectedVM.id)
-        ),
-      ]);
-    }
-  }, [vmsQuery.data, selectedTreeNodes, treeType]);
+  const availableVMs = React.useMemo(
+    () =>
+      getAvailableVMs(
+        indexedTree,
+        selectedTreeNodes,
+        vmsQuery.data,
+        treeType,
+        selectedVMsOnMount.current
+      ),
+    [indexedTree, selectedTreeNodes, vmsQuery.data, treeType]
+  );
 
-  const [treePathInfoByVM, setTreePathInfoByVM] = React.useState<IVMTreePathInfoByVM | null>(null);
-  React.useEffect(() => {
-    if (
-      (availableVMs || []).length > 0 &&
-      hostTreeQuery.data &&
-      (sourceProvider?.type === 'ovirt' || vmTreeQuery.data) // Only VMware has a VM tree
-    ) {
-      setTreePathInfoByVM(
-        getVMTreePathInfoByVM(
-          availableVMs?.map((vm) => vm.selfLink) || [],
-          hostTreeQuery.data,
-          vmTreeQuery.data || null
-        )
-      );
-    }
-  }, [availableVMs, hostTreeQuery.data, sourceProvider?.type, vmTreeQuery.data]);
-  const getVMTreeInfo = (vm: SourceVM): IVMTreePathInfo => {
-    if (treePathInfoByVM) return treePathInfoByVM[vm.selfLink];
-    return { datacenter: null, cluster: null, host: null, folders: null, folderPathStr: null };
-  };
+  const getVMInfo = (vm: SourceVM) =>
+    getVMTreePathInfo(vm.selfLink, hostTreeQuery.data, vmTreeQuery.data);
 
   const filterCategories: FilterCategory<SourceVM>[] = [
     {
@@ -161,7 +140,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by datacenter ...',
       getItemValue: (item) => {
-        const { datacenter } = getVMTreeInfo(item);
+        const { datacenter } = getVMInfo(item);
         return datacenter ? datacenter.name : '';
       },
     },
@@ -171,7 +150,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by cluster ...',
       getItemValue: (item) => {
-        const { cluster } = getVMTreeInfo(item);
+        const { cluster } = getVMInfo(item);
         return cluster ? cluster.name : '';
       },
     },
@@ -181,7 +160,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by hostname...',
       getItemValue: (item) => {
-        const { host } = getVMTreeInfo(item);
+        const { host } = getVMInfo(item);
         return host ? host.name : '';
       },
     },
@@ -193,7 +172,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
             type: FilterType.search,
             placeholderText: 'Filter by folder path ...',
             getItemValue: (item: SourceVM) => {
-              const { folderPathStr } = getVMTreeInfo(item);
+              const { folderPathStr } = getVMInfo(item);
               return folderPathStr ? folderPathStr : '';
             },
           },
@@ -207,7 +186,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   );
 
   const getSortValues = (vm: SourceVM) => {
-    const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
+    const { datacenter, cluster, host, folderPathStr } = getVMInfo(vm);
     return [
       '', // Expand control column
       '', // Checkbox column
@@ -279,7 +258,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   currentPageItems.forEach((vm: SourceVM) => {
     const isExpanded = isVMExpanded(vm);
-    const { datacenter, cluster, host, folderPathStr } = getVMTreeInfo(vm);
+    const { datacenter, cluster, host, folderPathStr } = getVMInfo(vm);
 
     rows.push({
       meta: { vm },
@@ -292,7 +271,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         vm.name,
         datacenter?.name || '',
         cluster?.name || '',
-        host?.name || '',
+        host?.name || 'N/A',
         ...(sourceProvider?.type === 'vsphere' ? [folderPathStr || ''] : []),
       ],
     });
@@ -396,9 +375,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         vmsQuery,
       ]}
       errorTitles={[
-        'Error loading inventory host tree data',
-        ...(sourceProvider?.type === 'vsphere' ? ['Error loading inventory VM tree data'] : []),
-        'Error loading VMs',
+        'Could not load inventory host tree data',
+        ...(sourceProvider?.type === 'vsphere' ? ['Could not load inventory VM tree data'] : []),
+        'Could not load VMs',
       ]}
       emptyStateBody={LONG_LOADING_MESSAGE}
       forceLoadingState={!availableVMs}

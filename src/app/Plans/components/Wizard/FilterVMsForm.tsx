@@ -1,8 +1,19 @@
 import * as React from 'react';
-import { TreeView, Tabs, Tab, TabTitleText, TextContent, Text } from '@patternfly/react-core';
+import {
+  TreeView,
+  Tabs,
+  Tab,
+  TabTitleText,
+  TextContent,
+  Text,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  TreeViewSearch,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useSelectionState } from '@konveyor/lib-ui';
-import { useInventoryTreeQuery, useSourceVMsQuery } from '@app/queries';
+import { IndexedTree, useSourceVMsQuery } from '@app/queries';
 import {
   IPlan,
   SourceInventoryProvider,
@@ -11,12 +22,9 @@ import {
 } from '@app/queries/types';
 import {
   filterAndConvertInventoryTree,
-  findMatchingNode,
-  findMatchingNodeAndDescendants,
+  findMatchingSelectableDescendants,
   findNodesMatchingSelectedVMs,
-  flattenInventoryTreeNodes,
   getAvailableVMs,
-  getSelectableNodes,
   getSelectedVMsFromPlan,
   isNodeFullyChecked,
   useIsNodeSelectableCallback,
@@ -26,31 +34,31 @@ import { PlanWizardFormState } from './PlanWizard';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { usePausedPollingEffect } from '@app/common/context';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+import { UseQueryResult } from 'react-query';
 
 interface IFilterVMsFormProps {
   form: PlanWizardFormState['filterVMs'];
+  treeQuery: UseQueryResult<IndexedTree<InventoryTree>, unknown>;
   sourceProvider: SourceInventoryProvider | null;
-  planBeingEdited: IPlan | null;
+  planBeingPrefilled: IPlan | null;
 }
-
-// TODO also for the folder path column, make a hash of folder ids to tree nodes, so we can walk up their parents to build the path string
 
 const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
+  treeQuery,
   sourceProvider,
-  planBeingEdited,
+  planBeingPrefilled,
 }: IFilterVMsFormProps) => {
   usePausedPollingEffect();
 
   const [searchText, setSearchText] = React.useState('');
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const treeQuery = useInventoryTreeQuery(sourceProvider, form.values.treeType);
 
   const isNodeSelectable = useIsNodeSelectableCallback(form.values.treeType);
 
   const treeSelection = useSelectionState({
-    items: getSelectableNodes(treeQuery.data || null, isNodeSelectable),
+    items: treeQuery.data?.flattenedNodes.filter(isNodeSelectable) || [],
     externalState: [form.fields.selectedTreeNodes.value, form.fields.selectedTreeNodes.setValue],
     isEqual: (a: InventoryTree, b: InventoryTree) => a.object?.selfLink === b.object?.selfLink,
   });
@@ -61,13 +69,13 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     // Clear or reset selection when the tree type tab changes
     const treeTypeChanged = form.values.treeType !== lastTreeType.current;
     if (!isFirstRender.current && treeTypeChanged) {
-      if (!planBeingEdited || !form.values.isPrefilled) {
+      if (!planBeingPrefilled || !form.values.isPrefilled) {
         treeSelection.selectAll(false);
         lastTreeType.current = form.values.treeType;
       } else if (vmsQuery.isSuccess && treeQuery.isSuccess) {
-        const selectedVMs = getSelectedVMsFromPlan(planBeingEdited, vmsQuery);
+        const selectedVMs = getSelectedVMsFromPlan(planBeingPrefilled, vmsQuery.data);
         const selectedTreeNodes = findNodesMatchingSelectedVMs(
-          treeQuery.data || null,
+          treeQuery.data,
           selectedVMs,
           isNodeSelectable
         );
@@ -79,7 +87,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   }, [
     form.values.treeType,
     form.values.isPrefilled,
-    planBeingEdited,
+    planBeingPrefilled,
     treeQuery,
     vmsQuery,
     treeSelection,
@@ -87,16 +95,49 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   ]);
 
   const getNodeBadgeContent = (node: InventoryTree, isRootNode: boolean) => {
+    if (!treeQuery.data) return null;
     const { treeType } = form.values;
     const { isItemSelected, selectedItems } = treeSelection;
-    const selectedDescendants = flattenInventoryTreeNodes(node).filter(isItemSelected);
-    const numVMs = getAvailableVMs(selectedDescendants, vmsQuery.data || [], treeType).length;
+    const allDescendants = isRootNode
+      ? treeQuery.data.flattenedNodes
+      : treeQuery.data.getDescendants(node, true);
+    const selectedDescendants = allDescendants.filter(isItemSelected);
+    const numVMs = getAvailableVMs(
+      treeQuery.data,
+      selectedDescendants,
+      vmsQuery.data,
+      treeType
+    ).length;
     const rootNodeSuffix = ` VM${numVMs !== 1 ? 's' : ''}`;
     if (numVMs || isItemSelected(node) || (isRootNode && selectedItems.length > 0)) {
       return `${numVMs}${isRootNode ? rootNodeSuffix : ''}`;
     }
     return null;
   };
+
+  const treeViewData = filterAndConvertInventoryTree(
+    treeQuery.data || null,
+    searchText,
+    treeSelection.isItemSelected,
+    treeSelection.areAllSelected,
+    isNodeSelectable,
+    getNodeBadgeContent
+  );
+
+  const toolbar = (
+    <Toolbar style={{ padding: 0 }}>
+      <ToolbarContent style={{ padding: 0 }}>
+        <ToolbarItem widths={{ default: '100%' }}>
+          <TreeViewSearch
+            onSearch={(event) => setSearchText(event.target.value)}
+            id="inventory-search"
+            name="search-inventory"
+            aria-label="Search inventory"
+          />
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
+  );
 
   return (
     <div className="plan-wizard-filter-vms-form">
@@ -126,47 +167,41 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       ) : null}
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
-        errorTitles={['Error loading VMs', 'Error loading inventory tree data']}
+        errorTitles={['Could not load VMs', 'Could not load inventory tree data']}
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView
-          data={filterAndConvertInventoryTree(
-            treeQuery.data || null,
-            searchText,
-            treeSelection.isItemSelected,
-            treeSelection.areAllSelected,
-            isNodeSelectable,
-            getNodeBadgeContent
-          )}
+          data={treeViewData}
           defaultAllExpanded
+          allExpanded={true}
           hasChecks
           hasBadges
-          onSearch={(event) => setSearchText(event.target.value)}
+          hasGuides
           onCheck={(_event, treeViewItem) => {
             if (treeViewItem.id === 'converted-root') {
               treeSelection.selectAll(!treeSelection.areAllSelected);
-            } else {
-              const matchingNode = findMatchingNode(treeQuery.data || null, treeViewItem.id || '');
-              const isFullyChecked = isNodeFullyChecked(
-                matchingNode,
-                treeSelection.isItemSelected,
-                isNodeSelectable
-              );
-              const nodesToSelect = findMatchingNodeAndDescendants(
-                treeQuery.data || null,
-                treeViewItem.id || '',
-                isNodeSelectable
-              );
-              if (nodesToSelect.length > 0) {
-                treeSelection.selectMultiple(nodesToSelect, !isFullyChecked);
+            } else if (treeQuery.data) {
+              const ancestors = treeQuery.data.ancestorsBySelfLink[treeViewItem.id || ''];
+              if (ancestors) {
+                const matchingNode = ancestors[ancestors.length - 1];
+                const isFullyChecked = isNodeFullyChecked(
+                  treeQuery.data,
+                  matchingNode,
+                  treeSelection.isItemSelected,
+                  isNodeSelectable
+                );
+                const nodesToSelect = findMatchingSelectableDescendants(
+                  treeQuery.data,
+                  matchingNode,
+                  isNodeSelectable
+                );
+                if (nodesToSelect.length > 0) {
+                  treeSelection.selectMultiple(nodesToSelect, !isFullyChecked);
+                }
               }
             }
           }}
-          searchProps={{
-            id: 'inventory-search',
-            name: 'search-inventory',
-            'aria-label': 'Search inventory',
-          }}
+          toolbar={toolbar}
         />
       </ResolvedQueries>
     </div>

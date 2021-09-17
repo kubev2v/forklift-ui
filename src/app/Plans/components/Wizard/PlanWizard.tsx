@@ -11,11 +11,11 @@ import {
   WizardStep,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
-import { Link, Prompt, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { UseQueryResult } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
-
+import { RouteGuard } from '@app/common/components/RouteGuard';
 import WizardStepContainer from './WizardStepContainer';
 import GeneralForm from './GeneralForm';
 import FilterVMsForm from './FilterVMsForm';
@@ -33,12 +33,13 @@ import {
   SourceInventoryProvider,
   InventoryTree,
   InventoryTreeType,
+  IVMwareFolderTree,
 } from '@app/queries/types';
 import {
   IMappingBuilderItem,
   mappingBuilderItemsSchema,
 } from '@app/Mappings/components/MappingBuilder';
-import { generateMappings, getSelectedVMsFromIds, useEditingPlanPrefillEffect } from './helpers';
+import { generateMappings, usePlanWizardPrefillEffect } from './helpers';
 import {
   getMappingNameSchema,
   useMappingsQuery,
@@ -48,6 +49,8 @@ import {
   usePlansQuery,
   useCreateMappingMutations,
   useSourceVMsQuery,
+  useInventoryTreeQuery,
+  IndexedTree,
 } from '@app/queries';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
@@ -58,6 +61,8 @@ import { PlanHookInstance } from './PlanAddEditHookModal';
 
 import './PlanWizard.css';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
+
+export type PlanWizardMode = 'create' | 'edit' | 'duplicate';
 
 const useMappingFormState = (mappingsQuery: UseQueryResult<IKubeList<Mapping>>) => {
   const isSaveNewMapping = useFormField(false, yup.boolean().required());
@@ -79,13 +84,14 @@ const usePlanWizardFormState = (
   plansQuery: UseQueryResult<IKubeList<IPlan>>,
   networkMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
   storageMappingsQuery: UseQueryResult<IKubeList<Mapping>>,
-  planBeingEdited: IPlan | null
+  planBeingPrefilled: IPlan | null,
+  wizardMode: PlanWizardMode
 ) => {
   const forms = {
     general: useFormState({
       planName: useFormField(
         '',
-        getPlanNameSchema(plansQuery, planBeingEdited).label('Plan name').required()
+        getPlanNameSchema(plansQuery, planBeingPrefilled, wizardMode).label('Plan name').required()
       ),
       planDescription: useFormField('', yup.string().label('Plan description').defined()),
       sourceProvider: useFormField<SourceInventoryProvider | null>(
@@ -150,23 +156,31 @@ const PlanWizard: React.FunctionComponent = () => {
     strict: true,
     sensitive: true,
   });
-  const planBeingEdited =
-    plansQuery.data?.items.find((plan) => plan.metadata.name === editRouteMatch?.params.planName) ||
-    null;
+  const duplicateRouteMatch = useRouteMatch<{ planName: string }>({
+    path: '/plans/:planName/duplicate',
+    strict: true,
+    sensitive: true,
+  });
+  const wizardMode = editRouteMatch ? 'edit' : duplicateRouteMatch ? 'duplicate' : 'create';
+
+  const prefillPlanName = editRouteMatch?.params.planName || duplicateRouteMatch?.params.planName;
+  const planBeingPrefilled =
+    plansQuery.data?.items.find((plan) => plan.metadata.name === prefillPlanName) || null;
 
   const forms = usePlanWizardFormState(
     plansQuery,
     networkMappingsQuery,
     storageMappingsQuery,
-    planBeingEdited
+    planBeingPrefilled,
+    wizardMode
   );
 
   const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
 
-  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = useEditingPlanPrefillEffect(
+  const { isDonePrefilling, prefillQueries, prefillErrorTitles } = usePlanWizardPrefillEffect(
     forms,
-    planBeingEdited,
-    !!editRouteMatch
+    planBeingPrefilled,
+    wizardMode
   );
 
   enum StepId {
@@ -226,10 +240,10 @@ const PlanWizard: React.FunctionComponent = () => {
   };
 
   const onSave = () => {
-    if (!planBeingEdited) {
+    if (wizardMode === 'create' || wizardMode === 'duplicate') {
       createPlanMutation.mutate(forms);
-    } else {
-      patchPlanMutation.mutate({ planBeingEdited, forms });
+    } else if (wizardMode === 'edit' && planBeingPrefilled) {
+      patchPlanMutation.mutate({ planBeingEdited: planBeingPrefilled, forms });
     }
     createSharedMappings();
   };
@@ -240,9 +254,9 @@ const PlanWizard: React.FunctionComponent = () => {
     ...(forms.storageMapping.values.isSaveNewMapping ? [createSharedStorageMapMutation] : []),
   ];
   const allMutationErrorTitles = [
-    !editRouteMatch ? 'Error creating migration plan' : 'Error saving migration plan',
-    ...(forms.networkMapping.values.isSaveNewMapping ? ['Error creating network mapping'] : []),
-    ...(forms.storageMapping.values.isSaveNewMapping ? ['Error creating storage mapping'] : []),
+    !editRouteMatch ? 'Could not create migration plan' : 'Could not save migration plan',
+    ...(forms.networkMapping.values.isSaveNewMapping ? ['Could not create network mapping'] : []),
+    ...(forms.storageMapping.values.isSaveNewMapping ? ['Could not create storage mapping'] : []),
   ];
   const mutationStatus = getAggregateQueryStatus(allMutationResults);
 
@@ -251,7 +265,16 @@ const PlanWizard: React.FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutationStatus]);
 
-  const selectedVMs = getSelectedVMsFromIds(forms.selectVMs.values.selectedVMIds, vmsQuery);
+  const selectedVMs = vmsQuery.data?.findVMsByIds(forms.selectVMs.values.selectedVMIds) || [];
+
+  const clusterTreeQuery = useInventoryTreeQuery(
+    forms.general.values.sourceProvider,
+    InventoryTreeType.Cluster
+  );
+  const vmTreeQuery = useInventoryTreeQuery(
+    forms.general.values.sourceProvider,
+    InventoryTreeType.VM
+  );
 
   const steps: WizardStep[] = [
     {
@@ -259,7 +282,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} planBeingEdited={planBeingEdited} />
+          <GeneralForm form={forms.general} wizardMode={wizardMode} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
@@ -273,9 +296,14 @@ const PlanWizard: React.FunctionComponent = () => {
           component: (
             <WizardStepContainer title="Filter by VM location">
               <FilterVMsForm
+                treeQuery={
+                  forms.filterVMs.values.treeType === InventoryTreeType.Cluster
+                    ? clusterTreeQuery
+                    : vmTreeQuery
+                }
                 form={forms.filterVMs}
                 sourceProvider={forms.general.values.sourceProvider}
-                planBeingEdited={planBeingEdited}
+                planBeingPrefilled={planBeingPrefilled}
               />
             </WizardStepContainer>
           ),
@@ -288,6 +316,8 @@ const PlanWizard: React.FunctionComponent = () => {
           component: (
             <WizardStepContainer title="Select VMs">
               <SelectVMsForm
+                hostTreeQuery={clusterTreeQuery}
+                vmTreeQuery={vmTreeQuery as UseQueryResult<IndexedTree<IVMwareFolderTree>, unknown>}
                 form={forms.selectVMs}
                 treeType={forms.filterVMs.values.treeType}
                 selectedTreeNodes={forms.filterVMs.values.selectedTreeNodes}
@@ -313,7 +343,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
             selectedVMs={selectedVMs}
-            planBeingEdited={planBeingEdited}
+            planBeingPrefilled={planBeingPrefilled}
           />
         </WizardStepContainer>
       ),
@@ -332,7 +362,7 @@ const PlanWizard: React.FunctionComponent = () => {
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
             selectedVMs={selectedVMs}
-            planBeingEdited={planBeingEdited}
+            planBeingPrefilled={planBeingPrefilled}
           />
         </WizardStepContainer>
       ),
@@ -374,7 +404,7 @@ const PlanWizard: React.FunctionComponent = () => {
             forms={forms}
             allMutationResults={allMutationResults}
             allMutationErrorTitles={allMutationErrorTitles}
-            planBeingEdited={planBeingEdited}
+            wizardMode={wizardMode}
             selectedVMs={selectedVMs}
           />
         </WizardStepContainer>
@@ -391,13 +421,15 @@ const PlanWizard: React.FunctionComponent = () => {
     }
   };
 
+  const wizardTitle = `${wizardMode === 'edit' ? 'Edit' : 'Create'} migration plan`;
+
   return (
     <ResolvedQueries
       results={[plansQuery, networkMappingsQuery, storageMappingsQuery, ...prefillQueries]}
       errorTitles={[
-        'Error loading plans',
-        'Error loading network mappings',
-        'Error loading storage mappings',
+        'Could not load plans',
+        'Could not load network mappings',
+        'Could not load storage mappings',
         ...prefillErrorTitles,
       ]}
       errorsInline={false}
@@ -406,32 +438,29 @@ const PlanWizard: React.FunctionComponent = () => {
     >
       {!isDonePrefilling ? (
         <LoadingEmptyState />
-      ) : editRouteMatch && (!planBeingEdited || planBeingEdited?.status?.migration?.started) ? (
+      ) : wizardMode === 'edit' &&
+        (!planBeingPrefilled || planBeingPrefilled?.status?.migration?.started) ? (
         <Redirect to="/plans" />
       ) : (
         <>
-          <Prompt
+          <RouteGuard
             when={forms.isSomeFormDirty && mutationStatus === 'idle'}
-            message="You have unsaved changes, are you sure you want to leave this page?"
+            title="Leave this page?"
+            message="All unsaved changes will be lost."
           />
-          <PageSection
-            title={`${!planBeingEdited ? 'Create' : 'Edit'} Migration Plan`}
-            variant="light"
-          >
+          <PageSection title={wizardTitle} variant="light">
             <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
               <BreadcrumbItem>
                 <Link to={`/plans`}>Migration plans</Link>
               </BreadcrumbItem>
-              {planBeingEdited ? (
-                <BreadcrumbItem>{planBeingEdited.metadata.name}</BreadcrumbItem>
+              {planBeingPrefilled ? (
+                <BreadcrumbItem>{planBeingPrefilled.metadata.name}</BreadcrumbItem>
               ) : null}
-              <BreadcrumbItem>{!planBeingEdited ? 'Create' : 'Edit'}</BreadcrumbItem>
+              <BreadcrumbItem>{wizardMode.replace(/^\w/, (c) => c.toUpperCase())}</BreadcrumbItem>
             </Breadcrumb>
             <Level>
               <LevelItem>
-                <Title headingLevel="h1">
-                  {!planBeingEdited ? 'Create' : 'Edit'} migration plan
-                </Title>
+                <Title headingLevel="h1">{wizardTitle}</Title>
               </LevelItem>
             </Level>
           </PageSection>

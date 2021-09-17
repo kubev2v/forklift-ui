@@ -145,7 +145,7 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         <Stack hasGutter>
           <ResolvedQuery
             result={mutationResult}
-            errorTitle={`Error ${!mappingBeingEdited ? 'creating' : 'saving'} mapping`}
+            errorTitle={`Could not ${!mappingBeingEdited ? 'create' : 'save'} mapping`}
             spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
@@ -187,8 +187,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
         <ResolvedQueries
           results={[inventoryProvidersQuery, clusterProvidersQuery]}
           errorTitles={[
-            'Error loading provider inventory data',
-            'Error loading providers from cluster',
+            'Could not load provider inventory data',
+            'Could not load providers from cluster',
           ]}
         >
           {!isDonePrefilling ? (
@@ -246,8 +246,8 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
                 <ResolvedQueries
                   results={mappingResourceQueries.queries}
                   errorTitles={[
-                    'Error loading source provider resources',
-                    'Error loading target provider resources',
+                    'Could not load source provider resources',
+                    'Could not load target provider resources',
                   ]}
                 >
                   <MappingBuilder

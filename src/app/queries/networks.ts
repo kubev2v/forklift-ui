@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { usePollingContext } from '@app/common/context';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import {
@@ -22,13 +23,14 @@ export const useNetworksQuery = <T extends ISourceNetwork | IOpenShiftNetwork>(
   mockNetworks: T[]
 ) => {
   const apiSlug = providerRole === 'source' ? '/networks' : '/networkattachmentdefinitions';
+  const sortByNameCallback = React.useCallback((data): T[] => sortByName(data), []);
   const result = useMockableQuery<T[]>(
     {
       queryKey: ['networks', providerRole, provider?.name],
       queryFn: useAuthorizedFetch(getInventoryApiUrl(`${provider?.selfLink || ''}${apiSlug}`)),
       enabled: !!provider && (!mappingType || mappingType === MappingType.Network),
       refetchInterval: usePollingContext().refetchInterval,
-      select: sortByName,
+      select: sortByNameCallback,
     },
     mockNetworks
   );

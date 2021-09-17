@@ -2,6 +2,7 @@ export const button = 'button';
 export const nextButton = 'Next';
 export const loginButton = 'Log in';
 export const vmware = 'VMware';
+export const rhv = 'Red Hat Virtualization';
 export const ocpVirt = 'OpenShift Virtualization';
 export const addProvider = 'Add provider';
 export const selectProviderType = 'Select a provider type...';
@@ -46,6 +47,7 @@ export enum migrationType {
 
 export enum providerType {
   vmware = 'VMware',
+  rhv = 'Red Hat Virtualization',
   ocpv = 'OpenShift Virtualization',
 }
 

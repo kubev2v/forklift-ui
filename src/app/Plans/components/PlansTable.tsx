@@ -5,9 +5,9 @@ import {
   Pagination,
   Progress,
   ProgressMeasureLocation,
-  ProgressVariant,
   Text,
   ToolbarItem,
+  Switch,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -26,19 +26,20 @@ import {
   Tr,
   truncate,
 } from '@patternfly/react-table';
+import { ArchiveIcon } from '@patternfly/react-icons';
+import { useAppLayoutContext } from '@app/common/context/AppLayoutContext';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
-import PlanActionsDropdown from './PlanActionsDropdown';
+import { archivedPlanLabel } from '@app/common/constants';
+import { PlansActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import { PlanStatusDisplayType, PlanStatusType } from '@app/common/constants';
 import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
-import { hasCondition } from '@app/common/helpers';
 import TableEmptyState from '@app/common/components/TableEmptyState';
 import {
   findLatestMigration,
@@ -48,12 +49,7 @@ import {
 } from '@app/queries';
 
 import './PlansTable.css';
-import {
-  canPlanBeStarted,
-  getPlanStatusTitle,
-  getWarmPlanState,
-  isPlanBeingStarted,
-} from './helpers';
+import { getPlanStatusTitle, getPlanState, getButtonState, getMigStatusState } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
@@ -69,6 +65,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   errorContainerRef,
 }: IPlansTableProps) => {
+  const appLayoutContext = useAppLayoutContext();
+  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((isOpen) => !isOpen, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
@@ -119,24 +117,35 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title: 'Status',
       type: FilterType.select,
       selectOptions: [
-        { key: 'Failed', value: 'Failed' },
         { key: 'Ready', value: 'Ready' },
+        { key: 'Not Ready', value: 'Not Ready' },
         { key: 'Running', value: 'Running' },
         { key: 'Succeeded', value: 'Succeeded' },
+        { key: 'Failed', value: 'Failed' },
+        { key: 'Canceled', value: 'Canceled' },
+        { key: 'Finished - Incomplete', value: 'Finished - Incomplete' },
+        { key: 'Archived', value: 'Archived' },
       ],
-      getItemValue: (item) => {
-        if (item.status?.conditions) {
-          if (hasCondition(item.status.conditions, PlanStatusType.Failed)) return 'Failed';
-          if (hasCondition(item.status.conditions, PlanStatusType.Ready)) return 'Ready';
-          if (hasCondition(item.status.conditions, PlanStatusType.Executing)) return 'Running';
-          if (hasCondition(item.status.conditions, PlanStatusType.Succeeded)) return 'Succeeded';
-        }
-        return '';
+      getItemValue: (plan) => {
+        const latestMigration = findLatestMigration(
+          plan || null,
+          migrationsQuery.data?.items || null
+        );
+        return getMigStatusState(
+          getPlanState(plan, latestMigration, migrationsQuery),
+          plan.spec.warm
+        ).filterValue;
       },
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(plans, filterCategories);
+  const filteredPlans = showArchivedPlans
+    ? plans
+    : plans.filter((plan) => !(plan.metadata.annotations?.[archivedPlanLabel] === 'true'));
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    filteredPlans,
+    filterCategories
+  );
   const getSortValues = (plan: IPlan) => [
     '', // Expand/collapse column
     plan.metadata.name,
@@ -196,47 +205,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const rows: IRow[] = [];
 
   currentPageItems.forEach((plan: IPlan) => {
-    let buttonType: PlanActionButtonType | null = null;
-    let title = '';
-    let variant: ProgressVariant | undefined;
-
-    const conditions = plan.status?.conditions || [];
     const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
+    const isWarmPlan = plan.spec.warm;
 
-    // TODO This whole if-else pile should instead be reduced to a union type like WarmPlanState but generalized.
-    // TODO the PlanStatusType should be a union PlanConditionType and the PlanStatusDisplayType should perhaps not be a thing.
-    // TODO note, buttonType and title will only be used if <Progress> is shown in the row below, so their values don't matter for pre-cutover.
-    if (hasCondition(conditions, PlanStatusType.Ready) && !plan.status?.migration?.started) {
-      buttonType = 'Start';
-    } else if (hasCondition(conditions, PlanStatusType.Executing)) {
-      buttonType = null;
-      title = PlanStatusDisplayType.Executing;
-      if (plan.spec.warm) {
-        title = 'Running cutover';
-        if (!latestMigration?.spec.cutover) {
-          buttonType = 'Cutover';
-        }
-      }
-    } else if (hasCondition(conditions, PlanStatusType.Succeeded)) {
-      title = PlanStatusDisplayType.Succeeded;
-      variant = ProgressVariant.success;
-    } else if (hasCondition(conditions, PlanStatusType.Canceled)) {
-      title = PlanStatusDisplayType.Canceled;
-    } else if (hasCondition(conditions, PlanStatusType.Failed)) {
-      title = PlanStatusDisplayType.Failed;
-      variant = ProgressVariant.danger;
-    } else if (plan.status?.migration?.started) {
-      if (canPlanBeStarted(plan)) {
-        title = 'Finished - Incomplete';
-        variant = ProgressVariant.warning;
-      } else {
-        console.warn('Migration plan unexpected status:', plan);
-      }
-    }
-
-    if (buttonType !== 'Start' && canPlanBeStarted(plan)) {
-      buttonType = 'Restart';
-    }
+    const planState = getPlanState(plan, latestMigration, migrationsQuery);
+    const buttonType = getButtonState(planState);
+    const { title, variant } = getMigStatusState(planState, isWarmPlan);
 
     const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
 
@@ -246,10 +220,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     );
 
     const isExpanded = isPlanExpanded(plan);
-
-    const warmState = getWarmPlanState(plan, latestMigration, migrationsQuery);
-    // TODO this is redundant with getWarmPlanState's 'Starting' case, maybe generalize that helper.
-    const isBeingStarted = isPlanBeingStarted(plan, latestMigration, migrationsQuery);
+    const isBeingStarted = planState === 'Starting';
+    const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
 
     rows.push({
       meta: { plan },
@@ -265,63 +237,70 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             </>
           ),
         },
-        plan.spec.warm ? 'Warm' : 'Cold',
+        isWarmPlan ? 'Warm' : 'Cold',
         {
-          title: isBeingStarted ? (
-            <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
-          ) : warmState === 'Starting' ? (
-            <PlanStatusNavLink plan={plan}>
-              Running - preparing for incremental data copies
-            </PlanStatusNavLink>
-          ) : !plan.status?.migration?.started || warmState === 'NotStarted' ? (
-            <StatusCondition status={plan.status} />
-          ) : warmState === 'Copying' ? (
-            <PlanStatusNavLink plan={plan}>
-              Running - performing incremental data copies
-            </PlanStatusNavLink>
-          ) : warmState === 'StartingCutover' ? (
-            <PlanStatusNavLink plan={plan}>Running - preparing for cutover</PlanStatusNavLink>
-          ) : (
-            <PlanStatusNavLink plan={plan} isInline={false}>
-              <Progress
-                title={title}
-                value={statusValue}
-                label={statusMessage}
-                valueText={statusMessage}
-                variant={variant}
-                measureLocation={ProgressMeasureLocation.top}
-              />
-            </PlanStatusNavLink>
-          ),
+          title:
+            planState === 'Archived' ? (
+              <PlanStatusNavLink plan={plan}>
+                <ArchiveIcon /> Archived
+              </PlanStatusNavLink>
+            ) : isBeingStarted && !isWarmPlan ? (
+              <PlanStatusNavLink plan={plan}>Running - preparing for migration</PlanStatusNavLink>
+            ) : isBeingStarted && isWarmPlan ? (
+              <PlanStatusNavLink plan={plan}>
+                Running - preparing for incremental data copies
+              </PlanStatusNavLink>
+            ) : planState === 'NotStarted-Ready' || planState === 'NotStarted-NotReady' ? (
+              <StatusCondition status={plan.status} />
+            ) : planState === 'Copying' ? (
+              <PlanStatusNavLink plan={plan}>
+                Running - performing incremental data copies
+              </PlanStatusNavLink>
+            ) : planState === 'StartingCutover' ? (
+              <PlanStatusNavLink plan={plan}>Running - preparing for cutover</PlanStatusNavLink>
+            ) : (
+              <PlanStatusNavLink plan={plan} isInline={false}>
+                <Progress
+                  title={title}
+                  value={statusValue}
+                  label={statusMessage}
+                  valueText={statusMessage}
+                  variant={variant}
+                  measureLocation={ProgressMeasureLocation.top}
+                />
+              </PlanStatusNavLink>
+            ),
         },
         {
-          title: buttonType ? (
-            <>
-              <Flex
-                flex={{ default: 'flex_2' }}
-                spaceItems={{ default: 'spaceItemsNone' }}
-                alignItems={{ default: 'alignItemsCenter' }}
-                flexWrap={{ default: 'nowrap' }}
-              >
-                <FlexItem align={{ default: 'alignRight' }}>
-                  <MigrateOrCutoverButton
-                    plan={plan}
-                    buttonType={buttonType}
-                    isBeingStarted={isBeingStarted}
-                    errorContainerRef={errorContainerRef}
-                  />
-                </FlexItem>
-                <FlexItem>
-                  <PlanActionsDropdown plan={plan} />
-                </FlexItem>
-              </Flex>
-            </>
-          ) : !isBeingStarted ? (
-            <PlanActionsDropdown plan={plan} />
-          ) : null,
+          title:
+            buttonType && !isPlanArchived ? (
+              <>
+                <Flex
+                  flex={{ default: 'flex_2' }}
+                  spaceItems={{ default: 'spaceItemsNone' }}
+                  alignItems={{ default: 'alignItemsCenter' }}
+                  flexWrap={{ default: 'nowrap' }}
+                >
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    <MigrateOrCutoverButton
+                      plan={plan}
+                      buttonType={buttonType}
+                      isBeingStarted={isBeingStarted}
+                      errorContainerRef={errorContainerRef}
+                    />
+                  </FlexItem>
+                  <FlexItem>
+                    <PlansActionsDropdown planState={planState} plan={plan} />
+                  </FlexItem>
+                </Flex>
+              </>
+            ) : !isBeingStarted ? (
+              <PlansActionsDropdown planState={planState} plan={plan} />
+            ) : null,
         },
       ],
     });
+
     if (isExpanded) {
       rows.push({
         parent: rows.length - 1,
@@ -363,9 +342,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         filterValues={filterValues}
         setFilterValues={setFilterValues}
         endToolbarItems={
-          <ToolbarItem>
-            <CreatePlanButton variant="secondary" />
-          </ToolbarItem>
+          <>
+            <ToolbarItem>
+              <CreatePlanButton variant="secondary" />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Switch
+                className="pf-u-pt-xs"
+                id="archive-results-switch"
+                label={appLayoutContext.isMobileView ? null : 'Show archived'}
+                labelOff={appLayoutContext.isMobileView ? null : 'Hide archived'}
+                isChecked={showArchivedPlans}
+                onChange={() => {
+                  toggleShowArchivedPlans();
+                }}
+              />
+            </ToolbarItem>
+          </>
         }
         pagination={
           <Pagination
@@ -394,7 +387,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       ) : (
         <TableEmptyState
           titleText="No migration plans found"
-          bodyText="No results match your filter."
+          bodyText={
+            !showArchivedPlans && filterValues.status?.[0] === 'Archived'
+              ? 'No results match your filters. When filtering by archived plans, ensure the hide/show archived plans switch is enabled in the toolbar above.'
+              : 'No results match your filter.'
+          }
         />
       )}
       <Pagination {...paginationProps} widgetId="plans-table-pagination-bottom" variant="bottom" />

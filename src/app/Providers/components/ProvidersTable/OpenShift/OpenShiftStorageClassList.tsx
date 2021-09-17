@@ -1,4 +1,3 @@
-import { PlanStatusType } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import {
   IAnnotatedStorageClass,
@@ -18,7 +17,7 @@ const OpenShiftStorageClassList: React.FunctionComponent<IOpenShiftStorageClassL
   provider,
   storageClasses,
 }: IOpenShiftStorageClassListProps) => {
-  const isProviderReady = hasCondition(provider.status?.conditions || [], PlanStatusType.Ready);
+  const isProviderReady = hasCondition(provider.status?.conditions || [], 'Ready');
   if (!isProviderReady) {
     return (
       <Alert variant="warning" isInline title="Cannot view storage classes" className={spacing.mMd}>

@@ -1,6 +1,12 @@
 import * as React from 'react';
 
-import { IHook, IMetaObjectMeta, IPlan, MappingType } from '@app/queries/types';
+import {
+  IHook,
+  IMetaObjectMeta,
+  IPlan,
+  MappingType,
+  SourceInventoryProvider,
+} from '@app/queries/types';
 import {
   useInventoryProvidersQuery,
   useMappingsQuery,
@@ -12,6 +18,7 @@ import { usePausedPollingEffect } from '@app/common/context';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isSameResource } from '@app/queries/helpers';
 import PlanDetails from './PlanDetails';
+import { SOURCE_PROVIDER_TYPES } from '@app/common/constants';
 
 interface IPlanDetailsModalProps {
   plan: IPlan;
@@ -22,30 +29,33 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
 }: IPlanDetailsModalProps) => {
   usePausedPollingEffect();
 
-  const networkMappings = useMappingsQuery(MappingType.Network);
+  const networkMappingsQuery = useMappingsQuery(MappingType.Network);
   const networkMapping =
-    networkMappings.data?.items.find((mapping) =>
+    networkMappingsQuery.data?.items.find((mapping) =>
       isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.network)
     ) || null;
 
-  const storageMappings = useMappingsQuery(MappingType.Storage);
+  const storageMappingsQuery = useMappingsQuery(MappingType.Storage);
   const storageMapping =
-    storageMappings.data?.items.find((mapping) =>
+    storageMappingsQuery.data?.items.find((mapping) =>
       isSameResource(mapping.metadata as IMetaObjectMeta, plan.spec.map.storage)
     ) || null;
 
-  const providers = useInventoryProvidersQuery();
+  const providersQuery = useInventoryProvidersQuery();
+  const allProviders = providersQuery.data
+    ? (SOURCE_PROVIDER_TYPES.flatMap(
+        (key) => providersQuery.data[key]
+      ) as SourceInventoryProvider[])
+    : [];
   const provider =
-    providers.data?.vsphere.find((provider) => provider.name === plan.spec.provider.source.name) ||
-    null;
+    allProviders.find((provider) => isSameResource(provider, plan.spec.provider.source)) || null;
 
-  const vms = useSourceVMsQuery(provider);
-  const selectedVMs =
-    vms.data?.filter((vm) => plan.spec.vms.find((planVM) => planVM.id === vm.id)) || [];
+  const vmsQuery = useSourceVMsQuery(provider);
+  const selectedVMs = vmsQuery.data?.findVMsByIds(plan.spec.vms.map(({ id }) => id)) || [];
 
-  const hooks = useHooksQuery();
+  const hooksQuery = useHooksQuery();
   const selectedHooks =
-    hooks.data?.items.filter((hook) =>
+    hooksQuery.data?.items.filter((hook) =>
       plan.spec.vms.find((vm) =>
         vm.hooks?.find(
           (VMHook) =>
@@ -63,26 +73,26 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
   const networkMappingResources = useResourceQueriesForMapping(MappingType.Network, networkMapping);
   const storageMappingResources = useResourceQueriesForMapping(MappingType.Storage, storageMapping);
   const mappingResourceQueryErrors = [
-    'Error loading providers',
-    'Error loading source provider resources',
-    'Error loading target provider resources',
+    'Could not load providers',
+    'Could not load source provider resources',
+    'Could not load target provider resources',
   ];
 
   return (
     <ResolvedQueries
       results={[
-        networkMappings,
-        storageMappings,
-        providers,
-        vms,
+        networkMappingsQuery,
+        storageMappingsQuery,
+        providersQuery,
+        vmsQuery,
         ...networkMappingResources.queries,
         ...storageMappingResources.queries,
       ]}
       errorTitles={[
-        'Error loading network mappings',
-        'Error loading storage mappings',
-        'Error loading providers',
-        'Error loading VMs',
+        'Could not load network mappings',
+        'Could not load storage mappings',
+        'Could not load providers',
+        'Could not load VMs',
         ...mappingResourceQueryErrors,
         ...mappingResourceQueryErrors,
       ]}
