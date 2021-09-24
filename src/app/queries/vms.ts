@@ -12,8 +12,10 @@ type SourceVMsRecord = Record<string, SourceVM | undefined>;
 export interface IndexedSourceVMs {
   vms: SourceVM[];
   vmsById: SourceVMsRecord;
+  vmsByName: SourceVMsRecord;
   vmsBySelfLink: SourceVMsRecord;
   findVMsByIds: (ids: string[]) => SourceVM[];
+  findVMsByNames: (ids: string[]) => SourceVM[];
   findVMsBySelfLinks: (selfLinks: string[]) => SourceVM[];
 }
 
@@ -23,16 +25,20 @@ const findVMsInRecord = (record: SourceVMsRecord, keys: string[]) =>
 export const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
   const sortedVMs = sortByName(vms.filter((vm) => !(vm as IVMwareVM).isTemplate));
   const vmsById: SourceVMsRecord = {};
+  const vmsByName: SourceVMsRecord = {};
   const vmsBySelfLink: SourceVMsRecord = {};
   sortedVMs.forEach((vm) => {
     vmsById[vm.id] = vm;
+    vmsByName[vm.name] = vm;
     vmsBySelfLink[vm.selfLink] = vm;
   });
   return {
     vms: sortedVMs,
     vmsById,
+    vmsByName,
     vmsBySelfLink,
     findVMsByIds: (ids) => findVMsInRecord(vmsById, ids),
+    findVMsByNames: (names) => findVMsInRecord(vmsByName, names),
     findVMsBySelfLinks: (selfLinks) => findVMsInRecord(vmsBySelfLink, selfLinks),
   };
 };

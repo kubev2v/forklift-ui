@@ -512,7 +512,9 @@ export const getSelectedVMsFromPlan = (
   indexedVMs: IndexedSourceVMs | undefined
 ): SourceVM[] => {
   if (!planBeingPrefilled || !indexedVMs) return [];
-  return indexedVMs.findVMsByIds(planBeingPrefilled?.spec.vms.map(({ id }) => id));
+  return indexedVMs.findVMsByNames(
+    planBeingPrefilled?.spec.vms.map(({ name }) => name) as string[]
+  );
 };
 
 interface IPlanWizardPrefillResults {

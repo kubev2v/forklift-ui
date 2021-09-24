@@ -55,6 +55,7 @@ export interface IPlanVMHook {
 
 export interface IPlanVM {
   id: string;
+  name?: string;
   hooks?: IPlanVMHook[];
 }
 
