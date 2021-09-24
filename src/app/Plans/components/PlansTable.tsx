@@ -27,7 +27,6 @@ import {
   truncate,
 } from '@patternfly/react-table';
 import { ArchiveIcon } from '@patternfly/react-icons';
-import { useAppLayoutContext } from '@app/common/context/AppLayoutContext';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
@@ -65,7 +64,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   errorContainerRef,
 }: IPlansTableProps) => {
-  const appLayoutContext = useAppLayoutContext();
   const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((show) => !show, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
