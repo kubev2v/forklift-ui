@@ -267,7 +267,7 @@ export const useArchivePlanMutation = (
       if (!isArchived) {
         planWithArchiveAnnotation.metadata.annotations = {
           ...plan.metadata.annotations,
-          archivedPlanLabel: 'true',
+          [archivedPlanLabel]: 'true',
         };
       }
       return client.patch(planResource, plan.metadata.name, planWithArchiveAnnotation);
