@@ -7,7 +7,7 @@ import {
   ProgressMeasureLocation,
   Text,
   ToolbarItem,
-  Switch,
+  Checkbox,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -27,7 +27,6 @@ import {
   truncate,
 } from '@patternfly/react-table';
 import { ArchiveIcon } from '@patternfly/react-icons';
-import { useAppLayoutContext } from '@app/common/context/AppLayoutContext';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
@@ -65,8 +64,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   plans,
   errorContainerRef,
 }: IPlansTableProps) => {
-  const appLayoutContext = useAppLayoutContext();
-  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((isOpen) => !isOpen, false);
+  const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((show) => !show, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [
@@ -347,15 +345,13 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               <CreatePlanButton variant="secondary" />
             </ToolbarItem>
             <ToolbarItem>
-              <Switch
-                className="pf-u-pt-xs"
-                id="archive-results-switch"
-                label={appLayoutContext.isMobileView ? null : 'Show archived'}
-                labelOff={appLayoutContext.isMobileView ? null : 'Hide archived'}
+              <Checkbox
+                className={spacing.ptXs}
+                label="Show archived"
                 isChecked={showArchivedPlans}
-                onChange={() => {
-                  toggleShowArchivedPlans();
-                }}
+                onChange={toggleShowArchivedPlans}
+                aria-label="Show archived"
+                id="show-archived-checkbox"
               />
             </ToolbarItem>
           </>

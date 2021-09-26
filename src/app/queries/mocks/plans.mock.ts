@@ -786,7 +786,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ...plan1.metadata,
       name: 'plantest-09',
       annotations: {
-        [`${archivedPlanLabel}`]: 'true',
+        [archivedPlanLabel]: 'true',
       },
     },
     spec: { ...plan7.spec, description: 'failed before cutover' },
