@@ -59,6 +59,7 @@ import VMStatusPrecopyTable from './VMStatusPrecopyTable';
 import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import '@app/Plans/components/VMMigrationDetails.css';
+import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 
 export interface IPlanMatchParams {
   url: string;
@@ -290,6 +291,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               vmStatus.warm?.precopies?.length || 0,
               { title: <VMWarmCopyStatus vmStatus={vmStatus} isCanceled={isCanceled} /> },
             ]),
+        {
+          title: <MustGatherBtn type="vm" customName={getVMName(vmStatus)} />,
+        },
       ],
     });
     if (isExpanded) {

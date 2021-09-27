@@ -19,22 +19,40 @@ import {
   useClusterProvidersQuery,
   useDeletePlanMutation,
   useArchivePlanMutation,
+  useCreateMigrationMutation,
 } from '@app/queries';
+import { MustGatherContext } from '@app/common/context';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
+import { IMigration } from '@app/queries/types/migrations.types';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
   planState: PlanState | null;
+  canRestart: boolean;
 }
 
-const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> = ({
+export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> = ({
   plan,
   planState,
+  canRestart,
 }: IPlansActionDropdownProps) => {
+  const { mustGatherWatchList, latestAssociatedMustGather } = React.useContext(MustGatherContext);
+
+  const mustGather = latestAssociatedMustGather(plan.metadata.name);
+
+  const isPlanGathering =
+    mustGatherWatchList.map((mg) => mg.name).includes(plan.metadata.name) &&
+    (mustGather?.status === 'inprogress' || mustGather?.status === 'new');
+
+  const history = useHistory();
+  const onMigrationStarted = (migration: IMigration) => {
+    history.push(`/plans/${migration.spec.plan.name}`);
+  };
+  const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -44,7 +62,6 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
   );
   const deletePlanMutation = useDeletePlanMutation(toggleDeleteModal);
   const archivePlanMutation = useArchivePlanMutation(toggleArchivePlanModal);
-  const history = useHistory();
   const conditions = plan.status?.conditions || [];
   const clusterProvidersQuery = useClusterProvidersQuery();
   const areProvidersReady = React.useMemo(
@@ -52,11 +69,13 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
     [kebabIsOpen, clusterProvidersQuery, plan.spec.provider]
   );
   const isPlanStarted = !!plan.status?.migration?.started;
+
   const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
   const isPlanCompleted =
     !planState?.toLowerCase().includes('finished') &&
     !planState?.toLowerCase().includes('failed') &&
     !planState?.toLowerCase().includes('canceled');
+
   return (
     <>
       <Dropdown
@@ -69,7 +88,9 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             key="edit"
             isTooltipEnabled={isPlanStarted || !areProvidersReady}
             content={
-              isPlanArchived
+              isPlanGathering
+                ? 'This plan cannot be edited because it is running must gather.'
+                : isPlanArchived
                 ? 'This plan cannot be edited because it has been archived'
                 : isPlanStarted
                 ? 'This plan cannot be edited because it has been started'
@@ -79,7 +100,7 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
             }
           >
             <DropdownItem
-              isDisabled={isPlanStarted || !areProvidersReady || isPlanArchived}
+              isDisabled={isPlanStarted || !areProvidersReady || isPlanArchived || isPlanGathering}
               onClick={() => {
                 setKebabIsOpen(false);
                 history.push(`/plans/${plan.metadata.name}/edit`);
@@ -119,17 +140,27 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           </ConditionalTooltip>,
           <ConditionalTooltip
             key="Delete"
-            isTooltipEnabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
+            isTooltipEnabled={
+              hasCondition(conditions, 'Executing') ||
+              deletePlanMutation.isLoading ||
+              isPlanGathering
+            }
             content={
               hasCondition(conditions, 'Executing')
                 ? 'This plan cannot be deleted because it is running'
                 : deletePlanMutation.isLoading
                 ? 'This plan cannot be deleted because it is deleting'
+                : isPlanGathering
+                ? 'This plan cannot be deleted because it is running must gather service'
                 : ''
             }
           >
             <DropdownItem
-              isDisabled={hasCondition(conditions, 'Executing') || deletePlanMutation.isLoading}
+              isAriaDisabled={
+                hasCondition(conditions, 'Executing') ||
+                deletePlanMutation.isLoading ||
+                isPlanGathering
+              }
               onClick={() => {
                 setKebabIsOpen(false);
                 toggleDeleteModal();
@@ -147,6 +178,23 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
           >
             View details
           </DropdownItem>,
+          ...((canRestart && [
+            <ConditionalTooltip
+              key="Restart"
+              isTooltipEnabled={isPlanGathering}
+              content="This plan cannot be restarted because it is running must gather service"
+            >
+              <DropdownItem
+                isDisabled={isPlanGathering}
+                onClick={() => {
+                  createMigrationMutation.mutate(plan);
+                }}
+              >
+                Restart
+              </DropdownItem>
+            </ConditionalTooltip>,
+          ]) ||
+            []),
         ]}
         position={DropdownPosition.right}
       />
@@ -207,5 +255,3 @@ const PlansActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> =
     </>
   );
 };
-
-export { PlansActionsDropdown };

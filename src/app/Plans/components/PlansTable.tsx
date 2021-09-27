@@ -33,7 +33,7 @@ import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
 
 import { archivedPlanLabel } from '@app/common/constants';
-import { PlansActionsDropdown } from './PlanActionsDropdown';
+import { PlanActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
 import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
@@ -48,13 +48,20 @@ import {
 } from '@app/queries';
 
 import './PlansTable.css';
-import { getPlanStatusTitle, getPlanState, getButtonState, getMigStatusState } from './helpers';
+import {
+  getPlanStatusTitle,
+  getPlanState,
+  getButtonState,
+  getMigStatusState,
+  canBeRestarted,
+} from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
+import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 
-export type PlanActionButtonType = 'Start' | 'Restart' | 'Cutover';
+export type PlanActionButtonType = 'Start' | 'Cutover' | 'MustGather';
 interface IPlansTableProps {
   plans: IPlan[];
   errorContainerRef: React.RefObject<HTMLDivElement>;
@@ -207,6 +214,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const isWarmPlan = plan.spec.warm;
 
     const planState = getPlanState(plan, latestMigration, migrationsQuery);
+    const canRestart = canBeRestarted(planState);
     const buttonType = getButtonState(planState);
     const { title, variant } = getMigStatusState(planState, isWarmPlan);
 
@@ -219,7 +227,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
     const isExpanded = isPlanExpanded(plan);
     const isBeingStarted = planState === 'Starting';
-    const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
 
     rows.push({
       meta: { plan },
@@ -270,31 +277,32 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             ),
         },
         {
-          title:
-            buttonType && !isPlanArchived ? (
-              <>
-                <Flex
-                  flex={{ default: 'flex_2' }}
-                  spaceItems={{ default: 'spaceItemsNone' }}
-                  alignItems={{ default: 'alignItemsCenter' }}
-                  flexWrap={{ default: 'nowrap' }}
-                >
-                  <FlexItem align={{ default: 'alignRight' }}>
-                    <MigrateOrCutoverButton
-                      plan={plan}
-                      buttonType={buttonType}
-                      isBeingStarted={isBeingStarted}
-                      errorContainerRef={errorContainerRef}
-                    />
-                  </FlexItem>
-                  <FlexItem>
-                    <PlansActionsDropdown planState={planState} plan={plan} />
-                  </FlexItem>
-                </Flex>
-              </>
-            ) : !isBeingStarted ? (
-              <PlansActionsDropdown planState={planState} plan={plan} />
-            ) : null,
+          title: buttonType ? (
+            <Flex
+              flex={{ default: 'flex_2' }}
+              spaceItems={{ default: 'spaceItemsNone' }}
+              alignItems={{ default: 'alignItemsCenter' }}
+              flexWrap={{ default: 'nowrap' }}
+            >
+              <FlexItem align={{ default: 'alignRight' }}>
+                {buttonType === 'MustGather' ? (
+                  <MustGatherBtn type="plan" customName={plan.metadata.name} />
+                ) : (
+                  <MigrateOrCutoverButton
+                    plan={plan}
+                    buttonType={buttonType}
+                    isBeingStarted={isBeingStarted}
+                    errorContainerRef={errorContainerRef}
+                  />
+                )}
+              </FlexItem>
+              <FlexItem>
+                <PlanActionsDropdown canRestart={canRestart} planState={planState} plan={plan} />
+              </FlexItem>
+            </Flex>
+          ) : !isBeingStarted ? (
+            <PlanActionsDropdown canRestart={canRestart} planState={planState} plan={plan} />
+          ) : null,
         },
       ],
     });

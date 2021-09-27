@@ -7,6 +7,8 @@ import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
 import '@app/app.css';
 import {
+  NotificationContextProvider,
+  MustGatherContextProvider,
   PollingContextProvider,
   LocalStorageContextProvider,
   NetworkContextProvider,
@@ -30,13 +32,17 @@ const App: React.FunctionComponent = () => (
     <PollingContextProvider>
       <LocalStorageContextProvider>
         <NetworkContextProvider>
-          <Router getUserConfirmation={noop}>
-            <AppLayoutContextProvider>
-              <AppLayout>
-                <AppRoutes />
-              </AppLayout>
-            </AppLayoutContextProvider>
-          </Router>
+          <NotificationContextProvider>
+            <MustGatherContextProvider>
+              <Router getUserConfirmation={noop}>
+                <AppLayoutContextProvider>
+                  <AppLayout>
+                    <AppRoutes />
+                  </AppLayout>
+                </AppLayoutContextProvider>
+              </Router>
+            </MustGatherContextProvider>
+          </NotificationContextProvider>
         </NetworkContextProvider>
       </LocalStorageContextProvider>
     </PollingContextProvider>
