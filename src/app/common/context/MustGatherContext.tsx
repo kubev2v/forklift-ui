@@ -6,7 +6,7 @@ import { MustGatherWatcher } from '@app/common/components/MustGatherWatcher';
 import { NotificationContext } from '@app/common/context';
 
 export type MustGatherObjType = {
-  customName: string;
+  displayName: string;
   type: 'plan' | 'vm';
   status: mustGatherStatus;
 };
@@ -52,7 +52,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
     (data) => {
       const updatedMgList: mustGatherListType = data.map((mg): MustGatherObjType => {
         return {
-          customName: mg['custom-name'],
+          displayName: mg['custom-name'],
           status: mg.status,
           type: mg.command.toLowerCase().includes('plan') ? 'plan' : 'vm',
         };
@@ -110,24 +110,24 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
       <>
         {children}
         {mustGatherList.map((mg, idx) => {
-          return mg.customName && process.env.NODE_ENV !== 'production' ? (
+          return mg.displayName && process.env.NODE_ENV !== 'production' ? (
             <div
-              data-mg-watcher={mg.customName}
+              data-mg-watcher={mg.displayName}
               data-type={mg.type}
               data-status={mg.status}
               key={idx}
             >
               <MustGatherWatcher
                 listStatus={mg.status}
-                key={`${mg.customName}-${idx}`}
-                name={mg.customName}
+                key={`${mg.displayName}-${idx}`}
+                name={mg.displayName}
               />
             </div>
           ) : (
             <MustGatherWatcher
               listStatus={mg.status}
-              key={`${mg.customName}-${idx}`}
-              name={mg.customName}
+              key={`${mg.displayName}-${idx}`}
+              name={mg.displayName}
             />
           );
         })}

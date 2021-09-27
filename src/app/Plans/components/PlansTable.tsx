@@ -286,7 +286,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             >
               <FlexItem align={{ default: 'alignRight' }}>
                 {buttonType === 'MustGather' ? (
-                  <MustGatherBtn type="plan" customName={plan.metadata.name} />
+                  <MustGatherBtn type="plan" displayName={plan.metadata.name} />
                 ) : (
                   <MigrateOrCutoverButton
                     plan={plan}

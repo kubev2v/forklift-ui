@@ -5,11 +5,11 @@ import { MustGatherContext } from '@app/common/context';
 import { getMustGatherApiUrl } from '@app/queries/helpers';
 
 interface IMustGatherBtn {
-  customName: string;
+  displayName: string;
   type: 'plan' | 'vm';
 }
 
-export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customName, type }) => {
+export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ displayName, type }) => {
   const {
     setMustGatherModalOpen,
     setActiveMustGather,
@@ -19,7 +19,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
     withoutNs,
   } = React.useContext(MustGatherContext);
 
-  const namespacedName = withNs(customName, type);
+  const namespacedName = withNs(displayName, type);
   const mustGather = latestAssociatedMustGather(namespacedName);
 
   return mustGather?.status === 'completed' && mustGather?.['archive-name'] ? (
@@ -27,7 +27,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
       content={
         !mustGathersQuery.isSuccess
           ? `Could not reach must gather service.`
-          : `must-gather-${type}_${customName} available for download.`
+          : `must-gather-${type}_${displayName} available for download.`
       }
     >
       <Button
@@ -73,7 +73,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
           setMustGatherModalOpen(true);
           setActiveMustGather({
             type,
-            customName: customName,
+            displayName: displayName,
             status: 'new',
           });
         }}

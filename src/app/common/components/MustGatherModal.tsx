@@ -11,9 +11,9 @@ export const MustGatherModal: React.FunctionComponent = () => {
   const handleMustGatherSuccess = () => {
     if (activeMustGather) {
       pushNotification({
-        title: `Started must gather for ${activeMustGather.customName}`,
+        title: `Started must gather for ${activeMustGather.displayName}`,
         message: '',
-        key: activeMustGather.customName,
+        key: activeMustGather.displayName,
         variant: 'info',
         actionClose: true,
         timeout: 4000,
@@ -24,9 +24,9 @@ export const MustGatherModal: React.FunctionComponent = () => {
   const handleMustGatherError = () => {
     if (activeMustGather) {
       pushNotification({
-        title: `Could not run must gather for ${activeMustGather.customName}`,
+        title: `Could not run must gather for ${activeMustGather.displayName}`,
         message: '',
-        key: activeMustGather.customName,
+        key: activeMustGather.displayName,
         variant: 'danger',
         actionClose: true,
       });
@@ -39,8 +39,8 @@ export const MustGatherModal: React.FunctionComponent = () => {
     handleMustGatherError
   );
 
-  const handleMustGatherRequest = ({ customName, type }: MustGatherObjType) => {
-    const namespacedName = withNs(customName, type);
+  const handleMustGatherRequest = ({ displayName, type }: MustGatherObjType) => {
+    const namespacedName = withNs(displayName, type);
     registerMustGather.mutate({
       'custom-name': namespacedName,
       command:
@@ -84,7 +84,7 @@ export const MustGatherModal: React.FunctionComponent = () => {
         <Text component="p">
           The migration logs will be consolidated into a single archive file named{' '}
           <strong>
-            must-gather-{activeMustGather?.type}_{activeMustGather?.customName}.tar.gz
+            must-gather-{activeMustGather?.type}_{activeMustGather?.displayName}.tar.gz
           </strong>
           .
         </Text>
