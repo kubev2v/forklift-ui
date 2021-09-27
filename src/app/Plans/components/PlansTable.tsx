@@ -60,6 +60,7 @@ import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
+import { useAppLayoutContext } from '@app/common/context';
 
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'MustGather';
 interface IPlansTableProps {
