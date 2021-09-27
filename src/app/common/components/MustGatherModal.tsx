@@ -4,15 +4,16 @@ import { MustGatherContext, NotificationContext, MustGatherObjType } from '@app/
 import { useMustGatherMutation } from '@app/queries';
 
 export const MustGatherModal: React.FunctionComponent = () => {
-  const mustGatherContext = React.useContext(MustGatherContext);
+  const { activeMustGather, withNs, setMustGatherModalOpen, mustGatherModalOpen } =
+    React.useContext(MustGatherContext);
   const { pushNotification } = React.useContext(NotificationContext);
 
   const handleMustGatherSuccess = () => {
-    if (mustGatherContext.activeMustGather) {
+    if (activeMustGather) {
       pushNotification({
-        title: `Started must gather for ${mustGatherContext.activeMustGather.customName}`,
+        title: `Started must gather for ${activeMustGather.customName}`,
         message: '',
-        key: mustGatherContext.activeMustGather.customName,
+        key: activeMustGather.customName,
         variant: 'info',
         actionClose: true,
         timeout: 4000,
@@ -21,11 +22,11 @@ export const MustGatherModal: React.FunctionComponent = () => {
   };
 
   const handleMustGatherError = () => {
-    if (mustGatherContext.activeMustGather) {
+    if (activeMustGather) {
       pushNotification({
-        title: `Could not run must gather for ${mustGatherContext.activeMustGather.customName}`,
+        title: `Could not run must gather for ${activeMustGather.customName}`,
         message: '',
-        key: mustGatherContext.activeMustGather.customName,
+        key: activeMustGather.customName,
         variant: 'danger',
         actionClose: true,
       });
@@ -39,32 +40,31 @@ export const MustGatherModal: React.FunctionComponent = () => {
   );
 
   const handleMustGatherRequest = ({ customName, type }: MustGatherObjType) => {
+    const namespacedName = withNs(customName, type);
     registerMustGather.mutate({
-      'custom-name': customName,
+      'custom-name': namespacedName,
       command:
         type === 'plan'
-          ? `PLAN=${customName} /usr/bin/targeted`
-          : `VM=${customName} /usr/bin/targeted`,
+          ? `PLAN=${namespacedName} /usr/bin/targeted`
+          : `VM=${namespacedName} /usr/bin/targeted`,
     });
-
-    mustGatherContext.setMustGatherModalOpen(false);
+    setMustGatherModalOpen(false);
   };
 
   return (
     <Modal
       variant="medium"
       title="Get logs"
-      isOpen={mustGatherContext.mustGatherModalOpen}
+      isOpen={mustGatherModalOpen}
       onClose={() => {
-        mustGatherContext.setMustGatherModalOpen(false);
+        setMustGatherModalOpen(false);
       }}
       actions={[
         <Button
           key="confirm"
           variant="primary"
           onClick={() => {
-            mustGatherContext.activeMustGather &&
-              handleMustGatherRequest(mustGatherContext.activeMustGather);
+            activeMustGather && handleMustGatherRequest(activeMustGather);
           }}
         >
           Get logs
@@ -73,7 +73,7 @@ export const MustGatherModal: React.FunctionComponent = () => {
           key="cancel"
           variant="link"
           onClick={() => {
-            mustGatherContext.setMustGatherModalOpen(false);
+            setMustGatherModalOpen(false);
           }}
         >
           Cancel
@@ -83,7 +83,10 @@ export const MustGatherModal: React.FunctionComponent = () => {
       <TextContent>
         <Text component="p">
           The migration logs will be consolidated into a single archive file named{' '}
-          <strong>must-gather-{mustGatherContext.activeMustGather?.customName}.tar.gz</strong>.
+          <strong>
+            must-gather-{activeMustGather?.type}_{activeMustGather?.customName}.tar.gz
+          </strong>
+          .
         </Text>
         <Text component="p">
           The log collection process can take several minutes. You will be notified when the process

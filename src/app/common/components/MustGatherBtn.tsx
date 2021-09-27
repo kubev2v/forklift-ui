@@ -13,20 +13,21 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
   const {
     setMustGatherModalOpen,
     setActiveMustGather,
-    mustGatherWatchList,
-    setMustGatherWatchList,
     mustGathersQuery,
     latestAssociatedMustGather,
+    withNs,
+    withoutNs,
   } = React.useContext(MustGatherContext);
 
-  const mustGather = latestAssociatedMustGather(customName);
+  const namespacedName = withNs(customName, type);
+  const mustGather = latestAssociatedMustGather(namespacedName);
 
   return mustGather?.status === 'completed' && mustGather?.['archive-name'] ? (
     <Tooltip
       content={
         !mustGathersQuery.isSuccess
           ? `Could not reach must gather service.`
-          : `${mustGather?.['archive-name']} available for download`
+          : `must-gather-${type}_${customName} available for download.`
       }
     >
       <Button
@@ -50,7 +51,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
           : mustGather?.status === 'new'
           ? `Must gather queued for execution.`
           : mustGather?.status === 'error'
-          ? `Could not complete must gather for ${mustGather?.['custom-name']}`
+          ? `Could not complete must gather for ${withoutNs(mustGather?.['custom-name'], type)}`
           : `Collects the current ${
               type === 'plan' ? 'migration plan' : 'VM migration'
             } logs and creates a tar archive file for download.`
@@ -59,13 +60,12 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
       <Button
         icon={mustGather?.status === 'error' ? <WarningTriangleIcon /> : null}
         isLoading={
-          mustGatherWatchList.map((mg) => mg.name).includes(customName) &&
           !mustGathersQuery.isError &&
           (mustGather?.status === 'inprogress' || mustGather?.status === 'new')
         }
         isAriaDisabled={
-          (mustGatherWatchList.map((mg) => mg.name).includes(customName) &&
-            (mustGather?.status === 'inprogress' || mustGather?.status === 'new')) ||
+          mustGather?.status === 'inprogress' ||
+          mustGather?.status === 'new' ||
           !mustGathersQuery.isSuccess
         }
         variant="secondary"
@@ -76,15 +76,6 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
             customName: customName,
             status: 'new',
           });
-
-          setMustGatherWatchList([
-            ...mustGatherWatchList,
-            {
-              name: customName,
-              // ensure the "inprogress" state is reflected in the button
-              isGathering: true,
-            },
-          ]);
         }}
       >
         {mustGather?.status === 'completed' ? 'Download logs' : 'Get logs'}

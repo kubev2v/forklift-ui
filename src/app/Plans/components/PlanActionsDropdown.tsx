@@ -40,13 +40,12 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
   planState,
   canRestart,
 }: IPlansActionDropdownProps) => {
-  const { mustGatherWatchList, latestAssociatedMustGather } = React.useContext(MustGatherContext);
+  const { withNs, latestAssociatedMustGather } = React.useContext(MustGatherContext);
 
-  const mustGather = latestAssociatedMustGather(plan.metadata.name);
+  const mustGather = latestAssociatedMustGather(withNs(plan.metadata.name, 'plan'));
+  console.log('PlanActionsDropdown', mustGather);
 
-  const isPlanGathering =
-    mustGatherWatchList.map((mg) => mg.name).includes(plan.metadata.name) &&
-    (mustGather?.status === 'inprogress' || mustGather?.status === 'new');
+  const isPlanGathering = mustGather?.status === 'inprogress' || mustGather?.status === 'new';
 
   const history = useHistory();
   const onMigrationStarted = (migration: IMigration) => {
