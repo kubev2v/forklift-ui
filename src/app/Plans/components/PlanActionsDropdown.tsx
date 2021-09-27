@@ -182,7 +182,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
             <ConditionalTooltip
               key="Restart"
               isTooltipEnabled={isPlanGathering}
-              content={'This plan cannot be restarted because it is running must gather service'}
+              content="This plan cannot be restarted because it is running must gather service"
             >
               <DropdownItem
                 isDisabled={isPlanGathering}

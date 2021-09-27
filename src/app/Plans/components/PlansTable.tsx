@@ -60,7 +60,6 @@ import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
-import { useAppLayoutContext } from '@app/common/context';
 
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'MustGather';
 interface IPlansTableProps {
@@ -73,7 +72,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   errorContainerRef,
 }: IPlansTableProps) => {
   const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((show) => !show, false);
-  const appLayoutContext = useAppLayoutContext();
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
   const filterCategories: FilterCategory<IPlan>[] = [

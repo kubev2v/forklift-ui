@@ -17,14 +17,13 @@ export const useFetchContext = (): IFetchContext => {
   return { history: useHistory(), checkExpiry, currentUser };
 };
 
-export const authorizedFetch = async <T>(
+export const authorizedFetch = async <TResponse, TData = unknown>(
   url: string,
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {},
   method: 'get' | 'post' = 'get',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any // TODO: type this
-): Promise<T> => {
+  data?: TData
+): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
   try {
     const response = await fetch(url, {
