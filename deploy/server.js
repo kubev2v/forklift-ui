@@ -97,7 +97,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   };
 
   let mustGatherApiProxyOptions = {
-    target: 'http://localhost:8080',
+    target: meta.mustGatherApi,
     changeOrigin: true,
     pathRewrite: {
       '^/must-gather-api/': '/',
