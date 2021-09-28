@@ -5,28 +5,29 @@ import { MustGatherContext } from '@app/common/context';
 import { getMustGatherApiUrl } from '@app/queries/helpers';
 
 interface IMustGatherBtn {
-  customName: string;
+  displayName: string;
   type: 'plan' | 'vm';
 }
 
-export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customName, type }) => {
+export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ displayName, type }) => {
   const {
     setMustGatherModalOpen,
     setActiveMustGather,
-    mustGatherWatchList,
-    setMustGatherWatchList,
     mustGathersQuery,
     latestAssociatedMustGather,
+    withNs,
+    withoutNs,
   } = React.useContext(MustGatherContext);
 
-  const mustGather = latestAssociatedMustGather(customName);
+  const namespacedName = withNs(displayName, type);
+  const mustGather = latestAssociatedMustGather(namespacedName);
 
   return mustGather?.status === 'completed' && mustGather?.['archive-name'] ? (
     <Tooltip
       content={
         !mustGathersQuery.isSuccess
           ? `Could not reach must gather service.`
-          : `${mustGather?.['archive-name']} available for download`
+          : `must-gather-${type}_${displayName} available for download.`
       }
     >
       <Button
@@ -50,7 +51,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
           : mustGather?.status === 'new'
           ? `Must gather queued for execution.`
           : mustGather?.status === 'error'
-          ? `Could not complete must gather for ${mustGather?.['custom-name']}`
+          ? `Could not complete must gather for ${withoutNs(mustGather?.['custom-name'], type)}`
           : `Collects the current ${
               type === 'plan' ? 'migration plan' : 'VM migration'
             } logs and creates a tar archive file for download.`
@@ -59,13 +60,12 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
       <Button
         icon={mustGather?.status === 'error' ? <WarningTriangleIcon /> : null}
         isLoading={
-          mustGatherWatchList.map((mg) => mg.name).includes(customName) &&
           !mustGathersQuery.isError &&
           (mustGather?.status === 'inprogress' || mustGather?.status === 'new')
         }
         isAriaDisabled={
-          (mustGatherWatchList.map((mg) => mg.name).includes(customName) &&
-            (mustGather?.status === 'inprogress' || mustGather?.status === 'new')) ||
+          mustGather?.status === 'inprogress' ||
+          mustGather?.status === 'new' ||
           !mustGathersQuery.isSuccess
         }
         variant="secondary"
@@ -73,18 +73,9 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ customN
           setMustGatherModalOpen(true);
           setActiveMustGather({
             type,
-            customName: customName,
+            displayName: displayName,
             status: 'new',
           });
-
-          setMustGatherWatchList([
-            ...mustGatherWatchList,
-            {
-              name: customName,
-              // ensure the "inprogress" state is reflected in the button
-              isGathering: true,
-            },
-          ]);
         }}
       >
         {mustGather?.status === 'completed' ? 'Download logs' : 'Get logs'}

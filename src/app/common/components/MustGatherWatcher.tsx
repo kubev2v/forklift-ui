@@ -4,6 +4,7 @@ import { NotificationContext } from '@app/common/context';
 import { useMustGatherQuery } from '@app/queries';
 import { mustGatherStatus } from '@app/client/types';
 import { getMustGatherApiUrl } from '@app/queries/helpers';
+import { MustGatherContext } from '@app/common/context';
 
 interface IMustGatherWatcherProps {
   name: string;
@@ -20,10 +21,11 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
   const [notified, setNotified] = React.useState(completedPreviously || erroredPreviously);
   const [hasCompleted, setHasCompleted] = React.useState(completedPreviously || erroredPreviously);
   const { data, isSuccess } = useMustGatherQuery(name, hasCompleted);
+  const { withoutNs } = React.useContext(MustGatherContext);
 
   React.useEffect(() => {
     const type = data?.command.toLowerCase().includes('plan') ? 'plan' : 'vm';
-
+    const unprefixedName = data && withoutNs(data['custom-name'], type);
     if (
       data?.status === 'completed' ||
       completedPreviously ||
@@ -49,7 +51,7 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
               variant="link"
               isInline
             >
-              {data?.['custom-name']}
+              {unprefixedName}
             </Button>
           </div>
         ),
@@ -65,7 +67,7 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
     if (isSuccess && !!data?.['custom-name'] && listStatus === 'error' && !notified) {
       pushNotification({
         title: 'Log collection unsuccessful.',
-        message: `An error was encountered while gathering the migration logs for the ${type} ${data?.['custom-name']}`,
+        message: `An error was encountered while gathering the migration logs for the ${type} ${unprefixedName}`,
         key: `${data?.['custom-name']}-error`,
         variant: 'danger',
         actionClose: true,
@@ -82,6 +84,7 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
     hasCompleted,
     completedPreviously,
     erroredPreviously,
+    withoutNs,
     setNotified,
     setHasCompleted,
     pushNotification,
