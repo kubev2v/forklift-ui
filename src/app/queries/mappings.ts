@@ -19,15 +19,23 @@ import {
   useMockableMutation,
   useMockableQuery,
 } from './helpers';
-import { useOpenShiftNetworksQuery, useSourceNetworksQuery } from './networks';
-import { useSourceStoragesQuery, useStorageClassesQuery } from './storages';
+
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { KubeClientError, IKubeList, IKubeResponse, IKubeStatus } from '@app/client/types';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.mock';
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedK8sClient } from './fetchHelpers';
-import { findProvidersByRefs, useInventoryProvidersQuery } from './providers';
+import {
+  // useDiskProfilesQuery,
+  // useNicProfilesQuery,
+  useOpenShiftNetworksQuery,
+  useSourceNetworksQuery,
+  useSourceStoragesQuery,
+  useStorageClassesQuery,
+  findProvidersByRefs,
+  useInventoryProvidersQuery,
+} from '@app/queries';
 
 export const getMappingResource = (
   mappingType: MappingType
