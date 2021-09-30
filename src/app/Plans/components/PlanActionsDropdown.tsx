@@ -232,37 +232,28 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
       >
         <PlanDetailsModal plan={plan} />
       </Modal>
-      <Modal
+      <ConfirmModal
         variant="medium"
-        title="Archive plan"
         isOpen={isArchivePlanModalOpen}
-        onClose={toggleArchivePlanModal}
-        actions={[
-          <Button
-            key="archive"
-            variant="primary"
-            onClick={() => {
-              archivePlanMutation.mutate(plan);
-            }}
-          >
-            Archive
-          </Button>,
-          <Button key="cancel-archive" variant="secondary" onClick={toggleArchivePlanModal}>
-            Cancel
-          </Button>,
-        ]}
-      >
-        <TextContent>
-          <Text>Archiving a plan means:</Text>
-          <List>
-            <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
-            <ListItem>Migration logs are deleted.</ListItem>
-            <ListItem>
-              The plan can no longer be edited or restarted, but it can be viewed.
-            </ListItem>
-          </List>
-        </TextContent>
-      </Modal>
+        toggleOpen={toggleArchivePlanModal}
+        mutateFn={() => archivePlanMutation.mutate(plan)}
+        mutateResult={archivePlanMutation}
+        title="Archive plan?"
+        body={
+          <TextContent>
+            <Text>Archiving a plan means:</Text>
+            <List>
+              <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
+              <ListItem>Migration logs are deleted.</ListItem>
+              <ListItem>
+                The plan can no longer be edited or restarted, but it can be viewed.
+              </ListItem>
+            </List>
+          </TextContent>
+        }
+        confirmButtonText="Archive"
+        errorText="Could not archive plan"
+      />
     </>
   );
 };

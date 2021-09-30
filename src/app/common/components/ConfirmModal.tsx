@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Modal, Stack, Flex, Button } from '@patternfly/react-core';
+import { Modal, Stack, Flex, Button, ModalProps } from '@patternfly/react-core';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 import { UnknownMutationResult } from '../types';
 
 // TODO lib-ui candidate
 
 interface IConfirmModalProps {
+  variant?: ModalProps['variant'];
   isOpen: boolean;
   toggleOpen: () => void;
   mutateFn: () => void;
@@ -18,6 +19,7 @@ interface IConfirmModalProps {
 }
 
 const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
+  variant = 'small',
   isOpen,
   toggleOpen,
   mutateFn,
@@ -35,7 +37,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
 
   return isOpen ? (
     <Modal
-      variant="small"
+      variant={variant}
       title={title}
       isOpen
       onClose={toggleOpen}
