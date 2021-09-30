@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { Button, Spinner } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useCreateMigrationMutation, useSetCutoverMutation } from '@app/queries';
-import { IMigration } from '@app/queries/types/migrations.types';
 import { IPlan } from '@app/queries/types';
 import { PlanActionButtonType } from './PlansTable';
 import ConfirmModal from '@app/common/components/ConfirmModal';
@@ -20,11 +19,12 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
   isBeingStarted,
 }: IMigrateOrCutoverButtonProps) => {
   const history = useHistory();
-  const onMigrationStarted = (migration: IMigration) => {
-    history.push(`/plans/${migration.spec.plan.name}`);
+  const onMigrationStarted = () => {
+    toggleConfirmModal();
+    history.push(`/plans/${plan.metadata.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
-  const setCutoverMutation = useSetCutoverMutation();
+  const setCutoverMutation = useSetCutoverMutation(onMigrationStarted);
 
   const [isConfirmModalOpen, toggleConfirmModal] = React.useReducer((isOpen) => !isOpen, false);
 
@@ -36,14 +36,15 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
     }
   };
 
-  if (isBeingStarted || createMigrationMutation.isLoading || setCutoverMutation.isLoading) {
-    return <Spinner size="md" className={spacing.mxLg} />;
-  }
   return (
     <>
-      <Button variant="secondary" onClick={toggleConfirmModal}>
-        {buttonType}
-      </Button>
+      {isBeingStarted ? (
+        <Spinner size="md" className={spacing.mxLg} />
+      ) : (
+        <Button variant="secondary" onClick={toggleConfirmModal}>
+          {buttonType}
+        </Button>
+      )}
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         toggleOpen={toggleConfirmModal}
