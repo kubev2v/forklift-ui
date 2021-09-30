@@ -19,7 +19,7 @@ import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
 import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
-import { IMappingResourcesResult } from '@app/queries';
+import { IDisk, IMappingResourcesResult, INicProfile } from '@app/queries';
 import { getObjectRef } from '@app/common/helpers';
 
 export const getBuilderItemsFromMappingItems = (
@@ -159,14 +159,18 @@ export const getBuilderItemsWithMissingSources = (
   selectedVMs: SourceVM[],
   mappingType: MappingType,
   sourceProviderType: ProviderType,
-  keepNonRequiredSources: boolean
+  keepNonRequiredSources: boolean,
+  nicProfiles: INicProfile[],
+  disks: IDisk[]
 ): IMappingBuilderItem[] => {
   const nonEmptyItems = builderItems.filter((item) => item.source && item.target);
   const requiredSources = filterSourcesBySelectedVMs(
     mappingResourceQueries.availableSources,
     selectedVMs,
     mappingType,
-    sourceProviderType
+    sourceProviderType,
+    nicProfiles,
+    disks
   );
   const itemsToKeep = keepNonRequiredSources
     ? nonEmptyItems
