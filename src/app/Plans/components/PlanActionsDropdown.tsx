@@ -48,11 +48,13 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
 
   const history = useHistory();
   const onMigrationStarted = (migration: IMigration) => {
+    toggleRestartModal();
     history.push(`/plans/${migration.spec.plan.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [isRestartModalOpen, toggleRestartModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isArchivePlanModalOpen, toggleArchivePlanModal] = React.useReducer(
     (isOpen) => !isOpen,
@@ -185,7 +187,8 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               <DropdownItem
                 isDisabled={isPlanGathering}
                 onClick={() => {
-                  createMigrationMutation.mutate(plan);
+                  setKebabIsOpen(false);
+                  toggleRestartModal();
                 }}
               >
                 Restart
@@ -205,6 +208,16 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         confirmButtonText="Delete"
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
         errorText="Could not delete migration plan"
+      />
+      <ConfirmModal
+        isOpen={isRestartModalOpen}
+        toggleOpen={toggleRestartModal}
+        mutateFn={() => createMigrationMutation.mutate(plan)}
+        mutateResult={createMigrationMutation}
+        title="Restart migration?"
+        body={<>Restart the migration for plan &quot;{plan.metadata.name}&quot;?</>}
+        confirmButtonText="Restart"
+        errorText="Could not restart migration"
       />
       <Modal
         variant="medium"
