@@ -40,7 +40,7 @@ const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverCon
           </Text>
         </TextContent>
       }
-      confirmButtonText={verb}
+      confirmButtonText={action === 'cutover' ? 'Cutover' : verb}
       errorText={`Could not ${verb.toLowerCase()} ${noun}`}
     />
   );
