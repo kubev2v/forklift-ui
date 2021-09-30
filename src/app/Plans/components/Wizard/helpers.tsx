@@ -367,10 +367,10 @@ export const filterSourcesBySelectedVMs = (
             return (vm as IVMwareVM).networks.map((network) => network.id);
           }
           if (sourceProviderType === 'ovirt') {
-            const networkIds = (vm as IRHVVM).nics.map((nic) => {
-              const nicProfile = nicProfiles.find((nicProfile) => nicProfile.id === nic.profile);
-              return nicProfile?.network;
-            });
+            const vmNicProfiles = (vm as IRHVVM).nics.map((nic) =>
+              nicProfiles.find((nicProfile) => nicProfile.id === nic.profile)
+            );
+            const networkIds = vmNicProfiles.map((nicProfile) => nicProfile?.network);
             return networkIds;
           }
         }

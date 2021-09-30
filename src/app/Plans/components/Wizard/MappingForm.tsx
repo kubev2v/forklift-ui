@@ -86,8 +86,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     if (
       !hasInitialized.current &&
       mappingResourceQueries.status === 'success' &&
-      sourceProvider?.type === 'ovirt' &&
-      rhvResourcesLoaded
+      (sourceProvider?.type !== 'ovirt' || rhvResourcesLoaded)
     ) {
       hasInitialized.current = true;
       if (form.values.builderItems.length > 0) {
