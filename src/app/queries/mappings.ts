@@ -27,8 +27,6 @@ import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mocks/mappings.m
 import { usePollingContext } from '@app/common/context';
 import { useAuthorizedK8sClient } from './fetchHelpers';
 import {
-  // useDiskProfilesQuery,
-  // useNicProfilesQuery,
   useOpenShiftNetworksQuery,
   useSourceNetworksQuery,
   useSourceStoragesQuery,

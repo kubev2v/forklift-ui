@@ -29,19 +29,11 @@ export interface IRHVNIC {
   profile: string;
   name: string;
   id: string;
-  // plugged: boolean;
-  // ipAddress: {
-  //   address: string;
-  //   version: string;
-  // }[];
-  // interface: string;
 }
 
 export interface IRHVDiskAttachment {
   disk: string;
   id: string;
-  // interface: string;
-  // scsiReservation: boolean;
 }
 
 export interface IRHVVM extends IBaseSourceVM {
