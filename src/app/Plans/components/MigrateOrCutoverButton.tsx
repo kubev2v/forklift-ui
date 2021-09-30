@@ -57,7 +57,7 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
             {plan.metadata.name}&quot;?
           </>
         }
-        confirmButtonText="Start"
+        confirmButtonText={buttonType}
         errorText={`Could not ${buttonType === 'Start' ? 'start migration' : 'set cutover time'}`}
       />
     </>
