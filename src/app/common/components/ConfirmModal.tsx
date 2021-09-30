@@ -5,7 +5,7 @@ import { UnknownMutationResult } from '../types';
 
 // TODO lib-ui candidate
 
-interface IConfirmModalProps {
+export interface IConfirmModalProps {
   variant?: ModalProps['variant'];
   isOpen: boolean;
   toggleOpen: () => void;

@@ -5,7 +5,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useCreateMigrationMutation, useSetCutoverMutation } from '@app/queries';
 import { IPlan } from '@app/queries/types';
 import { PlanActionButtonType } from './PlansTable';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
 
 interface IMigrateOrCutoverButtonProps {
   plan: IPlan;
@@ -45,20 +45,13 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
           {buttonType}
         </Button>
       )}
-      <ConfirmModal
+      <MigrateOrCutoverConfirmModal
         isOpen={isConfirmModalOpen}
         toggleOpen={toggleConfirmModal}
         mutateFn={doMigrateOrCutover}
         mutateResult={buttonType === 'Start' ? createMigrationMutation : setCutoverMutation}
-        title={buttonType === 'Start' ? 'Start migration?' : 'Start cutover?'}
-        body={
-          <>
-            Start the {buttonType === 'Start' ? 'migration' : 'cutover'} for plan &quot;
-            {plan.metadata.name}&quot;?
-          </>
-        }
-        confirmButtonText={buttonType}
-        errorText={`Could not ${buttonType === 'Start' ? 'start migration' : 'set cutover time'}`}
+        plan={plan}
+        action={buttonType === 'Start' ? 'start' : 'cutover'}
       />
     </>
   );

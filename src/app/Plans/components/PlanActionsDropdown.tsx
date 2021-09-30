@@ -28,6 +28,7 @@ import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
+import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -209,15 +210,13 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
         errorText="Could not delete migration plan"
       />
-      <ConfirmModal
+      <MigrateOrCutoverConfirmModal
         isOpen={isRestartModalOpen}
         toggleOpen={toggleRestartModal}
         mutateFn={() => createMigrationMutation.mutate(plan)}
         mutateResult={createMigrationMutation}
-        title="Restart migration?"
-        body={<>Restart the migration for plan &quot;{plan.metadata.name}&quot;?</>}
-        confirmButtonText="Restart"
-        errorText="Could not restart migration"
+        plan={plan}
+        action="restart"
       />
       <Modal
         variant="medium"
