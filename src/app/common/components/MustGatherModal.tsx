@@ -45,8 +45,8 @@ export const MustGatherModal: React.FunctionComponent = () => {
       'custom-name': namespacedName,
       command:
         type === 'plan'
-          ? `PLAN=${namespacedName} /usr/bin/targeted`
-          : `VM=${namespacedName} /usr/bin/targeted`,
+          ? `PLAN=${displayName} /usr/bin/targeted`
+          : `VM=${displayName} /usr/bin/targeted`,
     });
     setMustGatherModalOpen(false);
   };

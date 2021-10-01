@@ -9,7 +9,7 @@ import { MOCK_MUST_GATHERS } from '@app/queries/mocks/mustGather.mock';
 export const useMustGatherMutation = (
   url: string,
   onSuccess?: (data: IMustGatherResponse) => void,
-  onError?: () => void
+  onError?: (error: unknown) => void
 ) => {
   const queryClient = useQueryClient();
   const fetchContext = useFetchContext();
@@ -40,8 +40,8 @@ export const useMustGatherMutation = (
         queryClient.invalidateQueries(['must-gather-list']);
         onSuccess && onSuccess(data);
       },
-      onError: () => {
-        onError && onError();
+      onError: (error) => {
+        onError && onError(error);
       },
     }
   );
@@ -51,17 +51,18 @@ export const useMustGatherMutation = (
 // get all must gathers
 export const useMustGathersQuery = (
   url: string,
+  isReady: boolean,
   onSuccess?: (data: IMustGatherResponse[]) => void,
-  onError?: () => void
+  onError?: (error: Response) => void
 ) => {
   const result = useMockableQuery<IMustGatherResponse[], Response>(
     {
       queryKey: ['must-gather-list'],
       queryFn: useAuthorizedFetch(getMustGatherApiUrl(url)),
-      enabled: true,
+      enabled: isReady,
       refetchInterval: usePollingContext().refetchInterval,
-      onError: () => {
-        onError && onError();
+      onError: (error) => {
+        onError && onError(error);
       },
       onSuccess: (data) => {
         onSuccess && onSuccess(data);

@@ -4,6 +4,7 @@ import { UseQueryResult } from 'react-query';
 import { IMustGatherResponse, mustGatherStatus } from '@app/client/types';
 import { MustGatherWatcher } from '@app/common/components/MustGatherWatcher';
 import { NotificationContext } from '@app/common/context';
+import { useNetworkContext } from '@app/common/context';
 
 export type MustGatherObjType = {
   displayName: string;
@@ -46,9 +47,11 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
   const [mustGatherList, setMustGatherList] = React.useState<mustGatherListType>([]);
   const [activeMustGather, setActiveMustGather] = React.useState<MustGatherObjType>();
   const [errorNotified, setErrorNotified] = React.useState(false);
+  const { currentUser } = useNetworkContext();
 
   const mustGathersQuery = useMustGathersQuery(
     'must-gather',
+    !!currentUser.access_token,
     (data) => {
       const updatedMgList: mustGatherListType = data.map((mg): MustGatherObjType => {
         return {
@@ -60,7 +63,8 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
       setMustGatherList(updatedMgList);
       setErrorNotified(false);
     },
-    () => {
+    (error) => {
+      console.log(error);
       if (!errorNotified) {
         appContext.pushNotification({
           title: 'Could not reach must gather service.',
@@ -110,11 +114,12 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
       <>
         {children}
         {mustGatherList.map((mg, idx) => {
-          return mg.displayName && process.env.NODE_ENV !== 'production' ? (
+          return (
             <div
               data-mg-watcher={mg.displayName}
               data-type={mg.type}
               data-status={mg.status}
+              data-total-num-mg={mustGatherList.length}
               key={idx}
             >
               <MustGatherWatcher
@@ -123,12 +128,6 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
                 name={mg.displayName}
               />
             </div>
-          ) : (
-            <MustGatherWatcher
-              listStatus={mg.status}
-              key={`${mg.displayName}-${idx}`}
-              name={mg.displayName}
-            />
           );
         })}
       </>

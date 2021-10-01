@@ -25,12 +25,14 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   data?: TData
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
+  const headersObj = {
+    Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
+    ...extraHeaders,
+  };
+
   try {
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
-        ...extraHeaders,
-      },
+      headers: headersObj,
       method,
       ...(data &&
         method !== 'get' && {
