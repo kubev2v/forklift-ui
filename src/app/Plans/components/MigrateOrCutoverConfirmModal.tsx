@@ -35,7 +35,7 @@ const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverCon
           <Text>
             {action === 'cutover' || !plan.spec.warm
               ? 'VMs included in the migration plan will be shut down.'
-              : 'VMs included in the migration plan will remain powered on until cutover is started.'}{' '}
+              : 'VM data will be copied incrementally until cutover migration. To start cutover, click the button on the Plans page.'}{' '}
             See the product documentation for more information.
           </Text>
         </TextContent>
