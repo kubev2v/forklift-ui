@@ -28,6 +28,7 @@ import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
 import { IMigration } from '@app/queries/types/migrations.types';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
+import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -48,11 +49,13 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
 
   const history = useHistory();
   const onMigrationStarted = (migration: IMigration) => {
+    toggleRestartModal();
     history.push(`/plans/${migration.spec.plan.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
+  const [isRestartModalOpen, toggleRestartModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isDetailsModalOpen, toggleDetailsModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isArchivePlanModalOpen, toggleArchivePlanModal] = React.useReducer(
     (isOpen) => !isOpen,
@@ -185,7 +188,8 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               <DropdownItem
                 isDisabled={isPlanGathering}
                 onClick={() => {
-                  createMigrationMutation.mutate(plan);
+                  setKebabIsOpen(false);
+                  toggleRestartModal();
                 }}
               >
                 Restart
@@ -206,6 +210,14 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
         errorText="Could not delete migration plan"
       />
+      <MigrateOrCutoverConfirmModal
+        isOpen={isRestartModalOpen}
+        toggleOpen={toggleRestartModal}
+        mutateFn={() => createMigrationMutation.mutate(plan)}
+        mutateResult={createMigrationMutation}
+        plan={plan}
+        action="restart"
+      />
       <Modal
         variant="medium"
         title="Plan details"
@@ -219,37 +231,28 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
       >
         <PlanDetailsModal plan={plan} />
       </Modal>
-      <Modal
+      <ConfirmModal
         variant="medium"
-        title="Archive plan"
         isOpen={isArchivePlanModalOpen}
-        onClose={toggleArchivePlanModal}
-        actions={[
-          <Button
-            key="archive"
-            variant="primary"
-            onClick={() => {
-              archivePlanMutation.mutate(plan);
-            }}
-          >
-            Archive
-          </Button>,
-          <Button key="cancel-archive" variant="secondary" onClick={toggleArchivePlanModal}>
-            Cancel
-          </Button>,
-        ]}
-      >
-        <TextContent>
-          <Text>Archiving a plan means:</Text>
-          <List>
-            <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
-            <ListItem>Migration logs are deleted.</ListItem>
-            <ListItem>
-              The plan can no longer be edited or restarted, but it can be viewed.
-            </ListItem>
-          </List>
-        </TextContent>
-      </Modal>
+        toggleOpen={toggleArchivePlanModal}
+        mutateFn={() => archivePlanMutation.mutate(plan)}
+        mutateResult={archivePlanMutation}
+        title="Archive plan?"
+        body={
+          <TextContent>
+            <Text>Archiving a plan means:</Text>
+            <List>
+              <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
+              <ListItem>Migration logs are deleted.</ListItem>
+              <ListItem>
+                The plan can no longer be edited or restarted, but it can be viewed.
+              </ListItem>
+            </List>
+          </TextContent>
+        }
+        confirmButtonText="Archive"
+        errorText="Could not archive plan"
+      />
     </>
   );
 };
