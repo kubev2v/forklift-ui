@@ -213,7 +213,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
       <MigrateOrCutoverConfirmModal
         isOpen={isRestartModalOpen}
         toggleOpen={toggleRestartModal}
-        mutateFn={() => createMigrationMutation.mutate(plan)}
+        doMigrateOrCutover={() => createMigrationMutation.mutate(plan)}
         mutateResult={createMigrationMutation}
         plan={plan}
         action="restart"

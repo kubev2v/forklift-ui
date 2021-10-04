@@ -28,11 +28,11 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
 
   const [isConfirmModalOpen, toggleConfirmModal] = React.useReducer((isOpen) => !isOpen, false);
 
-  const doMigrateOrCutover = () => {
+  const doMigrateOrCutover = (cutover = new Date().toISOString()) => {
     if (buttonType === 'Start') {
       createMigrationMutation.mutate(plan);
     } else if (buttonType === 'Cutover') {
-      setCutoverMutation.mutate({ plan, cutover: new Date().toISOString() });
+      setCutoverMutation.mutate({ plan, cutover });
     }
   };
 
@@ -48,7 +48,7 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
       <MigrateOrCutoverConfirmModal
         isOpen={isConfirmModalOpen}
         toggleOpen={toggleConfirmModal}
-        mutateFn={doMigrateOrCutover}
+        doMigrateOrCutover={doMigrateOrCutover}
         mutateResult={buttonType === 'Start' ? createMigrationMutation : setCutoverMutation}
         plan={plan}
         action={buttonType === 'Start' ? 'start' : 'cutover'}

@@ -4,15 +4,16 @@ import { IPlan } from '@app/queries/types';
 import { TextContent, Text } from '@patternfly/react-core';
 
 interface IMigrateOrCutoverConfirmModalProps
-  extends Pick<IConfirmModalProps, 'isOpen' | 'toggleOpen' | 'mutateFn' | 'mutateResult'> {
+  extends Pick<IConfirmModalProps, 'isOpen' | 'toggleOpen' | 'mutateResult'> {
   plan: IPlan;
   action: 'start' | 'restart' | 'cutover';
+  doMigrateOrCutover: (cutover?: string) => void;
 }
 
 const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverConfirmModalProps> = ({
   isOpen,
   toggleOpen,
-  mutateFn,
+  doMigrateOrCutover,
   mutateResult,
   plan,
   action,
@@ -20,11 +21,17 @@ const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverCon
   const verb = action === 'restart' ? 'Restart' : 'Start';
   const noun =
     action === 'cutover' ? 'cutover' : plan.spec.warm ? 'incremental copies' : 'migration';
+
+  const [cutoverScheduleMode, setCutoverScheduleMode] = React.useState<'now' | 'later'>('now');
+  const [cutoverTime, setCutoverTime] = React.useState<null | string>(null);
+
+  // TODO if action === 'cutover', render the options, change the button text and pass cutoverTime into doMigrateOrCutover
+
   return (
     <ConfirmModal
       isOpen={isOpen}
       toggleOpen={toggleOpen}
-      mutateFn={mutateFn}
+      mutateFn={() => doMigrateOrCutover()}
       mutateResult={mutateResult}
       title={`${verb} ${noun}?`}
       body={
