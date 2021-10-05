@@ -45,14 +45,16 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
           {buttonType}
         </Button>
       )}
-      <MigrateOrCutoverConfirmModal
-        isOpen={isConfirmModalOpen}
-        toggleOpen={toggleConfirmModal}
-        doMigrateOrCutover={doMigrateOrCutover}
-        mutateResult={buttonType === 'Start' ? createMigrationMutation : setCutoverMutation}
-        plan={plan}
-        action={buttonType === 'Start' ? 'start' : 'cutover'}
-      />
+      {isConfirmModalOpen ? (
+        <MigrateOrCutoverConfirmModal
+          isOpen
+          toggleOpen={toggleConfirmModal}
+          doMigrateOrCutover={doMigrateOrCutover}
+          mutateResult={buttonType === 'Start' ? createMigrationMutation : setCutoverMutation}
+          plan={plan}
+          action={buttonType === 'Start' ? 'start' : 'cutover'}
+        />
+      ) : null}
     </>
   );
 };

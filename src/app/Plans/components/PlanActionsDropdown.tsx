@@ -210,14 +210,16 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
         errorText="Could not delete migration plan"
       />
-      <MigrateOrCutoverConfirmModal
-        isOpen={isRestartModalOpen}
-        toggleOpen={toggleRestartModal}
-        doMigrateOrCutover={() => createMigrationMutation.mutate(plan)}
-        mutateResult={createMigrationMutation}
-        plan={plan}
-        action="restart"
-      />
+      {isRestartModalOpen ? (
+        <MigrateOrCutoverConfirmModal
+          isOpen
+          toggleOpen={toggleRestartModal}
+          doMigrateOrCutover={() => createMigrationMutation.mutate(plan)}
+          mutateResult={createMigrationMutation}
+          plan={plan}
+          action="restart"
+        />
+      ) : null}
       <Modal
         variant="medium"
         title="Plan details"

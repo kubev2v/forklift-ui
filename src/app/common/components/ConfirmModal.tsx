@@ -15,6 +15,7 @@ export interface IConfirmModalProps {
   body: React.ReactNode;
   confirmButtonText: string;
   cancelButtonText?: string;
+  confirmButtonDisabled?: boolean;
   errorText?: string;
 }
 
@@ -27,6 +28,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
   title,
   body,
   confirmButtonText,
+  confirmButtonDisabled = false,
   cancelButtonText = 'Cancel',
   errorText = 'Error performing action',
 }: IConfirmModalProps) => {
@@ -56,7 +58,7 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
               key="confirm"
               variant="primary"
               onClick={mutateFn}
-              isDisabled={mutateResult?.isLoading}
+              isDisabled={mutateResult?.isLoading || confirmButtonDisabled}
             >
               {confirmButtonText}
             </Button>
