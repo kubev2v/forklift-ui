@@ -53,7 +53,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
     'must-gather',
     !!currentUser.access_token,
     (data) => {
-      const updatedMgList: mustGatherListType = data.map((mg): MustGatherObjType => {
+      const updatedMgList: mustGatherListType = data?.map((mg): MustGatherObjType => {
         return {
           displayName: mg['custom-name'],
           status: mg.status,
@@ -114,7 +114,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
       <>
         {children}
         {mustGatherList.map((mg, idx) => {
-          return (
+          return mg.displayName && process.env.NODE_ENV !== 'production' ? (
             <div
               data-mg-watcher={mg.displayName}
               data-type={mg.type}
@@ -128,6 +128,12 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
                 name={mg.displayName}
               />
             </div>
+          ) : (
+            <MustGatherWatcher
+              listStatus={mg.status}
+              key={`${mg.displayName}-${idx}`}
+              name={mg.displayName}
+            />
           );
         })}
       </>

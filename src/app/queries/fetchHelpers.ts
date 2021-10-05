@@ -22,6 +22,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {},
   method: 'get' | 'post' = 'get',
+  returnMode: 'json' | 'blob' = 'json',
   data?: TData
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
@@ -40,7 +41,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
         }),
     });
     if (response.ok && response.json) {
-      return response.json();
+      return returnMode === 'json' ? response.json() : response.blob();
     } else {
       throw response;
     }

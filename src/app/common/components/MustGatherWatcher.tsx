@@ -5,6 +5,7 @@ import { useMustGatherQuery } from '@app/queries';
 import { mustGatherStatus } from '@app/client/types';
 import { getMustGatherApiUrl } from '@app/queries/helpers';
 import { MustGatherContext } from '@app/common/context';
+import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
 
 interface IMustGatherWatcherProps {
   name: string;
@@ -22,6 +23,7 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
   const [hasCompleted, setHasCompleted] = React.useState(completedPreviously || erroredPreviously);
   const { data, isSuccess } = useMustGatherQuery(name, hasCompleted);
   const { withoutNs } = React.useContext(MustGatherContext);
+  const fetchContext = useFetchContext();
 
   React.useEffect(() => {
     const type = data?.command.toLowerCase().includes('plan') ? 'plan' : 'vm';
@@ -44,10 +46,26 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
           <div>
             You can download the migration logs for the {type}&nbsp;
             <Button
-              component="a"
-              href={getMustGatherApiUrl(`must-gather/${data?.['id']}/data`)}
-              download
-              target="_self"
+              onClick={() => {
+                authorizedFetch<Blob>(
+                  getMustGatherApiUrl(`must-gather/${data?.['id']}/data`),
+                  fetchContext,
+                  {},
+                  'get',
+                  'blob'
+                )
+                  .then((tarBall) => {
+                    const file = new File(
+                      [tarBall],
+                      `must-gather-${data?.['custom-name']}.tar.gz`,
+                      { type: 'text/plain;charset=utf-8' }
+                    );
+                    saveAs(file);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }}
               variant="link"
               isInline
             >
@@ -84,6 +102,7 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
     hasCompleted,
     completedPreviously,
     erroredPreviously,
+    fetchContext,
     withoutNs,
     setNotified,
     setHasCompleted,

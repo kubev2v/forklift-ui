@@ -22,6 +22,7 @@ export const useMustGatherMutation = (
           fetchContext,
           { 'Content-Type': 'application/json' },
           'post',
+          'json',
           options
         )
           .then((mustGatherData) => {
