@@ -13,7 +13,7 @@ import {
 } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
-import { IPlan } from '@app/queries/types';
+import { IPlan, IMigration } from '@app/queries/types';
 import { hasCondition } from '@app/common/helpers';
 import {
   useClusterProvidersQuery,
@@ -26,7 +26,6 @@ import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
-import { IMigration } from '@app/queries/types/migrations.types';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
 import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
 

@@ -25,6 +25,7 @@ import {
   Th,
   Tr,
   truncate,
+  nowrap,
 } from '@patternfly/react-table';
 import { ArchiveIcon } from '@patternfly/react-icons';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
@@ -60,6 +61,7 @@ import StatusCondition from '@app/common/components/StatusCondition';
 import MigrateOrCutoverButton from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
+import ScheduledCutoverTime from './ScheduledCutoverTime';
 
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'ScheduledCutover' | 'MustGather';
 interface IPlansTableProps {
@@ -199,6 +201,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
     {
       title: '',
       transforms: [cellWidth(10)],
+      cellTransforms: [nowrap],
       columnTransforms: [classNames(alignment.textAlignRight, spacing.pxSm)],
     },
   ];
@@ -284,7 +287,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
                 {buttonType === 'MustGather' ? (
                   <MustGatherBtn type="plan" displayName={plan.metadata.name} />
                 ) : buttonType === 'ScheduledCutover' ? (
-                  <ScheduledCutoverTime />
+                  <ScheduledCutoverTime migration={latestMigration} />
                 ) : buttonType === 'Start' || buttonType === 'Cutover' ? (
                   <MigrateOrCutoverButton
                     plan={plan}

@@ -1,8 +1,7 @@
 import { ProgressVariant } from '@patternfly/react-core';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
-import { IPlan } from '@app/queries/types';
-import { IMigration } from '@app/queries/types/migrations.types';
+import { IPlan, IMigration } from '@app/queries/types';
 import { PlanActionButtonType } from '@app/Plans/components/PlansTable';
 import { IKubeList } from '@app/client/types';
 import { UseQueryResult } from 'react-query';

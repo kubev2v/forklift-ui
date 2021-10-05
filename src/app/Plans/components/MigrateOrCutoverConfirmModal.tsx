@@ -11,6 +11,7 @@ import {
   isValidDate,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 interface IMigrateOrCutoverConfirmModalProps
   extends Pick<IConfirmModalProps, 'isOpen' | 'toggleOpen' | 'mutateResult'> {
@@ -134,7 +135,7 @@ const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverCon
                       </InputGroup>
                       {cutoverDateInvalidReason ? (
                         <div
-                          className={`${spacing.mtXs} pf-c-date-picker__helper-text pf-m-error pf-u-danger-color-100`}
+                          className={`${spacing.mtXs} ${text.dangerColor_100} ${text.fontSizeSm}`}
                         >
                           {cutoverDateInvalidReason}
                         </div>
