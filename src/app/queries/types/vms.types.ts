@@ -26,15 +26,14 @@ export interface IVMwareVM extends IBaseSourceVM {
 }
 
 export interface IRHVNIC {
-  profile: {
-    network: string;
-  };
+  profile: string;
+  name: string;
+  id: string;
 }
 
 export interface IRHVDiskAttachment {
-  disk: {
-    storageDomain: string;
-  };
+  disk: string;
+  id: string;
 }
 
 export interface IRHVVM extends IBaseSourceVM {

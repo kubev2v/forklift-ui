@@ -12,3 +12,5 @@ export * from './secrets';
 export * from './namespaces';
 export * from './provisioners';
 export * from './mustGather';
+export * from './nicProfiles';
+export * from './disks';

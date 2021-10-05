@@ -64,13 +64,9 @@ import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'MustGather';
 interface IPlansTableProps {
   plans: IPlan[];
-  errorContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
-  plans,
-  errorContainerRef,
-}: IPlansTableProps) => {
+const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlansTableProps) => {
   const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((show) => !show, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
@@ -292,7 +288,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     plan={plan}
                     buttonType={buttonType}
                     isBeingStarted={isBeingStarted}
-                    errorContainerRef={errorContainerRef}
                   />
                 )}
               </FlexItem>

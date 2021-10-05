@@ -1,5 +1,6 @@
 import { IVMwareVM, IRHVVM } from '../types/vms.types';
-
+import { MOCK_DISK_ATTACHMENTS } from '@app/queries/mocks/disks.mock';
+import { MOCK_NICS } from '@app/queries/mocks/nicProfiles.mock';
 export let MOCK_VMWARE_VMS: IVMwareVM[] = [];
 export let MOCK_RHV_VMS: IRHVVM[] = [];
 
@@ -144,25 +145,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/3dcaf3ec-6b51-4ca0-8345-6d61841731d7',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '1',
-          },
-        },
-        {
-          disk: {
-            storageDomain: '1',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[0], MOCK_DISK_ATTACHMENTS[0]], // storageDomain 1
       concerns: [],
     },
     {
@@ -172,20 +156,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/2a66a719-440c-4544-9da0-692d14338b12',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '2',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '1',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[1]], // network 2
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[0]], // storageDomain 1
       concerns: [],
     },
     {
@@ -195,20 +167,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/64333a40-ffbb-4c28-add7-5560bdf082fb',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -218,30 +178,12 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/6f9de857-ef39-43b7-8853-af982286dc59',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
       diskAttachments: [
-        {
-          disk: {
-            storageDomain: '1',
-          },
-        },
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-        {
-          disk: {
-            storageDomain: '1',
-          },
-        },
-      ],
+        MOCK_DISK_ATTACHMENTS[0],
+        MOCK_DISK_ATTACHMENTS[1],
+        MOCK_DISK_ATTACHMENTS[0],
+      ], // storageDomain 1 & 2
       concerns: [],
     },
     {
@@ -251,25 +193,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/bea5f184-972e-44e2-811a-2357829ab590',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1], MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -279,20 +204,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/b3eb91d4-2c42-4dc6-98fb-fee94f1df30d',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '3',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[2]], // storageDomain 3
       concerns: [],
     },
     {
@@ -302,25 +215,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/be55c259-2415-448d-841e-f4b9d743242e',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '2',
-          },
-        },
-        {
-          profile: {
-            network: '4',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '4',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[1], MOCK_NICS[3]], // networks 2 & 4
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[3]], // storageDomain 4
       concerns: [],
     },
     {
@@ -330,20 +226,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/54426696-297d-4ae4-a2a3-c7bc43ee5ccf',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '3',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[2]], // storageDomain 3
       concerns: [],
     },
     {
@@ -353,20 +237,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/84d2359c-45d3-401f-a942-81020d6a58bd',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -376,20 +248,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/25284d90-3684-4643-8f60-c72cc8ccfbff',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -399,20 +259,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/aa6eca14-b91d-447f-8050-4a7127d33244',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -422,20 +270,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/cdb41d1c-481a-4d24-a239-fe77813608cd',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -445,30 +281,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/fe91d819-94e4-4e77-8d8d-399484601937',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '4',
-          },
-        },
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '5',
-          },
-        },
-        {
-          disk: {
-            storageDomain: '5',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[3], MOCK_NICS[0]], // networks 4 & 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[4], MOCK_DISK_ATTACHMENTS[4]], // storageDomain 5
       concerns: [],
     },
     {
@@ -478,20 +292,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/18d82ffd-8c1a-407a-a2c4-119b6d81375a',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '3',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[2]], // storageDomain 3
       concerns: [],
     },
     {
@@ -501,20 +303,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/f9ee4c85-e880-48eb-86d4-639bf2956049',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '3',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[2]], // network 3
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
     {
@@ -524,20 +314,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       selfLink:
         'providers/ovirt/85292227-48fc-4571-a2ea-ba1f04634bc9/vms/35c259ac-603a-458e-81f6-8d9ed3a8e1ee',
       revisionValidated: 0,
-      nics: [
-        {
-          profile: {
-            network: '1',
-          },
-        },
-      ],
-      diskAttachments: [
-        {
-          disk: {
-            storageDomain: '2',
-          },
-        },
-      ],
+      nics: [MOCK_NICS[0]], // network 1
+      diskAttachments: [MOCK_DISK_ATTACHMENTS[1]], // storageDomain 2
       concerns: [],
     },
   ];
