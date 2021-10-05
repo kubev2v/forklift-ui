@@ -11,7 +11,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { MustGatherModal } from '@app/common/components/MustGatherModal';
-// import { MustGatherContextProvider } from '@app/common/context';
+
 import {
   useHasSufficientProvidersQuery,
   usePlansQuery,
