@@ -109,8 +109,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     !!plan?.spec.warm &&
     (planState === 'Starting' ||
       planState === 'Copying' ||
-      planState === 'CanceledCopying' ||
-      planState === 'FailedCopying');
+      planState === 'Copying-CutoverScheduled' ||
+      planState === 'Copying-Canceled' ||
+      planState === 'Copying-Failed');
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
@@ -186,7 +187,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         } else {
           const { state } = getWarmVMCopyState(item);
           if (state === 'Starting') return 'Not Started';
-          if (state === 'Copying') return 'In Progress';
+          if (state === 'Copying') return 'Copying';
           if (state === 'Idle') return 'Idle';
           if (state === 'Failed' || state === 'Warning') return 'On Error';
           return 'In Progress';

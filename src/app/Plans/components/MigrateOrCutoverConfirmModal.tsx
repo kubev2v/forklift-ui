@@ -19,6 +19,8 @@ interface IMigrateOrCutoverConfirmModalProps
   doMigrateOrCutover: (cutover?: string) => void;
 }
 
+// TODO this turned into too many conditionals, split it into MigrationConfirmModal and CutoverConfirmModal
+
 const MigrateOrCutoverConfirmModal: React.FunctionComponent<IMigrateOrCutoverConfirmModalProps> = ({
   isOpen,
   toggleOpen,

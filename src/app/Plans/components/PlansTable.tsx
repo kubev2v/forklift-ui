@@ -61,7 +61,7 @@ import MigrateOrCutoverButton from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 
-export type PlanActionButtonType = 'Start' | 'Cutover' | 'MustGather';
+export type PlanActionButtonType = 'Start' | 'Cutover' | 'ScheduledCutover' | 'MustGather';
 interface IPlansTableProps {
   plans: IPlan[];
 }
@@ -253,7 +253,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
               </PlanStatusNavLink>
             ) : planState === 'NotStarted-Ready' || planState === 'NotStarted-NotReady' ? (
               <StatusCondition status={plan.status} />
-            ) : planState === 'Copying' ? (
+            ) : planState === 'Copying' || planState === 'Copying-CutoverScheduled' ? (
               <PlanStatusNavLink plan={plan}>
                 Running - performing incremental data copies
               </PlanStatusNavLink>
@@ -283,13 +283,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
               <FlexItem align={{ default: 'alignRight' }}>
                 {buttonType === 'MustGather' ? (
                   <MustGatherBtn type="plan" displayName={plan.metadata.name} />
-                ) : (
+                ) : buttonType === 'ScheduledCutover' ? (
+                  <ScheduledCutoverTime />
+                ) : buttonType === 'Start' || buttonType === 'Cutover' ? (
                   <MigrateOrCutoverButton
                     plan={plan}
                     buttonType={buttonType}
                     isBeingStarted={isBeingStarted}
                   />
-                )}
+                ) : null}
               </FlexItem>
               <FlexItem>
                 <PlanActionsDropdown canRestart={canRestart} planState={planState} plan={plan} />

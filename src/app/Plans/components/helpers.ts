@@ -31,14 +31,14 @@ export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) 
       break;
     }
     case state === 'Finished-Failed':
-    case state === 'FailedCopying': {
+    case state === 'Copying-Failed': {
       title = 'Failed';
       variant = ProgressVariant.danger;
       filterValue = 'Failed';
       break;
     }
     case state === 'Canceled':
-    case state === 'CanceledCopying': {
+    case state === 'Copying-Canceled': {
       title = 'Canceled';
       filterValue = 'Canceled';
       break;
@@ -50,6 +50,7 @@ export const getMigStatusState = (state: PlanState | null, isWarmPlan: boolean) 
       break;
     }
     case state === 'Copying':
+    case state === 'Copying-CutoverScheduled':
     case state === 'PipelineRunning': {
       title = isWarmPlan ? 'Running cutover' : 'Running';
       filterValue = 'Running';
@@ -90,8 +91,8 @@ export const canBeRestarted = (planState: PlanState | null) => {
     planState === 'Finished-Incomplete' ||
     planState === 'Finished-Failed' ||
     planState === 'Canceled' ||
-    planState === 'FailedCopying' ||
-    planState === 'CanceledCopying'
+    planState === 'Copying-Failed' ||
+    planState === 'Copying-Canceled'
   );
 };
 
@@ -105,6 +106,10 @@ export const getButtonState = (state: PlanState | null): PlanActionButtonType | 
     }
     case state === 'Copying': {
       type = 'Cutover';
+      break;
+    }
+    case state === 'Copying-CutoverScheduled': {
+      type = 'ScheduledCutover';
       break;
     }
     case state === 'Finished-Succeeded':
@@ -146,10 +151,10 @@ export const getPlanState = (
 
   if (isWarm && !migration.spec.cutover) {
     if (hasCondition(conditions, 'Canceled')) {
-      return 'CanceledCopying';
+      return 'Copying-Canceled';
     }
     if (hasCondition(conditions, 'Failed')) {
-      return 'FailedCopying';
+      return 'Copying-Failed';
     }
   }
 
@@ -182,10 +187,14 @@ export const getPlanState = (
       }
 
       if (plan.status?.migration?.vms?.some((vm) => (vm.warm?.precopies?.length || 0) > 0)) {
-        return 'Copying';
+        if (migration?.spec.cutover && !cutoverTimePassed) {
+          return 'Copying-CutoverScheduled';
+        } else {
+          return 'Copying';
+        }
       }
 
-      // Warm migration executing, cutover time not passed, no precopy data: show Starting until copy data appears
+      // Warm migration executing, cutover time not set, no precopy data: show Starting until copy data appears
       return 'Starting';
     }
 
