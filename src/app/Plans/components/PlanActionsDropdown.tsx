@@ -20,6 +20,7 @@ import {
   useDeletePlanMutation,
   useArchivePlanMutation,
   useCreateMigrationMutation,
+  useSetCutoverMutation,
 } from '@app/queries';
 import { MustGatherContext } from '@app/common/context';
 import ConfirmModal from '@app/common/components/ConfirmModal';
@@ -52,6 +53,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
     history.push(`/plans/${migration.spec.plan.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
+  const setCutoverMutation = useSetCutoverMutation();
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isRestartModalOpen, toggleRestartModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -178,24 +180,38 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
           >
             View details
           </DropdownItem>,
-          ...((canRestart && [
-            <ConditionalTooltip
-              key="Restart"
-              isTooltipEnabled={isPlanGathering}
-              content="This plan cannot be restarted because it is running must gather service"
-            >
-              <DropdownItem
-                isDisabled={isPlanGathering}
-                onClick={() => {
-                  setKebabIsOpen(false);
-                  toggleRestartModal();
-                }}
-              >
-                Restart
-              </DropdownItem>
-            </ConditionalTooltip>,
-          ]) ||
-            []),
+          ...(canRestart
+            ? [
+                <ConditionalTooltip
+                  key="Restart"
+                  isTooltipEnabled={isPlanGathering}
+                  content="This plan cannot be restarted because it is running must gather service"
+                >
+                  <DropdownItem
+                    isDisabled={isPlanGathering}
+                    onClick={() => {
+                      setKebabIsOpen(false);
+                      toggleRestartModal();
+                    }}
+                  >
+                    Restart
+                  </DropdownItem>
+                </ConditionalTooltip>,
+              ]
+            : []),
+          ...(planState === 'Copying-CutoverScheduled'
+            ? [
+                <DropdownItem
+                  key="Cancel cutover"
+                  onClick={() => {
+                    setKebabIsOpen(false);
+                    setCutoverMutation.mutate({ plan, cutover: null });
+                  }}
+                >
+                  Cancel scheduled cutover
+                </DropdownItem>,
+              ]
+            : []),
         ]}
         position={DropdownPosition.right}
       />
