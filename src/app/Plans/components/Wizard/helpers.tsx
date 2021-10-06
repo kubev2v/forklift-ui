@@ -43,6 +43,10 @@ import {
   IndexedTree,
   IndexedSourceVMs,
   usePlansQuery,
+  useNicProfilesQuery,
+  useDisksQuery,
+  INicProfile,
+  IDisk,
 } from '@app/queries';
 import { UseQueryResult, QueryStatus } from 'react-query';
 import { StatusType } from '@konveyor/lib-ui';
@@ -351,9 +355,11 @@ export const filterSourcesBySelectedVMs = (
   availableSources: MappingSource[],
   selectedVMs: SourceVM[],
   mappingType: MappingType,
-  sourceProviderType: ProviderType
+  sourceProviderType: ProviderType,
+  nicProfiles: INicProfile[],
+  disks: IDisk[]
 ): MappingSource[] => {
-  const sourceIds = Array.from(
+  const sourceIds: (string | undefined)[] = Array.from(
     new Set(
       selectedVMs.flatMap((vm) => {
         if (mappingType === MappingType.Network) {
@@ -361,22 +367,33 @@ export const filterSourcesBySelectedVMs = (
             return (vm as IVMwareVM).networks.map((network) => network.id);
           }
           if (sourceProviderType === 'ovirt') {
-            return (vm as IRHVVM).nics.map((nic) => nic.profile.network);
+            const vmNicProfiles = (vm as IRHVVM).nics.map((nic) =>
+              nicProfiles.find((nicProfile) => nicProfile.id === nic.profile)
+            );
+            const networkIds = vmNicProfiles.map((nicProfile) => nicProfile?.network);
+            return networkIds;
           }
         }
+
         if (mappingType === MappingType.Storage) {
           if (sourceProviderType === 'vsphere') {
             return (vm as IVMwareVM).disks.map((disk) => disk.datastore.id);
           }
           if (sourceProviderType === 'ovirt') {
-            return (vm as IRHVVM).diskAttachments.map((da) => da.disk.storageDomain);
+            const vmDisks = (vm as IRHVVM).diskAttachments.map((da) =>
+              disks.find((disk) => disk.id === da.disk)
+            );
+            const storageDomainIds = vmDisks.map((disk) => disk?.storageDomain);
+            return storageDomainIds;
           }
         }
         return [];
       })
     )
   );
-  return availableSources.filter((source) => sourceIds.includes(source.id));
+
+  const filteredSources = availableSources.filter((source) => sourceIds.includes(source.id));
+  return filteredSources;
 };
 
 export const warmCriticalConcerns = ['Changed Block Tracking (CBT) not enabled'];
@@ -586,6 +603,8 @@ export const usePlanWizardPrefillEffect = (
 
   const defaultTreeType = InventoryTreeType.Cluster;
   const isNodeSelectable = useIsNodeSelectableCallback(defaultTreeType);
+  const nicProfilesQuery = useNicProfilesQuery(sourceProvider);
+  const disksQuery = useDisksQuery(sourceProvider);
 
   React.useEffect(() => {
     if (
@@ -643,7 +662,9 @@ export const usePlanWizardPrefillEffect = (
           selectedVMs,
           MappingType.Network,
           sourceProvider?.type || 'vsphere',
-          false
+          false,
+          nicProfilesQuery?.data || [],
+          disksQuery?.data || []
         )
       );
       forms.networkMapping.fields.isPrefilled.prefill(true);
@@ -660,7 +681,9 @@ export const usePlanWizardPrefillEffect = (
           selectedVMs,
           MappingType.Storage,
           sourceProvider?.type || 'vsphere',
-          false
+          false,
+          nicProfilesQuery?.data || [],
+          disksQuery?.data || []
         )
       );
       forms.storageMapping.fields.isPrefilled.prefill(true);
@@ -694,6 +717,8 @@ export const usePlanWizardPrefillEffect = (
     plansQuery,
     defaultTreeType,
     isNodeSelectable,
+    disksQuery?.data,
+    nicProfilesQuery?.data,
   ]);
 
   return {

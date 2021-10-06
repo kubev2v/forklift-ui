@@ -30,15 +30,12 @@ const PlansPage: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const migrationsQuery = useMigrationsQuery();
 
-  const errorContainerRef = React.useRef<HTMLDivElement>(null);
-
   return (
     <>
       <PageSection variant="light">
         <Title headingLevel="h1">Migration plans</Title>
       </PageSection>
       <PageSection>
-        <div ref={errorContainerRef} />
         <ResolvedQueries
           results={[
             sufficientProvidersQuery.result,
@@ -69,10 +66,7 @@ const PlansPage: React.FunctionComponent = () => {
                   <CreatePlanButton />
                 </EmptyState>
               ) : (
-                <PlansTable
-                  plans={plansQuery.data?.items || []}
-                  errorContainerRef={errorContainerRef}
-                />
+                <PlansTable plans={plansQuery.data?.items || []} />
               )}
             </CardBody>
           </Card>

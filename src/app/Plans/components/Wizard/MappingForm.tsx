@@ -17,7 +17,6 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ValidatedTextInput } from '@konveyor/lib-ui';
-
 import { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   MappingType,
@@ -29,7 +28,13 @@ import {
   SourceInventoryProvider,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
-import { filterSharedMappings, useMappingResourceQueries, useMappingsQuery } from '@app/queries';
+import {
+  filterSharedMappings,
+  useMappingResourceQueries,
+  useMappingsQuery,
+  useDisksQuery,
+  useNicProfilesQuery,
+} from '@app/queries';
 import { PlanWizardFormState } from './PlanWizard';
 import {
   getBuilderItemsFromMapping,
@@ -63,16 +68,26 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
 }: IMappingFormProps) => {
   usePausedPollingEffect();
 
+  const nicProfilesQuery = useNicProfilesQuery(sourceProvider);
+  const disksQuery = useDisksQuery(sourceProvider);
+
+  const rhvResourcesLoaded = nicProfilesQuery.isSuccess && disksQuery.isSuccess;
+
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
     mappingType
   );
+
   const { availableSources, availableTargets } = mappingResourceQueries;
 
   const hasInitialized = React.useRef(false);
   React.useEffect(() => {
-    if (!hasInitialized.current && mappingResourceQueries.status === 'success') {
+    if (
+      !hasInitialized.current &&
+      mappingResourceQueries.status === 'success' &&
+      (sourceProvider?.type !== 'ovirt' || rhvResourcesLoaded)
+    ) {
       hasInitialized.current = true;
       if (form.values.builderItems.length > 0) {
         form.fields.builderItems.setValue(
@@ -82,7 +97,9 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
             selectedVMs,
             mappingType,
             sourceProvider?.type || 'vsphere',
-            !!form.values.selectedExistingMapping
+            !!form.values.selectedExistingMapping,
+            nicProfilesQuery?.data || [],
+            disksQuery?.data || []
           )
         );
       }
@@ -95,6 +112,9 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     mappingType,
     selectedVMs,
     sourceProvider,
+    rhvResourcesLoaded,
+    disksQuery?.data,
+    nicProfilesQuery?.data,
   ]);
 
   const mappingsQuery = useMappingsQuery(mappingType);
@@ -144,7 +164,9 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
         selectedVMs,
         mappingType,
         sourceProviderType,
-        true
+        true,
+        nicProfilesQuery?.data || [],
+        disksQuery?.data || []
       )
     );
     form.fields.isSaveNewMapping.setValue(false);
