@@ -110,7 +110,7 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
         title="Permanently remove provider?"
         body={`${PROVIDER_TYPE_NAMES[providerType]} provider "${provider.metadata.name}" will no longer be selectable as a migration target.`}
         confirmButtonText="Remove"
-        errorText="Could not remove provider"
+        errorText="Cannot remove provider"
       />
     </>
   );

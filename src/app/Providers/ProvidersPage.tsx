@@ -53,9 +53,9 @@ const ProvidersPage: React.FunctionComponent = () => {
 
   const allQueries = [clusterProvidersQuery, inventoryProvidersQuery, plansQuery];
   const allErrorTitles = [
-    'Could not load providers from cluster API',
-    'Could not load providers from inventory API',
-    'Could not load plans',
+    'Cannot load providers from cluster API',
+    'Cannot load providers from inventory API',
+    'Cannot load plans',
   ];
   const queryStatus = getAggregateQueryStatus(allQueries);
 

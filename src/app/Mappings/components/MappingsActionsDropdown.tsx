@@ -90,7 +90,7 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
           (mapping.metadata as IMetaObjectMeta).name
         }" when you create a migration plan.`}
         confirmButtonText="Delete"
-        errorText="Could not delete network mapping"
+        errorText="Cannot delete network mapping"
       />
     </>
   );

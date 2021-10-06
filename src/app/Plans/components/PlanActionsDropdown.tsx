@@ -223,7 +223,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         title="Permanently delete migration plan?"
         confirmButtonText="Delete"
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
-        errorText="Could not delete migration plan"
+        errorText="Cannot delete migration plan"
       />
       {isRestartModalOpen ? (
         <MigrationConfirmModal
@@ -267,7 +267,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
           </TextContent>
         }
         confirmButtonText="Archive"
-        errorText="Could not archive plan"
+        errorText="Cannot archive plan"
       />
     </>
   );

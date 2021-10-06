@@ -167,7 +167,7 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
       ) : null}
       <ResolvedQueries
         results={[vmsQuery, treeQuery]}
-        errorTitles={['Could not load VMs', 'Could not load inventory tree data']}
+        errorTitles={['Cannot load VMs', 'Cannot load inventory tree data']}
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView

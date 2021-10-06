@@ -40,7 +40,7 @@ const LoginHandlerComponent: React.FunctionComponent = () => {
     return (
       <Alert
         variant="danger"
-        title="Could not log in"
+        title="Cannot log in"
         className={spacing.mLg}
         actionLinks={
           <AlertActionLink onClick={() => history.replace('/')}>Try again</AlertActionLink>

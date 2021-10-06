@@ -31,7 +31,7 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
     );
   }
   return (
-    <ResolvedQuery result={openshiftNetworksQuery} errorTitle="Could not load networks">
+    <ResolvedQuery result={openshiftNetworksQuery} errorTitle="Cannot load networks">
       <TableComposable
         aria-label={`Networks for provider ${provider.metadata.name}`}
         variant="compact"

@@ -100,7 +100,7 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
   const [isSelectNetworkModalOpen, setIsSelectNetworkModalOpen] = React.useState(false);
 
   return (
-    <ResolvedQuery result={hostConfigsQuery} errorTitle="Could not load host configurations">
+    <ResolvedQuery result={hostConfigsQuery} errorTitle="Cannot load host configurations">
       <Level>
         <LevelItem>
           <ConditionalTooltip

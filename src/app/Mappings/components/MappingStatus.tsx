@@ -39,9 +39,9 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
     <ResolvedQueries
       results={queries}
       errorTitles={[
-        'Could not load providers',
-        'Could not load source provider resources',
-        'Could not load target provider resources',
+        'Cannot load providers',
+        'Cannot load source provider resources',
+        'Cannot load target provider resources',
       ]}
       spinnerMode={QuerySpinnerMode.Inline}
       spinnerProps={{

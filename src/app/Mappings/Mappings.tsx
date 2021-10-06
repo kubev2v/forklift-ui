@@ -40,9 +40,9 @@ const Mappings: React.FunctionComponent<IMappingsProps> = ({
     <ResolvedQueries
       results={[sufficientProvidersQuery.result, clusterProvidersQuery, mappingsQuery]}
       errorTitles={[
-        'Could not load provider inventory data',
-        'Could not load providers from cluster',
-        'Could not load mappings',
+        'Cannot load provider inventory data',
+        'Cannot load providers from cluster',
+        'Cannot load mappings',
       ]}
       errorsInline={false}
     >
