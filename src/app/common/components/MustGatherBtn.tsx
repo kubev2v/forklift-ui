@@ -2,9 +2,6 @@ import * as React from 'react';
 import { Button, Tooltip } from '@patternfly/react-core';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import { MustGatherContext } from '@app/common/context';
-import { getMustGatherApiUrl } from '@app/queries/helpers';
-import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
-import { saveAs } from 'file-saver';
 
 interface IMustGatherBtn {
   displayName: string;
@@ -19,11 +16,13 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
     latestAssociatedMustGather,
     withNs,
     withoutNs,
+    downloadMustGatherResult,
+    fetchMustGatherResult,
+    notifyDownloadFailed,
   } = React.useContext(MustGatherContext);
 
   const namespacedName = withNs(displayName, type);
   const mustGather = latestAssociatedMustGather(namespacedName);
-  const fetchContext = useFetchContext();
 
   return mustGather?.status === 'completed' && mustGather?.['archive-name'] ? (
     <Tooltip
@@ -38,22 +37,11 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
         isAriaDisabled={!mustGathersQuery.isSuccess}
         variant="secondary"
         onClick={() => {
-          authorizedFetch<Blob>(
-            getMustGatherApiUrl(`must-gather/${mustGather?.['id']}/data`),
-            fetchContext,
-            {},
-            'get',
-            'blob'
-          )
-            .then((tarBall) => {
-              const file = new File([tarBall], mustGather['archive-name'], {
-                type: 'text/plain;charset=utf-8',
-              });
-              saveAs(file);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+          fetchMustGatherResult(mustGather)
+            .then(
+              (tarBall) => tarBall && downloadMustGatherResult(tarBall, mustGather['archive-name'])
+            )
+            .catch(() => notifyDownloadFailed());
         }}
       >
         Download logs

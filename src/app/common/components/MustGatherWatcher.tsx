@@ -3,9 +3,8 @@ import { Button } from '@patternfly/react-core';
 import { NotificationContext } from '@app/common/context';
 import { useMustGatherQuery } from '@app/queries';
 import { mustGatherStatus } from '@app/client/types';
-import { getMustGatherApiUrl } from '@app/queries/helpers';
 import { MustGatherContext } from '@app/common/context';
-import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
+import { useFetchContext } from '@app/queries/fetchHelpers';
 
 interface IMustGatherWatcherProps {
   name: string;
@@ -22,7 +21,8 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
   const [notified, setNotified] = React.useState(completedPreviously || erroredPreviously);
   const [hasCompleted, setHasCompleted] = React.useState(completedPreviously || erroredPreviously);
   const { data, isSuccess } = useMustGatherQuery(name, hasCompleted);
-  const { withoutNs } = React.useContext(MustGatherContext);
+  const { withoutNs, fetchMustGatherResult, downloadMustGatherResult, notifyDownloadFailed } =
+    React.useContext(MustGatherContext);
   const fetchContext = useFetchContext();
 
   React.useEffect(() => {
@@ -47,24 +47,16 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
             You can download the migration logs for the {type}&nbsp;
             <Button
               onClick={() => {
-                authorizedFetch<Blob>(
-                  getMustGatherApiUrl(`must-gather/${data?.['id']}/data`),
-                  fetchContext,
-                  {},
-                  'get',
-                  'blob'
-                )
-                  .then((tarBall) => {
-                    const file = new File(
-                      [tarBall],
-                      `must-gather-${data?.['custom-name']}.tar.gz`,
-                      { type: 'text/plain;charset=utf-8' }
-                    );
-                    saveAs(file);
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                  });
+                fetchMustGatherResult(data)
+                  .then(
+                    (tarBall) =>
+                      tarBall &&
+                      downloadMustGatherResult(
+                        tarBall,
+                        `must-gather-${data?.['custom-name']}.tar.gz`
+                      )
+                  )
+                  .catch(() => notifyDownloadFailed());
               }}
               variant="link"
               isInline
@@ -107,6 +99,9 @@ export const MustGatherWatcher: React.FunctionComponent<IMustGatherWatcherProps>
     setNotified,
     setHasCompleted,
     pushNotification,
+    downloadMustGatherResult,
+    fetchMustGatherResult,
+    notifyDownloadFailed,
   ]);
 
   return null;
