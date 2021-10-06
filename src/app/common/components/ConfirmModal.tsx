@@ -31,13 +31,8 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
   confirmButtonDisabled = false,
   cancelButtonText = 'Cancel',
   errorText = 'Error performing action',
-}: IConfirmModalProps) => {
-  React.useEffect(() => {
-    if (!isOpen) mutateResult?.reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  return isOpen ? (
+}: IConfirmModalProps) =>
+  isOpen ? (
     <Modal
       variant={variant}
       title={title}
@@ -78,6 +73,5 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
       {body}
     </Modal>
   ) : null;
-};
 
 export default ConfirmModal;
