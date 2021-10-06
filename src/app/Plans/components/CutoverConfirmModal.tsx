@@ -66,8 +66,7 @@ const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalProps> = 
             </Text>
             <Text>
               You can start cutover immediately or schedule cutover for a future date and time. VMs
-              included in the migration plan will be shut down when cutover starts. See the product
-              documentation for more information.
+              included in the migration plan will be shut down when cutover starts.
             </Text>
           </TextContent>
           <div className={`${spacing.mtLg} ${spacing.mlMd}`}>
