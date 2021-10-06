@@ -284,8 +284,14 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         getVMName(vmStatus),
         ...(!isShowingPrecopyView
           ? [
-              formatTimestamp(vmStatus.started),
-              formatTimestamp(vmStatus.completed),
+              {
+                title: <time dateTime={vmStatus.started}>{formatTimestamp(vmStatus.started)}</time>,
+              },
+              {
+                title: (
+                  <time dateTime={vmStatus.completed}>{formatTimestamp(vmStatus.completed)}</time>
+                ),
+              },
               `${(ratio.completed / 1024).toFixed(2)} / ${(ratio.total / 1024).toFixed(2)} GB`,
               { title: <PipelineSummary status={vmStatus} isCanceled={isCanceled} /> },
             ]

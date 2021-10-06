@@ -11,15 +11,13 @@ interface IScheduledCutoverTimeProps {
 const ScheduledCutoverTime: React.FunctionComponent<IScheduledCutoverTimeProps> = ({
   migration,
 }: IScheduledCutoverTimeProps) => {
-  const formattedCutoverTime = migration?.spec.cutover
-    ? formatTimestamp(migration.spec.cutover, false)
-    : null;
-  if (!formattedCutoverTime) return null;
+  if (!migration?.spec.cutover) return null;
+  const formattedCutoverTime = formatTimestamp(migration.spec.cutover, false);
   return (
     <div className={`${text.fontSizeSm} ${alignment.textAlignLeft}`}>
       Scheduled for cutover:
       <br />
-      {formattedCutoverTime}
+      <time dateTime={migration.spec.cutover}>{formattedCutoverTime}</time>
     </div>
   );
 };
