@@ -13,22 +13,22 @@ import {
 } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
-import { IPlan } from '@app/queries/types';
+import { IPlan, IMigration } from '@app/queries/types';
 import { hasCondition } from '@app/common/helpers';
 import {
   useClusterProvidersQuery,
   useDeletePlanMutation,
   useArchivePlanMutation,
   useCreateMigrationMutation,
+  useSetCutoverMutation,
 } from '@app/queries';
 import { MustGatherContext } from '@app/common/context';
 import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
-import { IMigration } from '@app/queries/types/migrations.types';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
-import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
+import { MigrationConfirmModal } from './MigrationConfirmModal';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -53,6 +53,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
     history.push(`/plans/${migration.spec.plan.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
+  const setCutoverMutation = useSetCutoverMutation();
   const [kebabIsOpen, setKebabIsOpen] = React.useState(false);
   const [isDeleteModalOpen, toggleDeleteModal] = React.useReducer((isOpen) => !isOpen, false);
   const [isRestartModalOpen, toggleRestartModal] = React.useReducer((isOpen) => !isOpen, false);
@@ -179,24 +180,38 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
           >
             View details
           </DropdownItem>,
-          ...((canRestart && [
-            <ConditionalTooltip
-              key="Restart"
-              isTooltipEnabled={isPlanGathering}
-              content="This plan cannot be restarted because it is running must gather service"
-            >
-              <DropdownItem
-                isDisabled={isPlanGathering}
-                onClick={() => {
-                  setKebabIsOpen(false);
-                  toggleRestartModal();
-                }}
-              >
-                Restart
-              </DropdownItem>
-            </ConditionalTooltip>,
-          ]) ||
-            []),
+          ...(canRestart
+            ? [
+                <ConditionalTooltip
+                  key="Restart"
+                  isTooltipEnabled={isPlanGathering}
+                  content="This plan cannot be restarted because it is running must gather service"
+                >
+                  <DropdownItem
+                    isDisabled={isPlanGathering}
+                    onClick={() => {
+                      setKebabIsOpen(false);
+                      toggleRestartModal();
+                    }}
+                  >
+                    Restart
+                  </DropdownItem>
+                </ConditionalTooltip>,
+              ]
+            : []),
+          ...(planState === 'Copying-CutoverScheduled'
+            ? [
+                <DropdownItem
+                  key="Cancel cutover"
+                  onClick={() => {
+                    setKebabIsOpen(false);
+                    setCutoverMutation.mutate({ plan, cutover: null });
+                  }}
+                >
+                  Cancel scheduled cutover
+                </DropdownItem>,
+              ]
+            : []),
         ]}
         position={DropdownPosition.right}
       />
@@ -210,14 +225,15 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
         errorText="Could not delete migration plan"
       />
-      <MigrateOrCutoverConfirmModal
-        isOpen={isRestartModalOpen}
-        toggleOpen={toggleRestartModal}
-        mutateFn={() => createMigrationMutation.mutate(plan)}
-        mutateResult={createMigrationMutation}
-        plan={plan}
-        action="restart"
-      />
+      {isRestartModalOpen ? (
+        <MigrationConfirmModal
+          isOpen
+          toggleOpen={toggleRestartModal}
+          createMigrationMutation={createMigrationMutation}
+          plan={plan}
+          action="restart"
+        />
+      ) : null}
       <Modal
         variant="medium"
         title="Plan details"

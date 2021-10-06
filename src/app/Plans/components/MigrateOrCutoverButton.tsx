@@ -5,7 +5,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useCreateMigrationMutation, useSetCutoverMutation } from '@app/queries';
 import { IPlan } from '@app/queries/types';
 import { PlanActionButtonType } from './PlansTable';
-import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
+import { MigrationConfirmModal } from './MigrationConfirmModal';
+import { CutoverConfirmModal } from './CutoverConfirmModal';
 
 interface IMigrateOrCutoverButtonProps {
   plan: IPlan;
@@ -13,28 +14,19 @@ interface IMigrateOrCutoverButtonProps {
   isBeingStarted: boolean;
 }
 
-const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonProps> = ({
+export const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonProps> = ({
   plan,
   buttonType,
   isBeingStarted,
 }: IMigrateOrCutoverButtonProps) => {
   const history = useHistory();
+  const [isConfirmModalOpen, toggleConfirmModal] = React.useReducer((isOpen) => !isOpen, false);
   const onMigrationStarted = () => {
     toggleConfirmModal();
     history.push(`/plans/${plan.metadata.name}`);
   };
   const createMigrationMutation = useCreateMigrationMutation(onMigrationStarted);
-  const setCutoverMutation = useSetCutoverMutation(onMigrationStarted);
-
-  const [isConfirmModalOpen, toggleConfirmModal] = React.useReducer((isOpen) => !isOpen, false);
-
-  const doMigrateOrCutover = () => {
-    if (buttonType === 'Start') {
-      createMigrationMutation.mutate(plan);
-    } else if (buttonType === 'Cutover') {
-      setCutoverMutation.mutate({ plan, cutover: new Date().toISOString() });
-    }
-  };
+  const setCutoverMutation = useSetCutoverMutation(toggleConfirmModal);
 
   return (
     <>
@@ -45,16 +37,24 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
           {buttonType}
         </Button>
       )}
-      <MigrateOrCutoverConfirmModal
-        isOpen={isConfirmModalOpen}
-        toggleOpen={toggleConfirmModal}
-        mutateFn={doMigrateOrCutover}
-        mutateResult={buttonType === 'Start' ? createMigrationMutation : setCutoverMutation}
-        plan={plan}
-        action={buttonType === 'Start' ? 'start' : 'cutover'}
-      />
+      {isConfirmModalOpen ? (
+        buttonType === 'Start' ? (
+          <MigrationConfirmModal
+            isOpen
+            toggleOpen={toggleConfirmModal}
+            createMigrationMutation={createMigrationMutation}
+            plan={plan}
+            action="start"
+          />
+        ) : buttonType === 'Cutover' ? (
+          <CutoverConfirmModal
+            isOpen
+            toggleOpen={toggleConfirmModal}
+            setCutoverMutation={setCutoverMutation}
+            plan={plan}
+          />
+        ) : null
+      ) : null}
     </>
   );
 };
-
-export default MigrateOrCutoverButton;

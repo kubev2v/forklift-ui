@@ -78,8 +78,10 @@ export const findCurrentStep = (
   return { currentStep, currentStepIndex };
 };
 
-export const formatTimestamp = (timestamp?: string): string =>
-  timestamp ? dayjs(timestamp).format('DD MMM YYYY, HH:mm:ss z') : '';
+export const formatTimestamp = (timestamp?: string, showSeconds = true): string => {
+  const template = `DD MMM YYYY, HH:mm${showSeconds ? ':ss' : ''} z`;
+  return timestamp ? dayjs(timestamp).format(template) : '';
+};
 
 const padNum = (num: number) => (num < 10 ? `0${num}` : `${num}`);
 

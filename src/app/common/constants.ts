@@ -42,7 +42,7 @@ export type ConditionType = 'Ready' | 'Executing' | 'Succeeded' | 'Failed' | 'Ca
 
 export type ColdPlanState = Exclude<
   PlanState,
-  'Copying' | 'FailedCopying' | 'CanceledCopying' | 'StartingCutover'
+  'Copying' | 'Copying-CutoverScheduled' | 'Copying-Failed' | 'Copying-Canceled' | 'StartingCutover'
 >;
 
 export type PlanState =
@@ -50,8 +50,9 @@ export type PlanState =
   | 'NotStarted-NotReady' // Not ready for migration, likely a critical condition was encountered
   | 'Starting' // User clicked start button, Migration CR exists but no status data exists yet
   | 'Copying' // Warm-specific. "Running incremental copies" in the UI, the first stage of a warm migration
-  | 'FailedCopying' // Warm-specific. Plan failed during copying
-  | 'CanceledCopying' // Warm-specific. Plan was canceled during copying
+  | 'Copying-CutoverScheduled' // Warm-specific. Copying, but a future cutover time is set.
+  | 'Copying-Failed' // Warm-specific. Plan failed during copying
+  | 'Copying-Canceled' // Warm-specific. Plan was canceled during copying
   | 'StartingCutover' // Warm-specific. User has clicked the cutover button but the first pipeline step doesn't have a start time yet
   | 'PipelineRunning' // The migration pipeline is running.
   | 'Canceled'

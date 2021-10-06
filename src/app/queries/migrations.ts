@@ -145,7 +145,7 @@ export const useCancelVMsMutation = (
 
 export interface ISetCutoverArgs {
   plan: IPlan;
-  cutover: string;
+  cutover: string | null;
 }
 
 export const useSetCutoverMutation = (
