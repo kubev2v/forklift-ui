@@ -248,7 +248,6 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         <PlanDetailsModal plan={plan} />
       </Modal>
       <ConfirmModal
-        variant="medium"
         isOpen={isArchivePlanModalOpen}
         toggleOpen={toggleArchivePlanModal}
         mutateFn={() => archivePlanMutation.mutate(plan)}
@@ -256,14 +255,11 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         title="Archive plan?"
         body={
           <TextContent>
-            <Text>Archiving a plan means:</Text>
-            <List>
-              <ListItem>All migration history and metadata are cleaned up and discarded.</ListItem>
-              <ListItem>Migration logs are deleted.</ListItem>
-              <ListItem>
-                The plan can no longer be edited or restarted, but it can be viewed.
-              </ListItem>
-            </List>
+            <Text>Archive plan &quot;{plan.metadata.name}&quot;?</Text>
+            <Text>
+              When a plan is archived, its history, metadata, and logs are deleted. The plan cannot
+              be edited or restarted but it can be viewed.
+            </Text>
           </TextContent>
         }
         confirmButtonText="Archive"
