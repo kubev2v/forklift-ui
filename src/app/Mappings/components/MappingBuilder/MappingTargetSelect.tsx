@@ -88,7 +88,7 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
               <>
                 This storage does not support dynamic provisioning. The default settings, Filesystem
                 volume mode and ReadWriteOnce access mode, will be used. Performance may be
-                impacted. See product documentation for more information.
+                impacted.
               </>
             }
             position="left"
