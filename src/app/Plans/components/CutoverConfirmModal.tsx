@@ -9,6 +9,7 @@ import {
   DatePicker,
   TimePicker,
   isValidDate,
+  HelperText,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
@@ -105,12 +106,12 @@ export const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalPr
                             setCutoverDay(null);
                           }
                         }}
-                        aria-label="Start date"
+                        aria-label="Cutover scheduled date"
                         placeholder="YYYY-MM-DD"
                         appendTo={document.querySelector('body') as HTMLElement}
                       />
                       <TimePicker
-                        aria-label="Start time"
+                        aria-label="Cutover scheduled time"
                         style={{ width: '150px' }}
                         onChange={(_time, hour, minute) => {
                           if ((hour || hour === 0) && (minute || minute === 0)) {
@@ -123,9 +124,9 @@ export const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalPr
                       />
                     </InputGroup>
                     {cutoverDateInvalidReason ? (
-                      <div className={`${spacing.mtXs} ${text.dangerColor_100} ${text.fontSizeSm}`}>
+                      <HelperText className={`${spacing.mtXs} ${text.dangerColor_100}`}>
                         {cutoverDateInvalidReason}
-                      </div>
+                      </HelperText>
                     ) : null}
                   </>
                 ) : null
