@@ -24,7 +24,7 @@ export const MustGatherModal: React.FunctionComponent = () => {
   const handleMustGatherError = () => {
     if (activeMustGather) {
       pushNotification({
-        title: `Could not run must gather for ${activeMustGather.displayName}`,
+        title: `Cannot run must gather for ${activeMustGather.displayName}`,
         message: '',
         key: activeMustGather.displayName,
         variant: 'danger',

@@ -44,10 +44,10 @@ const PlansPage: React.FunctionComponent = () => {
             migrationsQuery,
           ]}
           errorTitles={[
-            'Could not load providers',
-            'Could not load providers from cluster',
-            'Could not load plans',
-            'Could not load migrations',
+            'Cannot load providers',
+            'Cannot load providers from cluster',
+            'Cannot load plans',
+            'Cannot load migrations',
           ]}
           errorsInline={false}
         >

@@ -136,7 +136,7 @@ export const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalPr
         </>
       }
       confirmButtonText={cutoverScheduleMode === 'now' ? 'Cutover' : 'Schedule cutover'}
-      errorText="Could not schedule cutover"
+      errorText="Cannot schedule cutover"
     />
   );
 };

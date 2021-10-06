@@ -118,10 +118,7 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   return (
     <ResolvedQueries
       results={[inventoryProvidersQuery, clusterProvidersQuery]}
-      errorTitles={[
-        'Could not load provider inventory data',
-        'Could not load providers from cluster',
-      ]}
+      errorTitles={['Cannot load provider inventory data', 'Cannot load providers from cluster']}
       spinnerMode={QuerySpinnerMode.Inline}
     >
       <FormGroup

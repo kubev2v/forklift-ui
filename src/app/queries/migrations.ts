@@ -105,7 +105,7 @@ export const useCancelVMsMutation = (
   const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, SourceVM[]>(
     (vms: SourceVM[]) => {
-      if (!latestMigration) return Promise.reject('Could not find active Migration CR');
+      if (!latestMigration) return Promise.reject('Cannot find active Migration CR');
       const existingCanceledVMs = latestMigration.spec.cancel || [];
       const newCanceledVMs = vms
         .filter(
@@ -157,7 +157,7 @@ export const useSetCutoverMutation = (
   return useMockableMutation<IKubeResponse<IMigration>, KubeClientError, ISetCutoverArgs>(
     ({ plan, cutover }) => {
       const latestMigration = findLatestMigration(plan, migrationsQuery.data?.items || null);
-      if (!latestMigration) return Promise.reject('Could not find active Migration CR');
+      if (!latestMigration) return Promise.reject('Cannot find active Migration CR');
       const migrationPatch: Partial<IMigration> = {
         spec: { ...latestMigration.spec, cutover },
       };

@@ -28,7 +28,7 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
     <Tooltip
       content={
         !mustGathersQuery.isSuccess
-          ? `Could not reach must gather service.`
+          ? `Cannot reach must gather service.`
           : `must-gather-${type}_${displayName} available for download.`
       }
     >
@@ -51,13 +51,13 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
     <Tooltip
       content={
         !mustGathersQuery.isSuccess
-          ? `Could not reach must gather service.`
+          ? `Cannot reach must gather service.`
           : mustGather?.status === 'inprogress'
           ? `Collecting ${type === 'plan' ? 'migration plan' : 'VM migration'} logs.`
           : mustGather?.status === 'new'
           ? `Must gather queued for execution.`
           : mustGather?.status === 'error'
-          ? `Could not complete must gather for ${withoutNs(mustGather?.['custom-name'], type)}`
+          ? `Cannot complete must gather for ${withoutNs(mustGather?.['custom-name'], type)}`
           : `Collects the current ${
               type === 'plan' ? 'migration plan' : 'VM migration'
             } logs and creates a tar archive file for download.`

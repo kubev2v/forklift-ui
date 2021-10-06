@@ -206,7 +206,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
         <Stack hasGutter>
           <ResolvedQuery
             result={mutateProviderResult}
-            errorTitle={`Could not ${!providerBeingEdited ? 'add' : 'edit'} provider`}
+            errorTitle={`Cannot ${!providerBeingEdited ? 'add' : 'edit'} provider`}
             spinnerMode={QuerySpinnerMode.Inline}
           />
           <Flex spaceItems={{ default: 'spaceItemsSm' }}>
@@ -236,7 +236,7 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
         </Stack>
       }
     >
-      <ResolvedQuery result={clusterProvidersQuery} errorTitle="Could not load providers">
+      <ResolvedQuery result={clusterProvidersQuery} errorTitle="Cannot load providers">
         {!isDonePrefilling ? (
           <LoadingEmptyState />
         ) : (

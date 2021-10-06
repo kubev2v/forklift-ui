@@ -42,7 +42,7 @@ export const MigrationConfirmModal: React.FunctionComponent<IMigrationConfirmMod
         </TextContent>
       }
       confirmButtonText={verb}
-      errorText={`Could not ${verb.toLowerCase()} ${noun}`}
+      errorText={`Cannot ${verb.toLowerCase()} ${noun}`}
     />
   );
 };

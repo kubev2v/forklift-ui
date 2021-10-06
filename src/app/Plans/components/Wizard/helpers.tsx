@@ -582,17 +582,17 @@ export const usePlanWizardPrefillEffect = (
     plansQuery,
   ];
   const errorTitles = [
-    'Could not load providers',
-    'Could not load VMs',
-    'Could not load inventory tree data',
-    'Could not load source networks',
-    'Could not load target networks',
-    'Could not load source storages',
-    'Could not load target storage classes',
-    'Could not load network mappings',
-    'Could not load storage mappings',
-    'Could not load hooks',
-    'Could not load plans',
+    'Cannot load providers',
+    'Cannot load VMs',
+    'Cannot load inventory tree data',
+    'Cannot load source networks',
+    'Cannot load target networks',
+    'Cannot load source storages',
+    'Cannot load target storage classes',
+    'Cannot load network mappings',
+    'Cannot load storage mappings',
+    'Cannot load hooks',
+    'Cannot load plans',
   ];
 
   const queryStatus = getAggregateQueryStatus(queries);

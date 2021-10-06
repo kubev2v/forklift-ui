@@ -73,7 +73,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
     () => {
       if (!errorNotified) {
         pushNotification({
-          title: 'Could not reach must gather service.',
+          title: 'Cannot reach must gather service.',
           message: '',
           key: 'mg-connection-error',
           variant: 'warning',
@@ -119,7 +119,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
 
   const notifyDownloadFailed = () => {
     pushNotification({
-      title: 'Could not download must gather result',
+      title: 'Cannot download must gather result',
       message: '',
       key: new Date().toISOString(),
       variant: 'danger',
