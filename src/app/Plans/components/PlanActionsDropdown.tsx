@@ -28,7 +28,7 @@ import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
-import MigrateOrCutoverConfirmModal from './MigrateOrCutoverConfirmModal';
+import MigrationConfirmModal from './MigrationConfirmModal';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;
@@ -226,11 +226,10 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         errorText="Could not delete migration plan"
       />
       {isRestartModalOpen ? (
-        <MigrateOrCutoverConfirmModal
+        <MigrationConfirmModal
           isOpen
           toggleOpen={toggleRestartModal}
-          doMigrateOrCutover={() => createMigrationMutation.mutate(plan)}
-          mutateResult={createMigrationMutation}
+          createMigrationMutation={createMigrationMutation}
           plan={plan}
           action="restart"
         />
