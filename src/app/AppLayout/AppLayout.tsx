@@ -23,7 +23,6 @@ import './AppLayout.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import HelpDropdown from './HelpDropdown';
 import { Notifications } from '@app/common/components/Notifications';
-import { MustGatherModal } from '@app/common/components/MustGatherModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -150,7 +149,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     >
       <>
         {children}
-        <MustGatherModal />
         <Notifications />
       </>
     </Page>

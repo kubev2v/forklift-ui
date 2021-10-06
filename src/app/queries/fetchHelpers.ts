@@ -22,15 +22,18 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {},
   method: 'get' | 'post' = 'get',
+  returnMode: 'json' | 'blob' = 'json',
   data?: TData
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
+  const headersObj = {
+    Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
+    ...extraHeaders,
+  };
+
   try {
     const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
-        ...extraHeaders,
-      },
+      headers: headersObj,
       method,
       ...(data &&
         method !== 'get' && {
@@ -38,7 +41,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
         }),
     });
     if (response.ok && response.json) {
-      return response.json();
+      return returnMode === 'json' ? response.json() : response.blob();
     } else {
       throw response;
     }

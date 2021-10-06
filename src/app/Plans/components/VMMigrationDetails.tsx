@@ -35,6 +35,7 @@ import { useSelectionState } from '@konveyor/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
+import { MustGatherModal } from '@app/common/components/MustGatherModal';
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
 import VMStatusPipelineTable from './VMStatusPipelineTable';
 import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components/PipelineSummary';
@@ -399,6 +400,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
           </Card>
         </ResolvedQueries>
       </PageSection>
+      <MustGatherModal />
       <ConfirmModal
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}

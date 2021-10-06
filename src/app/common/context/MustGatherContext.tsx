@@ -4,6 +4,10 @@ import { UseQueryResult } from 'react-query';
 import { IMustGatherResponse, mustGatherStatus } from '@app/client/types';
 import { MustGatherWatcher } from '@app/common/components/MustGatherWatcher';
 import { NotificationContext } from '@app/common/context';
+import { useNetworkContext } from '@app/common/context';
+import { authorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
+import { getMustGatherApiUrl } from '@app/queries/helpers';
+import { saveAs } from 'file-saver';
 
 export type MustGatherObjType = {
   displayName: string;
@@ -27,6 +31,9 @@ interface IMustGatherContext {
   latestAssociatedMustGather: (name: string) => IMustGatherResponse | undefined;
   withNs: (resourceName: string, type: 'plan' | 'vm') => string;
   withoutNs: (namespacedResourceName: string, type: 'plan' | 'vm') => string;
+  fetchMustGatherResult: (mg: IMustGatherResponse) => Promise<Blob | void>;
+  downloadMustGatherResult: (tarBall: Blob, fileName: string) => void;
+  notifyDownloadFailed: () => void;
 }
 
 const mustGatherContextDefaultValue = {} as IMustGatherContext;
@@ -41,16 +48,19 @@ interface IMustGatherContextProvider {
 export const MustGatherContextProvider: React.FunctionComponent<IMustGatherContextProvider> = ({
   children,
 }: IMustGatherContextProvider) => {
-  const appContext = React.useContext(NotificationContext);
+  const { pushNotification } = React.useContext(NotificationContext);
+  const fetchContext = useFetchContext();
   const [mustGatherModalOpen, setMustGatherModalOpen] = React.useState(false);
   const [mustGatherList, setMustGatherList] = React.useState<mustGatherListType>([]);
   const [activeMustGather, setActiveMustGather] = React.useState<MustGatherObjType>();
   const [errorNotified, setErrorNotified] = React.useState(false);
+  const { currentUser } = useNetworkContext();
 
   const mustGathersQuery = useMustGathersQuery(
     'must-gather',
+    !!currentUser.access_token,
     (data) => {
-      const updatedMgList: mustGatherListType = data.map((mg): MustGatherObjType => {
+      const updatedMgList: mustGatherListType = data?.map((mg): MustGatherObjType => {
         return {
           displayName: mg['custom-name'],
           status: mg.status,
@@ -62,7 +72,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
     },
     () => {
       if (!errorNotified) {
-        appContext.pushNotification({
+        pushNotification({
           title: 'Could not reach must gather service.',
           message: '',
           key: 'mg-connection-error',
@@ -93,9 +103,36 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
   const withoutNs = (namespacedResourceName: string, type: 'plan' | 'vm') =>
     namespacedResourceName.replace(`${type}:`, '');
 
+  const fetchMustGatherResult = async (mg: IMustGatherResponse) =>
+    await authorizedFetch<Blob>(
+      getMustGatherApiUrl(`must-gather/${mg?.['id']}/data`),
+      fetchContext,
+      {},
+      'get',
+      'blob'
+    );
+
+  const downloadMustGatherResult = (tarBall: Blob, fileName: string) => {
+    const file = new File([tarBall], fileName, { type: 'text/plain;charset=utf-8' });
+    saveAs(file);
+  };
+
+  const notifyDownloadFailed = () => {
+    pushNotification({
+      title: 'Could not download must gather result',
+      message: '',
+      key: new Date().toISOString(),
+      variant: 'danger',
+      timeout: 8000,
+    });
+  };
+
   return (
     <MustGatherContext.Provider
       value={{
+        notifyDownloadFailed,
+        fetchMustGatherResult,
+        downloadMustGatherResult,
         mustGathersQuery,
         mustGatherModalOpen,
         setMustGatherModalOpen,
@@ -115,6 +152,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
               data-mg-watcher={mg.displayName}
               data-type={mg.type}
               data-status={mg.status}
+              data-total-num-mg={mustGatherList.length}
               key={idx}
             >
               <MustGatherWatcher

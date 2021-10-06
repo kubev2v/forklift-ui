@@ -10,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { MustGatherModal } from '@app/common/components/MustGatherModal';
 
 import {
   useHasSufficientProvidersQuery,
@@ -71,6 +72,7 @@ const PlansPage: React.FunctionComponent = () => {
           </Card>
         </ResolvedQueries>
       </PageSection>
+      <MustGatherModal />
     </>
   );
 };

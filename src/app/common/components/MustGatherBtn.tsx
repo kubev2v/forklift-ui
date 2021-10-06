@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Button, Tooltip } from '@patternfly/react-core';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import { MustGatherContext } from '@app/common/context';
-import { getMustGatherApiUrl } from '@app/queries/helpers';
 
 interface IMustGatherBtn {
   displayName: string;
@@ -17,6 +16,9 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
     latestAssociatedMustGather,
     withNs,
     withoutNs,
+    downloadMustGatherResult,
+    fetchMustGatherResult,
+    notifyDownloadFailed,
   } = React.useContext(MustGatherContext);
 
   const namespacedName = withNs(displayName, type);
@@ -31,12 +33,16 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
       }
     >
       <Button
+        aria-label={`Download logs for ${displayName}`}
         isAriaDisabled={!mustGathersQuery.isSuccess}
         variant="secondary"
-        component="a"
-        target="_blank"
-        download
-        href={getMustGatherApiUrl(`must-gather/${mustGather?.['id']}/data`)}
+        onClick={() => {
+          fetchMustGatherResult(mustGather)
+            .then(
+              (tarBall) => tarBall && downloadMustGatherResult(tarBall, mustGather['archive-name'])
+            )
+            .catch(() => notifyDownloadFailed());
+        }}
       >
         Download logs
       </Button>
