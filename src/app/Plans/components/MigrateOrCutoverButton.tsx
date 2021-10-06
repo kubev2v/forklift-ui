@@ -5,8 +5,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useCreateMigrationMutation, useSetCutoverMutation } from '@app/queries';
 import { IPlan } from '@app/queries/types';
 import { PlanActionButtonType } from './PlansTable';
-import MigrationConfirmModal from './MigrationConfirmModal';
-import CutoverConfirmModal from './CutoverConfirmModal';
+import { MigrationConfirmModal } from './MigrationConfirmModal';
+import { CutoverConfirmModal } from './CutoverConfirmModal';
 
 interface IMigrateOrCutoverButtonProps {
   plan: IPlan;
@@ -14,7 +14,7 @@ interface IMigrateOrCutoverButtonProps {
   isBeingStarted: boolean;
 }
 
-const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonProps> = ({
+export const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonProps> = ({
   plan,
   buttonType,
   isBeingStarted,
@@ -58,5 +58,3 @@ const MigrateOrCutoverButton: React.FunctionComponent<IMigrateOrCutoverButtonPro
     </>
   );
 };
-
-export default MigrateOrCutoverButton;

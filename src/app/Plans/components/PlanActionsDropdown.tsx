@@ -28,7 +28,7 @@ import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
 import { PlanState, archivedPlanLabel } from '@app/common/constants';
-import MigrationConfirmModal from './MigrationConfirmModal';
+import { MigrationConfirmModal } from './MigrationConfirmModal';
 
 interface IPlansActionDropdownProps {
   plan: IPlan;

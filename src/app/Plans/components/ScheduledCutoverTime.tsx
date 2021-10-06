@@ -8,7 +8,7 @@ interface IScheduledCutoverTimeProps {
   migration: IMigration | null;
 }
 
-const ScheduledCutoverTime: React.FunctionComponent<IScheduledCutoverTimeProps> = ({
+export const ScheduledCutoverTime: React.FunctionComponent<IScheduledCutoverTimeProps> = ({
   migration,
 }: IScheduledCutoverTimeProps) => {
   if (!migration?.spec.cutover) return null;
@@ -21,5 +21,3 @@ const ScheduledCutoverTime: React.FunctionComponent<IScheduledCutoverTimeProps> 
     </div>
   );
 };
-
-export default ScheduledCutoverTime;

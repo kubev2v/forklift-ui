@@ -20,7 +20,7 @@ interface ICutoverConfirmModalProps
   setCutoverMutation: ReturnType<typeof useSetCutoverMutation>;
 }
 
-const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalProps> = ({
+export const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalProps> = ({
   isOpen,
   toggleOpen,
   setCutoverMutation,
@@ -139,5 +139,3 @@ const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalProps> = 
     />
   );
 };
-
-export default CutoverConfirmModal;

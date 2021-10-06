@@ -11,7 +11,7 @@ interface IMigrationConfirmModalProps
   createMigrationMutation: ReturnType<typeof useCreateMigrationMutation>;
 }
 
-const MigrationConfirmModal: React.FunctionComponent<IMigrationConfirmModalProps> = ({
+export const MigrationConfirmModal: React.FunctionComponent<IMigrationConfirmModalProps> = ({
   isOpen,
   toggleOpen,
   createMigrationMutation,
@@ -46,5 +46,3 @@ const MigrationConfirmModal: React.FunctionComponent<IMigrationConfirmModalProps
     />
   );
 };
-
-export default MigrationConfirmModal;

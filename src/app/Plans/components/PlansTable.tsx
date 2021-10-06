@@ -58,10 +58,10 @@ import {
 } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
-import MigrateOrCutoverButton from './MigrateOrCutoverButton';
+import { MigrateOrCutoverButton } from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
-import ScheduledCutoverTime from './ScheduledCutoverTime';
+import { ScheduledCutoverTime } from './ScheduledCutoverTime';
 
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'ScheduledCutover' | 'MustGather';
 interface IPlansTableProps {
