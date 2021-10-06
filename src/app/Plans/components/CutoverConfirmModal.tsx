@@ -49,9 +49,13 @@ const CutoverConfirmModal: React.FunctionComponent<ICutoverConfirmModalProps> = 
       variant="medium"
       isOpen={isOpen}
       toggleOpen={toggleOpen}
-      mutateFn={() =>
-        cutoverDate && setCutoverMutation.mutate({ plan, cutover: cutoverDate.toISOString() })
-      }
+      mutateFn={() => {
+        if (cutoverScheduleMode === 'now') {
+          setCutoverMutation.mutate({ plan, cutover: new Date().toISOString() });
+        } else if (cutoverDate) {
+          setCutoverMutation.mutate({ plan, cutover: cutoverDate.toISOString() });
+        }
+      }}
       mutateResult={setCutoverMutation}
       title="Schedule cutover?"
       confirmButtonDisabled={
