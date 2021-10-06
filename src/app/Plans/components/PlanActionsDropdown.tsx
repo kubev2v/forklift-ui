@@ -8,8 +8,6 @@ import {
   Button,
   TextContent,
   Text,
-  List,
-  ListItem,
 } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
