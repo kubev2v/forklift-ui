@@ -84,6 +84,7 @@ export interface IPlan extends ICR {
     provider: ISrcDestRefs;
     targetNamespace: string;
     transferNetwork: INameNamespaceRef | null;
+    archived: boolean;
     map: {
       network: INameNamespaceRef;
       storage: INameNamespaceRef;

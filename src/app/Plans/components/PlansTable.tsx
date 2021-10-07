@@ -33,7 +33,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
 import { StatusIcon, useSelectionState } from '@konveyor/lib-ui';
 
-import { archivedPlanLabel } from '@app/common/constants';
 import { PlanActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
@@ -62,6 +61,7 @@ import { MigrateOrCutoverButton } from './MigrateOrCutoverButton';
 import PlanStatusNavLink from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 import { ScheduledCutoverTime } from './ScheduledCutoverTime';
+import { hasCondition } from '@app/common/helpers';
 
 export type PlanActionButtonType = 'Start' | 'Cutover' | 'ScheduledCutover' | 'MustGather';
 interface IPlansTableProps {
@@ -144,7 +144,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
 
   const filteredPlans = showArchivedPlans
     ? plans
-    : plans.filter((plan) => !(plan.metadata.annotations?.[archivedPlanLabel] === 'true'));
+    : plans.filter((plan) => !hasCondition(plan.status?.conditions || [], 'Archived'));
+
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
     filteredPlans,
     filterCategories
@@ -244,7 +245,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
         isWarmPlan ? 'Warm' : 'Cold',
         {
           title:
-            planState === 'Archived' ? (
+            planState === 'Archiving' ? (
+              <PlanStatusNavLink plan={plan}>Archiving</PlanStatusNavLink>
+            ) : planState === 'Archived' ? (
               <PlanStatusNavLink plan={plan}>
                 <ArchiveIcon /> Archived
               </PlanStatusNavLink>

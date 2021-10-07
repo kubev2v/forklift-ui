@@ -38,7 +38,13 @@ export enum StatusCategoryType {
   Warn = 'Warn',
 }
 
-export type ConditionType = 'Ready' | 'Executing' | 'Succeeded' | 'Failed' | 'Canceled';
+export type ConditionType =
+  | 'Ready'
+  | 'Executing'
+  | 'Succeeded'
+  | 'Failed'
+  | 'Canceled'
+  | 'Archived';
 
 export type ColdPlanState = Exclude<
   PlanState,
@@ -60,6 +66,7 @@ export type PlanState =
   | 'Finished-Failed'
   | 'Finished-Incomplete'
   | 'Archived'
+  | 'Archiving'
   | 'Unknown'; // No status data is available and the plan is over 30 seconds old (to give the controller time to catch up)
 
 export enum StepType {
@@ -145,5 +152,3 @@ export const usernameSchema = yup
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
-
-export const archivedPlanLabel = 'forklift.konveyor.io/archived';

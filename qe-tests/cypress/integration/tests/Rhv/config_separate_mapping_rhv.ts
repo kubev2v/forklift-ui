@@ -6,7 +6,7 @@ import {
   TestData,
   RhvProviderData,
 } from '../../types/types';
-import { providerType, storageType, CreateNewStorageMapping } from '../../types/constants';
+import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');

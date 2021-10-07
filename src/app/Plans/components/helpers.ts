@@ -1,5 +1,5 @@
 import { ProgressVariant } from '@patternfly/react-core';
-import { PlanState, archivedPlanLabel } from '@app/common/constants';
+import { PlanState } from '@app/common/constants';
 import { hasCondition } from '@app/common/helpers';
 import { IPlan, IMigration } from '@app/queries/types';
 import { PlanActionButtonType } from '@app/Plans/components/PlansTable';
@@ -146,8 +146,12 @@ export const getPlanState = (
   const isWarm = plan.spec.warm;
   const conditions = plan.status?.conditions || [];
 
-  if (plan.metadata.annotations?.[archivedPlanLabel] === 'true') {
+  if (plan.spec.archived && hasCondition(conditions, 'Archived')) {
     return 'Archived';
+  }
+
+  if (plan.spec.archived && !hasCondition(conditions, 'Archived')) {
+    return 'Archiving';
   }
 
   if (!migration || !plan.status?.migration?.started) {
