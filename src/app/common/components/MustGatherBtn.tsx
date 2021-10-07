@@ -6,9 +6,14 @@ import { MustGatherContext } from '@app/common/context';
 interface IMustGatherBtn {
   displayName: string;
   type: 'plan' | 'vm';
+  isCompleted?: boolean;
 }
 
-export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ displayName, type }) => {
+export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({
+  displayName,
+  type,
+  isCompleted,
+}) => {
   const {
     setMustGatherModalOpen,
     setActiveMustGather,
@@ -50,7 +55,9 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
   ) : (
     <Tooltip
       content={
-        !mustGathersQuery.isSuccess
+        !isCompleted
+          ? 'Cannot run must gather until the migration is finished.'
+          : !mustGathersQuery.isSuccess
           ? `Cannot reach must gather service.`
           : mustGather?.status === 'inprogress'
           ? `Collecting ${type === 'plan' ? 'migration plan' : 'VM migration'} logs.`
@@ -72,7 +79,8 @@ export const MustGatherBtn: React.FunctionComponent<IMustGatherBtn> = ({ display
         isAriaDisabled={
           mustGather?.status === 'inprogress' ||
           mustGather?.status === 'new' ||
-          !mustGathersQuery.isSuccess
+          !mustGathersQuery.isSuccess ||
+          !isCompleted
         }
         variant="secondary"
         onClick={() => {
