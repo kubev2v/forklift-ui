@@ -77,7 +77,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
     !planState?.toLowerCase().includes('canceled');
 
   const duplicateMessageOnDisabledEdit =
-    'To make changes to the plan, select Duplicate and make changes to the duplicate.';
+    'To make changes to the plan, select Duplicate and edit the duplicate plan.';
 
   return (
     <>
