@@ -285,7 +285,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
             >
               <FlexItem align={{ default: 'alignRight' }}>
                 {buttonType === 'MustGather' ? (
-                  <MustGatherBtn type="plan" displayName={plan.metadata.name} />
+                  <MustGatherBtn
+                    type="plan"
+                    isCompleted={!!plan.status?.migration?.completed}
+                    displayName={plan.metadata.name}
+                  />
                 ) : buttonType === 'ScheduledCutover' ? (
                   <ScheduledCutoverTime migration={latestMigration} />
                 ) : buttonType === 'Start' || buttonType === 'Cutover' ? (
