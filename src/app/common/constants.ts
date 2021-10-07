@@ -59,7 +59,8 @@ export type PlanState =
   | 'Finished-Succeeded' // Has a completed timestamp
   | 'Finished-Failed'
   | 'Finished-Incomplete'
-  | 'Archived';
+  | 'Archived'
+  | 'Unknown'; // No status data is available and the plan is over 30 seconds old (to give the controller time to catch up)
 
 export enum StepType {
   Full = 'Full',
