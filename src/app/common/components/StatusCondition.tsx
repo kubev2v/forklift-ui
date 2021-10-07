@@ -8,11 +8,13 @@ import { Button, Popover } from '@patternfly/react-core';
 interface IStatusConditionProps {
   status?: { conditions?: IStatusCondition[] };
   unknownFallback?: React.ReactNode;
+  hideLabel?: boolean;
 }
 
 const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status,
   unknownFallback = null,
+  hideLabel = false,
 }: IStatusConditionProps) => {
   if (!status) return <StatusIcon status="Loading" label="Validating" />;
 
@@ -44,7 +46,9 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
     label = 'Not ready';
   }
 
-  const icon = <StatusIcon status={getStatusType(mostSeriousCondition)} label={label} />;
+  const icon = (
+    <StatusIcon status={getStatusType(mostSeriousCondition)} label={!hideLabel ? label : null} />
+  );
 
   if (conditions.length === 0) return icon;
 
