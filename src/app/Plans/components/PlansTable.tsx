@@ -31,7 +31,7 @@ import { ArchiveIcon } from '@patternfly/react-icons';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
-import { useSelectionState } from '@konveyor/lib-ui';
+import { StatusIcon, useSelectionState } from '@konveyor/lib-ui';
 
 import { archivedPlanLabel } from '@app/common/constants';
 import { PlanActionsDropdown } from './PlanActionsDropdown';
@@ -254,6 +254,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
               <PlanStatusNavLink plan={plan}>
                 Running - preparing for incremental data copies
               </PlanStatusNavLink>
+            ) : planState === 'Unknown' ? (
+              <StatusIcon status="Warning" label="Unknown" />
             ) : planState === 'NotStarted-Ready' || planState === 'NotStarted-NotReady' ? (
               <StatusCondition status={plan.status} />
             ) : planState === 'Copying' || planState === 'Copying-CutoverScheduled' ? (
