@@ -76,6 +76,9 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
     !planState?.toLowerCase().includes('failed') &&
     !planState?.toLowerCase().includes('canceled');
 
+  const duplicateMessageOnDisabledEdit =
+    'To make changes to the plan, select Duplicate and edit the duplicate plan.';
+
   return (
     <>
       <Dropdown
@@ -89,13 +92,13 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
             isTooltipEnabled={isPlanStarted || !areProvidersReady}
             content={
               isPlanGathering
-                ? 'This plan cannot be edited because it is running must gather.'
+                ? `This plan cannot be edited because it is running must gather. ${duplicateMessageOnDisabledEdit}`
                 : isPlanArchived
-                ? 'This plan cannot be edited because it has been archived'
+                ? `This plan cannot be edited because it has been archived. ${duplicateMessageOnDisabledEdit}`
                 : isPlanStarted
-                ? 'This plan cannot be edited because it has been started'
+                ? `This plan cannot be edited because it has been started. ${duplicateMessageOnDisabledEdit}`
                 : !areProvidersReady
-                ? 'This plan cannot be edited because the inventory data for its associated providers is not ready'
+                ? 'This plan cannot be edited because the inventory data for its associated providers is not ready.'
                 : ''
             }
           >
@@ -109,15 +112,21 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               Edit
             </DropdownItem>
           </ConditionalTooltip>,
-          <DropdownItem
+          <ConditionalTooltip
             key="duplicate"
-            onClick={() => {
-              setKebabIsOpen(false);
-              history.push(`/plans/${plan.metadata.name}/duplicate`);
-            }}
+            isTooltipEnabled={!areProvidersReady}
+            content="This plan cannot be duplicated because the inventory data for its associated providers is not ready."
           >
-            Duplicate
-          </DropdownItem>,
+            <DropdownItem
+              isDisabled={!areProvidersReady}
+              onClick={() => {
+                setKebabIsOpen(false);
+                history.push(`/plans/${plan.metadata.name}/duplicate`);
+              }}
+            >
+              Duplicate
+            </DropdownItem>
+          </ConditionalTooltip>,
           <ConditionalTooltip
             key="archive-tooltip"
             isTooltipEnabled={isPlanCompleted || isPlanArchived}
