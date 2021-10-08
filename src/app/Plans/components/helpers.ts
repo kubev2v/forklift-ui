@@ -134,6 +134,15 @@ export const getPlanState = (
   migrationQuery: UseQueryResult<IKubeList<IMigration>>
 ): PlanState | null => {
   if (!plan) return null;
+  // Give the controller 30 seconds to fill in status data before we consider the status to be unknown
+  if (
+    !plan.status &&
+    plan.metadata.creationTimestamp &&
+    new Date(plan.metadata.creationTimestamp).getTime() < new Date().getTime() - 30000
+  ) {
+    return 'Unknown';
+  }
+
   const isWarm = plan.spec.warm;
   const conditions = plan.status?.conditions || [];
 
