@@ -300,7 +300,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
               { title: <VMWarmCopyStatus vmStatus={vmStatus} isCanceled={isCanceled} /> },
             ]),
         {
-          title: <MustGatherBtn type="vm" displayName={getVMName(vmStatus)} />,
+          title: (
+            <MustGatherBtn
+              type="vm"
+              isCompleted={!!vmStatus.completed}
+              displayName={getVMName(vmStatus)}
+            />
+          ),
         },
       ],
     });
