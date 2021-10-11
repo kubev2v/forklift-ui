@@ -13,6 +13,7 @@ interface IBaseSourceVM {
   selfLink: string;
   concerns: ISourceVMConcern[];
   revisionValidated: number;
+  powerState: 'poweredOff' | 'poweredOn';
 }
 
 export interface IVMwareVMDisk {

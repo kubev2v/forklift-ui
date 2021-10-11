@@ -11,6 +11,7 @@ import {
   DropdownToggleCheckbox,
   DropdownItem,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
 
 import {
@@ -25,7 +26,7 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
+import { AngleDownIcon, AngleRightIcon, SyncAltIcon, OffIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import '@app/Plans/components/Wizard/SelectVMsForm.css';
 
@@ -268,7 +269,33 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         {
           title: <VMConcernsIcon vm={vm} />,
         },
-        vm.name,
+        {
+          title: (
+            <>
+              {vm.powerState === 'poweredOn' ? (
+                <>
+                  <Tooltip content="Powered on">
+                    <SyncAltIcon />
+                  </Tooltip>
+                  &nbsp;
+                  <Tooltip content={vm.name}>
+                    <span tabIndex={0}>{vm.name}</span>
+                  </Tooltip>
+                </>
+              ) : (
+                <>
+                  <Tooltip content="Powered off">
+                    <OffIcon />
+                  </Tooltip>
+                  &nbsp;
+                  <Tooltip content={vm.name}>
+                    <span tabIndex={0}>{vm.name}</span>
+                  </Tooltip>
+                </>
+              )}
+            </>
+          ),
+        },
         datacenter?.name || '',
         cluster?.name || '',
         host?.name || 'N/A',
