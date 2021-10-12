@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Tooltip } from '@patternfly/react-core';
 import { SyncAltIcon, OffIcon, UnknownIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IRHVVM, IVMwareVM, SourceInventoryProvider, SourceVM } from '@app/queries/types';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
@@ -14,15 +15,17 @@ export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState
   vm,
 }) => {
   const renderPowerStateIcon = (providerType: keyof typeof PROVIDER_TYPE_NAMES, vm: SourceVM) => {
-    let powerStatus: 'on' | 'off' | 'unknown';
+    let powerStatus: 'on' | 'off' | 'unknown' = 'unknown';
 
     switch (providerType) {
       case 'ovirt': {
-        powerStatus = (vm as IRHVVM).status === 'up' ? 'on' : 'off';
+        if ((vm as IRHVVM).status === 'up') powerStatus = 'on';
+        if ((vm as IRHVVM).status === 'down') powerStatus = 'off';
         break;
       }
       case 'vsphere': {
-        powerStatus = (vm as IVMwareVM).powerState === 'poweredOn' ? 'on' : 'off';
+        if ((vm as IVMwareVM).powerState === 'poweredOn') powerStatus = 'on';
+        if ((vm as IVMwareVM).powerState === 'poweredOff') powerStatus = 'off';
         break;
       }
       default: {
@@ -40,11 +43,11 @@ export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState
     return (
       <Tooltip content={tooltipTxt}>
         {powerStatus === 'on' ? (
-          <SyncAltIcon className="pf-u-mr-xs" />
+          <SyncAltIcon className={spacing.mrSm} />
         ) : powerStatus === 'off' ? (
-          <OffIcon className="pf-u-mr-xs" />
+          <OffIcon className={spacing.mrSm} />
         ) : (
-          <UnknownIcon className="pf-u-mr-xs" />
+          <UnknownIcon className={spacing.mrSm} />
         )}
       </Tooltip>
     );
