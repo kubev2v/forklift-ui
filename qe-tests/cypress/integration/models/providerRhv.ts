@@ -1,6 +1,6 @@
 import { Provider } from './provider';
 import { RhvProviderData } from '../types/types';
-import { click, clickByText, inputText } from '../../utils/utils';
+import { applyAction, click, clickByText, inputText } from '../../utils/utils';
 import {
   instanceCaCert,
   instanceHostname,
@@ -10,7 +10,7 @@ import {
   addButtonModal,
 } from '../views/providerRhv.view';
 import { providerMenu } from '../views/provider.view';
-import { rhv } from '../types/constants';
+import { editButton, removeButton,rhv } from '../types/constants';
 
 export class providerRhv extends Provider {
   protected runWizard(providerData: RhvProviderData): void {
@@ -51,5 +51,10 @@ export class providerRhv extends Provider {
     this.fillPassword(password);
     this.fillCaCert(cert);
     click(addButtonModal);
+  }
+  delete(providerData: RhvProviderData): void {
+    const { name } = providerData;
+    providerRhv.openList();
+    applyAction(name, removeButton);
   }
 }
