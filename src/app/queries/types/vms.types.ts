@@ -13,7 +13,6 @@ interface IBaseSourceVM {
   selfLink: string;
   concerns: ISourceVMConcern[];
   revisionValidated: number;
-  powerState: 'poweredOff' | 'poweredOn';
 }
 
 export interface IVMwareVMDisk {
@@ -24,6 +23,7 @@ export interface IVMwareVM extends IBaseSourceVM {
   networks: IVMwareObjRef[];
   disks: IVMwareVMDisk[];
   isTemplate: boolean;
+  powerState?: 'poweredOff' | 'poweredOn';
 }
 
 export interface IRHVNIC {
@@ -40,6 +40,7 @@ export interface IRHVDiskAttachment {
 export interface IRHVVM extends IBaseSourceVM {
   nics: IRHVNIC[];
   diskAttachments: IRHVDiskAttachment[];
+  status?: 'up' | 'down';
 }
 
 export type SourceVM = IVMwareVM | IRHVVM;

@@ -26,7 +26,13 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import { AngleDownIcon, AngleRightIcon, SyncAltIcon, OffIcon } from '@patternfly/react-icons';
+import {
+  AngleDownIcon,
+  AngleRightIcon,
+  SyncAltIcon,
+  OffIcon,
+  UnknownIcon,
+} from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import '@app/Plans/components/Wizard/SelectVMsForm.css';
 
@@ -37,6 +43,8 @@ import {
   SourceInventoryProvider,
   InventoryTree,
   InventoryTreeType,
+  IRHVVM,
+  IVMwareVM,
 } from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
@@ -257,6 +265,43 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const rows: IRow[] = [];
 
+  const renderPowerStateIcon = (providerType: keyof typeof PROVIDER_TYPE_NAMES, vm: SourceVM) => {
+    let powerStatus: 'on' | 'off' | 'unknown';
+
+    switch (providerType) {
+      case 'ovirt': {
+        powerStatus = (vm as IRHVVM).status === 'up' ? 'on' : 'off';
+        break;
+      }
+      case 'vsphere': {
+        powerStatus = (vm as IVMwareVM).powerState === 'poweredOn' ? 'on' : 'off';
+        break;
+      }
+      default: {
+        powerStatus = 'unknown';
+      }
+    }
+
+    const tooltipTxt =
+      powerStatus === 'on'
+        ? 'Powered on'
+        : powerStatus === 'off'
+        ? 'Powered off'
+        : 'Unknown power state';
+
+    return (
+      <Tooltip content={tooltipTxt}>
+        {powerStatus === 'on' ? (
+          <SyncAltIcon className="pf-u-mr-xs" />
+        ) : powerStatus === 'off' ? (
+          <OffIcon className="pf-u-mr-xs" />
+        ) : (
+          <UnknownIcon className="pf-u-mr-xs" />
+        )}
+      </Tooltip>
+    );
+  };
+
   currentPageItems.forEach((vm: SourceVM) => {
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = getVMInfo(vm);
@@ -272,27 +317,10 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         {
           title: (
             <>
-              {vm.powerState === 'poweredOn' ? (
-                <>
-                  <Tooltip content="Powered on">
-                    <SyncAltIcon />
-                  </Tooltip>
-                  &nbsp;
-                  <Tooltip content={vm.name}>
-                    <span tabIndex={0}>{vm.name}</span>
-                  </Tooltip>
-                </>
-              ) : (
-                <>
-                  <Tooltip content="Powered off">
-                    <OffIcon />
-                  </Tooltip>
-                  &nbsp;
-                  <Tooltip content={vm.name}>
-                    <span tabIndex={0}>{vm.name}</span>
-                  </Tooltip>
-                </>
-              )}
+              {sourceProvider && renderPowerStateIcon(sourceProvider.type, vm)}
+              <Tooltip content={vm.name}>
+                <span tabIndex={0}>{vm.name}</span>
+              </Tooltip>
             </>
           ),
         },
