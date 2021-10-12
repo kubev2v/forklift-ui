@@ -36,20 +36,20 @@ export const networkMappingPeer: MappingPeer[] = [
     dProvider: 'Pod network',
   },
   {
-    sProvider:'vm',
-    dProvider:'default / ovn-kubernetes1',
-  } 
+    sProvider: 'vm',
+    dProvider: 'default / ovn-kubernetes1',
+  },
 ];
 
 export const storageMappingPeer: MappingPeer[] = [
   {
-    sProvider: 'v2v-fc', 
+    sProvider: 'v2v-fc',
     dProvider: storageType.nfs,
   },
   {
     sProvider: 'hosted_storage',
     dProvider: storageType.nfs,
-  } 
+  },
 ];
 
 export const networkMapping: MappingData = {
@@ -72,7 +72,7 @@ export const planData: PlanData = {
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: 'MTV',
-  vmwareSourceVmList: ['v2v-migration-rhel8-2disks2nics' ],
+  vmwareSourceVmList: ['v2v-migration-rhel8-2disks2nics'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,

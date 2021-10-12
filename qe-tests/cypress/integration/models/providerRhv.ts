@@ -10,7 +10,7 @@ import {
   addButtonModal,
 } from '../views/providerRhv.view';
 import { providerMenu } from '../views/provider.view';
-import { editButton, removeButton,rhv } from '../types/constants';
+import { removeButton, rhv } from '../types/constants';
 
 export class providerRhv extends Provider {
   protected runWizard(providerData: RhvProviderData): void {

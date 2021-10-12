@@ -2,7 +2,6 @@ import { MappingNetwork } from '../../models/mappingNetwork';
 import { testData } from './config_separate_mapping_rhv';
 import { login } from '../../../utils/utils';
 import { MappingStorage } from '../../models/mappingStorage';
-import { selectProvider } from '../../types/constants';
 
 describe('Create new Network and Storage mappings', () => {
   const networkMapping = new MappingNetwork();
