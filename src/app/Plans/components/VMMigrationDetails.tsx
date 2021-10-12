@@ -61,6 +61,7 @@ import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import '@app/Plans/components/VMMigrationDetails.css';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
+import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
 export interface IPlanMatchParams {
   url: string;
@@ -274,14 +275,16 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     const isExpanded = isVMExpanded(vmStatus);
     const ratio = getTotalCopiedRatio(vmStatus);
     const isCanceled = isVMCanceled(vmStatus);
-
+    const vm = vmsQuery.data?.vmsById[vmStatus.id];
     rows.push({
       meta: { vmStatus },
       selected: isItemSelected(vmStatus),
       disableSelection: !cancelableVMs.find((vm) => vm === vmStatus),
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
-        getVMName(vmStatus),
+        {
+          title: vm && <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
+        },
         ...(!isShowingPrecopyView
           ? [
               {

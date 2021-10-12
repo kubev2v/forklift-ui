@@ -11,7 +11,6 @@ import {
   DropdownToggleCheckbox,
   DropdownItem,
   ToolbarItem,
-  Tooltip,
 } from '@patternfly/react-core';
 
 import {
@@ -26,13 +25,7 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import {
-  AngleDownIcon,
-  AngleRightIcon,
-  SyncAltIcon,
-  OffIcon,
-  UnknownIcon,
-} from '@patternfly/react-icons';
+import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import '@app/Plans/components/Wizard/SelectVMsForm.css';
 
@@ -43,8 +36,6 @@ import {
   SourceInventoryProvider,
   InventoryTree,
   InventoryTreeType,
-  IRHVVM,
-  IVMwareVM,
 } from '@app/queries/types';
 import { useSelectionState } from '@konveyor/lib-ui';
 
@@ -66,6 +57,7 @@ import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { UseQueryResult } from 'react-query';
+import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -265,43 +257,6 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
 
   const rows: IRow[] = [];
 
-  const renderPowerStateIcon = (providerType: keyof typeof PROVIDER_TYPE_NAMES, vm: SourceVM) => {
-    let powerStatus: 'on' | 'off' | 'unknown';
-
-    switch (providerType) {
-      case 'ovirt': {
-        powerStatus = (vm as IRHVVM).status === 'up' ? 'on' : 'off';
-        break;
-      }
-      case 'vsphere': {
-        powerStatus = (vm as IVMwareVM).powerState === 'poweredOn' ? 'on' : 'off';
-        break;
-      }
-      default: {
-        powerStatus = 'unknown';
-      }
-    }
-
-    const tooltipTxt =
-      powerStatus === 'on'
-        ? 'Powered on'
-        : powerStatus === 'off'
-        ? 'Powered off'
-        : 'Unknown power state';
-
-    return (
-      <Tooltip content={tooltipTxt}>
-        {powerStatus === 'on' ? (
-          <SyncAltIcon className="pf-u-mr-xs" />
-        ) : powerStatus === 'off' ? (
-          <OffIcon className="pf-u-mr-xs" />
-        ) : (
-          <UnknownIcon className="pf-u-mr-xs" />
-        )}
-      </Tooltip>
-    );
-  };
-
   currentPageItems.forEach((vm: SourceVM) => {
     const isExpanded = isVMExpanded(vm);
     const { datacenter, cluster, host, folderPathStr } = getVMInfo(vm);
@@ -315,14 +270,7 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           title: <VMConcernsIcon vm={vm} />,
         },
         {
-          title: (
-            <>
-              {sourceProvider && renderPowerStateIcon(sourceProvider.type, vm)}
-              <Tooltip content={vm.name}>
-                <span tabIndex={0}>{vm.name}</span>
-              </Tooltip>
-            </>
-          ),
+          title: <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
         },
         datacenter?.name || '',
         cluster?.name || '',

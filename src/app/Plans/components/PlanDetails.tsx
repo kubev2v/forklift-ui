@@ -29,6 +29,7 @@ import {
 } from '@app/queries/types';
 import MappingStatus from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
+import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
 interface IHookDetails {
   step: HookStep | null;
@@ -132,7 +133,9 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
             bodyContent={
               <List id="details-selected-vms-list">
                 {vms.map((vm, idx) => (
-                  <li key={idx}>{vm.name}</li>
+                  <li key={idx}>
+                    <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />
+                  </li>
                 ))}
               </List>
             }
