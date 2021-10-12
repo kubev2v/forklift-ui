@@ -57,6 +57,7 @@ import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { UseQueryResult } from 'react-query';
+import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -268,7 +269,9 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
         {
           title: <VMConcernsIcon vm={vm} />,
         },
-        vm.name,
+        {
+          title: <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
+        },
         datacenter?.name || '',
         cluster?.name || '',
         host?.name || 'N/A',
