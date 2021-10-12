@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Pagination, Popover, Tooltip } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -11,16 +11,16 @@ import {
   truncate,
 } from '@patternfly/react-table';
 import { usePaginationState, useSortState } from '@app/common/hooks';
-import { useSelectionState } from '@konveyor/lib-ui';
+import { StatusIcon, useSelectionState } from '@konveyor/lib-ui';
 import { IHost, IVMwareProvider } from '@app/queries/types';
 import SelectNetworkModal from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { getMostSeriousCondition } from '@app/common/helpers';
 import StatusCondition from '@app/common/components/StatusCondition';
 import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 interface IVMwareProviderHostsTableProps {
   provider: IVMwareProvider;
@@ -43,7 +43,6 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     },
     { title: 'Bandwidth', transforms: [sortable], cellTransforms: [truncate] },
     { title: 'MTU', transforms: [sortable], cellTransforms: [truncate] },
-    { title: 'Status', transforms: [sortable], cellTransforms: [truncate] },
   ];
 
   const getCells = (host: IHost) => {
@@ -51,27 +50,47 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     const networkAdapter = findSelectedNetworkAdapter(host, hostConfig);
     return [
       host.name,
-      networkAdapter ? formatHostNetworkAdapter(networkAdapter) : '(default)',
+      networkAdapter
+        ? {
+            title: (
+              <>
+                {!hostConfig ? (
+                  <Popover
+                    hasAutoWidth
+                    bodyContent={
+                      <StatusIcon status="Ok" label="Not configured, using default network" />
+                    }
+                  >
+                    <Button variant="link" isInline>
+                      <StatusIcon status="Ok" />
+                    </Button>
+                  </Popover>
+                ) : !hostConfig.status ? (
+                  <Tooltip content="Configuring">
+                    <StatusIcon status="Loading" />
+                  </Tooltip>
+                ) : (
+                  <StatusCondition status={hostConfig.status} hideLabel />
+                )}
+                <span className={spacing.mlSm}>{formatHostNetworkAdapter(networkAdapter)}</span>
+              </>
+            ),
+          }
+        : '(default)',
       networkAdapter ? `${networkAdapter.linkSpeed} Mbps` : '',
       networkAdapter?.mtu || '',
-      {
-        title: (
-          <StatusCondition
-            status={hostConfig?.status}
-            unknownFallback={hostConfig ? 'Pending' : ''}
-          />
-        ),
-      },
     ];
   };
 
   const getSortValues = (host: IHost) => {
     const hostConfig = findHostConfig(host, hostConfigs, provider);
-    const cells = getCells(host);
+    const networkAdapter = findSelectedNetworkAdapter(host, hostConfig);
     return [
       '', // Checkbox column
-      ...(cells.slice(0, -1) as string[]),
-      hostConfig?.status ? getMostSeriousCondition(hostConfig?.status?.conditions) : '',
+      host.name,
+      networkAdapter ? formatHostNetworkAdapter(networkAdapter) : '',
+      networkAdapter ? `${networkAdapter.linkSpeed} Mbps` : '',
+      networkAdapter?.mtu || '',
     ];
   };
 

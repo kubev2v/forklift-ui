@@ -51,7 +51,14 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     selfLink: '/providers/vsphere/test/hosts/host-29',
   };
 
-  MOCK_HOSTS = [host1, host2];
+  const host3 = {
+    ...host1,
+    id: 'host-57',
+    name: 'esx14.v2v.bos.redhat.com',
+    selfLink: '/providers/vsphere/test/hosts/host-57',
+  };
+
+  MOCK_HOSTS = [host1, host2, host3];
 
   MOCK_HOST_CONFIGS = [
     {
@@ -69,6 +76,35 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           name: 'mock-secret',
           namespace: 'openshift-migration',
         },
+      },
+    },
+    {
+      apiVersion: CLUSTER_API_VERSION,
+      kind: 'Host',
+      metadata: {
+        name: `host-${host3.id}-config`,
+        namespace: META.namespace,
+      },
+      spec: {
+        id: host3.id,
+        ipAddress: host3.networkAdapters[0].ipAddress,
+        provider: nameAndNamespace(MOCK_INVENTORY_PROVIDERS.vsphere[0]),
+        secret: {
+          name: 'mock-secret',
+          namespace: 'openshift-migration',
+        },
+      },
+      status: {
+        conditions: [
+          {
+            category: 'Critical',
+            lastTransitionTime: '2020-09-18T16:04:10Z',
+            message: 'Invalid credentials',
+            reason: 'MockReason',
+            status: 'True',
+            type: 'MockType',
+          },
+        ],
       },
     },
   ];
