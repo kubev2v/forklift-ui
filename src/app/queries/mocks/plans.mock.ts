@@ -772,9 +772,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       ...plan7.spec,
       description: 'cutover scheduled',
+      archived: false,
     },
     status: {
-      conditions: plan7.status?.conditions || [],
+      conditions:
+        plan7.status?.conditions.filter((condition) => condition.type !== 'Archived') || [],
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -800,9 +802,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan9: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-09' },
-    spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3] },
+    spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3], archived: false },
     status: {
-      conditions: plan7.status?.conditions || [],
+      conditions:
+        plan7.status?.conditions.filter((condition) => condition.type !== 'Archived') || [],
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -831,7 +834,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       ...plan1.metadata,
       name: 'plantest-10',
     },
-    spec: { ...plan7.spec, description: 'failed before cutover' },
+    spec: { ...plan7.spec, description: 'failed before cutover', archived: false },
     status: {
       conditions: [
         {
