@@ -5,7 +5,7 @@ import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/view
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 
 export function inputText(fieldId: string, text: string): void {
-  cy.get(fieldId).clear().type(text);
+  cy.get(fieldId).last().clear().type(text);
 }
 
 export function clickByText(fieldId: string, buttonText: string): void {
