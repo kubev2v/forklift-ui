@@ -1,6 +1,6 @@
 import { IPlan, IPlanVM, IVMStatus } from '../types';
 import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
-import { CLUSTER_API_VERSION, META, archivedPlanLabel } from '@app/common/constants';
+import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
 import { MOCK_NETWORK_MAPPINGS, MOCK_STORAGE_MAPPINGS } from './mappings.mock';
 import { MOCK_OPENSHIFT_NAMESPACES } from './namespaces.mock';
@@ -188,6 +188,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       transferNetwork: null,
+      archived: false,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -274,6 +275,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         name: 'ocp-network-2',
         namespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       },
+      archived: false,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -345,6 +347,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       transferNetwork: null,
+      archived: false,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -412,6 +415,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       transferNetwork: null,
+      archived: false,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -562,6 +566,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       },
       targetNamespace: MOCK_OPENSHIFT_NAMESPACES[0].name,
       transferNetwork: null,
+      archived: false,
       map: {
         network: nameAndNamespace(MOCK_NETWORK_MAPPINGS[0].metadata),
         storage: nameAndNamespace(MOCK_STORAGE_MAPPINGS[0].metadata),
@@ -710,9 +715,18 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       description: 'various precopy states',
       warm: true,
       vms: [vm1, vm2, vm3],
+      archived: true,
     },
     status: {
       conditions: [
+        {
+          category: 'Advisory',
+          lastTransitionTime: '2021-10-12T00:33:36Z',
+          message: 'The migration plan has been archived.',
+          reason: 'UserRequested',
+          status: 'True',
+          type: 'Archived',
+        },
         {
           category: 'Info',
           lastTransitionTime: '2020-09-18T16:04:10Z',
@@ -758,9 +772,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     spec: {
       ...plan7.spec,
       description: 'cutover scheduled',
+      archived: false,
     },
     status: {
-      conditions: plan7.status?.conditions || [],
+      conditions:
+        plan7.status?.conditions.filter((condition) => condition.type !== 'Archived') || [],
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -786,9 +802,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan9: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-09' },
-    spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3] },
+    spec: { ...plan7.spec, description: 'cutover started', vms: [vm1, vm2, vm3], archived: false },
     status: {
-      conditions: plan7.status?.conditions || [],
+      conditions:
+        plan7.status?.conditions.filter((condition) => condition.type !== 'Archived') || [],
       migration: {
         active: '',
         started: '2020-10-10T14:04:10Z',
@@ -816,11 +833,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     metadata: {
       ...plan1.metadata,
       name: 'plantest-10',
-      annotations: {
-        [archivedPlanLabel]: 'true',
-      },
     },
-    spec: { ...plan7.spec, description: 'failed before cutover' },
+    spec: { ...plan7.spec, description: 'failed before cutover', archived: false },
     status: {
       conditions: [
         {

@@ -25,7 +25,7 @@ import ConfirmModal from '@app/common/components/ConfirmModal';
 import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
 import PlanDetailsModal from './PlanDetailsModal';
-import { PlanState, archivedPlanLabel } from '@app/common/constants';
+import { PlanState } from '@app/common/constants';
 import { MigrationConfirmModal } from './MigrationConfirmModal';
 
 interface IPlansActionDropdownProps {
@@ -70,7 +70,7 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
   );
   const isPlanStarted = !!plan.status?.migration?.started;
 
-  const isPlanArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
+  const isPlanArchived = plan.spec.archived;
   const isPlanCompleted =
     !planState?.toLowerCase().includes('finished') &&
     !planState?.toLowerCase().includes('failed') &&
