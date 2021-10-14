@@ -23,6 +23,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   extraHeaders: RequestInit['headers'] = {},
   method: 'get' | 'post' = 'get',
   returnMode: 'json' | 'blob' = 'json',
+  bypassRedirect = false,
   data?: TData
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
@@ -46,14 +47,14 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
       throw response;
     }
   } catch (error: unknown) {
-    checkExpiry(error, history);
+    !bypassRedirect && checkExpiry(error, history);
     throw error;
   }
 };
 
-export const useAuthorizedFetch = <T>(url: string): QueryFunction<T> => {
+export const useAuthorizedFetch = <T>(url: string, bypassRedirect?: boolean): QueryFunction<T> => {
   const fetchContext = useFetchContext();
-  return () => authorizedFetch(url, fetchContext);
+  return () => authorizedFetch(url, fetchContext, {}, 'get', 'json', bypassRedirect);
 };
 
 export const authorizedK8sRequest = async <T>(
