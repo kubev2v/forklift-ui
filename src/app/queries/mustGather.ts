@@ -23,6 +23,7 @@ export const useMustGatherMutation = (
           { 'Content-Type': 'application/json' },
           'post',
           'json',
+          true,
           options
         )
           .then((mustGatherData) => {
@@ -59,7 +60,7 @@ export const useMustGathersQuery = (
   const result = useMockableQuery<IMustGatherResponse[], Response>(
     {
       queryKey: ['must-gather-list'],
-      queryFn: useAuthorizedFetch(getMustGatherApiUrl(url)),
+      queryFn: useAuthorizedFetch(getMustGatherApiUrl(url), true),
       enabled: isReady,
       refetchInterval: usePollingContext().refetchInterval,
       onError: (error) => {
@@ -86,7 +87,7 @@ export const useMustGatherQuery = (
   const result = useMockableQuery<IMustGatherResponse, Response>(
     {
       queryKey: ['must-gather-entity', customName],
-      queryFn: useAuthorizedFetch(getMustGatherApiUrl(`must-gather/${customName}`)),
+      queryFn: useAuthorizedFetch(getMustGatherApiUrl(`must-gather/${customName}`), true),
       enabled: shouldPoll,
       refetchInterval: usePollingContext().refetchInterval,
       onError: () => {
