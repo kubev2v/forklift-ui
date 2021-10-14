@@ -502,6 +502,7 @@ export const generatePlan = (
       destination: nameAndNamespace(forms.general.values.targetProvider),
     },
     targetNamespace: forms.general.values.targetNamespace,
+    archived: false,
     // Note: This assumes we will only ever allow migration networks that are in the target namespace.
     //       We may want to store migrationNetwork name/namespace in form state instead of just name.
     transferNetwork: forms.general.values.migrationNetwork
