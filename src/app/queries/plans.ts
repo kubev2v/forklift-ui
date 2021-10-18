@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as yup from 'yup';
 import { checkIfResourceExists, ForkliftResource, ForkliftResourceKind } from '@app/client/helpers';
 import { IKubeList, IKubeResponse, IKubeStatus, KubeClientError } from '@app/client/types';
-import { dnsLabelNameSchema, META, archivedPlanLabel } from '@app/common/constants';
+import { dnsLabelNameSchema, META } from '@app/common/constants';
 import { usePollingContext } from '@app/common/context';
 import { UseMutationResult, UseQueryResult, useQueryClient } from 'react-query';
 import {
@@ -262,15 +262,15 @@ export const useArchivePlanMutation = (
   const queryClient = useQueryClient();
   return useMockableMutation<IKubeResponse<IKubeStatus>, KubeClientError, IPlan>(
     (plan: IPlan) => {
-      const planWithArchiveAnnotation = plan;
-      const isArchived = plan.metadata.annotations?.[archivedPlanLabel] === 'true';
-      if (!isArchived) {
-        planWithArchiveAnnotation.metadata.annotations = {
-          ...plan.metadata.annotations,
-          [archivedPlanLabel]: 'true',
-        };
-      }
-      return client.patch(planResource, plan.metadata.name, planWithArchiveAnnotation);
+      const planWithArchiveFlag: IPlan = {
+        ...plan,
+        spec: {
+          ...plan.spec,
+          archived: true,
+        },
+      };
+
+      return client.patch(planResource, plan.metadata.name, planWithArchiveFlag);
     },
     {
       onSuccess: () => {
