@@ -32,12 +32,14 @@ interface IPlansActionDropdownProps {
   plan: IPlan;
   planState: PlanState | null;
   canRestart: boolean;
+  numVMsDone: number;
 }
 
 export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownProps> = ({
   plan,
   planState,
   canRestart,
+  numVMsDone,
 }: IPlansActionDropdownProps) => {
   const { withNs, latestAssociatedMustGather } = React.useContext(MustGatherContext);
 
@@ -76,8 +78,17 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
     !planState?.toLowerCase().includes('failed') &&
     !planState?.toLowerCase().includes('canceled');
 
+  const isPlanRunning = !!(
+    planState?.toLowerCase().includes('running') ||
+    planState?.toLowerCase().includes('starting') ||
+    planState?.toLowerCase().includes('archiving') ||
+    (planState?.toLowerCase().includes('copying') && !planState?.toLowerCase().includes('failed'))
+  );
+
   const duplicateMessageOnDisabledEdit =
     'To make changes to the plan, select Duplicate and edit the duplicate plan.';
+
+  const someVMsSucceeded = numVMsDone > 0;
 
   return (
     <>
@@ -89,21 +100,31 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         dropdownItems={[
           <ConditionalTooltip
             key="edit"
-            isTooltipEnabled={isPlanStarted || !areProvidersReady}
+            isTooltipEnabled={
+              (isPlanStarted && someVMsSucceeded) || !areProvidersReady || isPlanRunning
+            }
             content={
               isPlanGathering
                 ? `This plan cannot be edited because it is running must gather. ${duplicateMessageOnDisabledEdit}`
                 : isPlanArchived
                 ? `This plan cannot be edited because it has been archived. ${duplicateMessageOnDisabledEdit}`
-                : isPlanStarted
-                ? `This plan cannot be edited because it has been started. ${duplicateMessageOnDisabledEdit}`
                 : !areProvidersReady
                 ? 'This plan cannot be edited because the inventory data for its associated providers is not ready.'
+                : someVMsSucceeded
+                ? `This plan cannot be edited because some of its VMs have already been migrated. ${duplicateMessageOnDisabledEdit}`
+                : (isPlanStarted && someVMsSucceeded) || isPlanRunning
+                ? `This plan cannot be edited because it has been started. ${duplicateMessageOnDisabledEdit}`
                 : ''
             }
           >
             <DropdownItem
-              isDisabled={isPlanStarted || !areProvidersReady || isPlanArchived || isPlanGathering}
+              isDisabled={
+                isPlanRunning ||
+                (isPlanStarted && someVMsSucceeded) ||
+                !areProvidersReady ||
+                isPlanArchived ||
+                isPlanGathering
+              }
               onClick={() => {
                 setKebabIsOpen(false);
                 history.push(`/plans/${plan.metadata.name}/edit`);

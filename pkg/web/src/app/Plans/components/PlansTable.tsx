@@ -182,7 +182,7 @@ export const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const statusValue = totalVMs > 0 ? (numVMsDone * 100) / totalVMs : 0;
     const statusMessage = `${numVMsDone} of ${totalVMs} VMs migrated`;
 
-    return { statusValue, statusMessage };
+    return { statusValue, statusMessage, numVMsDone };
   };
 
   const columns: ICell[] = [
@@ -220,7 +220,7 @@ export const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const buttonType = getButtonState(planState);
     const { title, variant } = getMigStatusState(planState, isWarmPlan);
 
-    const { statusValue = 0, statusMessage = '' } = ratioVMs(plan);
+    const { statusValue = 0, statusMessage = '', numVMsDone } = ratioVMs(plan);
 
     const { sourceProvider, targetProvider } = findProvidersByRefs(
       plan.spec.provider,
@@ -308,11 +308,21 @@ export const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 ) : null}
               </FlexItem>
               <FlexItem>
-                <PlanActionsDropdown canRestart={canRestart} planState={planState} plan={plan} />
+                <PlanActionsDropdown
+                  numVMsDone={numVMsDone}
+                  canRestart={canRestart}
+                  planState={planState}
+                  plan={plan}
+                />
               </FlexItem>
             </Flex>
           ) : !isBeingStarted ? (
-            <PlanActionsDropdown canRestart={canRestart} planState={planState} plan={plan} />
+            <PlanActionsDropdown
+              numVMsDone={numVMsDone}
+              canRestart={canRestart}
+              planState={planState}
+              plan={plan}
+            />
           ) : null,
         },
       ],
