@@ -8,7 +8,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-14-minimal
 
 # Add tar package to allow copying files with kubectl scp
 USER root
-RUN dnf -y install tar && dnf clean all
+RUN microdnf -y install tar && microdnf clean all
 USER 1001
 
 LABEL name="konveyor/forklift-ui" \
