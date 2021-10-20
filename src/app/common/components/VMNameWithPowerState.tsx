@@ -3,35 +3,39 @@ import { Tooltip } from '@patternfly/react-core';
 import { SyncAltIcon, OffIcon, UnknownIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IRHVVM, IVMwareVM, SourceInventoryProvider, SourceVM } from '@app/queries/types';
-import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
+import { ProviderType } from '@app/common/constants';
 
 interface IVMNameWithPowerState {
   sourceProvider: SourceInventoryProvider | null;
   vm: SourceVM;
 }
 
+export const getVMPowerState = (providerType: ProviderType | undefined, vm: SourceVM) => {
+  let powerStatus: 'on' | 'off' | 'unknown' = 'unknown';
+  switch (providerType) {
+    case 'ovirt': {
+      if ((vm as IRHVVM).status === 'up') powerStatus = 'on';
+      if ((vm as IRHVVM).status === 'down') powerStatus = 'off';
+      break;
+    }
+    case 'vsphere': {
+      if ((vm as IVMwareVM).powerState === 'poweredOn') powerStatus = 'on';
+      if ((vm as IVMwareVM).powerState === 'poweredOff') powerStatus = 'off';
+      break;
+    }
+    default: {
+      powerStatus = 'unknown';
+    }
+  }
+  return powerStatus;
+};
+
 export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState> = ({
   sourceProvider,
   vm,
 }) => {
-  const renderPowerStateIcon = (providerType: keyof typeof PROVIDER_TYPE_NAMES, vm: SourceVM) => {
-    let powerStatus: 'on' | 'off' | 'unknown' = 'unknown';
-
-    switch (providerType) {
-      case 'ovirt': {
-        if ((vm as IRHVVM).status === 'up') powerStatus = 'on';
-        if ((vm as IRHVVM).status === 'down') powerStatus = 'off';
-        break;
-      }
-      case 'vsphere': {
-        if ((vm as IVMwareVM).powerState === 'poweredOn') powerStatus = 'on';
-        if ((vm as IVMwareVM).powerState === 'poweredOff') powerStatus = 'off';
-        break;
-      }
-      default: {
-        powerStatus = 'unknown';
-      }
-    }
+  const renderPowerStateIcon = (providerType: ProviderType, vm: SourceVM) => {
+    const powerStatus = getVMPowerState(providerType, vm);
 
     const tooltipTxt =
       powerStatus === 'on'

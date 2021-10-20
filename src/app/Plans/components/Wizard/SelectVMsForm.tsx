@@ -57,7 +57,7 @@ import VMConcernsDescription from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { UseQueryResult } from 'react-query';
-import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
+import { getVMPowerState, VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
 interface ISelectVMsFormProps {
   form: PlanWizardFormState['selectVMs'];
@@ -106,6 +106,17 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
       title: 'VM name',
       type: FilterType.search,
       placeholderText: 'Filter by VM ...',
+    },
+    {
+      key: 'powerState',
+      title: 'VM power state',
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'on', value: 'Powered on' },
+        { key: 'off', value: 'Powered off' },
+        { key: 'unknown', value: 'Unknown' },
+      ],
+      getItemValue: (item) => getVMPowerState(sourceProvider?.type, item),
     },
     {
       key: 'migrationAnalysis',
@@ -270,7 +281,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           title: <VMConcernsIcon vm={vm} />,
         },
         {
-          title: <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
+          title: (
+            <VMNameWithPowerState
+              vm={vm}
+              sourceProvider={sourceProvider}
+              key={`row${rows.length}-${vm.name}`} // Ensure it always re-mounts when table rows change so tooltip state doesn't get messed up
+            />
+          ),
         },
         datacenter?.name || '',
         cluster?.name || '',
