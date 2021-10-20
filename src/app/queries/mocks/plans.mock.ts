@@ -606,7 +606,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          start: '2021-03-16T17:28:48Z',
+          started: '2021-03-16T17:28:48Z',
         },
       ],
       successes: 0,
@@ -630,7 +630,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          start: '2021-03-16T17:28:48Z',
+          started: '2021-03-16T17:28:48Z',
         },
       ],
       successes: 0,
@@ -645,15 +645,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          start: '2021-03-16T17:28:48Z',
-          end: '2021-03-16T17:29:42Z',
+          started: '2021-03-16T17:28:48Z',
+          completed: '2021-03-16T17:29:42Z',
         },
         {
-          start: '2021-03-16T18:29:20Z',
-          end: '2021-03-16T18:30:38Z',
+          started: '2021-03-16T18:29:20Z',
+          completed: '2021-03-16T18:30:38Z',
         },
         {
-          start: '2021-03-16T18:30:38Z',
+          started: '2021-03-16T18:30:38Z',
         },
       ],
       successes: 0,
@@ -676,16 +676,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       nextPrecopyAt: '2021-03-16T18:29:20Z',
       precopies: [
         {
-          start: '2021-03-16T17:28:48Z',
-          end: '2021-03-16T17:29:42Z',
+          started: '2021-03-16T17:28:48Z',
+          completed: '2021-03-16T17:29:42Z',
         },
         {
-          start: '2021-03-16T18:29:20Z',
-          end: '2021-03-16T18:30:38Z',
+          started: '2021-03-16T18:29:20Z',
+          completed: '2021-03-16T18:30:38Z',
         },
         {
-          start: '2021-03-16T18:30:38Z',
-          end: '2021-03-16T18:31:48Z',
+          started: '2021-03-16T18:30:38Z',
+          completed: '2021-03-16T18:31:48Z',
         },
       ],
       successes: 3,
