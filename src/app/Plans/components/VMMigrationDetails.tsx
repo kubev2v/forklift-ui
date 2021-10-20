@@ -283,7 +283,13 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         {
-          title: vm && <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
+          title: vm && (
+            <VMNameWithPowerState
+              vm={vm}
+              sourceProvider={sourceProvider}
+              key={`row${rows.length}-${vm.name}`} // Ensure it always re-mounts when table rows change so tooltip state doesn't get messed up
+            />
+          ),
         },
         ...(!isShowingPrecopyView
           ? [
