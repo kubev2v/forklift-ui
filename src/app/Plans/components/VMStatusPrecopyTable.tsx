@@ -34,8 +34,8 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
 
   const sortedPrecopies = (status.warm.precopies || []).sort((a, b) => {
     // Most recent first
-    if (a.start < b.start) return 1;
-    if (a.start > b.start) return -1;
+    if (a.started < b.started) return 1;
+    if (a.started > b.started) return -1;
     return 0;
   });
 
@@ -55,12 +55,17 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
       cells: [
         sortedPrecopies.length - index,
         {
-          title: <TickingElapsedTime start={precopy.start} end={precopy.end || status.completed} />,
+          title: (
+            <TickingElapsedTime
+              start={precopy.started}
+              end={precopy.completed || status.completed}
+            />
+          ),
         },
         {
           title: isCanceled ? (
             <CanceledIcon />
-          ) : precopy.end ? (
+          ) : precopy.completed ? (
             <StatusIcon status="Ok" label="Complete" />
           ) : status.error && index === 0 ? (
             <StatusIcon status="Error" label="Failed" />
