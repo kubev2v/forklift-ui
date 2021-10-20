@@ -281,7 +281,13 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
           title: <VMConcernsIcon vm={vm} />,
         },
         {
-          title: <VMNameWithPowerState vm={vm} sourceProvider={sourceProvider} />,
+          title: (
+            <VMNameWithPowerState
+              vm={vm}
+              sourceProvider={sourceProvider}
+              key={`row${rows.length}-${vm.name}`} // Ensure it always re-mounts when table rows change so tooltip state doesn't get messed up
+            />
+          ),
         },
         datacenter?.name || '',
         cluster?.name || '',
