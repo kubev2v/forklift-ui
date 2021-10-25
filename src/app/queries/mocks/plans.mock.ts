@@ -11,22 +11,27 @@ export let MOCK_PLANS: IPlan[];
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vm1: IPlanVM = {
     id: 'vm-1630',
+    name: 'fdupont-test-migration',
   };
 
   const vm2: IPlanVM = {
     id: 'vm-2844',
+    name: 'fdupont-test',
   };
 
   const vm3: IPlanVM = {
     id: 'vm-1008',
+    name: 'fdupont-test-migration-centos',
   };
 
   const vm4: IPlanVM = {
     id: 'vm-2685',
+    name: 'pemcg-discovery01',
   };
 
   const vmStatus1: IVMStatus = {
-    id: vm1.id,
+    id: vm1.id || '',
+    name: vm1.name || '',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -50,7 +55,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus2: IVMStatus = {
-    id: vm2.id,
+    id: vm2.id || '',
+    name: vm2.name || '',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -74,7 +80,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus3: IVMStatus = {
-    id: vm3.id,
+    id: vm3.id || '',
+    name: vm3.name || '',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -110,7 +117,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus4: IVMStatus = {
-    id: vm4.id,
+    id: vm4.id || '',
+    name: vm4.name || '',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -147,7 +155,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatusWithTopLevelError: IVMStatus = {
-    id: vm2.id,
+    id: vm2.id || '',
+    name: vm2.name || '',
     pipeline: [
       {
         name: 'DiskTransfer',

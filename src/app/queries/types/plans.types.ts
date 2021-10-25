@@ -27,7 +27,8 @@ export interface IError {
 }
 
 export interface IVMStatus {
-  id: string;
+  id?: string;
+  name?: string;
   pipeline: IStep[];
   phase: string;
   error?: IError;
@@ -54,7 +55,8 @@ export interface IPlanVMHook {
 }
 
 export interface IPlanVM {
-  id: string;
+  id?: string;
+  name?: string;
   hooks?: IPlanVMHook[];
 }
 
