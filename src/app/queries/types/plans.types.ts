@@ -28,6 +28,7 @@ export interface IError {
 
 export interface IVMStatus {
   id: string;
+  name: string;
   pipeline: IStep[];
   phase: string;
   error?: IError;
