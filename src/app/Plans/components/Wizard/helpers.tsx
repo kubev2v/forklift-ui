@@ -484,6 +484,7 @@ interface IHookRef {
 }
 
 export const generatePlan = (
+  vmsQuery: UseQueryResult<IndexedSourceVMs>,
   forms: PlanWizardFormState,
   networkMappingRef: INameNamespaceRef,
   storageMappingRef: INameNamespaceRef,
@@ -518,9 +519,13 @@ export const generatePlan = (
     vms: hooksRef
       ? forms.selectVMs.values.selectedVMIds.map((id) => ({
           id,
+          name: vmsQuery.data?.vmsById[id]?.name || '',
           hooks: hooksRef.map((hookRef) => ({ hook: hookRef.ref, step: hookRef.instance.step })),
         }))
-      : forms.selectVMs.values.selectedVMIds.map((id) => ({ id })),
+      : forms.selectVMs.values.selectedVMIds.map((id) => ({
+          id,
+          name: vmsQuery.data?.vmsById[id]?.name || '',
+        })),
     warm: forms.type.values.type === 'Warm',
   },
 });

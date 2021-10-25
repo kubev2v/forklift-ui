@@ -20,6 +20,7 @@ import { getMappingResource } from './mappings';
 import { PlanWizardFormState, PlanWizardMode } from '@app/Plans/components/Wizard/PlanWizard';
 import { generateHook, generateMappings, generatePlan } from '@app/Plans/components/Wizard/helpers';
 import { IMetaObjectMeta } from '@app/queries/types/common.types';
+import { IndexedSourceVMs } from './vms';
 
 const planResource = new ForkliftResource(ForkliftResourceKind.Plan, META.namespace);
 const networkMapResource = getMappingResource(MappingType.Network).resource;
@@ -45,6 +46,7 @@ export const usePlansQuery = (): UseQueryResult<IKubeList<IPlan>> => {
 };
 
 export const useCreatePlanMutation = (
+  vmsQuery: UseQueryResult<IndexedSourceVMs>,
   onSuccess?: () => void
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, PlanWizardFormState, unknown> => {
   const client = useAuthorizedK8sClient();
@@ -85,7 +87,7 @@ export const useCreatePlanMutation = (
       // Create plan referencing new mappings and new hooks for plan's VMs
       const planResponse = await client.create<IPlan>(
         planResource,
-        generatePlan(forms, networkMappingRef, storageMappingRef, hooksRef)
+        generatePlan(vmsQuery, forms, networkMappingRef, storageMappingRef, hooksRef)
       );
 
       // Patch mappings with ownerReferences to new plan
@@ -134,6 +136,7 @@ interface IPatchPlanArgs {
 }
 
 export const usePatchPlanMutation = (
+  vmsQuery: UseQueryResult<IndexedSourceVMs>,
   onSuccess?: () => void
 ): UseMutationResult<IKubeResponse<IPlan>, KubeClientError, IPatchPlanArgs, unknown> => {
   const client = useAuthorizedK8sClient();
@@ -182,7 +185,13 @@ export const usePatchPlanMutation = (
 
       const hooksRef = await Promise.all(updatedHooksRef);
 
-      const updatedPlan = generatePlan(forms, networkMappingRef, storageMappingRef, hooksRef);
+      const updatedPlan = generatePlan(
+        vmsQuery,
+        forms,
+        networkMappingRef,
+        storageMappingRef,
+        hooksRef
+      );
       const [, , planResponse] = await Promise.all([
         networkMapping &&
           client.patch<Mapping>(networkMapResource, networkMappingRef.name, networkMapping),

@@ -6,7 +6,7 @@ import { IPlan, SourceVM } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
-import { useNamespacesQuery } from '@app/queries';
+import { useNamespacesQuery, useSourceVMsQuery } from '@app/queries';
 import PlanDetails from '../PlanDetails';
 import { UnknownResult } from '@app/common/types';
 
@@ -27,9 +27,12 @@ const Review: React.FunctionComponent<IReviewProps> = ({
 }: IReviewProps) => {
   usePausedPollingEffect();
 
+  const vmsQuery = useSourceVMsQuery(forms.general.values.sourceProvider);
+
   // Create non resilient mappings and plan to display details before commit (or not)
   const { networkMapping, storageMapping } = generateMappings({ forms });
   const plan: IPlan = generatePlan(
+    vmsQuery,
     forms,
     { name: '', namespace: '' },
     { name: '', namespace: '' },

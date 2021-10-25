@@ -223,8 +223,8 @@ const PlanWizard: React.FunctionComponent = () => {
 
   const onClose = () => history.push('/plans');
 
-  const createPlanMutation = useCreatePlanMutation();
-  const patchPlanMutation = usePatchPlanMutation();
+  const createPlanMutation = useCreatePlanMutation(vmsQuery);
+  const patchPlanMutation = usePatchPlanMutation(vmsQuery);
 
   const { network: createSharedNetworkMapMutation, storage: createSharedStorageMapMutation } =
     useCreateMappingMutations();
