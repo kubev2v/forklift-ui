@@ -2,16 +2,24 @@ import * as React from 'react';
 import { Tooltip } from '@patternfly/react-core';
 import { SyncAltIcon, OffIcon, UnknownIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IRHVVM, IVMwareVM, SourceInventoryProvider, SourceVM } from '@app/queries/types';
+import {
+  IRHVVM,
+  IVMwareVM,
+  SourceInventoryProvider,
+  SourceVM,
+  IVMStatus,
+} from '@app/queries/types';
 import { ProviderType } from '@app/common/constants';
 
 interface IVMNameWithPowerState {
   sourceProvider: SourceInventoryProvider | null;
-  vm: SourceVM;
+  vm?: SourceVM;
+  vmStatus?: IVMStatus;
 }
 
-export const getVMPowerState = (providerType: ProviderType | undefined, vm: SourceVM) => {
+export const getVMPowerState = (providerType: ProviderType | undefined, vm?: SourceVM) => {
   let powerStatus: 'on' | 'off' | 'unknown' = 'unknown';
+  if (!vm) return powerStatus;
   switch (providerType) {
     case 'ovirt': {
       if ((vm as IRHVVM).status === 'up') powerStatus = 'on';
@@ -33,8 +41,9 @@ export const getVMPowerState = (providerType: ProviderType | undefined, vm: Sour
 export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState> = ({
   sourceProvider,
   vm,
+  vmStatus,
 }) => {
-  const renderPowerStateIcon = (providerType: ProviderType, vm: SourceVM) => {
+  const renderPowerStateIcon = (providerType: ProviderType, vm?: SourceVM) => {
     const powerStatus = getVMPowerState(providerType, vm);
 
     const tooltipTxt =
@@ -57,11 +66,14 @@ export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState
     );
   };
 
+  const vmName =
+    vm?.name || vmStatus?.name || (vmStatus?.id ? `VM not found (id: ${vmStatus?.id})` : '');
+
   return (
     <>
       {sourceProvider && renderPowerStateIcon(sourceProvider.type, vm)}
-      <Tooltip content={vm.name}>
-        <span tabIndex={0}>{vm.name}</span>
+      <Tooltip content={vmName}>
+        <span tabIndex={0}>{vmName}</span>
       </Tooltip>
     </>
   );
