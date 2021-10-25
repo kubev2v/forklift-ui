@@ -89,14 +89,6 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
   const planStarted = !!plan?.status?.migration?.started;
-  const vmStatuses: IVMStatus[] = planStarted
-    ? plan?.status?.migration?.vms || []
-    : plan?.spec.vms.map(({ id }) => ({
-        id,
-        name: vmsQuery.data?.vmsById[id]?.name || '',
-        pipeline: [],
-        phase: '',
-      })) || [];
 
   const providersQuery = useInventoryProvidersQuery();
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
@@ -117,6 +109,15 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       planState === 'Copying-CutoverScheduled' ||
       planState === 'Copying-Canceled' ||
       planState === 'Copying-Failed');
+
+  const vmStatuses: IVMStatus[] = planStarted
+    ? plan?.status?.migration?.vms || []
+    : plan?.spec.vms.map(({ id }) => ({
+        id,
+        name: vmsQuery.data?.vmsById[id]?.name || '',
+        pipeline: [],
+        phase: '',
+      })) || [];
 
   const getSortValues = (vmStatus: IVMStatus) => {
     return [
@@ -287,11 +288,12 @@ const VMMigrationDetails: React.FunctionComponent = () => {
       isOpen: planStarted ? isExpanded : undefined,
       cells: [
         {
-          title: vm && (
+          title: (
             <VMNameWithPowerState
               vm={vm}
+              vmStatus={vmStatus}
               sourceProvider={sourceProvider}
-              key={`row${rows.length}-${vm.name}`} // Ensure it always re-mounts when table rows change so tooltip state doesn't get messed up
+              key={`row${rows.length}-${vmStatus.id}`} // Ensure it always re-mounts when table rows change so tooltip state doesn't get messed up
             />
           ),
         },
