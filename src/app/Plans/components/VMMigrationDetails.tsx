@@ -426,7 +426,9 @@ const VMMigrationDetails: React.FunctionComponent = () => {
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}
         mutateFn={() => {
-          const vmsToCancel = vmsQuery.data?.findVMsByIds(selectedItems.map(({ id }) => id)) || [];
+          const vmsToCancel =
+            vmsQuery.data?.findVMsByIds(selectedItems.map(({ id, name }) => id || name || '')) ||
+            [];
           cancelVMsMutation.mutate(vmsToCancel);
         }}
         mutateResult={cancelVMsMutation}
