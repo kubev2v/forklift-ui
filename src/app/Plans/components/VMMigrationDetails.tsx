@@ -89,10 +89,11 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const plansQuery = usePlansQuery();
   const plan = plansQuery.data?.items.find((item) => item.metadata.name === match?.params.planName);
   const planStarted = !!plan?.status?.migration?.started;
-  const vmStatuses = planStarted
+  const vmStatuses: IVMStatus[] = planStarted
     ? plan?.status?.migration?.vms || []
     : plan?.spec.vms.map(({ id }) => ({
         id,
+        name: vmsQuery.data?.vmsById[id]?.name || '',
         pipeline: [],
         phase: '',
       })) || [];
@@ -101,7 +102,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const getVMName = (vmStatus: IVMStatus) => vmsQuery.data?.vmsById[vmStatus.id]?.name || '';
+  const getVMName = (vmStatus: IVMStatus) => {
+    const nameFromInventory = vmsQuery.data?.vmsById[vmStatus.id]?.name || null;
+    return nameFromInventory || vmStatus.name;
+  };
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
@@ -216,7 +220,7 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     !!(latestMigration?.spec.cancel || []).find((canceledVM) => canceledVM.id === vm.id);
   const cancelableVMs = !hasCondition(plan?.status?.conditions || [], 'Executing')
     ? []
-    : (vmStatuses as IVMStatus[]).filter((vm) => !vm.completed && !isVMCanceled(vm));
+    : vmStatuses.filter((vm) => !vm.completed && !isVMCanceled(vm));
   const selectAllCancelable = (isSelected: boolean) =>
     isSelected ? setSelectedItems(cancelableVMs) : setSelectedItems([]);
 
