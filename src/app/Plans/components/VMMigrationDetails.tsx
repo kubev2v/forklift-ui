@@ -101,7 +101,10 @@ const VMMigrationDetails: React.FunctionComponent = () => {
   const { sourceProvider } = findProvidersByRefs(plan?.spec.provider || null, providersQuery);
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
-  const getVMName = (vmStatus: IVMStatus) => vmsQuery.data?.vmsById[vmStatus.id]?.name || '';
+  const getVMName = (vmStatus: IVMStatus) => {
+    if (vmStatus.name) return vmStatus.name;
+    return vmsQuery.data?.vmsById[vmStatus.id || '']?.name || '';
+  };
 
   const migrationsQuery = useMigrationsQuery();
   const latestMigration = findLatestMigration(plan || null, migrationsQuery.data?.items || null);
