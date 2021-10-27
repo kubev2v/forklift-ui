@@ -505,9 +505,21 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan5: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-05' },
-    spec: { ...plan1.spec, description: 'completed with errors' },
+    spec: {
+      ...plan1.spec,
+      description: 'completed with errors',
+      archived: true,
+    },
     status: {
       conditions: [
+        {
+          category: 'Advisory',
+          lastTransitionTime: '2021-10-12T00:33:36Z',
+          message: 'The migration plan has been archived.',
+          reason: 'UserRequested',
+          status: 'True',
+          type: 'Archived',
+        },
         {
           category: 'Info',
           lastTransitionTime: '2020-09-10T16:04:10Z',
@@ -715,18 +727,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       description: 'various precopy states',
       warm: true,
       vms: [vm1, vm2, vm3],
-      archived: true,
+      archived: false,
     },
     status: {
       conditions: [
-        {
-          category: 'Advisory',
-          lastTransitionTime: '2021-10-12T00:33:36Z',
-          message: 'The migration plan has been archived.',
-          reason: 'UserRequested',
-          status: 'True',
-          type: 'Archived',
-        },
         {
           category: 'Info',
           lastTransitionTime: '2020-09-18T16:04:10Z',
