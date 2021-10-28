@@ -32,15 +32,18 @@ import { isSameResource } from '@app/queries/helpers';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface IGeneralFormProps {
-  forms: PlanWizardFormState;
+  form: PlanWizardFormState['general'];
   wizardMode: PlanWizardMode;
+  afterProviderChange: () => void;
+  afterTargetNamespaceChange: () => void;
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
-  forms,
+  form,
   wizardMode,
+  afterProviderChange,
+  afterTargetNamespaceChange,
 }: IGeneralFormProps) => {
-  const form = forms.general;
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
@@ -94,6 +97,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           network.name === providerDefaultNetworkName && network.namespace === targetNamespace
       );
       form.fields.migrationNetwork.prefill(matchingNetwork?.name || null);
+      afterTargetNamespaceChange();
     }
   };
 
@@ -122,8 +126,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <Title headingLevel="h3" size="md">
           Select source and target providers
         </Title>
-        <ProviderSelect providerRole="source" field={form.fields.sourceProvider} />
-        <ProviderSelect providerRole="target" field={form.fields.targetProvider} />
+        <ProviderSelect
+          providerRole="source"
+          field={form.fields.sourceProvider}
+          afterChange={afterProviderChange}
+        />
+        <ProviderSelect
+          providerRole="target"
+          field={form.fields.targetProvider}
+          afterChange={afterProviderChange}
+        />
         <FormGroup
           label="Target namespace"
           isRequired
@@ -151,11 +163,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                   }, 0);
                 }
               }}
-              onSelect={(_event, selection) => {
-                onTargetNamespaceChange(selection as string);
-                // Network mapping targets depend on target namespace
-                forms.networkMapping.clear();
-              }}
+              onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
               onFilter={(_event, value) => getFilteredOptions(value)}
               onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}
