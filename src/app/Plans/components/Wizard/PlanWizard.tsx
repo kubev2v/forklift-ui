@@ -207,20 +207,6 @@ const PlanWizard: React.FunctionComponent = () => {
   const stepIdReached: StepId =
     firstInvalidFormIndex === -1 ? StepId.Review : firstInvalidFormIndex;
 
-  const isFirstRender = React.useRef(true);
-
-  // When providers change, clear all forms containing provider-specific options
-  React.useEffect(() => {
-    if (!isFirstRender.current && isDonePrefilling) {
-      forms.filterVMs.clear();
-      forms.selectVMs.clear();
-      forms.networkMapping.clear();
-      forms.storageMapping.clear();
-    }
-    isFirstRender.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
-
   const onClose = () => history.push('/plans');
 
   const createPlanMutation = useCreatePlanMutation();
@@ -282,7 +268,21 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm forms={forms} wizardMode={wizardMode} />
+          <GeneralForm
+            form={forms.general}
+            wizardMode={wizardMode}
+            afterProviderChange={() => {
+              // When providers change, clear all forms containing provider-specific options
+              forms.filterVMs.clear();
+              forms.selectVMs.clear();
+              forms.networkMapping.clear();
+              forms.storageMapping.clear();
+            }}
+            afterTargetNamespaceChange={() => {
+              // Network mapping targets are namespace-specific
+              forms.networkMapping.clear();
+            }}
+          />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
