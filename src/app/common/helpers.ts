@@ -150,3 +150,13 @@ export const getStorageTitle = (sourceProviderType: ProviderType, cap = false): 
   if (sourceProviderType === 'ovirt') return `${cap ? 'S' : 's'}torage domains`;
   return '';
 };
+
+export const getUniqueItemsByName = <T extends { name: string }>(allItems: T[]): T[] => {
+  const uniqueItems: T[] = [];
+  allItems.forEach((item) => {
+    if (!uniqueItems.some(({ name }) => name === item.name)) {
+      uniqueItems.push(item);
+    }
+  });
+  return uniqueItems;
+};
