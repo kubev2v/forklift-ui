@@ -282,7 +282,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} wizardMode={wizardMode} />
+          <GeneralForm forms={forms} wizardMode={wizardMode} />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
@@ -342,6 +342,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
+            targetNamespace={forms.general.values.targetNamespace}
             selectedVMs={selectedVMs}
             planBeingPrefilled={planBeingPrefilled}
           />
@@ -361,6 +362,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
+            targetNamespace={forms.general.values.targetNamespace}
             selectedVMs={selectedVMs}
             planBeingPrefilled={planBeingPrefilled}
           />

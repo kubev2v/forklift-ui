@@ -32,14 +32,15 @@ import { isSameResource } from '@app/queries/helpers';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface IGeneralFormProps {
-  form: PlanWizardFormState['general'];
+  forms: PlanWizardFormState;
   wizardMode: PlanWizardMode;
 }
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
-  form,
+  forms,
   wizardMode,
 }: IGeneralFormProps) => {
+  const form = forms.general;
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const namespacesQuery = useNamespacesQuery(form.values.targetProvider);
@@ -150,7 +151,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                   }, 0);
                 }
               }}
-              onSelect={(_event, selection) => onTargetNamespaceChange(selection as string)}
+              onSelect={(_event, selection) => {
+                onTargetNamespaceChange(selection as string);
+                // Network mapping targets depend on target namespace
+                forms.networkMapping.clear();
+              }}
               onFilter={(_event, value) => getFilteredOptions(value)}
               onClear={() => onTargetNamespaceChange('')}
               selections={form.values.targetNamespace}

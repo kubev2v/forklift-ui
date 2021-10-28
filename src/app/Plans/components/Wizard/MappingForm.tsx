@@ -54,6 +54,7 @@ interface IMappingFormProps {
   sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
+  targetNamespace: string | null;
   selectedVMs: SourceVM[];
   planBeingPrefilled: IPlan | null;
 }
@@ -63,6 +64,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   sourceProvider,
   targetProvider,
   mappingType,
+  targetNamespace,
   selectedVMs,
   planBeingPrefilled,
 }: IMappingFormProps) => {
@@ -76,7 +78,8 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   const mappingResourceQueries = useMappingResourceQueries(
     sourceProvider,
     targetProvider,
-    mappingType
+    mappingType,
+    targetNamespace
   );
 
   const { availableSources, availableTargets } = mappingResourceQueries;
