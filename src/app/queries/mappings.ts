@@ -165,8 +165,7 @@ export interface ISpecificMappingResourcesResult extends IMappingResourcesResult
 export const useMappingResourceQueries = (
   sourceProvider: SourceInventoryProvider | null,
   targetProvider: IOpenShiftProvider | null,
-  mappingType: MappingType,
-  targetNamespace?: string | null
+  mappingType: MappingType
 ): IMappingResourcesResult => {
   const sourceNetworksQuery = useSourceNetworksQuery(sourceProvider, mappingType);
   const sourceStoragesQuery = useSourceStoragesQuery(sourceProvider, mappingType);
@@ -176,18 +175,13 @@ export const useMappingResourceQueries = (
     mappingType
   );
 
-  const allOpenshiftNetworks = openshiftNetworksQuery.data || [];
-  const filteredOpenshiftNetworks = targetNamespace
-    ? allOpenshiftNetworks.filter((network) => network.namespace === targetNamespace)
-    : allOpenshiftNetworks;
-
   let availableSources: MappingSource[] = [];
   let availableTargets: MappingTarget[] = [];
   if (mappingType === MappingType.Network) {
     availableSources = (sourceProvider && sourceNetworksQuery.data) || [];
     availableTargets =
       targetProvider && openshiftNetworksQuery.data
-        ? [POD_NETWORK, ...filteredOpenshiftNetworks]
+        ? [POD_NETWORK, ...(openshiftNetworksQuery.data || [])]
         : [];
   }
   if (mappingType === MappingType.Storage) {
