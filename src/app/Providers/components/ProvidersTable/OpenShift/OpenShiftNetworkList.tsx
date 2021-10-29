@@ -7,7 +7,7 @@ import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider, POD_NETWORK } from '@app/queries/types';
 import { isSameResource } from '@app/queries/helpers';
-import { hasCondition } from '@app/common/helpers';
+import { getUniqueItemsByName, hasCondition } from '@app/common/helpers';
 import { Alert } from '@patternfly/react-core';
 
 interface IOpenShiftNetworkListProps {
@@ -18,7 +18,7 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
   provider,
 }: IOpenShiftNetworkListProps) => {
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(provider.inventory);
-  const networks = [POD_NETWORK, ...(openshiftNetworksQuery.data || [])];
+  const networks = [POD_NETWORK, ...getUniqueItemsByName(openshiftNetworksQuery.data || [])];
   const defaultNetworkName = provider.metadata.annotations
     ? provider.metadata.annotations['forklift.konveyor.io/defaultTransferNetwork']
     : '';
