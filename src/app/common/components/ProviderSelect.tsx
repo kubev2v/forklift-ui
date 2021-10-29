@@ -31,6 +31,7 @@ import { OptionWithValue } from './SimpleSelect';
 interface IProviderSelectBaseProps<T> extends Partial<SelectProps> {
   notReadyTooltipPosition?: 'left' | 'right';
   field: IValidatedFormField<T | null>;
+  afterChange?: () => void;
 }
 
 interface ISourceProviderSelectProps extends IProviderSelectBaseProps<SourceInventoryProvider> {
@@ -47,6 +48,7 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   providerRole,
   field,
   notReadyTooltipPosition = 'left',
+  afterChange,
   ...props
 }: ProviderSelectProps) => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
@@ -156,6 +158,7 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
                 );
               }
             }
+            afterChange && afterChange();
           }}
           {...props}
         >

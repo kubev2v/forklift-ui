@@ -26,6 +26,7 @@ import {
   IMetaObjectMeta,
   SourceVM,
   SourceInventoryProvider,
+  POD_NETWORK,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import {
@@ -54,6 +55,7 @@ interface IMappingFormProps {
   sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
+  targetNamespace: string | null;
   selectedVMs: SourceVM[];
   planBeingPrefilled: IPlan | null;
 }
@@ -63,6 +65,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   sourceProvider,
   targetProvider,
   mappingType,
+  targetNamespace,
   selectedVMs,
   planBeingPrefilled,
 }: IMappingFormProps) => {
@@ -153,10 +156,22 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     };
   }) as OptionWithValue<Mapping>[];
 
+  const filteredAvailableTargets =
+    mappingType === MappingType.Network
+      ? availableTargets.filter(
+          (network) => isSameResource(network, POD_NETWORK) || network.namespace === targetNamespace
+        )
+      : availableTargets;
+
   const populateMappingBuilder = (sourceProviderType: ProviderType, mapping?: Mapping) => {
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
-      : getBuilderItemsFromMapping(mapping, mappingType, availableSources, availableTargets);
+      : getBuilderItemsFromMapping(
+          mapping,
+          mappingType,
+          availableSources,
+          filteredAvailableTargets
+        );
     form.fields.builderItems.setValue(
       getBuilderItemsWithMissingSources(
         newBuilderItems,
@@ -273,7 +288,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 mappingType={mappingType}
                 sourceProviderType={sourceProvider?.type || 'vsphere'}
                 availableSources={availableSources}
-                availableTargets={availableTargets}
+                availableTargets={filteredAvailableTargets}
                 builderItems={form.values.builderItems}
                 setBuilderItems={form.fields.builderItems.setValue}
                 isWizardMode
