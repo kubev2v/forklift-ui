@@ -26,6 +26,7 @@ import { IKubeResponse, KubeClientError } from '@app/client/types';
 import { QuerySpinnerMode, ResolvedQuery } from './ResolvedQuery';
 import { useOpenShiftNetworksQuery } from '@app/queries';
 import { isSameResource } from '@app/queries/helpers';
+import { getUniqueItemsByName } from '../helpers';
 
 interface ISelectOpenShiftNetworkModalProps {
   targetProvider: IOpenShiftProvider | null;
@@ -67,7 +68,7 @@ const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetwo
       (network) => network.namespace === targetNamespace
     );
   }
-  const networks = [POD_NETWORK, ...networksInNamespace];
+  const networks = [POD_NETWORK, ...getUniqueItemsByName(networksInNamespace)];
   const networkOptions = networks.map((network) => ({
     toString: () => network.name,
     value: network,
