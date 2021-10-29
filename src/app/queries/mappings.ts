@@ -181,7 +181,7 @@ export const useMappingResourceQueries = (
     availableSources = (sourceProvider && sourceNetworksQuery.data) || [];
     availableTargets =
       targetProvider && openshiftNetworksQuery.data
-        ? [POD_NETWORK, ...openshiftNetworksQuery.data]
+        ? [POD_NETWORK, ...(openshiftNetworksQuery.data || [])]
         : [];
   }
   if (mappingType === MappingType.Storage) {

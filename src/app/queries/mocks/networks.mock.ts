@@ -102,5 +102,11 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'ocp-network-5',
       selfLink: '/foo/openshiftnetwork/5',
     },
+    {
+      uid: 'foo-network-uid-6',
+      namespace: 'example-project',
+      name: 'ocp-network-1',
+      selfLink: '/bar/openshiftnetwork/5',
+    },
   ];
 }
