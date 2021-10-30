@@ -63,8 +63,8 @@ export class Mapping {
       const { sProvider, dProvider } = currentPeer;
       this.selectSource(sProvider);
       this.selectDestination(dProvider);
-      len -= 0;
-      if (len > 1) {
+      len -= 1;
+      if (len > 0) {
         clickByText(button, addButton);
       }
     });
