@@ -85,6 +85,7 @@ export class Mapping {
 
   protected createDialog(mappingData: MappingData): void {
     const { name, mappingPeer, sProviderName, tProviderName } = mappingData;
+    cy.wait(2 * SEC);
     clickByText(button, createMapping);
     this.inputName(name);
     this.selectSourceProvider(sProviderName);
