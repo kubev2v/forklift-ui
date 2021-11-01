@@ -14,6 +14,7 @@ const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
 const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
+const ansible_playbook = Cypress.env('ansible_playbook');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -70,6 +71,7 @@ export const planData: PlanData = {
   providerData: providerData,
   networkMappingData: networkMappingData,
   storageMappingData: storageMappingData,
+  ansiblePlaybook: ansible_playbook,
 };
 
 export const testData: TestData = {

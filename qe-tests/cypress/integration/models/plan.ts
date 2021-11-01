@@ -9,7 +9,6 @@ import {
   applyAction,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
-
 import {
   button,
   createPlan,
@@ -22,6 +21,7 @@ import {
   planSuccessMessage,
   planCanceledMessage,
   CreateNewNetworkMapping,
+  hookType,
 } from '../types/constants';
 
 import {
@@ -38,6 +38,8 @@ import {
   selectSourceProviderMenu,
   selectTargetNamespace,
   targetNetwork,
+  selectHooks,
+  ansibleId,
 } from '../views/plan.view';
 
 export class Plan {
@@ -133,7 +135,12 @@ export class Plan {
     next();
   }
 
-  protected hooksStep(): void {
+  protected hooksStep(planData: PlanData): void {
+    const { ansiblePlaybook } = planData;
+    clickByText(button, 'Add');
+    selectFromDroplist(selectHooks, hookType.prehook);
+    inputText(ansibleId, ansiblePlaybook);
+    click('#modal-confirm-button');
     next();
   }
 
@@ -157,6 +164,10 @@ export class Plan {
     this.validateSummaryLine(reviewTargetNamespace, namespace);
   }
 
+  protected reviewHooks() {
+    //TODO:Next Task to validate pre-post hooks
+  }
+
   protected finalReviewStep(planData: PlanData): void {
     const { name, sProvider, tProvider, namespace } = planData;
     // const totalVmAmount = vmwareSourceVmList.length;
@@ -164,6 +175,7 @@ export class Plan {
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);
+    this.reviewHooks();
     clickByText(button, finish);
   }
 
@@ -226,7 +238,7 @@ export class Plan {
     this.networkMappingStep(planData);
     this.storageMappingStep(planData);
     this.selectMigrationTypeStep(planData);
-    this.hooksStep();
+    this.hooksStep(planData);
     this.finalReviewStep(planData);
   }
 

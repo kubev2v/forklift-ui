@@ -44,7 +44,7 @@ export class providerRhv extends Provider {
 
   create(providerData: RhvProviderData): void {
     const { name, hostname, username, password, cert } = providerData;
-    cy.wait(2*SEC);
+    cy.wait(2 * SEC);
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);

@@ -13,6 +13,8 @@ export const reviewName = '#details-plan-name';
 export const reviewSourceProvider = '#details-source-provider';
 export const reviewTargetProvider = '#details-target-provider';
 export const reviewTargetNamespace = '#details-target-namespace';
+export const selectHooks = '#hook-step-select-toggle';
+export const ansibleId = '#playbook-yaml';
 export enum dataLabel {
   name = '[data-label=Name]',
   sourceProvider = '[data-label="Source provider"]',

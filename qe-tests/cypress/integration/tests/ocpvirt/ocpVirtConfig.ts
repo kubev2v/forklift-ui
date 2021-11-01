@@ -11,6 +11,7 @@ import { storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
+const ansible_playbook = Cypress.env('ansible_playbook');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -64,6 +65,7 @@ export const planData: PlanData = {
   providerData: providerData,
   networkMappingData: networkMappingData,
   storageMappingData: storageMappingData,
+  ansiblePlaybook: ansible_playbook,
 };
 
 export const tData: TestData = {
