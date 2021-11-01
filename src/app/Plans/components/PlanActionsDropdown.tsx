@@ -127,26 +127,26 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               Duplicate
             </DropdownItem>
           </ConditionalTooltip>,
-          <ConditionalTooltip
-            key="archive-tooltip"
-            isTooltipEnabled={isPlanCompleted || isPlanArchived}
-            content={
-              isPlanArchived
-                ? 'Plans cannot be unarchived.'
-                : 'This plan cannot be archived because it is not completed.'
-            }
-          >
-            <DropdownItem
-              isDisabled={isPlanCompleted || isPlanArchived}
-              key="archive"
-              onClick={() => {
-                setKebabIsOpen(false);
-                toggleArchivePlanModal();
-              }}
-            >
-              Archive
-            </DropdownItem>
-          </ConditionalTooltip>,
+          ...(!isPlanArchived
+            ? [
+                <ConditionalTooltip
+                  key="archive-tooltip"
+                  isTooltipEnabled={isPlanCompleted}
+                  content="This plan cannot be archived because it is not completed."
+                >
+                  <DropdownItem
+                    isDisabled={isPlanCompleted || isPlanArchived}
+                    key="archive"
+                    onClick={() => {
+                      setKebabIsOpen(false);
+                      toggleArchivePlanModal();
+                    }}
+                  >
+                    Archive
+                  </DropdownItem>
+                </ConditionalTooltip>,
+              ]
+            : []),
           <ConditionalTooltip
             key="Delete"
             isTooltipEnabled={
