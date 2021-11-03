@@ -46,7 +46,7 @@ export const storageMappingPeer: MappingPeer[] = [
     sProvider: 'v2v-fc',
     dProvider: storageType.nfs,
   },
- /*{
+  /*{
     sProvider: 'hosted_storage',
     dProvider: storageType.nfs,
   },*/
