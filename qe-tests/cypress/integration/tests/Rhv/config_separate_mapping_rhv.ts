@@ -46,10 +46,10 @@ export const storageMappingPeer: MappingPeer[] = [
     sProvider: 'v2v-fc',
     dProvider: storageType.nfs,
   },
-  {
+ /*{
     sProvider: 'hosted_storage',
     dProvider: storageType.nfs,
-  },
+  },*/
 ];
 
 export const networkMapping: MappingData = {
@@ -72,7 +72,7 @@ export const planData: PlanData = {
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: 'MTV',
-  vmwareSourceVmList: ['v2v-migration-rhel8-2disks2nics'],
+  vmwareSourceVmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,

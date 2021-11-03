@@ -35,11 +35,15 @@ export const networkMappingPeer: MappingPeer[] = [
     sProvider: 'VM Network',
     dProvider: 'Pod network',
   },
+  {
+    sProvider: 'Mgmt Network',
+    dProvider: 'default / ovn-kubernetes1',
+  },
 ];
 
 export const storageMappingPeer: MappingPeer[] = [
   {
-    sProvider: 'env-esxi67-ims-h02_localdisk',
+    sProvider: 'v2v_general_porpuse_ISCSI_DC',
     dProvider: storageType.cephRbd,
   },
 ];
@@ -64,7 +68,7 @@ export const planData: PlanData = {
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
-  vmwareSourceVmList: ['v2v-rhel7-igor'],
+  vmwareSourceVmList: ['v2v-rhel7-2nic-2disk-igor'],
   useExistingNetworkMapping: false,
   useExistingStorageMapping: false,
   providerData: providerData,

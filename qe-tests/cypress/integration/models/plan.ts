@@ -92,7 +92,7 @@ export class Plan {
       click(selector);
       cy.get(tdTag)
         .contains(name)
-        .parent(trTag)
+        .closest(trTag)
         .within(() => {
           click('input');
         });
@@ -241,6 +241,7 @@ export class Plan {
     const { name, warmMigration } = planData;
     Plan.openList();
     this.run(name, 'Start');
+    click('#modal-confirm-button');
     if (warmMigration) {
       Plan.openList();
       this.run(name, 'Cutover');

@@ -13,7 +13,7 @@ describe('Creating plan', () => {
     plan.create(testData.planData);
   });
 
-  it.skip('Running plan', () => {
+  it('Running plan', () => {
     plan.execute(testData.planData);
   });
 
