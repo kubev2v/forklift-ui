@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { NetworkContextProvider } from '@app/common/context';
-import PlanWizard from '../PlanWizard';
+import { PlanWizard } from '../PlanWizard';
 const queryClient = new QueryClient();
 
 describe('<AddEditProviderModal />', () => {

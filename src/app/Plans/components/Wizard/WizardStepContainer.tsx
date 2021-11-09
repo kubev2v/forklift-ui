@@ -9,7 +9,7 @@ interface IWizardStepContainerProps {
   children: React.ReactNode;
 }
 
-const WizardStepContainer: React.FunctionComponent<IWizardStepContainerProps> = ({
+export const WizardStepContainer: React.FunctionComponent<IWizardStepContainerProps> = ({
   title,
   children,
 }: IWizardStepContainerProps) => (
@@ -20,5 +20,3 @@ const WizardStepContainer: React.FunctionComponent<IWizardStepContainerProps> = 
     {children}
   </>
 );
-
-export default WizardStepContainer;

@@ -24,8 +24,8 @@ import {
 } from '@app/queries';
 import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import ProviderSelect from '@app/common/components/ProviderSelect';
-import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
+import { ProviderSelect } from '@app/common/components/ProviderSelect';
+import { SelectOpenShiftNetworkModal } from '@app/common/components/SelectOpenShiftNetworkModal';
 import { HelpIcon } from '@patternfly/react-icons';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
@@ -38,7 +38,7 @@ interface IGeneralFormProps {
   afterTargetNamespaceChange: () => void;
 }
 
-const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
+export const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
   wizardMode,
   afterProviderChange,
@@ -227,5 +227,3 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default GeneralForm;

@@ -7,7 +7,7 @@ export interface ISelectFilterControlProps<T> extends IFilterControlProps<T> {
   category: ISelectFilterCategory<T>;
 }
 
-const SelectFilterControl = <T,>({
+export const SelectFilterControl = <T,>({
   category,
   filterValue,
   setFilterValue,
@@ -64,5 +64,3 @@ const SelectFilterControl = <T,>({
     </ToolbarFilter>
   );
 };
-
-export default SelectFilterControl;

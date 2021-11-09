@@ -13,12 +13,12 @@ import {
 import { usePaginationState, useSortState } from '@app/common/hooks';
 import { StatusIcon, useSelectionState } from '@konveyor/lib-ui';
 import { IHost, IVMwareProvider } from '@app/queries/types';
-import SelectNetworkModal from './SelectNetworkModal';
+import { SelectNetworkModal } from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import StatusCondition from '@app/common/components/StatusCondition';
+import { StatusCondition } from '@app/common/components/StatusCondition';
 import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -27,7 +27,7 @@ interface IVMwareProviderHostsTableProps {
   hosts: IHost[];
 }
 
-const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
+export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTableProps> = ({
   provider,
   hosts,
 }: IVMwareProviderHostsTableProps) => {
@@ -176,5 +176,3 @@ const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHostsTabl
     </ResolvedQuery>
   );
 };
-
-export default VMwareProviderHostsTable;

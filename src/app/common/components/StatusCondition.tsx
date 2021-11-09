@@ -11,7 +11,7 @@ interface IStatusConditionProps {
   hideLabel?: boolean;
 }
 
-const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
+export const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status,
   unknownFallback = null,
   hideLabel = false,
@@ -76,5 +76,3 @@ const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
     </Popover>
   );
 };
-
-export default StatusCondition;

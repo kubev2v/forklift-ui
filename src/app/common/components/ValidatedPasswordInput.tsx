@@ -25,7 +25,7 @@ interface IValidatedPasswordInputProps
   hidePasswordAriaLabel?: string;
 }
 
-const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputProps> = ({
+export const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputProps> = ({
   field,
   label,
   fieldId,
@@ -62,5 +62,3 @@ const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputPro
     </FormGroup>
   );
 };
-
-export default ValidatedPasswordInput;

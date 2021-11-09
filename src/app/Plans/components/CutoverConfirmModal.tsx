@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ConfirmModal, { IConfirmModalProps } from '@app/common/components/ConfirmModal';
+import { ConfirmModal, IConfirmModalProps } from '@app/common/components/ConfirmModal';
 import { IPlan } from '@app/queries/types';
 import {
   TextContent,

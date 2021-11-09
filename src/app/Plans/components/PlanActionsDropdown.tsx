@@ -21,10 +21,10 @@ import {
   useSetCutoverMutation,
 } from '@app/queries';
 import { MustGatherContext } from '@app/common/context';
-import ConfirmModal from '@app/common/components/ConfirmModal';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
-import PlanDetailsModal from './PlanDetailsModal';
+import { PlanDetailsModal } from './PlanDetailsModal';
 import { PlanState } from '@app/common/constants';
 import { MigrationConfirmModal } from './MigrationConfirmModal';
 

@@ -49,11 +49,11 @@ import {
   vmMatchesConcernFilter,
 } from './helpers';
 import { IndexedTree, useSourceVMsQuery } from '@app/queries';
-import TableEmptyState from '@app/common/components/TableEmptyState';
+import { TableEmptyState } from '@app/common/components/TableEmptyState';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import VMConcernsIcon from './VMConcernsIcon';
-import VMConcernsDescription from './VMConcernsDescription';
+import { VMConcernsIcon } from './VMConcernsIcon';
+import { VMConcernsDescription } from './VMConcernsDescription';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { UseQueryResult } from 'react-query';
@@ -69,7 +69,7 @@ interface ISelectVMsFormProps {
   vmTreeQuery: UseQueryResult<IndexedTree<IVMwareFolderTree>, unknown>;
 }
 
-const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
+export const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
   form,
   treeType,
   selectedTreeNodes,
@@ -507,5 +507,3 @@ const SelectVMsForm: React.FunctionComponent<ISelectVMsFormProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default SelectVMsForm;

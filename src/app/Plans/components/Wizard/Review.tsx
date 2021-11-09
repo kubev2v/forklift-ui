@@ -7,7 +7,7 @@ import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/Resolv
 import { generateMappings, generatePlan } from './helpers';
 import { usePausedPollingEffect } from '@app/common/context';
 import { useNamespacesQuery } from '@app/queries';
-import PlanDetails from '../PlanDetails';
+import { PlanDetails } from '../PlanDetails';
 import { UnknownResult } from '@app/common/types';
 
 interface IReviewProps {
@@ -18,7 +18,7 @@ interface IReviewProps {
   selectedVMs: SourceVM[];
 }
 
-const Review: React.FunctionComponent<IReviewProps> = ({
+export const Review: React.FunctionComponent<IReviewProps> = ({
   forms,
   allMutationResults,
   allMutationErrorTitles,
@@ -73,5 +73,3 @@ const Review: React.FunctionComponent<IReviewProps> = ({
     </Form>
   );
 };
-
-export default Review;

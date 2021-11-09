@@ -16,9 +16,9 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSelectionState } from '@konveyor/lib-ui';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IMetaObjectMeta, Mapping, MappingType } from '@app/queries/types';
-import MappingsActionsDropdown from './MappingsActionsDropdown';
-import MappingDetailView from './MappingDetailView';
-import MappingStatus from './MappingStatus';
+import { MappingsActionsDropdown } from './MappingsActionsDropdown';
+import { MappingDetailView } from './MappingDetailView';
+import { MappingStatus } from './MappingStatus';
 import { isSameResource } from '@app/queries/helpers';
 import { useClusterProvidersQuery } from '@app/queries';
 
@@ -28,7 +28,7 @@ interface IMappingsTableProps {
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
-const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
+export const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
   mappings,
   mappingType,
   openEditMappingModal,
@@ -152,5 +152,3 @@ const MappingsTable: React.FunctionComponent<IMappingsTableProps> = ({
     </>
   );
 };
-
-export default MappingsTable;

@@ -2,13 +2,13 @@ import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { Dropdown, DropdownToggle, DropdownItem } from '@patternfly/react-core';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import ForkliftAboutModal from './ForkliftAboutModal';
+import { ForkliftAboutModal } from './ForkliftAboutModal';
 
 interface IHelpDropdownProps {
   className: string;
 }
 
-const HelpDropdown: React.FunctionComponent<IHelpDropdownProps> = ({
+export const HelpDropdown: React.FunctionComponent<IHelpDropdownProps> = ({
   className,
 }: IHelpDropdownProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -49,5 +49,3 @@ const HelpDropdown: React.FunctionComponent<IHelpDropdownProps> = ({
     </>
   );
 };
-
-export default HelpDropdown;

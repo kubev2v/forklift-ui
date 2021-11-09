@@ -1,1 +1,1 @@
-export { default } from './VMwareProviderHostsTable';
+export { VMwareProviderHostsTable } from './VMwareProviderHostsTable';

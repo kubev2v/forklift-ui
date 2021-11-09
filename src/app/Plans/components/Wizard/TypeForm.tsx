@@ -13,7 +13,7 @@ interface ITypeFormProps {
   sourceProvider: SourceInventoryProvider | null;
 }
 
-const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
+export const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   form,
   selectedVMs,
   sourceProvider,
@@ -84,5 +84,3 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
     </>
   );
 };
-
-export default TypeForm;

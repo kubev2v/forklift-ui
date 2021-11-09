@@ -43,7 +43,7 @@ interface IFilterVMsFormProps {
   planBeingPrefilled: IPlan | null;
 }
 
-const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
+export const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   treeQuery,
   sourceProvider,
@@ -207,5 +207,3 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     </div>
   );
 };
-
-export default FilterVMsForm;

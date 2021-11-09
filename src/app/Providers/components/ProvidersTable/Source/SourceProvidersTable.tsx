@@ -19,8 +19,8 @@ import {
   IVMwareProvider,
   SourceInventoryProvider,
 } from '@app/queries/types';
-import ProviderActionsDropdown from '../ProviderActionsDropdown';
-import StatusCondition from '@app/common/components/StatusCondition';
+import { ProviderActionsDropdown } from '../ProviderActionsDropdown';
+import { StatusCondition } from '@app/common/components/StatusCondition';
 import {
   getMostSeriousCondition,
   getStorageTitle,
@@ -37,7 +37,7 @@ interface ISourceProvidersTableProps {
   providerType: ProviderType;
 }
 
-const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
+export const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
   providers,
   providerType,
 }: ISourceProvidersTableProps) => {
@@ -221,5 +221,3 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
     </>
   );
 };
-
-export default SourceProvidersTable;

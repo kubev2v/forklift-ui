@@ -8,7 +8,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 const queryClient = new QueryClient();
 
 import { NetworkContextProvider } from '@app/common/context';
-import AddEditProviderModal from '../AddEditProviderModal';
+import { AddEditProviderModal } from '../AddEditProviderModal';
 import { MOCK_CLUSTER_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 describe('<AddEditProviderModal />', () => {

@@ -14,7 +14,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link, useRouteMatch } from 'react-router-dom';
-import VMwareProviderHostsTable from './components/VMwareProviderHostsTable';
+import { VMwareProviderHostsTable } from './components/VMwareProviderHostsTable';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useHostsQuery, useInventoryProvidersQuery } from '@app/queries';
 import { IVMwareProvider } from '@app/queries/types';

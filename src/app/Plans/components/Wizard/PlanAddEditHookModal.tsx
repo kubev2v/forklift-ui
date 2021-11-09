@@ -21,9 +21,9 @@ import {
   Popover,
   Radio,
 } from '@patternfly/react-core';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
+import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { HelpIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { HookStep, IHook } from '@app/queries/types';
@@ -87,7 +87,7 @@ interface IPlanAddEditHookModalProps {
   hasPostHook: boolean;
 }
 
-const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
+export const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> = ({
   onClose,
   onSave,
   instanceBeingEdited,
@@ -295,5 +295,3 @@ const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModalProps> 
     </Modal>
   );
 };
-
-export default PlanAddEditHookModal;
