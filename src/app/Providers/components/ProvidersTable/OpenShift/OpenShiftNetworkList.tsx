@@ -14,7 +14,7 @@ interface IOpenShiftNetworkListProps {
   provider: ICorrelatedProvider<IOpenShiftProvider>;
 }
 
-const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
+export const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
   provider,
 }: IOpenShiftNetworkListProps) => {
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(provider.inventory);
@@ -65,5 +65,3 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
     </ResolvedQuery>
   );
 };
-
-export default OpenShiftNetworkList;

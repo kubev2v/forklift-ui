@@ -11,16 +11,16 @@ import {
 } from '@patternfly/react-table';
 
 import { IVMStatus } from '@app/queries/types';
-import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
+import { TickingElapsedTime } from '@app/common/components/TickingElapsedTime';
 import { StatusIcon } from '@konveyor/lib-ui';
-import CanceledIcon from '@app/common/components/CanceledIcon';
+import { CanceledIcon } from '@app/common/components/CanceledIcon';
 
 interface IVMStatusPrecopyTableProps {
   status: IVMStatus;
   isCanceled: boolean;
 }
 
-const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> = ({
+export const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> = ({
   status,
   isCanceled,
 }: IVMStatusPrecopyTableProps) => {
@@ -97,5 +97,3 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
     </>
   );
 };
-
-export default VMStatusPrecopyTable;

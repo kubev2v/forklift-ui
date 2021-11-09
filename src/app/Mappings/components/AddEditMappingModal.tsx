@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui';
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
 import {
@@ -32,7 +32,7 @@ import {
   useClusterProvidersQuery,
 } from '@app/queries';
 import { usePausedPollingEffect } from '@app/common/context';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 
 import './AddEditMappingModal.css';
 import { UseQueryResult } from 'react-query';
@@ -43,7 +43,7 @@ import {
   ResolvedQueries,
   QuerySpinnerMode,
 } from '@app/common/components/ResolvedQuery';
-import ProviderSelect from '@app/common/components/ProviderSelect';
+import { ProviderSelect } from '@app/common/components/ProviderSelect';
 
 interface IAddEditMappingModalProps {
   title: string;
@@ -78,7 +78,7 @@ const useMappingFormState = (
 
 export type MappingFormState = ReturnType<typeof useMappingFormState>;
 
-const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
+export const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = ({
   title,
   onClose,
   mappingType,
@@ -267,5 +267,3 @@ const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalProps> = 
     </Modal>
   );
 };
-
-export default AddEditMappingModal;

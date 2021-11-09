@@ -46,7 +46,7 @@ import { isSameResource } from '@app/queries/helpers';
 import './MappingForm.css';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { usePausedPollingEffect } from '@app/common/context';
 import { ProviderType } from '@app/common/constants';
 
@@ -60,7 +60,7 @@ interface IMappingFormProps {
   planBeingPrefilled: IPlan | null;
 }
 
-const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
+export const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   form,
   sourceProvider,
   targetProvider,
@@ -326,5 +326,3 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default MappingForm;

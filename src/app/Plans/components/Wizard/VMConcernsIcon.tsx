@@ -7,7 +7,7 @@ interface IVMConcernsIconProps {
   vm: SourceVM;
 }
 
-const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
+export const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   vm,
 }: IVMConcernsIconProps) => {
   if (vm.revisionValidated !== vm.revision) {
@@ -18,5 +18,3 @@ const VMConcernsIcon: React.FunctionComponent<IVMConcernsIconProps> = ({
   const statusLabel = getVMConcernStatusLabel(worstConcern);
   return statusType ? <StatusIcon status={statusType} label={statusLabel} /> : null;
 };
-
-export default VMConcernsIcon;

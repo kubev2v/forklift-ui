@@ -22,7 +22,11 @@ interface IStepProps {
 }
 
 // TODO this is mostly redundant with the GetStepTypeIcon component in PipelineSummary. We should refactor.
-const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IStepProps) => {
+export const Step: React.FunctionComponent<IStepProps> = ({
+  vmStatus,
+  type,
+  error,
+}: IStepProps) => {
   let step: React.ReactElement | null = null;
   if (type === StepType.Full) {
     step = (
@@ -67,5 +71,3 @@ const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IS
 
   return step;
 };
-
-export default Step;

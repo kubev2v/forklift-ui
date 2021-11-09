@@ -19,7 +19,7 @@ export interface ITableEmptyStateProps {
   isHiddenActions?: boolean;
 }
 
-const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
+export const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
   icon = SearchIcon,
   titleText = 'No results found',
   bodyText = 'No results match the filter criteria. Remove filters or clear all filters to show results.',
@@ -43,5 +43,3 @@ const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
     </FlexItem>
   </Flex>
 );
-
-export default TableEmptyState;

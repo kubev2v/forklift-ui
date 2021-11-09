@@ -3,9 +3,9 @@ import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternf
 import { useDeleteProviderMutation } from '@app/queries';
 import { ICorrelatedProvider, InventoryProvider } from '@app/queries/types';
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
 import { EditProviderContext } from '@app/Providers/ProvidersPage';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { hasCondition } from '@app/common/helpers';
 import { isSameResource } from '@app/queries/helpers';
 import { useHistory } from 'react-router-dom';
@@ -16,7 +16,7 @@ interface IProviderActionsDropdownProps {
   providerType: ProviderType;
 }
 
-const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownProps> = ({
+export const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownProps> = ({
   provider,
   providerType,
 }: IProviderActionsDropdownProps) => {
@@ -115,5 +115,3 @@ const ProviderActionsDropdown: React.FunctionComponent<IProviderActionsDropdownP
     </>
   );
 };
-
-export default ProviderActionsDropdown;

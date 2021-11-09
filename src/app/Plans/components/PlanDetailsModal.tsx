@@ -17,14 +17,14 @@ import {
 import { usePausedPollingEffect } from '@app/common/context';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isSameResource } from '@app/queries/helpers';
-import PlanDetails from './PlanDetails';
+import { PlanDetails } from './PlanDetails';
 import { SOURCE_PROVIDER_TYPES } from '@app/common/constants';
 
 interface IPlanDetailsModalProps {
   plan: IPlan;
 }
 
-const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
+export const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
   plan,
 }: IPlanDetailsModalProps) => {
   usePausedPollingEffect();
@@ -113,5 +113,3 @@ const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default PlanDetailsModal;

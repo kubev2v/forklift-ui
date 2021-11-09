@@ -10,9 +10,9 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import Step from './Step';
+import { Step } from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
-import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
+import { TickingElapsedTime } from '@app/common/components/TickingElapsedTime';
 import { findCurrentStep, getStepType, isStepOnError } from '@app/common/helpers';
 
 interface IVMStatusPipelineTableProps {
@@ -20,7 +20,7 @@ interface IVMStatusPipelineTableProps {
   isCanceled: boolean;
 }
 
-const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
+export const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
   status,
   isCanceled,
 }: IVMStatusPipelineTableProps) => {
@@ -96,5 +96,3 @@ const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps
     </>
   );
 };
-
-export default VMStatusPipelineTable;

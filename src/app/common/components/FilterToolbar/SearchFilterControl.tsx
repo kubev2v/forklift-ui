@@ -14,7 +14,7 @@ export interface ISearchFilterControlProps<T> extends IFilterControlProps<T> {
   category: ISearchFilterCategory<T>;
 }
 
-const SearchFilterControl = <T,>({
+export const SearchFilterControl = <T,>({
   category,
   filterValue,
   setFilterValue,
@@ -62,5 +62,3 @@ const SearchFilterControl = <T,>({
     </ToolbarFilter>
   );
 };
-
-export default SearchFilterControl;

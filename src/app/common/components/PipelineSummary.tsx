@@ -17,7 +17,7 @@ import { IVMStatus } from '@app/queries/types';
 import { StepType } from '@app/common/constants';
 import './PipelineSummary.css';
 import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
-import TruncatedText from './TruncatedText';
+import { TruncatedText } from './TruncatedText';
 
 interface IDashProps {
   isReached: boolean;
@@ -94,7 +94,8 @@ interface IPipelineSummaryProps {
   status: IVMStatus;
   isCanceled: boolean;
 }
-const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
+
+export const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
   isCanceled,
 }: IPipelineSummaryProps) => {
@@ -117,5 +118,3 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     </Flex>
   );
 };
-
-export default PipelineSummary;

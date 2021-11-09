@@ -13,11 +13,11 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { PlanWizardFormState } from './PlanWizard';
-import PlanAddEditHookModal, { PlanHookInstance } from './PlanAddEditHookModal';
+import { PlanAddEditHookModal, PlanHookInstance } from './PlanAddEditHookModal';
 
 import './HooksForm.css';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
 
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import yaml from 'react-syntax-highlighter/dist/cjs/languages/hljs/yaml';
@@ -30,7 +30,7 @@ interface IHooksFormProps {
   isWarmMigration: boolean;
 }
 
-const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
+export const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
   form,
   isWarmMigration,
 }: IHooksFormProps) => {
@@ -193,5 +193,3 @@ const HooksForm: React.FunctionComponent<IHooksFormProps> = ({
     </>
   );
 };
-
-export default HooksForm;

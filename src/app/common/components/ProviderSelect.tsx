@@ -22,7 +22,7 @@ import {
   TARGET_PROVIDER_TYPES,
 } from '../constants';
 import { getAvailableProviderTypes, hasCondition } from '../helpers';
-import ConditionalTooltip from './ConditionalTooltip';
+import { ConditionalTooltip } from './ConditionalTooltip';
 import { QuerySpinnerMode, ResolvedQueries } from './ResolvedQuery';
 
 import { isSameResource } from '@app/queries/helpers';
@@ -44,7 +44,7 @@ interface ITargetProviderSelectProps extends IProviderSelectBaseProps<IOpenShift
 
 type ProviderSelectProps = ISourceProviderSelectProps | ITargetProviderSelectProps;
 
-const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
+export const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
   providerRole,
   field,
   notReadyTooltipPosition = 'left',
@@ -177,5 +177,3 @@ const ProviderSelect: React.FunctionComponent<ProviderSelectProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default ProviderSelect;

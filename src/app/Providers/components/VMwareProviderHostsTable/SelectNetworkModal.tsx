@@ -8,7 +8,7 @@ import {
   ValidatedTextInput,
 } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
 
 import {
@@ -18,9 +18,9 @@ import {
 } from './helpers';
 import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
-import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
+import { ValidatedPasswordInput } from '@app/common/components/ValidatedPasswordInput';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -50,7 +50,7 @@ const useSelectNetworkFormState = (selectedHosts: IHost[]) => {
 export type SelectNetworkFormState = ReturnType<typeof useSelectNetworkFormState>;
 export type SelectNetworkFormValues = SelectNetworkFormState['values'];
 
-const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
+export const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
   selectedHosts,
   hostConfigs,
   provider,
@@ -185,5 +185,3 @@ const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProps> = ({
     </Modal>
   );
 };
-
-export default SelectNetworkModal;

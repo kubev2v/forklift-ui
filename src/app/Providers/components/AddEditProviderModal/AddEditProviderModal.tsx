@@ -17,7 +17,7 @@ import {
   ValidatedTextInput,
 } from '@konveyor/lib-ui';
 
-import SimpleSelect, { OptionWithValue } from '@app/common/components/SimpleSelect';
+import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   fingerprintSchema,
   hostnameSchema,
@@ -40,8 +40,8 @@ import { IProviderObject } from '@app/queries/types';
 import { HelpIcon } from '@patternfly/react-icons';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useEditProviderPrefillEffect } from './helpers';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
-import ValidatedPasswordInput from '@app/common/components/ValidatedPasswordInput';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
+import { ValidatedPasswordInput } from '@app/common/components/ValidatedPasswordInput';
 
 interface IAddEditProviderModalProps {
   onClose: (navToProviderType?: ProviderType | null) => void;
@@ -153,7 +153,7 @@ export type AddProviderFormValues =
   | RHVProviderFormValues
   | OpenshiftProviderFormValues;
 
-const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> = ({
+export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> = ({
   onClose,
   providerBeingEdited,
 }: IAddEditProviderModalProps) => {
@@ -468,5 +468,3 @@ const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModalProps> 
     </Modal>
   );
 };
-
-export default AddEditProviderModal;

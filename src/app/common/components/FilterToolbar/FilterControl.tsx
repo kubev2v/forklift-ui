@@ -7,8 +7,8 @@ import {
   ISelectFilterCategory,
   ISearchFilterCategory,
 } from './FilterToolbar';
-import SelectFilterControl from './SelectFilterControl';
-import SearchFilterControl from './SearchFilterControl';
+import { SelectFilterControl } from './SelectFilterControl';
+import { SearchFilterControl } from './SearchFilterControl';
 
 export interface IFilterControlProps<T> {
   category: FilterCategory<T>;

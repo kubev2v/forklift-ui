@@ -27,7 +27,7 @@ export interface ISimpleSelectProps
   value: OptionLike | OptionLike[];
 }
 
-const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
+export const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
   onChange,
   options,
   value,
@@ -57,5 +57,3 @@ const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
     </Select>
   );
 };
-
-export default SimpleSelect;

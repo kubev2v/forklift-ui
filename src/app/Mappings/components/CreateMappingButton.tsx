@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, ButtonProps } from '@patternfly/react-core';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
@@ -10,7 +10,7 @@ interface ICreateMappingButtonProps {
   label?: string;
 }
 
-const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = ({
+export const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = ({
   onClick,
   variant = 'primary',
   label = 'Create mapping',
@@ -34,5 +34,3 @@ const CreateMappingButton: React.FunctionComponent<ICreateMappingButtonProps> = 
     </ConditionalTooltip>
   );
 };
-
-export default CreateMappingButton;

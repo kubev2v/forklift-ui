@@ -19,7 +19,7 @@ export interface IConfirmModalProps {
   errorText?: string;
 }
 
-const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
+export const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
   variant = 'small',
   isOpen,
   toggleOpen,
@@ -73,5 +73,3 @@ const ConfirmModal: React.FunctionComponent<IConfirmModalProps> = ({
       {body}
     </Modal>
   ) : null;
-
-export default ConfirmModal;

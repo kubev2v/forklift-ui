@@ -4,7 +4,7 @@ import { BanIcon } from '@patternfly/react-icons';
 import { global_disabled_color_100 as canceledColor } from '@patternfly/react-tokens';
 
 // TODO add a custom icon prop to StatusIcon so repeating these flex props isn't necessary. Also maybe a built-in canceled type.
-const CanceledIcon: React.FunctionComponent = () => (
+export const CanceledIcon: React.FunctionComponent = () => (
   <Flex
     spaceItems={{ default: 'spaceItemsSm' }}
     alignItems={{ default: 'alignItemsCenter' }}
@@ -17,5 +17,3 @@ const CanceledIcon: React.FunctionComponent = () => (
     <FlexItem>Canceled</FlexItem>
   </Flex>
 );
-
-export default CanceledIcon;

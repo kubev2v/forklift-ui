@@ -11,7 +11,7 @@ interface ILoginError {
   code?: string;
 }
 
-const LoginHandlerComponent: React.FunctionComponent = () => {
+export const LoginHandlerComponent: React.FunctionComponent = () => {
   const { saveLoginToken } = useNetworkContext();
   const history = useHistory();
   const searchParams = new URLSearchParams(useLocation().search);
@@ -53,5 +53,3 @@ const LoginHandlerComponent: React.FunctionComponent = () => {
 
   return <Redirect to="/" />;
 };
-
-export default LoginHandlerComponent;

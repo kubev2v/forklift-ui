@@ -1,1 +1,1 @@
-export { default } from './MappingDetailView';
+export { MappingDetailView } from './MappingDetailView';

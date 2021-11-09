@@ -4,11 +4,11 @@ import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patt
 import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType, MappingSource, MappingTarget } from '@app/queries/types';
-import LineArrow from '@app/common/components/LineArrow';
-import MappingSourceSelect from './MappingSourceSelect';
-import MappingTargetSelect from './MappingTargetSelect';
+import { LineArrow } from '@app/common/components/LineArrow';
+import { MappingSourceSelect } from './MappingSourceSelect';
+import { MappingTargetSelect } from './MappingTargetSelect';
 import { getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 
 import './MappingBuilder.css';
 import { ProviderType } from '@app/common/constants';

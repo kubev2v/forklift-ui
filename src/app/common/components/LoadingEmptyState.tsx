@@ -14,7 +14,7 @@ interface ILoadingEmptyStateProps {
   body?: React.ReactNode;
 }
 
-const LoadingEmptyState: React.FunctionComponent<ILoadingEmptyStateProps> = ({
+export const LoadingEmptyState: React.FunctionComponent<ILoadingEmptyStateProps> = ({
   className = '',
   spinnerProps = {},
   body = null,
@@ -31,5 +31,3 @@ const LoadingEmptyState: React.FunctionComponent<ILoadingEmptyStateProps> = ({
     </EmptyState>
   </Bullseye>
 );
-
-export default LoadingEmptyState;

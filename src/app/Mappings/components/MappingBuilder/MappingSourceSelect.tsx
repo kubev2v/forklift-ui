@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { MappingSource } from '@app/queries/types';
-import SimpleSelect, {
+import {
+  SimpleSelect,
   ISimpleSelectProps,
   OptionWithValue,
 } from '@app/common/components/SimpleSelect';
 import { IMappingBuilderItem } from './MappingBuilder';
-import TruncatedText from '@app/common/components/TruncatedText';
+import { TruncatedText } from '@app/common/components/TruncatedText';
 
 interface IMappingSourceSelectProps extends Partial<ISimpleSelectProps> {
   id: string;
@@ -15,7 +16,7 @@ interface IMappingSourceSelectProps extends Partial<ISimpleSelectProps> {
   availableSources: MappingSource[];
 }
 
-const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
+export const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = ({
   id,
   builderItems,
   itemIndex,
@@ -67,5 +68,3 @@ const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectProps> = 
     />
   );
 };
-
-export default MappingSourceSelect;
