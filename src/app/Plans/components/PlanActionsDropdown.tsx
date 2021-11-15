@@ -237,9 +237,9 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
           isPlanStarted && !isPlanArchived ? (
             <TextContent>
               <Text>
-                Migration plan &quot;{plan.metadata.name}&quot; will be deleted. However, some
-                temporary resources created during migration will not be cleaned up. These include
-                failed VMs and datavolumes, conversion pods, importer pods, secrets, and configmaps.
+                Migration plan &quot;{plan.metadata.name}&quot; will be deleted. However, deleting a
+                migration plan does not remove temporary resources such as failed VMs and data
+                volumes, conversion pods, importer pods, secrets, or config maps.
               </Text>
               <Text>To clean up these resources, archive the plan before deleting it.</Text>
             </TextContent>
