@@ -75,9 +75,24 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       return res.status(500).json('Authentication failed');
     }
   });
-}
 
-if (process.env['DATA_SOURCE'] !== 'mock') {
+  app.get('/get-certificate', async (req, res) => {
+    const sslCertificate = require('get-ssl-certificate');
+    sslCertificate
+      .get(req.query.url, 250, 443, 'https:')
+      .then((certificate) => {
+        console.info(`Fetched certificate: ${req.query.url}`);
+        return res.status(200).json(certificate);
+      })
+      .catch((error) => {
+        console.error(`Error: Fetch certificate`, error.message);
+        if (error.code === 'ENOTFOUND') {
+          return res.status(404).json('URL not found');
+        }
+        return res.status(500).json('Fetch certificate failed');
+      });
+  });
+
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
     changeOrigin: true,
