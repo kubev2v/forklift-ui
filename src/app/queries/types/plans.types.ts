@@ -11,6 +11,7 @@ export interface IStep {
   description: string;
   progress: IProgress;
   phase?: string;
+  reason?: string;
   annotations?: {
     unit: string;
     [key: string]: string;
