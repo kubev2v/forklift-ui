@@ -34,14 +34,14 @@ export const getWarmVMCopyState = (vmStatus: IVMStatus): IWarmVMCopyState => {
     };
   }
   const { precopies, nextPrecopyAt } = vmStatus.warm;
-  if ((precopies || []).some((copy) => !!copy.started && !copy.completed)) {
+  if ((precopies || []).some((copy) => !!copy.start && !copy.end)) {
     return {
       state: 'Copying',
       status: 'Loading',
       label: 'Performing incremental data copy',
     };
   }
-  if ((precopies || []).every((copy) => !!copy.started && !!copy.completed)) {
+  if ((precopies || []).every((copy) => !!copy.start && !!copy.end)) {
     return {
       state: 'Idle',
       status: 'Paused',

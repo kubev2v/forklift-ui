@@ -41,8 +41,8 @@ export interface IVMStatus {
     successes: number;
     nextPrecopyAt?: string; // ISO timestamp
     precopies?: {
-      started: string;
-      completed?: string;
+      start: string;
+      end?: string;
     }[];
   };
 }
