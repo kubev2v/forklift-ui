@@ -8,6 +8,7 @@ export const addProvider = 'Add provider';
 export const selectProviderType = 'Select a provider type...';
 export const removeButton = 'Remove';
 export const deleteButton = 'Delete';
+export const restartButton = 'Restart';
 export const editButton = 'Edit';
 export const selectProvider = 'Select a provider...';
 // export const tProvider = 'Select a provider...';
@@ -31,6 +32,7 @@ export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
 export const planCanceledMessage = 'Canceled';
 export const SEC = 1000;
+export const duplicateButton = 'Duplicate';
 
 export const CreateNewNetworkMapping = 'Create a network mapping';
 export const CreateNewStorageMapping = 'Create a storage mapping';

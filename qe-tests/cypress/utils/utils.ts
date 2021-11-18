@@ -40,7 +40,7 @@ export function applyAction(itemName: string, action: string): void {
       click(kebab);
     });
   clickByText(kebabDropDownItem, action);
-  clickByText(button, action);
+  //clickByText(button, action);
 }
 
 export function selectFromDroplist(selector: string, point: string): void {
