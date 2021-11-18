@@ -9,6 +9,17 @@ import {
   Stack,
   Popover,
   FileUpload,
+  Spinner,
+  Text,
+  Checkbox,
+  DescriptionList,
+  DescriptionListTerm,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  Title,
+  Panel,
+  PanelMain,
+  PanelMainBody,
 } from '@patternfly/react-core';
 import {
   useFormState,
@@ -21,7 +32,6 @@ import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSele
 import {
   fingerprintSchema,
   hostnameSchema,
-  PRODUCT_DOCO_LINK,
   ProviderType,
   PROVIDER_TYPES,
   PROVIDER_TYPE_NAMES,
@@ -34,10 +44,11 @@ import {
   useCreateProviderMutation,
   usePatchProviderMutation,
   useClusterProvidersQuery,
+  useCertificateQuery,
 } from '@app/queries';
 
-import { IProviderObject } from '@app/queries/types';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import { IProviderObject } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useEditProviderPrefillEffect } from './helpers';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
@@ -129,7 +140,7 @@ const useAddProviderFormState = (
     vsphere: useFormState({
       ...sourceProviderFields,
       fingerprint: useFormField('', fingerprintSchema.required()),
-      fingerprintFilename: useFormField('', yup.string()),
+      isCertificateValid: useFormField(false, yup.boolean()),
     }),
     ovirt: useFormState({
       ...sourceProviderFields,
@@ -194,6 +205,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
   const mutateProviderResult = !providerBeingEdited
     ? createProviderMutation
     : patchProviderMutation;
+
+  const [hostname, setHostname] = React.useState('');
+  const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
+  const { status, error, certificate } = useCertificateQuery(hostname, isCertificateQueryEnabled);
 
   return (
     <Modal
@@ -284,6 +299,14 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
+                    inputProps={{
+                      onBlur: () => {
+                        fields.hostname?.setIsTouched(true);
+                      },
+                      onFocus: () => {
+                        fields.hostname?.setIsTouched(false);
+                      },
+                    }}
                   />
                 ) : null}
                 {fields?.username ? (
@@ -308,37 +331,84 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                   />
                 ) : null}
                 {fields?.fingerprint ? (
-                  <ValidatedTextInput
-                    field={fields.fingerprint}
-                    label="vCenter SHA-1 fingerprint"
-                    isRequired
-                    fieldId="fingerprint"
-                    formGroupProps={{
-                      labelIcon: (
-                        <Popover
-                          bodyContent={
-                            <div>
-                              See{' '}
-                              <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
-                                {PRODUCT_DOCO_LINK.label}
-                              </a>{' '}
-                              for instructions on how to retrieve the fingerprint.
-                            </div>
+                  <>
+                    {!isCertificateQueryEnabled ? (
+                      <Button
+                        id="certificate-confirm-button"
+                        key="confirm"
+                        variant="primary"
+                        isDisabled={!fields?.hostname?.isValid}
+                        onClick={() => {
+                          if (fields?.hostname?.isValid) {
+                            setHostname(fields.hostname.value);
+                            setCertificateQueryEnabled(true);
                           }
-                        >
-                          <Button
-                            variant="plain"
-                            aria-label="More info for SHA-1 fingerprint field"
-                            onClick={(e) => e.preventDefault()}
-                            aria-describedby="fingerprint"
-                            className="pf-c-form__group-label-help"
-                          >
-                            <HelpIcon noVerticalAlign />
-                          </Button>
-                        </Popover>
-                      ),
-                    }}
-                  />
+                        }}
+                      >
+                        Verify certificate
+                      </Button>
+                    ) : status === 'loading' ? (
+                      <div className="pf-c-empty-state__icon">
+                        <Spinner aria-labelledby="loadingPrefLabel" size="sm" />
+                        &nbsp;Retrieving SHA-1 certificate fingerprint
+                      </div>
+                    ) : status === 'success' ? (
+                      <>
+                        <Panel variant="bordered">
+                          <PanelMain>
+                            <PanelMainBody>
+                              <Title headingLevel="h4" size="md">
+                                Certificate information
+                              </Title>
+                              <DescriptionList isCompact>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>Issuer</DescriptionListTerm>
+                                  <DescriptionListDescription id="issuer">
+                                    {`${certificate?.issuer.O} - ${certificate?.issuer.OU}`}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>
+                                    vCenter SHA-1 fingerprint
+                                  </DescriptionListTerm>
+                                  <DescriptionListDescription id="fingerprint">
+                                    {certificate?.fingerprint}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>Expiration date</DescriptionListTerm>
+                                  <DescriptionListDescription id="expriry">
+                                    {certificate?.valid_to}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                              </DescriptionList>
+                            </PanelMainBody>
+                          </PanelMain>
+                        </Panel>
+                        <Checkbox
+                          label="I trust the authenticity of this certificate"
+                          aria-label="Validate Certificate"
+                          id="certificate-check"
+                          name="certificateCheck"
+                          isChecked={fields?.isCertificateValid?.value}
+                          onChange={() => {
+                            fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
+                            if (fields?.isCertificateValid?.value) {
+                              if (certificate && fields?.fingerprint) {
+                                if (certificate.fingerprint !== '') {
+                                  fields?.fingerprint?.setValue(certificate.fingerprint);
+                                }
+                              }
+                            } else {
+                              fields?.fingerprint?.setValue('');
+                            }
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <Text>Cannot retrieve certificate: {error?.message} </Text>
+                    )}
+                  </>
                 ) : null}
                 {fields?.caCert && fields?.caCertFilename ? (
                   <FormGroup

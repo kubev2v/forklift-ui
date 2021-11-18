@@ -29,6 +29,7 @@ module.exports = merge(common('development'), {
           '/inventory-api',
           '/inventory-payload-api',
           '/must-gather-api',
+          '/get-certificate',
         ],
         target: `http://localhost:${EXPRESS_PORT}`,
       },

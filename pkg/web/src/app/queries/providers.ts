@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
+import { useQueryClient, UseQueryResult, UseMutationResult, useQuery } from 'react-query';
 import * as yup from 'yup';
 import Q from 'q';
 
@@ -25,6 +25,7 @@ import {
   IOpenShiftNetwork,
   POD_NETWORK,
   SourceInventoryProvider,
+  ITLSCertificate,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -377,3 +378,31 @@ export const getProviderNameSchema = (
     if (providers.find((provider) => provider.metadata.name === value)) return false;
     return true;
   });
+
+function assertIsCertificate(certificate: ITLSCertificate): asserts certificate is ITLSCertificate {
+  if (!('fingerprint' in certificate)) {
+    throw new Error('Not certificate');
+  }
+}
+const getCertificate = async (hostname: string) => {
+  const response = await fetch(`get-certificate?url=${hostname}`);
+  if (!response.ok) {
+    throw new Error('Problem fetching data');
+  }
+  const certificate = await response.json();
+  assertIsCertificate(certificate);
+
+  return certificate;
+};
+
+export const useCertificateQuery = (hostname: string, enabled: boolean) => {
+  const { status, error, data } = useQuery<ITLSCertificate, Error>(
+    ['certificate', hostname],
+    () => getCertificate(hostname || ''),
+    {
+      enabled: enabled,
+    }
+  );
+
+  return { status: status, error: error, certificate: data };
+};
