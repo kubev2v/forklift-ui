@@ -12,7 +12,8 @@ import {
   IRow,
   truncate,
 } from '@patternfly/react-table';
-import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
+import DatabaseIcon from '@patternfly/react-icons/dist/esm/icons/database-icon';
+import NetworkIcon from '@patternfly/react-icons/dist/esm/icons/network-icon';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useOCPMigrationNetworkMutation, useStorageClassesQuery } from '@app/queries';

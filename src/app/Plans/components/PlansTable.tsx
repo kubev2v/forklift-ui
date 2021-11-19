@@ -27,7 +27,7 @@ import {
   truncate,
   nowrap,
 } from '@patternfly/react-table';
-import { ArchiveIcon } from '@patternfly/react-icons';
+import ArchiveIcon from '@patternfly/react-icons/dist/esm/icons/archive-icon';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';

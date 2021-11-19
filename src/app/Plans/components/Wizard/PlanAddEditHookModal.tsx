@@ -24,7 +24,7 @@ import {
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
-import { HelpIcon } from '@patternfly/react-icons';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { HookStep, IHook } from '@app/queries/types';
 

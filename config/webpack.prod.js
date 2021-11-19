@@ -10,6 +10,7 @@ module.exports = merge(common('production'), {
   devtool: 'source-map',
   optimization: {
     minimizer: [new TerserJSPlugin({})],
+    sideEffects: true,
   },
   plugins: [
     new MiniCssExtractPlugin({

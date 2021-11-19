@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Tooltip } from '@patternfly/react-core';
-import { SyncAltIcon, OffIcon, UnknownIcon } from '@patternfly/react-icons';
+import SyncAltIcon from '@patternfly/react-icons/dist/esm/icons/sync-alt-icon';
+import OffIcon from '@patternfly/react-icons/dist/esm/icons/off-icon';
+import UnknownIcon from '@patternfly/react-icons/dist/esm/icons/unknown-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   IRHVVM,
