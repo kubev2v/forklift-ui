@@ -8,7 +8,7 @@ import {
   TextInputProps,
 } from '@patternfly/react-core';
 import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
-import EyeSlashIcon from '@patternfly/react-icons';
+import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 import { getFormGroupProps, getTextInputProps, IValidatedFormField } from '@konveyor/lib-ui';
 
 // TODO this is based heavily on ValidatedTextInput from lib-ui, which should be enhanced to support an InputGroup somehow.
