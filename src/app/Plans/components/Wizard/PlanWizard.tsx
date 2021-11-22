@@ -376,11 +376,7 @@ export const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm
-            form={forms.type}
-            selectedVMs={selectedVMs}
-            sourceProvider={forms.general.values.sourceProvider}
-          />
+          <TypeForm form={forms.type} selectedVMs={selectedVMs} />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,
