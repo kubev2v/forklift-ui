@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { EditIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
+import EditIcon from '@patternfly/react-icons/dist/esm/icons/edit-icon';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
+import TrashIcon from '@patternfly/react-icons/dist/esm/icons/trash-icon';
 import {
   TextContent,
   Text,

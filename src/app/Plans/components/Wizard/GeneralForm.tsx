@@ -26,7 +26,7 @@ import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { ProviderSelect } from '@app/common/components/ProviderSelect';
 import { SelectOpenShiftNetworkModal } from '@app/common/components/SelectOpenShiftNetworkModal';
-import { HelpIcon } from '@patternfly/react-icons';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';

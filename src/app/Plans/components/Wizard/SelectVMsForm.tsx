@@ -25,7 +25,8 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import { AngleDownIcon, AngleRightIcon } from '@patternfly/react-icons';
+import AngleDownIcon from '@patternfly/react-icons/dist/esm/icons/angle-down-icon';
+import AngleRightIcon from '@patternfly/react-icons/dist/esm/icons/angle-right-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import '@app/Plans/components/Wizard/SelectVMsForm.css';
 

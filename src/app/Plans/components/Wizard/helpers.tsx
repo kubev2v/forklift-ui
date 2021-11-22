@@ -18,7 +18,8 @@ import {
   IVMwareVM,
   IRHVVM,
 } from '@app/queries/types';
-import { ClusterIcon, FolderIcon } from '@patternfly/react-icons';
+import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
+import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
 import {
   getBuilderItemsFromMappingItems,
   getBuilderItemsWithMissingSources,

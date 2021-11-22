@@ -14,7 +14,7 @@ import {
   Level,
   LevelItem,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useHistory } from 'react-router-dom';
 

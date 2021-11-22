@@ -1,6 +1,6 @@
 import { PRODUCT_DOCO_LINK } from '@app/common/constants';
 import { Dropdown, DropdownToggle, DropdownItem } from '@patternfly/react-core';
-import { QuestionCircleIcon } from '@patternfly/react-icons';
+import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
 import * as React from 'react';
 import { ForkliftAboutModal } from './ForkliftAboutModal';
 
