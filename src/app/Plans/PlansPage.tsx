@@ -9,7 +9,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import { MustGatherModal } from '@app/common/components/MustGatherModal';
 
 import {

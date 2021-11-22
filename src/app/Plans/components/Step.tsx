@@ -1,9 +1,7 @@
 import * as React from 'react';
-import {
-  ResourcesEmptyIcon,
-  ResourcesAlmostFullIcon,
-  ResourcesFullIcon,
-} from '@patternfly/react-icons';
+import ResourcesEmptyIcon from '@patternfly/react-icons/dist/esm/icons/resources-empty-icon';
+import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-almost-full-icon';
+import ResourcesFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-full-icon';
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,

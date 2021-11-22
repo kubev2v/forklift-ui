@@ -7,9 +7,10 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 
 module.exports = merge(common('production'), {
   mode: 'production',
-  devtool: 'source-map',
+  devtool: 'nosources-source-map',
   optimization: {
     minimizer: [new TerserJSPlugin({})],
+    sideEffects: true,
   },
   plugins: [
     new MiniCssExtractPlugin({

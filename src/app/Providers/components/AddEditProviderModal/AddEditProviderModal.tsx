@@ -37,7 +37,7 @@ import {
 } from '@app/queries';
 
 import { IProviderObject } from '@app/queries/types';
-import { HelpIcon } from '@patternfly/react-icons';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useEditProviderPrefillEffect } from './helpers';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';

@@ -30,7 +30,7 @@ import {
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
-import { OutlinedHddIcon } from '@patternfly/react-icons';
+import OutlinedHddIcon from '@patternfly/react-icons/dist/esm/icons/outlined-hdd-icon';
 
 interface ISourceProvidersTableProps {
   providers: ICorrelatedProvider<SourceInventoryProvider>[];

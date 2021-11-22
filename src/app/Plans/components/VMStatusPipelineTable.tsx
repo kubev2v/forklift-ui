@@ -20,6 +20,14 @@ interface IVMStatusPipelineTableProps {
   isCanceled: boolean;
 }
 
+const renderStepPhase = (step: IStep) => {
+  if (step.phase) {
+    if (step.reason) return `${step.phase} - ${step.reason}`;
+    return step.phase;
+  }
+  return null;
+};
+
 export const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
   status,
   isCanceled,
@@ -70,11 +78,11 @@ export const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTab
           title: error ? (
             <Popover headerContent={error.phase} bodyContent={error?.reasons}>
               <Button variant="link" isInline>
-                {step.phase || error?.reasons}
+                {renderStepPhase(step) || error?.reasons}
               </Button>
             </Popover>
           ) : (
-            step.phase
+            renderStepPhase(step)
           ),
         },
       ],

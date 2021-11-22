@@ -11,6 +11,7 @@ export interface IStep {
   description: string;
   progress: IProgress;
   phase?: string;
+  reason?: string;
   annotations?: {
     unit: string;
     [key: string]: string;
@@ -41,8 +42,8 @@ export interface IVMStatus {
     successes: number;
     nextPrecopyAt?: string; // ISO timestamp
     precopies?: {
-      started: string;
-      completed?: string;
+      start: string;
+      end?: string;
     }[];
   };
 }

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as yup from 'yup';
 import { Button, TextContent, Text, Grid, GridItem, Bullseye, Flex } from '@patternfly/react-core';
-import { PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
+import TrashIcon from '@patternfly/react-icons/dist/esm/icons/trash-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { MappingType, MappingSource, MappingTarget } from '@app/queries/types';
 import { LineArrow } from '@app/common/components/LineArrow';
