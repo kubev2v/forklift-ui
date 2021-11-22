@@ -170,6 +170,7 @@ const convertInventoryTreeNode = (
       node.kind === 'Cluster' ? <ClusterIcon /> : node.kind === 'Folder' ? <FolderIcon /> : null,
     customBadgeContent: badge,
     hasBadge: !!badge,
+    defaultExpanded: false,
   };
 };
 
@@ -235,6 +236,7 @@ export const filterAndConvertInventoryTree = (
       ),
       customBadgeContent: badge,
       hasBadge: !!badge,
+      defaultExpanded: true,
     },
   ];
 };

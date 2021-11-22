@@ -173,8 +173,6 @@ export const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         <TreeView
           key={form.fields.treeType.value}
           data={treeViewData}
-          defaultAllExpanded
-          allExpanded={true}
           hasChecks
           hasBadges
           hasGuides
