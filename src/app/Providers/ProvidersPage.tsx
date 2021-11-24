@@ -14,15 +14,15 @@ import {
   Level,
   LevelItem,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useHistory } from 'react-router-dom';
 
 import { ProviderType, PROVIDER_TYPE_NAMES, PROVIDER_TYPES } from '@app/common/constants';
 import { useClusterProvidersQuery, useInventoryProvidersQuery, usePlansQuery } from '@app/queries';
 
-import ProvidersTable from './components/ProvidersTable';
-import AddEditProviderModal from './components/AddEditProviderModal';
+import { ProvidersTable } from './components/ProvidersTable';
+import { AddEditProviderModal } from './components/AddEditProviderModal';
 
 import { IPlan, IProviderObject } from '@app/queries/types';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
@@ -39,7 +39,7 @@ export interface IProvidersMatchParams {
   providerType: ProviderType;
 }
 
-const ProvidersPage: React.FunctionComponent = () => {
+export const ProvidersPage: React.FunctionComponent = () => {
   const history = useHistory();
   const match = useRouteMatch<IProvidersMatchParams>({
     path: '/providers/:providerType',
@@ -174,5 +174,3 @@ const ProvidersPage: React.FunctionComponent = () => {
     </>
   );
 };
-
-export default ProvidersPage;

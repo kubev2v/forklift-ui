@@ -20,7 +20,7 @@ import logoMA from './logoMA.svg';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
 import { APP_TITLE, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
-const WelcomePage: React.FunctionComponent = () => {
+export const WelcomePage: React.FunctionComponent = () => {
   const [isPageHidden, setIsPageHidden] = useLocalStorageContext(
     LocalStorageKey.isWelcomePageHidden
   );
@@ -84,5 +84,3 @@ const WelcomePage: React.FunctionComponent = () => {
     </PageSection>
   );
 };
-
-export default WelcomePage;

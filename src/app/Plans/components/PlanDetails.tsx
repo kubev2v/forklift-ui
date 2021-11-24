@@ -17,7 +17,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StatusIcon } from '@konveyor/lib-ui';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
-import MappingDetailView from '@app/Mappings/components/MappingDetailView';
+import { MappingDetailView } from '@app/Mappings/components/MappingDetailView';
 import {
   HookStep,
   IPlan,
@@ -27,7 +27,7 @@ import {
   POD_NETWORK,
   SourceInventoryProvider,
 } from '@app/queries/types';
-import MappingStatus from '@app/Mappings/components/MappingStatus';
+import { MappingStatus } from '@app/Mappings/components/MappingStatus';
 import { warmCriticalConcerns, someVMHasConcern } from './Wizard/helpers';
 import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 
@@ -46,7 +46,7 @@ interface IPlanDetailsProps {
   isNewNamespace?: boolean;
 }
 
-const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
+export const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
   plan,
   sourceProvider,
   networkMapping,
@@ -260,5 +260,3 @@ const PlanDetails: React.FunctionComponent<IPlanDetailsProps> = ({
     </DescriptionList>
   );
 };
-
-export default PlanDetails;

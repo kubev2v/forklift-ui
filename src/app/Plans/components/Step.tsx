@@ -1,9 +1,7 @@
 import * as React from 'react';
-import {
-  ResourcesEmptyIcon,
-  ResourcesAlmostFullIcon,
-  ResourcesFullIcon,
-} from '@patternfly/react-icons';
+import ResourcesEmptyIcon from '@patternfly/react-icons/dist/esm/icons/resources-empty-icon';
+import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-almost-full-icon';
+import ResourcesFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-full-icon';
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,
@@ -22,7 +20,11 @@ interface IStepProps {
 }
 
 // TODO this is mostly redundant with the GetStepTypeIcon component in PipelineSummary. We should refactor.
-const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IStepProps) => {
+export const Step: React.FunctionComponent<IStepProps> = ({
+  vmStatus,
+  type,
+  error,
+}: IStepProps) => {
   let step: React.ReactElement | null = null;
   if (type === StepType.Full) {
     step = (
@@ -67,5 +69,3 @@ const Step: React.FunctionComponent<IStepProps> = ({ vmStatus, type, error }: IS
 
   return step;
 };
-
-export default Step;

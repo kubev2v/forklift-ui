@@ -10,9 +10,9 @@ import {
   truncate,
 } from '@patternfly/react-table';
 
-import Step from './Step';
+import { Step } from './Step';
 import { IVMStatus, IStep } from '@app/queries/types';
-import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
+import { TickingElapsedTime } from '@app/common/components/TickingElapsedTime';
 import { findCurrentStep, getStepType, isStepOnError } from '@app/common/helpers';
 
 interface IVMStatusPipelineTableProps {
@@ -20,7 +20,15 @@ interface IVMStatusPipelineTableProps {
   isCanceled: boolean;
 }
 
-const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
+const renderStepPhase = (step: IStep) => {
+  if (step.phase) {
+    if (step.reason) return `${step.phase} - ${step.reason}`;
+    return step.phase;
+  }
+  return null;
+};
+
+export const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps> = ({
   status,
   isCanceled,
 }: IVMStatusPipelineTableProps) => {
@@ -70,11 +78,11 @@ const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps
           title: error ? (
             <Popover headerContent={error.phase} bodyContent={error?.reasons}>
               <Button variant="link" isInline>
-                {step.phase || error?.reasons}
+                {renderStepPhase(step) || error?.reasons}
               </Button>
             </Popover>
           ) : (
-            step.phase
+            renderStepPhase(step)
           ),
         },
       ],
@@ -96,5 +104,3 @@ const VMStatusPipelineTable: React.FunctionComponent<IVMStatusPipelineTableProps
     </>
   );
 };
-
-export default VMStatusPipelineTable;

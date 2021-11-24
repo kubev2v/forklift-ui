@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import { CheckIcon } from '@patternfly/react-icons';
+import CheckIcon from '@patternfly/react-icons/dist/esm/icons/check-icon';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
@@ -14,7 +14,7 @@ interface IOpenShiftNetworkListProps {
   provider: ICorrelatedProvider<IOpenShiftProvider>;
 }
 
-const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
+export const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> = ({
   provider,
 }: IOpenShiftNetworkListProps) => {
   const openshiftNetworksQuery = useOpenShiftNetworksQuery(provider.inventory);
@@ -65,5 +65,3 @@ const OpenShiftNetworkList: React.FunctionComponent<IOpenShiftNetworkListProps> 
     </ResolvedQuery>
   );
 };
-
-export default OpenShiftNetworkList;

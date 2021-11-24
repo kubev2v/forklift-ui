@@ -16,14 +16,14 @@ import { UseQueryResult } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
 import { RouteGuard } from '@app/common/components/RouteGuard';
-import WizardStepContainer from './WizardStepContainer';
-import GeneralForm from './GeneralForm';
-import FilterVMsForm from './FilterVMsForm';
-import SelectVMsForm from './SelectVMsForm';
-import MappingForm from './MappingForm';
-import TypeForm from './TypeForm';
-import HooksForm from './HooksForm';
-import Review from './Review';
+import { WizardStepContainer } from './WizardStepContainer';
+import { GeneralForm } from './GeneralForm';
+import { FilterVMsForm } from './FilterVMsForm';
+import { SelectVMsForm } from './SelectVMsForm';
+import { MappingForm } from './MappingForm';
+import { TypeForm } from './TypeForm';
+import { HooksForm } from './HooksForm';
+import { Review } from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
@@ -55,7 +55,7 @@ import {
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanHookInstance } from './PlanAddEditHookModal';
 
@@ -145,7 +145,7 @@ const usePlanWizardFormState = (
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
-const PlanWizard: React.FunctionComponent = () => {
+export const PlanWizard: React.FunctionComponent = () => {
   const history = useHistory();
   const plansQuery = usePlansQuery();
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
@@ -376,11 +376,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm
-            form={forms.type}
-            selectedVMs={selectedVMs}
-            sourceProvider={forms.general.values.sourceProvider}
-          />
+          <TypeForm form={forms.type} selectedVMs={selectedVMs} />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,
@@ -481,5 +477,3 @@ const PlanWizard: React.FunctionComponent = () => {
     </ResolvedQueries>
   );
 };
-
-export default PlanWizard;

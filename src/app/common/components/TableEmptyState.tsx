@@ -9,7 +9,7 @@ import {
   EmptyStateBody,
   Button,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 
 export interface ITableEmptyStateProps {
   icon?: EmptyStateIconProps['icon'];
@@ -19,7 +19,7 @@ export interface ITableEmptyStateProps {
   isHiddenActions?: boolean;
 }
 
-const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
+export const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
   icon = SearchIcon,
   titleText = 'No results found',
   bodyText = 'No results match the filter criteria. Remove filters or clear all filters to show results.',
@@ -43,5 +43,3 @@ const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
     </FlexItem>
   </Flex>
 );
-
-export default TableEmptyState;

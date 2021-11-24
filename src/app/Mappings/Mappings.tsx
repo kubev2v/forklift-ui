@@ -9,15 +9,15 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Mapping, MappingType } from '@app/queries/types';
-import { PlusCircleIcon } from '@patternfly/react-icons';
-import MappingsTable from './components/MappingsTable';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
+import { MappingsTable } from './components/MappingsTable';
 import {
   filterSharedMappings,
   useClusterProvidersQuery,
   useHasSufficientProvidersQuery,
   useMappingsQuery,
 } from '@app/queries';
-import CreateMappingButton from './components/CreateMappingButton';
+import { CreateMappingButton } from './components/CreateMappingButton';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 
 interface IMappingsProps {
@@ -26,7 +26,7 @@ interface IMappingsProps {
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
-const Mappings: React.FunctionComponent<IMappingsProps> = ({
+export const Mappings: React.FunctionComponent<IMappingsProps> = ({
   mappingType,
   toggleModalAndResetEdit,
   openEditMappingModal,
@@ -73,4 +73,3 @@ const Mappings: React.FunctionComponent<IMappingsProps> = ({
     </ResolvedQueries>
   );
 };
-export default Mappings;

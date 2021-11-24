@@ -27,7 +27,7 @@ import {
   truncate,
   nowrap,
 } from '@patternfly/react-table';
-import { ArchiveIcon } from '@patternfly/react-icons';
+import ArchiveIcon from '@patternfly/react-icons/dist/esm/icons/archive-icon';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Link } from 'react-router-dom';
@@ -36,10 +36,10 @@ import { StatusIcon, useSelectionState } from '@konveyor/lib-ui';
 import { PlanActionsDropdown } from './PlanActionsDropdown';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { IPlan } from '@app/queries/types';
-import CreatePlanButton from '@app/Plans/components/CreatePlanButton';
+import { CreatePlanButton } from '@app/Plans/components/CreatePlanButton';
 import { FilterToolbar, FilterType, FilterCategory } from '@app/common/components/FilterToolbar';
 import { useFilterState } from '@app/common/hooks/useFilterState';
-import TableEmptyState from '@app/common/components/TableEmptyState';
+import { TableEmptyState } from '@app/common/components/TableEmptyState';
 import {
   findLatestMigration,
   findProvidersByRefs,
@@ -56,9 +56,9 @@ import {
   canBeRestarted,
 } from './helpers';
 import { isSameResource } from '@app/queries/helpers';
-import StatusCondition from '@app/common/components/StatusCondition';
+import { StatusCondition } from '@app/common/components/StatusCondition';
 import { MigrateOrCutoverButton } from './MigrateOrCutoverButton';
-import PlanStatusNavLink from './PlanStatusNavLink';
+import { PlanStatusNavLink } from './PlanStatusNavLink';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 import { ScheduledCutoverTime } from './ScheduledCutoverTime';
 import { hasCondition } from '@app/common/helpers';
@@ -68,7 +68,9 @@ interface IPlansTableProps {
   plans: IPlan[];
 }
 
-const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlansTableProps) => {
+export const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
+  plans,
+}: IPlansTableProps) => {
   const [showArchivedPlans, toggleShowArchivedPlans] = React.useReducer((show) => !show, false);
   const providersQuery = useInventoryProvidersQuery();
   const migrationsQuery = useMigrationsQuery();
@@ -411,5 +413,3 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({ plans }: IPlans
     </>
   );
 };
-
-export default PlansTable;

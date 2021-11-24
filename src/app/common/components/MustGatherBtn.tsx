@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Tooltip } from '@patternfly/react-core';
-import { WarningTriangleIcon } from '@patternfly/react-icons';
+import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
 import { MustGatherContext } from '@app/common/context';
 
 interface IMustGatherBtn {

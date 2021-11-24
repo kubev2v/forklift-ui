@@ -37,11 +37,11 @@ import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignmen
 
 import { MustGatherModal } from '@app/common/components/MustGatherModal';
 import { useSortState, usePaginationState, useFilterState } from '@app/common/hooks';
-import VMStatusPipelineTable from './VMStatusPipelineTable';
-import PipelineSummary, { getPipelineSummaryTitle } from '@app/common/components/PipelineSummary';
+import { VMStatusPipelineTable } from './VMStatusPipelineTable';
+import { PipelineSummary, getPipelineSummaryTitle } from '@app/common/components/PipelineSummary';
 
 import { FilterCategory, FilterToolbar, FilterType } from '@app/common/components/FilterToolbar';
-import TableEmptyState from '@app/common/components/TableEmptyState';
+import { TableEmptyState } from '@app/common/components/TableEmptyState';
 import { IVMStatus } from '@app/queries/types';
 import {
   findLatestMigration,
@@ -54,10 +54,10 @@ import {
 } from '@app/queries';
 import { formatTimestamp, hasCondition } from '@app/common/helpers';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
 import { getPlanState } from './helpers';
-import VMStatusPrecopyTable from './VMStatusPrecopyTable';
-import VMWarmCopyStatus, { getWarmVMCopyState } from './VMWarmCopyStatus';
+import { VMStatusPrecopyTable } from './VMStatusPrecopyTable';
+import { VMWarmCopyStatus, getWarmVMCopyState } from './VMWarmCopyStatus';
 import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import '@app/Plans/components/VMMigrationDetails.css';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
@@ -79,7 +79,7 @@ const getTotalCopiedRatio = (vmStatus: IVMStatus) => {
   return { completed, total };
 };
 
-const VMMigrationDetails: React.FunctionComponent = () => {
+export const VMMigrationDetails: React.FunctionComponent = () => {
   const match = useRouteMatch<IPlanMatchParams>({
     path: '/plans/:planName',
     strict: true,
@@ -454,5 +454,3 @@ const VMMigrationDetails: React.FunctionComponent = () => {
     </>
   );
 };
-
-export default VMMigrationDetails;

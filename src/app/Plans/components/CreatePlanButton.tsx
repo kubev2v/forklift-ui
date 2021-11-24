@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, ButtonProps } from '@patternfly/react-core';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { useHasSufficientProvidersQuery } from '@app/queries';
 import { useHistory } from 'react-router-dom';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
@@ -9,7 +9,7 @@ interface ICreatePlanButtonProps {
   variant?: ButtonProps['variant'];
 }
 
-const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
+export const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
   variant = 'primary',
 }: ICreatePlanButtonProps) => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
@@ -32,5 +32,3 @@ const CreatePlanButton: React.FunctionComponent<ICreatePlanButtonProps> = ({
     </ConditionalTooltip>
   );
 };
-
-export default CreatePlanButton;

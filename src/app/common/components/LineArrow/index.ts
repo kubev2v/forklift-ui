@@ -1,1 +1,1 @@
-export { default } from './LineArrow';
+export { LineArrow } from './LineArrow';

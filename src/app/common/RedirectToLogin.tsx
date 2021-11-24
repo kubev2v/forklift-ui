@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const RedirectToLogin: React.FunctionComponent = () => {
+export const RedirectToLogin: React.FunctionComponent = () => {
   useEffect(() => {
     if (process.env['DATA_SOURCE'] !== 'mock' && process.env['NODE_ENV'] !== 'test') {
       window.location.href = '/login';
@@ -8,5 +8,3 @@ const RedirectToLogin: React.FunctionComponent = () => {
   }, []);
   return null;
 };
-
-export default RedirectToLogin;

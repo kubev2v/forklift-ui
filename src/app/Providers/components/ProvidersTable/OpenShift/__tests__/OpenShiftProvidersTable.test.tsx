@@ -8,7 +8,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 const queryClient = new QueryClient();
 
 import { NetworkContextProvider } from '@app/common/context';
-import OpenShiftProvidersTable from '../OpenShiftProvidersTable';
+import { OpenShiftProvidersTable } from '../OpenShiftProvidersTable';
 import {
   MOCK_CLUSTER_PROVIDERS,
   MOCK_INVENTORY_PROVIDERS,

@@ -12,13 +12,14 @@ import {
   IRow,
   truncate,
 } from '@patternfly/react-table';
-import { DatabaseIcon, NetworkIcon } from '@patternfly/react-icons';
+import DatabaseIcon from '@patternfly/react-icons/dist/esm/icons/database-icon';
+import NetworkIcon from '@patternfly/react-icons/dist/esm/icons/network-icon';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState, usePaginationState } from '@app/common/hooks';
 import { useOCPMigrationNetworkMutation, useStorageClassesQuery } from '@app/queries';
 import { ICorrelatedProvider, IOpenShiftProvider } from '@app/queries/types/providers.types';
-import ProviderActionsDropdown from '../ProviderActionsDropdown';
-import StatusCondition from '@app/common/components/StatusCondition';
+import { ProviderActionsDropdown } from '../ProviderActionsDropdown';
+import { StatusCondition } from '@app/common/components/StatusCondition';
 import { MappingType } from '@app/queries/types';
 import { getMostSeriousCondition, hasCondition, numStr } from '@app/common/helpers';
 import { centerCellTransform } from '@app/utils/utils';
@@ -27,9 +28,9 @@ import './OpenShiftProvidersTable.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { isSameResource } from '@app/queries/helpers';
-import OpenShiftNetworkList from './OpenShiftNetworkList';
-import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
-import OpenShiftStorageClassList from './OpenShiftStorageClassList';
+import { OpenShiftNetworkList } from './OpenShiftNetworkList';
+import { SelectOpenShiftNetworkModal } from '@app/common/components/SelectOpenShiftNetworkModal';
+import { OpenShiftStorageClassList } from './OpenShiftStorageClassList';
 
 interface IOpenShiftProvidersTableProps {
   providers: ICorrelatedProvider<IOpenShiftProvider>[];
@@ -40,7 +41,7 @@ interface IExpandedItem {
   column: 'Networks' | 'Storage classes';
 }
 
-const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
+export const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableProps> = ({
   providers,
 }: IOpenShiftProvidersTableProps) => {
   const storageClassesQuery = useStorageClassesQuery(
@@ -265,5 +266,3 @@ const OpenShiftProvidersTable: React.FunctionComponent<IOpenShiftProvidersTableP
     </>
   );
 };
-
-export default OpenShiftProvidersTable;

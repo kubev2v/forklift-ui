@@ -20,7 +20,7 @@ const versions = [
   ['OpenShift version', ENV.FORKLIFT_CLUSTER_VERSION],
 ];
 
-const ForkliftAboutModal: React.FunctionComponent<IForkliftAboutModalProps> = ({
+export const ForkliftAboutModal: React.FunctionComponent<IForkliftAboutModalProps> = ({
   onClose,
 }: IForkliftAboutModalProps) => (
   <AboutModal
@@ -46,5 +46,3 @@ const ForkliftAboutModal: React.FunctionComponent<IForkliftAboutModalProps> = ({
     </TextContent>
   </AboutModal>
 );
-
-export default ForkliftAboutModal;

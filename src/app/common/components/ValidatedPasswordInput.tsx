@@ -7,7 +7,8 @@ import {
   TextInput,
   TextInputProps,
 } from '@patternfly/react-core';
-import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
+import EyeIcon from '@patternfly/react-icons/dist/esm/icons/eye-icon';
+import EyeSlashIcon from '@patternfly/react-icons/dist/esm/icons/eye-slash-icon';
 import { getFormGroupProps, getTextInputProps, IValidatedFormField } from '@konveyor/lib-ui';
 
 // TODO this is based heavily on ValidatedTextInput from lib-ui, which should be enhanced to support an InputGroup somehow.
@@ -25,7 +26,7 @@ interface IValidatedPasswordInputProps
   hidePasswordAriaLabel?: string;
 }
 
-const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputProps> = ({
+export const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputProps> = ({
   field,
   label,
   fieldId,
@@ -62,5 +63,3 @@ const ValidatedPasswordInput: React.FunctionComponent<IValidatedPasswordInputPro
     </FormGroup>
   );
 };
-
-export default ValidatedPasswordInput;

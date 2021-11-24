@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import { UnregisterCallback } from 'history';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
 
 const blockUnload = (event: BeforeUnloadEvent) => {
   // The beforeunload event is weird in different browsers.
@@ -18,7 +18,7 @@ interface IRouteGuard {
   cancelText?: string;
 }
 
-const RouteGuard: React.FunctionComponent<IRouteGuard> = ({
+export const RouteGuard: React.FunctionComponent<IRouteGuard> = ({
   when,
   title,
   message,
@@ -73,5 +73,3 @@ const RouteGuard: React.FunctionComponent<IRouteGuard> = ({
     />
   );
 };
-
-export { RouteGuard };

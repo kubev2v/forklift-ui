@@ -11,16 +11,16 @@ import {
 } from '@patternfly/react-table';
 
 import { IVMStatus } from '@app/queries/types';
-import TickingElapsedTime from '@app/common/components/TickingElapsedTime';
+import { TickingElapsedTime } from '@app/common/components/TickingElapsedTime';
 import { StatusIcon } from '@konveyor/lib-ui';
-import CanceledIcon from '@app/common/components/CanceledIcon';
+import { CanceledIcon } from '@app/common/components/CanceledIcon';
 
 interface IVMStatusPrecopyTableProps {
   status: IVMStatus;
   isCanceled: boolean;
 }
 
-const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> = ({
+export const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> = ({
   status,
   isCanceled,
 }: IVMStatusPrecopyTableProps) => {
@@ -34,8 +34,8 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
 
   const sortedPrecopies = (status.warm.precopies || []).sort((a, b) => {
     // Most recent first
-    if (a.started < b.started) return 1;
-    if (a.started > b.started) return -1;
+    if (a.start < b.start) return 1;
+    if (a.start > b.start) return -1;
     return 0;
   });
 
@@ -55,17 +55,12 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
       cells: [
         sortedPrecopies.length - index,
         {
-          title: (
-            <TickingElapsedTime
-              start={precopy.started}
-              end={precopy.completed || status.completed}
-            />
-          ),
+          title: <TickingElapsedTime start={precopy.start} end={precopy.end || status.completed} />,
         },
         {
           title: isCanceled ? (
             <CanceledIcon />
-          ) : precopy.completed ? (
+          ) : precopy.end ? (
             <StatusIcon status="Ok" label="Complete" />
           ) : status.error && index === 0 ? (
             <StatusIcon status="Error" label="Failed" />
@@ -97,5 +92,3 @@ const VMStatusPrecopyTable: React.FunctionComponent<IVMStatusPrecopyTableProps> 
     </>
   );
 };
-
-export default VMStatusPrecopyTable;

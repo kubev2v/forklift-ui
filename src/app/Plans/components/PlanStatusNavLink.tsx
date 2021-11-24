@@ -9,7 +9,7 @@ interface IPlanStatusNavLinkProps {
   children: React.ReactNode;
 }
 
-const PlanStatusNavLink: React.FunctionComponent<IPlanStatusNavLinkProps> = ({
+export const PlanStatusNavLink: React.FunctionComponent<IPlanStatusNavLinkProps> = ({
   plan,
   isInline = true,
   children,
@@ -26,5 +26,3 @@ const PlanStatusNavLink: React.FunctionComponent<IPlanStatusNavLinkProps> = ({
     </Button>
   );
 };
-
-export default PlanStatusNavLink;

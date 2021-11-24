@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 import { Router } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { NetworkContextProvider } from '@app/common/context';
-import PlanWizard from '../PlanWizard';
+import { PlanWizard } from '../PlanWizard';
 const queryClient = new QueryClient();
 
 describe('<AddEditProviderModal />', () => {
@@ -110,6 +110,8 @@ describe('<AddEditProviderModal />', () => {
     userEvent.click(nextButton);
 
     expect(screen.getByRole('heading', { name: /Filter by VM location/ })).toBeInTheDocument();
+    const v2vDC = await screen.findByRole('button', { name: /V2V-DC/ });
+    userEvent.click(v2vDC);
     expect(screen.getByRole('checkbox', { name: /Select Cluster V2V_Cluster/ })).toBeChecked();
     expect(nextButton).toBeEnabled();
     userEvent.click(nextButton);

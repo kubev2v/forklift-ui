@@ -12,7 +12,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { KubeClientError } from '@app/client/types';
 import { getAggregateQueryStatus } from '@app/queries/helpers';
-import LoadingEmptyState from '../LoadingEmptyState';
+import { LoadingEmptyState } from '../LoadingEmptyState';
 
 export enum QuerySpinnerMode {
   Inline = 'Inline',

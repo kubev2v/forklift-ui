@@ -19,8 +19,8 @@ import {
   IVMwareProvider,
   SourceInventoryProvider,
 } from '@app/queries/types';
-import ProviderActionsDropdown from '../ProviderActionsDropdown';
-import StatusCondition from '@app/common/components/StatusCondition';
+import { ProviderActionsDropdown } from '../ProviderActionsDropdown';
+import { StatusCondition } from '@app/common/components/StatusCondition';
 import {
   getMostSeriousCondition,
   getStorageTitle,
@@ -30,14 +30,14 @@ import {
 
 import { ProviderType, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 import { Link } from 'react-router-dom';
-import { OutlinedHddIcon } from '@patternfly/react-icons';
+import OutlinedHddIcon from '@patternfly/react-icons/dist/esm/icons/outlined-hdd-icon';
 
 interface ISourceProvidersTableProps {
   providers: ICorrelatedProvider<SourceInventoryProvider>[];
   providerType: ProviderType;
 }
 
-const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
+export const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> = ({
   providers,
   providerType,
 }: ISourceProvidersTableProps) => {
@@ -221,5 +221,3 @@ const SourceProvidersTable: React.FunctionComponent<ISourceProvidersTableProps> 
     </>
   );
 };
-
-export default SourceProvidersTable;

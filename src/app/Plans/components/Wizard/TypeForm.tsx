@@ -3,20 +3,17 @@ import { List, ListItem, Radio } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanWizardFormState } from './PlanWizard';
 import { warmCriticalConcerns, someVMHasConcern } from './helpers';
-import { SourceInventoryProvider, SourceVM } from '@app/queries/types';
+import { SourceVM } from '@app/queries/types';
 import { StatusIcon } from '@konveyor/lib-ui';
-import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 interface ITypeFormProps {
   form: PlanWizardFormState['type'];
   selectedVMs: SourceVM[];
-  sourceProvider: SourceInventoryProvider | null;
 }
 
-const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
+export const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   form,
   selectedVMs,
-  sourceProvider,
 }: ITypeFormProps) => {
   const warmCriticalConcernsFound = warmCriticalConcerns.filter((label) =>
     someVMHasConcern(selectedVMs, label)
@@ -42,7 +39,6 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
         id="migration-type-warm"
         name="migration-type"
         label="Warm migration"
-        isDisabled={sourceProvider?.type === 'ovirt'}
         description={
           <>
             <List>
@@ -52,14 +48,7 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
                 copied, is run later.
               </ListItem>
             </List>
-            {sourceProvider?.type === 'ovirt' ? (
-              <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
-                <StatusIcon
-                  status="Info"
-                  label={`Warm migration is not currently supported for ${PROVIDER_TYPE_NAMES.ovirt} providers.`}
-                />
-              </div>
-            ) : isAnalysingVms ? (
+            {isAnalysingVms ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
                 <StatusIcon status="Loading" label="Analysing warm migration compatibility" />
               </div>
@@ -84,5 +73,3 @@ const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
     </>
   );
 };
-
-export default TypeForm;

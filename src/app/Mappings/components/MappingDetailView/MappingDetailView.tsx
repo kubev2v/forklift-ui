@@ -4,9 +4,9 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
 import { Mapping, MappingType } from '@app/queries/types';
-import LineArrow from '@app/common/components/LineArrow';
+import { LineArrow } from '@app/common/components/LineArrow';
 import { useResourceQueriesForMapping } from '@app/queries';
-import TruncatedText from '@app/common/components/TruncatedText';
+import { TruncatedText } from '@app/common/components/TruncatedText';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
@@ -21,7 +21,7 @@ interface IMappingDetailViewProps {
   className?: string;
 }
 
-const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
+export const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
   mappingType,
   sourceProviderType,
   mapping,
@@ -98,5 +98,3 @@ const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default MappingDetailView;

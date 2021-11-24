@@ -1,1 +1,1 @@
-export { default } from './AddEditProviderModal';
+export { AddEditProviderModal } from './AddEditProviderModal';

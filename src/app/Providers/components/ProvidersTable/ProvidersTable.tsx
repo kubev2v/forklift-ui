@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProviderType } from '@app/common/constants';
-import SourceProvidersTable from './Source/SourceProvidersTable';
-import OpenShiftProvidersTable from './OpenShift/OpenShiftProvidersTable';
+import { SourceProvidersTable } from './Source/SourceProvidersTable';
+import { OpenShiftProvidersTable } from './OpenShift/OpenShiftProvidersTable';
 import { IProviderObject, IProvidersByType, SourceInventoryProvider } from '@app/queries/types';
 import { correlateProviders } from './helpers';
 
@@ -11,7 +11,7 @@ interface IProvidersTableProps {
   activeProviderType: ProviderType;
 }
 
-const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
+export const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   inventoryProvidersByType,
   clusterProviders,
   activeProviderType,
@@ -41,5 +41,3 @@ const ProvidersTable: React.FunctionComponent<IProvidersTableProps> = ({
   }
   return null;
 };
-
-export default ProvidersTable;
