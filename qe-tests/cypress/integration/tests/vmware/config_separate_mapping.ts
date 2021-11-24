@@ -77,6 +77,26 @@ export const planData: PlanData = {
   warmMigration: false,
 };
 
+export const planData1: PlanData = {
+  name: 'copy-of-testplan-separate-mapping-cold',
+  sProvider: providerData.name,
+  tProvider: 'host',
+  namespace: 'openshift-mtv',
+  sourceClusterName: 'MTV_7.0',
+  vmwareSourceVmList: ['v2v-rhel7-2nic-2disk-igor'],
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
+};
+
+export const duplicateTestData: TestData = {
+  loginData: loginData,
+  planData: planData1,
+};
+
 export const testData: TestData = {
   loginData: loginData,
   planData: planData,

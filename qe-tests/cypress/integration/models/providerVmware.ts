@@ -1,6 +1,14 @@
 import { Provider } from './provider';
 import { applyAction, clickByText, click, inputText } from '../../utils/utils';
-import { editButton, removeButton, saveButton, SEC, trTag, vmware } from '../types/constants';
+import {
+  button,
+  editButton,
+  removeButton,
+  saveButton,
+  SEC,
+  trTag,
+  vmware,
+} from '../types/constants';
 import {
   addButtonModal,
   instanceName,
@@ -77,6 +85,7 @@ export class ProviderVmware extends Provider {
     const { name } = providerData;
     ProviderVmware.openList();
     applyAction(name, removeButton);
+    clickByText(button, removeButton); //confirm Button
   }
 
   create(providerData: VmwareProviderData): void {

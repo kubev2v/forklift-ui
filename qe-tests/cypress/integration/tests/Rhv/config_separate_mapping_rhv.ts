@@ -81,6 +81,26 @@ export const planData: PlanData = {
   warmMigration: false,
 };
 
+export const planData1: PlanData = {
+  name: 'copy-of-testplan-rhv-rhel8-separate-mapping-cold',
+  sProvider: providerData.name,
+  tProvider: 'host',
+  namespace: 'openshift-mtv', //another namespace
+  sourceClusterName: 'MTV',
+  vmwareSourceVmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
+};
+
+export const duplicateTestData: TestData = {
+  loginData: loginData,
+  planData: planData1,
+};
+
 export const testData: TestData = {
   loginData: loginData,
   planData: planData,

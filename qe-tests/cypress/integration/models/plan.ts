@@ -7,6 +7,7 @@ import {
   openSidebarMenu,
   selectFromDroplist,
   applyAction,
+  selectCheckBox,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import {
@@ -22,6 +23,7 @@ import {
   planCanceledMessage,
   CreateNewNetworkMapping,
   restartButton,
+  duplicateButton,
 } from '../types/constants';
 
 import {
@@ -80,7 +82,7 @@ export class Plan {
   protected filterVm(planData: PlanData): void {
     const { sourceClusterName } = planData;
     const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
-    click(selector);
+    selectCheckBox(selector);
     next();
   }
 
@@ -94,7 +96,7 @@ export class Plan {
         .contains(name)
         .closest(trTag)
         .within(() => {
-          click('input');
+          selectCheckBox('input');
         });
     });
     next();
@@ -120,8 +122,8 @@ export class Plan {
         });
       }
     }
-
     next();
+    //TODO:networkMappingStep should be refactored to fix workaround for duplicate function
   }
 
   protected storageMappingStep(planData: PlanData): void {
@@ -131,6 +133,7 @@ export class Plan {
       selectFromDroplist(mappingDropdown, name);
     }
     next();
+    //TODO:storageMappingStep should be refactored to fix workaround for duplicate function only
   }
 
   protected hooksStep(): void {
@@ -202,7 +205,7 @@ export class Plan {
   }
 
   protected cancel(name: string): void {
-    //this.plan_details(name); //I made changes for cnacel
+    //this.plan_details(name);      //Not Needed
     cy.get(`[aria-label="Select row 0"]`, { timeout: 20000 }).should('be.enabled').check();
     clickByText(button, 'Cancel');
     clickByText(button, 'Yes, cancel');
@@ -234,7 +237,7 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     applyAction(name, deleteButton);
-    clickByText(button, deleteButton);
+    clickByText(button, deleteButton); //Added Confirm Button
     cy.wait(2 * SEC);
   }
 
@@ -253,7 +256,7 @@ export class Plan {
   restart(name: string): void {
     Plan.openList();
     applyAction(name, restartButton);
-    clickByText(button, 'Restart');
+    clickByText(button, 'Restart'); //Added Confirm Button
   }
 
   cancel_and_restart(planData: PlanData): void {
@@ -274,10 +277,23 @@ export class Plan {
   cancel_plan(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
+    cy.wait(2000);
     this.run(name, 'Start');
     click('#modal-confirm-button');
     cy.wait(10000);
     this.cancel(name);
     this.waitForCanceled(name);
+  }
+  duplicate(planData: PlanData, planData1: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    applyAction(name, duplicateButton);
+    this.generalStep(planData1);
+    this.vmSelectionStep(planData1);
+    next();
+    next();
+    this.selectMigrationTypeStep(planData1);
+    this.hooksStep();
+    this.finalReviewStep(planData1);
   }
 }

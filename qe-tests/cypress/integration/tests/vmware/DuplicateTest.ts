@@ -2,16 +2,14 @@ import { login } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
-import { Plan_duplicate } from '../../models/duplicate';
-import { providerRhv } from '../../models/providerRhv';
-import { testData } from './config_separate_mapping_rhv';
+import { ProviderVmware } from '../../models/providerVmware';
+import { testData, duplicateTestData } from './config_separate_mapping';
 
 describe('Duplicate a cold migration test', () => {
-  const source = new providerRhv();
+  const source = new ProviderVmware();
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();
-  const plan_copy = new Plan_duplicate();
 
   before(() => {
     login(testData.loginData);
@@ -23,6 +21,12 @@ describe('Duplicate a cold migration test', () => {
   });
 
   it('duplicate', () => {
-    plan_copy.duplicate(testData.planData);
+    plan.duplicate(testData.planData, duplicateTestData.planData);
+  });
+  after(() => {
+    plan.delete(duplicateTestData.planData);
+    networkMapping.delete(testData.planData.networkMappingData);
+    storageMapping.delete(testData.planData.storageMappingData);
+    source.delete(testData.planData.providerData);
   });
 });
