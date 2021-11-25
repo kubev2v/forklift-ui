@@ -7,7 +7,7 @@ interface ITickingElapsedTimeProps {
   end?: string;
 }
 
-const TickingElapsedTime: React.FunctionComponent<ITickingElapsedTimeProps> = ({
+export const TickingElapsedTime: React.FunctionComponent<ITickingElapsedTimeProps> = ({
   start,
   end,
 }: ITickingElapsedTimeProps) => {
@@ -34,5 +34,3 @@ const TickingElapsedTime: React.FunctionComponent<ITickingElapsedTimeProps> = ({
 
   return <>{formatDuration(start, endTime)}</>;
 };
-
-export default TickingElapsedTime;

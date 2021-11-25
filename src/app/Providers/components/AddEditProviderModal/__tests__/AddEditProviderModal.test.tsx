@@ -8,7 +8,7 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 const queryClient = new QueryClient();
 
 import { NetworkContextProvider } from '@app/common/context';
-import AddEditProviderModal from '../AddEditProviderModal';
+import { AddEditProviderModal } from '../AddEditProviderModal';
 import { MOCK_CLUSTER_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
 describe('<AddEditProviderModal />', () => {
@@ -49,7 +49,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    const typeButton = await screen.getByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const oVirtButton = await screen.findByRole('option', { name: /ovirt/i, hidden: true });
     userEvent.click(oVirtButton);
@@ -88,7 +88,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    const typeButton = await screen.getByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
     userEvent.click(vsphereButton);
@@ -131,7 +131,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    const typeButton = await screen.getByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
     userEvent.click(vsphereButton);
@@ -193,7 +193,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    const typeButton = await screen.getByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);
@@ -225,7 +225,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.findByRole('button', { name: /select a provider type/i });
+    const typeButton = await screen.getByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);

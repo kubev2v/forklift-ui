@@ -7,7 +7,7 @@ import { Router } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from 'react-query';
 const queryClient = new QueryClient();
 
-import SourceProvidersTable from '../SourceProvidersTable';
+import { SourceProvidersTable } from '../SourceProvidersTable';
 import {
   MOCK_CLUSTER_PROVIDERS,
   MOCK_INVENTORY_PROVIDERS,

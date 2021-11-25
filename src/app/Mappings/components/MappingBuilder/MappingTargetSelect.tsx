@@ -1,7 +1,8 @@
 import * as React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StatusIcon } from '@konveyor/lib-ui';
-import SimpleSelect, {
+import {
+  SimpleSelect,
   ISimpleSelectProps,
   OptionWithValue,
 } from '@app/common/components/SimpleSelect';
@@ -14,8 +15,8 @@ import {
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
 import { getMappingTargetName } from '../MappingDetailView/helpers';
-import TruncatedText from '@app/common/components/TruncatedText';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { TruncatedText } from '@app/common/components/TruncatedText';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 
 interface IMappingTargetSelectProps extends Partial<ISimpleSelectProps> {
   id: string;
@@ -26,7 +27,7 @@ interface IMappingTargetSelectProps extends Partial<ISimpleSelectProps> {
   mappingType: MappingType;
 }
 
-const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
+export const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = ({
   id,
   builderItems,
   itemIndex,
@@ -132,5 +133,3 @@ const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectProps> = 
     />
   );
 };
-
-export default MappingTargetSelect;

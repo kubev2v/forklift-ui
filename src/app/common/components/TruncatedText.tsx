@@ -9,7 +9,7 @@ interface ITruncatedTextProps {
 }
 
 // TODO: lib-ui candidate
-const TruncatedText: React.FunctionComponent<ITruncatedTextProps> = ({
+export const TruncatedText: React.FunctionComponent<ITruncatedTextProps> = ({
   children,
   className = '',
   tooltipProps = {},
@@ -39,5 +39,3 @@ const TruncatedText: React.FunctionComponent<ITruncatedTextProps> = ({
     truncatedChildren
   );
 };
-
-export default TruncatedText;

@@ -6,9 +6,9 @@ import {
   useDeleteMappingMutation,
   useResourceQueriesForMapping,
 } from '@app/queries';
-import ConfirmModal from '@app/common/components/ConfirmModal';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { isMappingValid } from './helpers';
 
 interface IMappingsActionsDropdownProps {
@@ -17,7 +17,7 @@ interface IMappingsActionsDropdownProps {
   openEditMappingModal: (mapping: Mapping) => void;
 }
 
-const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownProps> = ({
+export const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownProps> = ({
   mappingType,
   mapping,
   openEditMappingModal,
@@ -95,5 +95,3 @@ const MappingsActionsDropdown: React.FunctionComponent<IMappingsActionsDropdownP
     </>
   );
 };
-
-export default MappingsActionsDropdown;

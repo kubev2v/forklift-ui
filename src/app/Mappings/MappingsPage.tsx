@@ -9,9 +9,9 @@ import {
   TabTitleText,
 } from '@patternfly/react-core';
 import { Mapping, MappingType } from '@app/queries/types';
-import CreateMappingButton from '@app/Mappings/components/CreateMappingButton';
-import AddEditMappingModal from '@app/Mappings/components/AddEditMappingModal';
-import Mappings from '@app/Mappings/Mappings';
+import { CreateMappingButton } from '@app/Mappings/components/CreateMappingButton';
+import { AddEditMappingModal } from '@app/Mappings/components/AddEditMappingModal';
+import { Mappings } from '@app/Mappings/Mappings';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const MappingsPage: React.FunctionComponent = () => {

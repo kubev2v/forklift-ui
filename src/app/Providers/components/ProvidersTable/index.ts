@@ -1,1 +1,1 @@
-export { default } from './ProvidersTable';
+export { ProvidersTable } from './ProvidersTable';

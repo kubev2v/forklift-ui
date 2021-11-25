@@ -10,23 +10,24 @@ export let MOCK_PLANS: IPlan[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const vm1: IPlanVM = {
-    id: 'vm-1630',
+    id: 'vm-1630', // fdupont-test-migration
   };
 
   const vm2: IPlanVM = {
-    id: 'vm-2844',
+    id: 'vm-2844', // fdupont-test
   };
 
   const vm3: IPlanVM = {
-    id: 'vm-1008',
+    id: 'vm-1008', // fdupont-test-migration-centos
   };
 
   const vm4: IPlanVM = {
-    id: 'vm-2685',
+    id: 'vm-2685', // pemcg-discovery01
   };
 
   const vmStatus1: IVMStatus = {
     id: vm1.id,
+    name: 'fdupont-test-migration',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -51,6 +52,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus2: IVMStatus = {
     id: vm2.id,
+    name: 'fdupont-test',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -65,8 +67,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         name: 'ImageConversion',
         description: 'Convert image to kubevirt.',
         progress: { total: 1, completed: 0 },
-        phase: 'Mock Step Phase',
-        started: '2020-10-10T15:57:10Z',
+        phase: 'Pending',
+        reason: 'AwaitingVDDK',
       },
     ],
     phase: 'Mock VM Phase',
@@ -75,6 +77,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus3: IVMStatus = {
     id: vm3.id,
+    name: 'fdupont-test-migration-centos',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -111,6 +114,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatus4: IVMStatus = {
     id: vm4.id,
+    name: 'pemcg-discovery01',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -148,6 +152,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
 
   const vmStatusWithTopLevelError: IVMStatus = {
     id: vm2.id,
+    name: 'fdupont-test',
     pipeline: [
       {
         name: 'DiskTransfer',
@@ -505,9 +510,21 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const plan5: IPlan = {
     ...plan1,
     metadata: { ...plan1.metadata, name: 'plantest-05' },
-    spec: { ...plan1.spec, description: 'completed with errors' },
+    spec: {
+      ...plan1.spec,
+      description: 'completed with errors',
+      archived: true,
+    },
     status: {
       conditions: [
+        {
+          category: 'Advisory',
+          lastTransitionTime: '2021-10-12T00:33:36Z',
+          message: 'The migration plan has been archived.',
+          reason: 'UserRequested',
+          status: 'True',
+          type: 'Archived',
+        },
         {
           category: 'Info',
           lastTransitionTime: '2020-09-10T16:04:10Z',
@@ -606,7 +623,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          started: '2021-03-16T17:28:48Z',
+          start: '2021-03-16T17:28:48Z',
         },
       ],
       successes: 0,
@@ -630,7 +647,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          started: '2021-03-16T17:28:48Z',
+          start: '2021-03-16T17:28:48Z',
         },
       ],
       successes: 0,
@@ -645,15 +662,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       failures: 0,
       precopies: [
         {
-          started: '2021-03-16T17:28:48Z',
-          completed: '2021-03-16T17:29:42Z',
+          start: '2021-03-16T17:28:48Z',
+          end: '2021-03-16T17:29:42Z',
         },
         {
-          started: '2021-03-16T18:29:20Z',
-          completed: '2021-03-16T18:30:38Z',
+          start: '2021-03-16T18:29:20Z',
+          end: '2021-03-16T18:30:38Z',
         },
         {
-          started: '2021-03-16T18:30:38Z',
+          start: '2021-03-16T18:30:38Z',
         },
       ],
       successes: 0,
@@ -676,16 +693,16 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       nextPrecopyAt: '2021-03-16T18:29:20Z',
       precopies: [
         {
-          started: '2021-03-16T17:28:48Z',
-          completed: '2021-03-16T17:29:42Z',
+          start: '2021-03-16T17:28:48Z',
+          end: '2021-03-16T17:29:42Z',
         },
         {
-          started: '2021-03-16T18:29:20Z',
-          completed: '2021-03-16T18:30:38Z',
+          start: '2021-03-16T18:29:20Z',
+          end: '2021-03-16T18:30:38Z',
         },
         {
-          started: '2021-03-16T18:30:38Z',
-          completed: '2021-03-16T18:31:48Z',
+          start: '2021-03-16T18:30:38Z',
+          end: '2021-03-16T18:31:48Z',
         },
       ],
       successes: 3,
@@ -715,18 +732,10 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       description: 'various precopy states',
       warm: true,
       vms: [vm1, vm2, vm3],
-      archived: true,
+      archived: false,
     },
     status: {
       conditions: [
-        {
-          category: 'Advisory',
-          lastTransitionTime: '2021-10-12T00:33:36Z',
-          message: 'The migration plan has been archived.',
-          reason: 'UserRequested',
-          status: 'True',
-          type: 'Archived',
-        },
         {
           category: 'Info',
           lastTransitionTime: '2020-09-18T16:04:10Z',

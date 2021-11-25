@@ -43,7 +43,7 @@ interface IFilterVMsFormProps {
   planBeingPrefilled: IPlan | null;
 }
 
-const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
+export const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
   form,
   treeQuery,
   sourceProvider,
@@ -171,9 +171,8 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
         emptyStateBody={LONG_LOADING_MESSAGE}
       >
         <TreeView
+          key={form.fields.treeType.value}
           data={treeViewData}
-          defaultAllExpanded
-          allExpanded={true}
           hasChecks
           hasBadges
           hasGuides
@@ -207,5 +206,3 @@ const FilterVMsForm: React.FunctionComponent<IFilterVMsFormProps> = ({
     </div>
   );
 };
-
-export default FilterVMsForm;

@@ -9,7 +9,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 import { MustGatherModal } from '@app/common/components/MustGatherModal';
 
 import {
@@ -19,12 +19,12 @@ import {
   useMigrationsQuery,
 } from '@app/queries';
 
-import PlansTable from './components/PlansTable';
-import CreatePlanButton from './components/CreatePlanButton';
+import { PlansTable } from './components/PlansTable';
+import { CreatePlanButton } from './components/CreatePlanButton';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
-const PlansPage: React.FunctionComponent = () => {
+export const PlansPage: React.FunctionComponent = () => {
   const sufficientProvidersQuery = useHasSufficientProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
   const plansQuery = usePlansQuery();
@@ -76,5 +76,3 @@ const PlansPage: React.FunctionComponent = () => {
     </>
   );
 };
-
-export default PlansPage;

@@ -24,9 +24,9 @@ import {
 } from '@app/queries';
 import { PlanWizardFormState, PlanWizardMode } from './PlanWizard';
 import { QuerySpinnerMode, ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import ProviderSelect from '@app/common/components/ProviderSelect';
-import SelectOpenShiftNetworkModal from '@app/common/components/SelectOpenShiftNetworkModal';
-import { HelpIcon } from '@patternfly/react-icons';
+import { ProviderSelect } from '@app/common/components/ProviderSelect';
+import { SelectOpenShiftNetworkModal } from '@app/common/components/SelectOpenShiftNetworkModal';
+import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import { usePausedPollingEffect } from '@app/common/context';
 import { isSameResource } from '@app/queries/helpers';
 import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
@@ -34,11 +34,15 @@ import { PROVIDER_TYPE_NAMES } from '@app/common/constants';
 interface IGeneralFormProps {
   form: PlanWizardFormState['general'];
   wizardMode: PlanWizardMode;
+  afterProviderChange: () => void;
+  afterTargetNamespaceChange: () => void;
 }
 
-const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
+export const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   form,
   wizardMode,
+  afterProviderChange,
+  afterTargetNamespaceChange,
 }: IGeneralFormProps) => {
   const inventoryProvidersQuery = useInventoryProvidersQuery();
   const clusterProvidersQuery = useClusterProvidersQuery();
@@ -93,6 +97,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           network.name === providerDefaultNetworkName && network.namespace === targetNamespace
       );
       form.fields.migrationNetwork.prefill(matchingNetwork?.name || null);
+      afterTargetNamespaceChange();
     }
   };
 
@@ -121,8 +126,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <Title headingLevel="h3" size="md">
           Select source and target providers
         </Title>
-        <ProviderSelect providerRole="source" field={form.fields.sourceProvider} />
-        <ProviderSelect providerRole="target" field={form.fields.targetProvider} />
+        <ProviderSelect
+          providerRole="source"
+          field={form.fields.sourceProvider}
+          afterChange={afterProviderChange}
+        />
+        <ProviderSelect
+          providerRole="target"
+          field={form.fields.targetProvider}
+          afterChange={afterProviderChange}
+        />
         <FormGroup
           label="Target namespace"
           isRequired
@@ -214,5 +227,3 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default GeneralForm;

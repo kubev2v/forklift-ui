@@ -12,7 +12,7 @@ interface IVMConcernsDescriptionProps {
   filterText?: string;
 }
 
-const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps> = ({
+export const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps> = ({
   vm,
   filterText,
 }: IVMConcernsDescriptionProps) => {
@@ -74,5 +74,3 @@ const VMConcernsDescription: React.FunctionComponent<IVMConcernsDescriptionProps
     );
   }
 };
-
-export default VMConcernsDescription;

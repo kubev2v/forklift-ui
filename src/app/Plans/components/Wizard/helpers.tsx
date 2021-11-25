@@ -18,7 +18,8 @@ import {
   IVMwareVM,
   IRHVVM,
 } from '@app/queries/types';
-import { ClusterIcon, FolderIcon } from '@patternfly/react-icons';
+import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
+import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
 import {
   getBuilderItemsFromMappingItems,
   getBuilderItemsWithMissingSources,
@@ -169,6 +170,7 @@ const convertInventoryTreeNode = (
       node.kind === 'Cluster' ? <ClusterIcon /> : node.kind === 'Folder' ? <FolderIcon /> : null,
     customBadgeContent: badge,
     hasBadge: !!badge,
+    defaultExpanded: false,
   };
 };
 
@@ -234,6 +236,7 @@ export const filterAndConvertInventoryTree = (
       ),
       customBadgeContent: badge,
       hasBadge: !!badge,
+      defaultExpanded: true,
     },
   ];
 };

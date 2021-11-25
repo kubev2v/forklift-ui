@@ -16,14 +16,14 @@ import { UseQueryResult } from 'react-query';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFormField, useFormState } from '@konveyor/lib-ui';
 import { RouteGuard } from '@app/common/components/RouteGuard';
-import WizardStepContainer from './WizardStepContainer';
-import GeneralForm from './GeneralForm';
-import FilterVMsForm from './FilterVMsForm';
-import SelectVMsForm from './SelectVMsForm';
-import MappingForm from './MappingForm';
-import TypeForm from './TypeForm';
-import HooksForm from './HooksForm';
-import Review from './Review';
+import { WizardStepContainer } from './WizardStepContainer';
+import { GeneralForm } from './GeneralForm';
+import { FilterVMsForm } from './FilterVMsForm';
+import { SelectVMsForm } from './SelectVMsForm';
+import { MappingForm } from './MappingForm';
+import { TypeForm } from './TypeForm';
+import { HooksForm } from './HooksForm';
+import { Review } from './Review';
 import {
   IOpenShiftProvider,
   IPlan,
@@ -55,7 +55,7 @@ import {
 import { getAggregateQueryStatus } from '@app/queries/helpers';
 import { dnsLabelNameSchema } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
-import LoadingEmptyState from '@app/common/components/LoadingEmptyState';
+import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { PlanHookInstance } from './PlanAddEditHookModal';
 
@@ -145,7 +145,7 @@ const usePlanWizardFormState = (
 
 export type PlanWizardFormState = ReturnType<typeof usePlanWizardFormState>; // ✨ Magic
 
-const PlanWizard: React.FunctionComponent = () => {
+export const PlanWizard: React.FunctionComponent = () => {
   const history = useHistory();
   const plansQuery = usePlansQuery();
   const networkMappingsQuery = useMappingsQuery(MappingType.Network);
@@ -206,20 +206,6 @@ const PlanWizard: React.FunctionComponent = () => {
   const firstInvalidFormIndex = stepForms.findIndex((form) => !form.isValid);
   const stepIdReached: StepId =
     firstInvalidFormIndex === -1 ? StepId.Review : firstInvalidFormIndex;
-
-  const isFirstRender = React.useRef(true);
-
-  // When providers change, clear all forms containing provider-specific options
-  React.useEffect(() => {
-    if (!isFirstRender.current && isDonePrefilling) {
-      forms.filterVMs.clear();
-      forms.selectVMs.clear();
-      forms.networkMapping.clear();
-      forms.storageMapping.clear();
-    }
-    isFirstRender.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forms.general.values.sourceProvider, forms.general.values.targetProvider]);
 
   const onClose = () => history.push('/plans');
 
@@ -282,7 +268,21 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'General',
       component: (
         <WizardStepContainer title="General settings">
-          <GeneralForm form={forms.general} wizardMode={wizardMode} />
+          <GeneralForm
+            form={forms.general}
+            wizardMode={wizardMode}
+            afterProviderChange={() => {
+              // When providers change, clear all forms containing provider-specific options
+              forms.filterVMs.clear();
+              forms.selectVMs.clear();
+              forms.networkMapping.clear();
+              forms.storageMapping.clear();
+            }}
+            afterTargetNamespaceChange={() => {
+              // Network mapping targets are namespace-specific
+              forms.networkMapping.clear();
+            }}
+          />
         </WizardStepContainer>
       ),
       enableNext: forms.general.isValid,
@@ -342,6 +342,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Network}
+            targetNamespace={forms.general.values.targetNamespace}
             selectedVMs={selectedVMs}
             planBeingPrefilled={planBeingPrefilled}
           />
@@ -361,6 +362,7 @@ const PlanWizard: React.FunctionComponent = () => {
             sourceProvider={forms.general.values.sourceProvider}
             targetProvider={forms.general.values.targetProvider}
             mappingType={MappingType.Storage}
+            targetNamespace={forms.general.values.targetNamespace}
             selectedVMs={selectedVMs}
             planBeingPrefilled={planBeingPrefilled}
           />
@@ -374,11 +376,7 @@ const PlanWizard: React.FunctionComponent = () => {
       name: 'Type',
       component: (
         <WizardStepContainer title="Migration type">
-          <TypeForm
-            form={forms.type}
-            selectedVMs={selectedVMs}
-            sourceProvider={forms.general.values.sourceProvider}
-          />
+          <TypeForm form={forms.type} selectedVMs={selectedVMs} />
         </WizardStepContainer>
       ),
       enableNext: forms.type.isValid,
@@ -479,5 +477,3 @@ const PlanWizard: React.FunctionComponent = () => {
     </ResolvedQueries>
   );
 };
-
-export default PlanWizard;

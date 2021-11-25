@@ -21,7 +21,7 @@ import logoKonveyor from './logoKonveyor.svg';
 import { APP_BRAND, BrandType } from '@app/global-flags';
 import './AppLayout.css';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import HelpDropdown from './HelpDropdown';
+import { HelpDropdown } from './HelpDropdown';
 import { Notifications } from '@app/common/components/Notifications';
 
 interface IAppLayout {

@@ -21,10 +21,10 @@ import {
   useSetCutoverMutation,
 } from '@app/queries';
 import { MustGatherContext } from '@app/common/context';
-import ConfirmModal from '@app/common/components/ConfirmModal';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConfirmModal } from '@app/common/components/ConfirmModal';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { areAssociatedProvidersReady } from '@app/queries/helpers';
-import PlanDetailsModal from './PlanDetailsModal';
+import { PlanDetailsModal } from './PlanDetailsModal';
 import { PlanState } from '@app/common/constants';
 import { MigrationConfirmModal } from './MigrationConfirmModal';
 
@@ -127,32 +127,33 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               Duplicate
             </DropdownItem>
           </ConditionalTooltip>,
-          <ConditionalTooltip
-            key="archive-tooltip"
-            isTooltipEnabled={isPlanCompleted || isPlanArchived}
-            content={
-              isPlanArchived
-                ? 'Plans cannot be unarchived.'
-                : 'This plan cannot be archived because it is not completed.'
-            }
-          >
-            <DropdownItem
-              isDisabled={isPlanCompleted || isPlanArchived}
-              key="archive"
-              onClick={() => {
-                setKebabIsOpen(false);
-                toggleArchivePlanModal();
-              }}
-            >
-              Archive
-            </DropdownItem>
-          </ConditionalTooltip>,
+          ...(!isPlanArchived
+            ? [
+                <ConditionalTooltip
+                  key="archive-tooltip"
+                  isTooltipEnabled={isPlanCompleted}
+                  content="This plan cannot be archived because it is not completed."
+                >
+                  <DropdownItem
+                    isDisabled={isPlanCompleted || isPlanArchived}
+                    key="archive"
+                    onClick={() => {
+                      setKebabIsOpen(false);
+                      toggleArchivePlanModal();
+                    }}
+                  >
+                    Archive
+                  </DropdownItem>
+                </ConditionalTooltip>,
+              ]
+            : []),
           <ConditionalTooltip
             key="Delete"
             isTooltipEnabled={
               hasCondition(conditions, 'Executing') ||
               deletePlanMutation.isLoading ||
-              isPlanGathering
+              isPlanGathering ||
+              planState === 'Archiving'
             }
             content={
               hasCondition(conditions, 'Executing')
@@ -161,6 +162,8 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
                 ? 'This plan cannot be deleted because it is deleting'
                 : isPlanGathering
                 ? 'This plan cannot be deleted because it is running must gather service'
+                : planState === 'Archiving'
+                ? 'This plan cannot be deleted because it is being archived'
                 : ''
             }
           >
@@ -168,7 +171,8 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
               isAriaDisabled={
                 hasCondition(conditions, 'Executing') ||
                 deletePlanMutation.isLoading ||
-                isPlanGathering
+                isPlanGathering ||
+                planState === 'Archiving'
               }
               onClick={() => {
                 setKebabIsOpen(false);
@@ -229,7 +233,20 @@ export const PlanActionsDropdown: React.FunctionComponent<IPlansActionDropdownPr
         mutateResult={deletePlanMutation}
         title="Permanently delete migration plan?"
         confirmButtonText="Delete"
-        body={`All data for migration plan "${plan.metadata.name}" will be lost.`}
+        body={
+          isPlanStarted && !isPlanArchived ? (
+            <TextContent>
+              <Text>
+                Migration plan &quot;{plan.metadata.name}&quot; will be deleted. However, deleting a
+                migration plan does not remove temporary resources such as failed VMs and data
+                volumes, conversion pods, importer pods, secrets, or config maps.
+              </Text>
+              <Text>To clean up these resources, archive the plan before deleting it.</Text>
+            </TextContent>
+          ) : (
+            <>All data for migration plan &quot;{plan.metadata.name}&quot; will be lost.</>
+          )
+        }
         errorText="Cannot delete migration plan"
       />
       {isRestartModalOpen ? (

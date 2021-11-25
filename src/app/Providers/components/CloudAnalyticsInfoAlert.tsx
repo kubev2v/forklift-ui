@@ -4,7 +4,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
 import { CLOUD_MA_LINK, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
-const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
+export const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
   const [isAlertHidden, setIsAlertHidden] = useLocalStorageContext(
     LocalStorageKey.isProvidersPageMAAlertHidden
   );
@@ -36,5 +36,3 @@ const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
     </Alert>
   );
 };
-
-export default CloudAnalyticsInfoAlert;

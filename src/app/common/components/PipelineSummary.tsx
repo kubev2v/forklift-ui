@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import {
-  ResourcesEmptyIcon,
-  ResourcesAlmostFullIcon,
-  ResourcesFullIcon,
-} from '@patternfly/react-icons';
+import ResourcesEmptyIcon from '@patternfly/react-icons/dist/esm/icons/resources-empty-icon';
+import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-almost-full-icon';
+import ResourcesFullIcon from '@patternfly/react-icons/dist/esm/icons/resources-full-icon';
 import {
   global_danger_color_100 as dangerColor,
   global_disabled_color_200 as disabledColor,
@@ -17,7 +15,7 @@ import { IVMStatus } from '@app/queries/types';
 import { StepType } from '@app/common/constants';
 import './PipelineSummary.css';
 import { findCurrentStep, getStepType, isStepOnError } from '../helpers';
-import TruncatedText from './TruncatedText';
+import { TruncatedText } from './TruncatedText';
 
 interface IDashProps {
   isReached: boolean;
@@ -94,7 +92,8 @@ interface IPipelineSummaryProps {
   status: IVMStatus;
   isCanceled: boolean;
 }
-const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
+
+export const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   status,
   isCanceled,
 }: IPipelineSummaryProps) => {
@@ -117,5 +116,3 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     </Flex>
   );
 };
-
-export default PipelineSummary;

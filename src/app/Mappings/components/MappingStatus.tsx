@@ -16,7 +16,7 @@ interface IMappingStatusProps {
   className?: string;
 }
 
-const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
+export const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
   mappingType,
   mapping,
   isLabel = true,
@@ -66,5 +66,3 @@ const MappingStatus: React.FunctionComponent<IMappingStatusProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default MappingStatus;

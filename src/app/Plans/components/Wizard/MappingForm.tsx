@@ -26,6 +26,7 @@ import {
   IMetaObjectMeta,
   SourceVM,
   SourceInventoryProvider,
+  POD_NETWORK,
 } from '@app/queries/types';
 import { MappingBuilder, IMappingBuilderItem } from '@app/Mappings/components/MappingBuilder';
 import {
@@ -45,7 +46,7 @@ import { isSameResource } from '@app/queries/helpers';
 import './MappingForm.css';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
 import { isMappingValid } from '@app/Mappings/components/helpers';
-import ConditionalTooltip from '@app/common/components/ConditionalTooltip';
+import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { usePausedPollingEffect } from '@app/common/context';
 import { ProviderType } from '@app/common/constants';
 
@@ -54,15 +55,17 @@ interface IMappingFormProps {
   sourceProvider: SourceInventoryProvider | null;
   targetProvider: IOpenShiftProvider | null;
   mappingType: MappingType;
+  targetNamespace: string | null;
   selectedVMs: SourceVM[];
   planBeingPrefilled: IPlan | null;
 }
 
-const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
+export const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
   form,
   sourceProvider,
   targetProvider,
   mappingType,
+  targetNamespace,
   selectedVMs,
   planBeingPrefilled,
 }: IMappingFormProps) => {
@@ -153,10 +156,22 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     };
   }) as OptionWithValue<Mapping>[];
 
+  const filteredAvailableTargets =
+    mappingType === MappingType.Network
+      ? availableTargets.filter(
+          (network) => isSameResource(network, POD_NETWORK) || network.namespace === targetNamespace
+        )
+      : availableTargets;
+
   const populateMappingBuilder = (sourceProviderType: ProviderType, mapping?: Mapping) => {
     const newBuilderItems: IMappingBuilderItem[] = !mapping
       ? []
-      : getBuilderItemsFromMapping(mapping, mappingType, availableSources, availableTargets);
+      : getBuilderItemsFromMapping(
+          mapping,
+          mappingType,
+          availableSources,
+          filteredAvailableTargets
+        );
     form.fields.builderItems.setValue(
       getBuilderItemsWithMissingSources(
         newBuilderItems,
@@ -273,7 +288,7 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                 mappingType={mappingType}
                 sourceProviderType={sourceProvider?.type || 'vsphere'}
                 availableSources={availableSources}
-                availableTargets={availableTargets}
+                availableTargets={filteredAvailableTargets}
                 builderItems={form.values.builderItems}
                 setBuilderItems={form.fields.builderItems.setValue}
                 isWizardMode
@@ -311,5 +326,3 @@ const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
     </ResolvedQueries>
   );
 };
-
-export default MappingForm;
