@@ -1,10 +1,10 @@
 # Builder image
-FROM registry.access.redhat.com/ubi8/nodejs-14 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . .
 RUN npm install && npm run build
 
 # Runner image
-FROM registry.access.redhat.com/ubi8/nodejs-14-minimal
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
 
 # Add tar package to allow copying files with kubectl scp
 USER root
@@ -23,7 +23,7 @@ LABEL name="konveyor/forklift-ui" \
       io.k8s.display-name="forklift-ui" \
       io.k8s.description="Konveyor for Virtualization - User Interface" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="operator,konveyor,ui,nodejs14" \
+      io.openshift.tags="operator,konveyor,ui,nodejs16" \
       io.openshift.min-cpu="100m" \
       io.openshift.min-memory="350Mi"
 

@@ -6,7 +6,7 @@ A read-only preview with mock data is available at http://konveyor-forklift-ui-p
 
 ## Prerequisites
 
-- [NodeJS](https://nodejs.org/en/) >= 10.x
+- [NodeJS](https://nodejs.org/en/) >= 16.x
 
 ## Quick-start
 
