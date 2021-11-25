@@ -12,7 +12,7 @@ console.log(helpers.getBuildEnv());
 module.exports = (env) => {
   return {
     entry: {
-      app: ['react-hot-loader/patch', path.resolve(__dirname, '../src/index.tsx')],
+      app: ['react-hot-loader/patch', path.resolve(__dirname, '../packages/web/src/index.tsx')],
     },
     module: {
       rules: [
@@ -98,7 +98,7 @@ module.exports = (env) => {
         {
           test: /\.(jpg|jpeg|png|gif)$/i,
           include: [
-            path.resolve(__dirname, '../src'),
+            path.resolve(__dirname, '../packages/web/src'),
             path.resolve(__dirname, '../node_modules/patternfly'),
             path.resolve(__dirname, '../node_modules/@patternfly/patternfly/assets/images'),
             path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css/assets/images'),
@@ -143,7 +143,7 @@ module.exports = (env) => {
           ? {
               // In dev and mock-prod modes, populate window._meta and window._env at build time
               filename: 'index.html',
-              template: path.resolve(__dirname, '../src/index.html.ejs'),
+              template: path.resolve(__dirname, '../packages/web/src/index.html.ejs'),
               templateParameters: {
                 _meta: helpers.sanitizeAndEncodeMeta(helpers.getDevMeta()),
                 _env: helpers.getEncodedEnv(),
@@ -153,13 +153,16 @@ module.exports = (env) => {
           : {
               // In real prod mode, populate window._meta and window._env at run time with express
               filename: 'index.html.ejs',
-              template: `!!raw-loader!${path.resolve(__dirname, '../src/index.html.ejs')}`,
+              template: `!!raw-loader!${path.resolve(
+                __dirname,
+                '../packages/web/src/index.html.ejs'
+              )}`,
             }),
         favicon: path.resolve(
           __dirname,
           process.env.BRAND_TYPE === 'RedHat'
-            ? '../src/favicon-redhat.ico'
-            : '../src/favicon-konveyor.ico'
+            ? '../packages/web/src/favicon-redhat.ico'
+            : '../packages/web/src/favicon-konveyor.ico'
         ),
       }),
       new webpack.EnvironmentPlugin({
@@ -175,7 +178,7 @@ module.exports = (env) => {
       extensions: ['.js', '.ts', '.tsx', '.jsx'],
       plugins: [
         new TsconfigPathsPlugin({
-          configFile: path.resolve(__dirname, '../tsconfig.json'),
+          configFile: path.resolve(__dirname, '../packages/web/tsconfig.json'),
         }),
       ],
       symlinks: false,

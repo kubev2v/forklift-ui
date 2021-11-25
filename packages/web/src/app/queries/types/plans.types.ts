@@ -1,4 +1,4 @@
-import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '../types/common.types';
+import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {

@@ -1,0 +1,30 @@
+{
+  "name": "forklift-ui-api",
+  "version": "0.0.1",
+  "description": "OpenShift VM Migration UI",
+  "main": "./src/server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konveyor/forklift-ui.git"
+  },
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json",
+    "start": "node src/server.ts"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.0.6",
+    "@types/express": "^4.17.12",
+    "@types/simple-oauth2": "^4.1.0",
+    "simple-oauth2": "^4.2.0"
+  },
+  "dependencies": {
+    "dayjs": "^1.10.5",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "get-ssl-certificate": "^2.3.3",
+    "http-proxy-middleware": "^2.0.0"
+  }
+}

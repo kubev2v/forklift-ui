@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "ES2020",
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true
+  },
+  "files": [
+    "./src/server.ts"
+  ],
+  "include": ["**/*.ts",  "**/*.js"],
+  "exclude": ["node_modules", "dist"]
+}
