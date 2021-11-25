@@ -58,7 +58,14 @@ export type PlanData = {
   networkMappingData: MappingData;
   storageMappingData: MappingData;
   warmMigration?: boolean;
+  preHook?: HookData;
+  postHook?: HookData;
 };
+export type HookData = {
+  ansiblePlaybook?: string;
+  image?: string;
+};
+
 export type TestData = {
   loginData: LoginData;
   planData: PlanData;

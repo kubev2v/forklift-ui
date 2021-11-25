@@ -63,8 +63,8 @@ export class Mapping {
       const { sProvider, dProvider } = currentPeer;
       this.selectSource(sProvider);
       this.selectDestination(dProvider);
-      len -= 0;
-      if (len > 1) {
+      len -= 1;
+      if (len > 0) {
         clickByText(button, addButton);
       }
     });
@@ -85,6 +85,7 @@ export class Mapping {
 
   protected createDialog(mappingData: MappingData): void {
     const { name, mappingPeer, sProviderName, tProviderName } = mappingData;
+    cy.wait(2 * SEC);
     clickByText(button, createMapping);
     this.inputName(name);
     this.selectSourceProvider(sProviderName);

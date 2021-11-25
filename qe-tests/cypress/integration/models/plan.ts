@@ -1,4 +1,4 @@
-import { PlanData } from '../types/types';
+import { PlanData, HookData } from '../types/types';
 import {
   clickByText,
   click,
@@ -9,7 +9,6 @@ import {
   applyAction,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
-
 import {
   button,
   createPlan,
@@ -22,6 +21,7 @@ import {
   planSuccessMessage,
   planCanceledMessage,
   CreateNewNetworkMapping,
+  hookType,
 } from '../types/constants';
 
 import {
@@ -38,6 +38,9 @@ import {
   selectSourceProviderMenu,
   selectTargetNamespace,
   targetNetwork,
+  selectHooks,
+  ansibleId,
+  imageId,
 } from '../views/plan.view';
 
 export class Plan {
@@ -92,7 +95,7 @@ export class Plan {
       click(selector);
       cy.get(tdTag)
         .contains(name)
-        .parent(trTag)
+        .closest(trTag)
         .within(() => {
           click('input');
         });
@@ -133,7 +136,31 @@ export class Plan {
     next();
   }
 
-  protected hooksStep(): void {
+  protected addHook(hook: HookData): void {
+    let hookString: string;
+    if (hook.ansiblePlaybook) {
+      hookString = hook.ansiblePlaybook;
+      inputText(ansibleId, hookString);
+    } else {
+      hookString = hook.image;
+      inputText(imageId, hookString);
+    }
+    click('#modal-confirm-button');
+  }
+
+  protected hooksStep(planData: PlanData): void {
+    const { preHook, postHook } = planData;
+    if (preHook) {
+      clickByText(button, 'Add');
+      cy.log(preHook.ansiblePlaybook);
+      selectFromDroplist(selectHooks, hookType.prehook);
+      this.addHook(preHook);
+    }
+    if (postHook) {
+      clickByText(button, 'Add');
+      selectFromDroplist(selectHooks, hookType.posthook);
+      this.addHook(postHook);
+    }
     next();
   }
 
@@ -157,6 +184,10 @@ export class Plan {
     this.validateSummaryLine(reviewTargetNamespace, namespace);
   }
 
+  protected reviewHooks() {
+    //TODO:Next Task to validate pre-post hooks
+  }
+
   protected finalReviewStep(planData: PlanData): void {
     const { name, sProvider, tProvider, namespace } = planData;
     // const totalVmAmount = vmwareSourceVmList.length;
@@ -164,6 +195,7 @@ export class Plan {
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);
+    this.reviewHooks();
     clickByText(button, finish);
   }
 
@@ -226,7 +258,7 @@ export class Plan {
     this.networkMappingStep(planData);
     this.storageMappingStep(planData);
     this.selectMigrationTypeStep(planData);
-    this.hooksStep();
+    this.hooksStep(planData);
     this.finalReviewStep(planData);
   }
 
@@ -241,6 +273,7 @@ export class Plan {
     const { name, warmMigration } = planData;
     Plan.openList();
     this.run(name, 'Start');
+    click('#modal-confirm-button');
     if (warmMigration) {
       Plan.openList();
       this.run(name, 'Cutover');

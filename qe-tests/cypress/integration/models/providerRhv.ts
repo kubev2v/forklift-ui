@@ -10,7 +10,7 @@ import {
   addButtonModal,
 } from '../views/providerRhv.view';
 import { providerMenu } from '../views/provider.view';
-import { removeButton, rhv } from '../types/constants';
+import { removeButton, rhv, SEC } from '../types/constants';
 
 export class providerRhv extends Provider {
   protected runWizard(providerData: RhvProviderData): void {
@@ -44,6 +44,7 @@ export class providerRhv extends Provider {
 
   create(providerData: RhvProviderData): void {
     const { name, hostname, username, password, cert } = providerData;
+    cy.wait(2 * SEC);
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);

@@ -31,10 +31,13 @@ export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
 export const planCanceledMessage = 'Canceled';
 export const SEC = 1000;
-
 export const CreateNewNetworkMapping = 'Create a network mapping';
 export const CreateNewStorageMapping = 'Create a storage mapping';
 
+export enum hooks {
+  image = 'Custom container image',
+  ansiblePlaybook = 'Ansible Playbook',
+}
 export enum storageType {
   nfs = 'nfs',
   cephRbd = 'ocs-storagecluster-ceph-rbd',
@@ -56,4 +59,9 @@ export enum summaryTitle {
   sProvider = 'Source provider',
   tProvider = 'Target provider',
   tNamespace = 'Target namespace',
+}
+
+export enum hookType {
+  prehook = 'Pre-migration',
+  posthook = 'Post-migration',
 }
