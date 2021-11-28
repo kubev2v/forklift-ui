@@ -28,7 +28,7 @@ LABEL name="konveyor/forklift-ui" \
       io.openshift.min-memory="350Mi"
 
 COPY --from=builder /opt/app-root/src/config /opt/app-root/src/config
-COPY --from=builder /opt/app-root/src/deploy /opt/app-root/src/deploy
+COPY --from=builder /opt/app-root/src/packages/api /opt/app-root/src/packages/api
 COPY --from=builder /opt/app-root/src/dist /opt/app-root/src/dist
 COPY --from=builder /opt/app-root/src/dist/index.html.ejs /opt/app-root/src/views/index.html.ejs
 COPY --from=builder /opt/app-root/src/node_modules /opt/app-root/src/node_modules
