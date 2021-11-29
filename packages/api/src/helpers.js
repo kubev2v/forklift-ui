@@ -14,9 +14,9 @@ const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
   const configPath = path.join(__dirname, localConfigFileName);
   if (!fs.existsSync(configPath)) {
-    console.error('ERROR: config/meta.dev.json is missing');
+    console.error('ERROR: packages/api/src/meta.dev.json is missing');
     console.error(
-      'Copy config/meta.dev.json.example to config/meta.dev.json' +
+      'Copy packages/api/src/meta.dev.json.example to packages/api/src/meta.dev.json' +
         ' and optionally configure your dev settings. A valid clusterUrl is ' +
         ' required for start:remote.'
     );
