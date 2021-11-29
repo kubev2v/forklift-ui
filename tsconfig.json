@@ -5,9 +5,9 @@
     "declaration": true,
     "declarationMap": true,
     "paths": {
-      "api": ["packages/api"],
-      "qe-tests": ["packages/qe-tests"],
-      "web": ["packages/web/src"],
+      "api": ["pkg/api/src"],
+      "qe-tests": ["pkg/qe-tests"],
+      "web": ["pkg/web/src"],
     }
   }
 }

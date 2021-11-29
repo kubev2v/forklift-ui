@@ -18,7 +18,7 @@ cd forklift-ui
 npm install
 ```
 
-Create a meta.dev.json file in the config directory using [`packages/api/src/meta.dev.example.json`](./packages/api/src/meta.dev.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
+Create a meta.dev.json file in the config directory using [`pkg/api/src/meta.dev.example.json`](./pkg/api/src/meta.dev.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
 ### Environment variables:
 
@@ -30,7 +30,7 @@ Create a meta.dev.json file in the config directory using [`packages/api/src/met
 Run the UI with webpack-dev-server at [localhost:9000](http://localhost:9000):
 
 ```sh
-npm run start:dev:remote  # uses data from the API URLs in your packages/api/src/meta.dev.json file
+npm run start:dev:remote  # uses data from the API URLs in your pkg/api/src/meta.dev.json file
 npm run start:dev:mock    # uses static mock data, can run offline
 npm run start:dev         # uses the DATA_SOURCE environment variable (remote or mock)
 ```

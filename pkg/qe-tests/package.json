@@ -1,7 +1,7 @@
 {
   "name": "forklift-ui-qe-tests",
   "version": "0.0.1",
-  "main": "../packages/api/src/server.js",
+  "main": "../pkg/api/src/server.js",
   "license": "Apache-2.0",
   "private": true,
   "type": "module",

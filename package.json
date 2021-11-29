@@ -7,27 +7,27 @@
     "type": "git",
     "url": "git+https://github.com/konveyor/forklift-ui.git"
   },
-  "main": "packages/api/src/server.js",
+  "main": "pkg/api/src/server.js",
   "private": true,
   "scripts": {
     "dr:surge": "node dr-surge.js",
-    "setup:dev:remote": "node ./packages/api/scripts/remote-dev.js",
+    "setup:dev:remote": "node ./pkg/api/scripts/remote-dev.js",
     "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock FORKLIFT_UI_GIT_COMMIT=$(git rev-parse --short HEAD) npm run build && npm run dr:surge",
-    "start": "node ./packages/api/src/server.js",
+    "start": "node ./pkg/api/src/server.js",
     "start:remote": "DATA_SOURCE=remote npm run start",
     "start:mock": "DATA_SOURCE=mock npm run start",
-    "start:dev": "./packages/api/scripts/start-dev.sh",
+    "start:dev": "./pkg/api/scripts/start-dev.sh",
     "start:dev:remote": "npm run setup:dev:remote && DATA_SOURCE=remote npm run start:dev",
     "start:dev:mock": "DATA_SOURCE=mock npm run start:dev",
-    "format": "npm run format -w packages/web && npm run format -w packages/qe-tests",
-    "lint": "$(npm bin)/eslint ./packages",
+    "format": "npm run format -w pkg/web && npm run format -w pkg/qe-tests",
+    "lint": "$(npm bin)/eslint ./pkg",
     "lint:fix": "npm run lint -- --fix",
     "build:bundle-profile": "$(npm bin)webpack --config ./config/webpack.prod.js --profile --json > stats.json",
     "bundle-profile:analyze": "npm run build:bundle-profile && $(npm bin)/webpack-bundle-analyzer ./stats.json",
-    "test": "npm run test -w packages/web",
-    "type-check": "npm run tsc -w packages/web && npm run tsc -w packages/qe-tests",
+    "test": "npm run test -w pkg/web",
+    "type-check": "npm run tsc -w pkg/web && npm run tsc -w pkg/qe-tests",
     "ci": "npm run type-check && npm run lint && npm run test",
     "clean": "$(npm bin)/rimraf dist"
   },
@@ -72,8 +72,8 @@
     "webpack-merge": "^5.8.0"
   },
   "workspaces": [
-    "packages/api",
-    "packages/web",
-    "packages/qe-tests"
+    "pkg/api",
+    "pkg/web",
+    "pkg/qe-tests"
   ]
 }
