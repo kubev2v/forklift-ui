@@ -6,6 +6,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --check --write ./**/*.{ts,js}",
     "tsc": "tsc --project ./tsconfig.json --noEmit"
   },
