@@ -15,7 +15,6 @@
     "simple-oauth2": "^4.2.0"
   },
   "dependencies": {
-    "dayjs": "^1.10.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "get-ssl-certificate": "^2.3.3",
