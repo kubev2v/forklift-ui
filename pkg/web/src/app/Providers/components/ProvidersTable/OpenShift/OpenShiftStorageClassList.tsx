@@ -13,22 +13,26 @@ interface IOpenShiftStorageClassListProps {
   storageClasses: IAnnotatedStorageClass[];
 }
 
-export const OpenShiftStorageClassList: React.FunctionComponent<
-  IOpenShiftStorageClassListProps
-> = ({ provider, storageClasses }: IOpenShiftStorageClassListProps) => {
-  const isProviderReady = hasCondition(provider.status?.conditions || [], 'Ready');
-  if (!isProviderReady) {
+export const OpenShiftStorageClassList: React.FunctionComponent<IOpenShiftStorageClassListProps> =
+  ({ provider, storageClasses }: IOpenShiftStorageClassListProps) => {
+    const isProviderReady = hasCondition(provider.status?.conditions || [], 'Ready');
+    if (!isProviderReady) {
+      return (
+        <Alert
+          variant="warning"
+          isInline
+          title="Cannot view storage classes"
+          className={spacing.mMd}
+        >
+          The provider inventory data is not ready
+        </Alert>
+      );
+    }
     return (
-      <Alert variant="warning" isInline title="Cannot view storage classes" className={spacing.mMd}>
-        The provider inventory data is not ready
-      </Alert>
+      <List className={`provider-storage-classes-list ${spacing.mMd} ${spacing.mlXl}`}>
+        {storageClasses.map((storageClass) => (
+          <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
+        ))}
+      </List>
     );
-  }
-  return (
-    <List className={`provider-storage-classes-list ${spacing.mMd} ${spacing.mlXl}`}>
-      {storageClasses.map((storageClass) => (
-        <ListItem key={storageClass.name}>{storageClass.name}</ListItem>
-      ))}
-    </List>
-  );
-};
+  };
