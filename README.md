@@ -22,6 +22,11 @@ Create a meta.dev.json file in the config directory using [`pkg/api/src/meta.dev
 
 ### Environment variables:
 
+To install all workspaces packages and the top level packages run:
+```sh
+$ npm install -ws --legacy-peer-deps && npm install
+```
+
 - `DATA_SOURCE` - either `mock` or `remote`
   (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
 - `META_FILE` path (for running in prod mode with `npm run start`)
