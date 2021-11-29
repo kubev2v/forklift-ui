@@ -5,4 +5,5 @@ coverage
 .DS_Store
 .idea
 .env
+config/meta.dev.json
 pkg/api/src/meta.dev.json
