@@ -51,107 +51,108 @@ const useSelectNetworkFormState = (initialSelectedNetwork: string | null) =>
     ),
   });
 
-export const SelectOpenShiftNetworkModal: React.FunctionComponent<ISelectOpenShiftNetworkModalProps> =
-  ({
-    targetProvider,
-    targetNamespace,
-    initialSelectedNetwork,
-    instructions,
-    onClose,
-    onSubmit,
-    mutationResult,
-  }: ISelectOpenShiftNetworkModalProps) => {
-    const form = useSelectNetworkFormState(initialSelectedNetwork);
-    const networksQuery = useOpenShiftNetworksQuery(targetProvider);
-    let networksInNamespace = networksQuery.data || [];
-    if (targetNamespace) {
-      networksInNamespace = networksInNamespace.filter(
-        (network) => network.namespace === targetNamespace
-      );
-    }
-    const networks = [POD_NETWORK, ...getUniqueItemsByName(networksInNamespace)];
-    const networkOptions = networks.map((network) => ({
-      toString: () => network.name,
-      value: network,
-    }));
-
-    let selectedNetworkOption: OptionWithValue<IOpenShiftNetwork> | undefined = networkOptions[0]; // Pod network
-    if (form.values.selectedNetworkName) {
-      selectedNetworkOption = networkOptions.find(
-        (option) => option.value.name === form.values.selectedNetworkName
-      );
-    }
-
-    return (
-      <Modal
-        className="SelectOpenShiftNetworkModal"
-        variant="small"
-        title="Select migration network"
-        isOpen
-        onClose={onClose}
-        footer={
-          <Stack hasGutter>
-            {mutationResult ? (
-              <ResolvedQuery
-                result={mutationResult}
-                errorTitle="Cannot set migration network"
-                spinnerMode={QuerySpinnerMode.Inline}
-              />
-            ) : null}
-            <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-              <Button
-                id="modal-confirm-button"
-                key="confirm"
-                variant="primary"
-                isDisabled={!form.isDirty || !form.isValid || mutationResult?.isLoading}
-                onClick={() => {
-                  const isPodNetwork = isSameResource(selectedNetworkOption?.value, POD_NETWORK);
-                  onSubmit((!isPodNetwork && selectedNetworkOption?.value) || null);
-                }}
-              >
-                Select
-              </Button>
-              <Button
-                id="modal-cancel-button"
-                key="cancel"
-                variant="link"
-                onClick={onClose}
-                isDisabled={mutationResult?.isLoading}
-              >
-                Cancel
-              </Button>
-            </Flex>
-          </Stack>
-        }
-      >
-        <ResolvedQuery result={networksQuery} errorTitle="Cannot load networks">
-          <Form>
-            <TextContent>
-              <Text component="p">{instructions}</Text>
-            </TextContent>
-            <FormGroup
-              isRequired
-              fieldId="network"
-              validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
-              {...getFormGroupProps(form.fields.selectedNetworkName)}
-            >
-              <SimpleSelect
-                id="network"
-                aria-label="Migration network"
-                options={networkOptions}
-                value={[selectedNetworkOption]}
-                onChange={(selection) =>
-                  form.fields.selectedNetworkName.setValue(
-                    (selection as OptionWithValue<IOpenShiftNetwork>).value.name
-                  )
-                }
-                placeholderText="Select a network..."
-                menuAppendTo="parent"
-                maxHeight="40vh"
-              />
-            </FormGroup>
-          </Form>
-        </ResolvedQuery>
-      </Modal>
+export const SelectOpenShiftNetworkModal: React.FunctionComponent<
+  ISelectOpenShiftNetworkModalProps
+> = ({
+  targetProvider,
+  targetNamespace,
+  initialSelectedNetwork,
+  instructions,
+  onClose,
+  onSubmit,
+  mutationResult,
+}: ISelectOpenShiftNetworkModalProps) => {
+  const form = useSelectNetworkFormState(initialSelectedNetwork);
+  const networksQuery = useOpenShiftNetworksQuery(targetProvider);
+  let networksInNamespace = networksQuery.data || [];
+  if (targetNamespace) {
+    networksInNamespace = networksInNamespace.filter(
+      (network) => network.namespace === targetNamespace
     );
-  };
+  }
+  const networks = [POD_NETWORK, ...getUniqueItemsByName(networksInNamespace)];
+  const networkOptions = networks.map((network) => ({
+    toString: () => network.name,
+    value: network,
+  }));
+
+  let selectedNetworkOption: OptionWithValue<IOpenShiftNetwork> | undefined = networkOptions[0]; // Pod network
+  if (form.values.selectedNetworkName) {
+    selectedNetworkOption = networkOptions.find(
+      (option) => option.value.name === form.values.selectedNetworkName
+    );
+  }
+
+  return (
+    <Modal
+      className="SelectOpenShiftNetworkModal"
+      variant="small"
+      title="Select migration network"
+      isOpen
+      onClose={onClose}
+      footer={
+        <Stack hasGutter>
+          {mutationResult ? (
+            <ResolvedQuery
+              result={mutationResult}
+              errorTitle="Cannot set migration network"
+              spinnerMode={QuerySpinnerMode.Inline}
+            />
+          ) : null}
+          <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+            <Button
+              id="modal-confirm-button"
+              key="confirm"
+              variant="primary"
+              isDisabled={!form.isDirty || !form.isValid || mutationResult?.isLoading}
+              onClick={() => {
+                const isPodNetwork = isSameResource(selectedNetworkOption?.value, POD_NETWORK);
+                onSubmit((!isPodNetwork && selectedNetworkOption?.value) || null);
+              }}
+            >
+              Select
+            </Button>
+            <Button
+              id="modal-cancel-button"
+              key="cancel"
+              variant="link"
+              onClick={onClose}
+              isDisabled={mutationResult?.isLoading}
+            >
+              Cancel
+            </Button>
+          </Flex>
+        </Stack>
+      }
+    >
+      <ResolvedQuery result={networksQuery} errorTitle="Cannot load networks">
+        <Form>
+          <TextContent>
+            <Text component="p">{instructions}</Text>
+          </TextContent>
+          <FormGroup
+            isRequired
+            fieldId="network"
+            validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
+            {...getFormGroupProps(form.fields.selectedNetworkName)}
+          >
+            <SimpleSelect
+              id="network"
+              aria-label="Migration network"
+              options={networkOptions}
+              value={[selectedNetworkOption]}
+              onChange={(selection) =>
+                form.fields.selectedNetworkName.setValue(
+                  (selection as OptionWithValue<IOpenShiftNetwork>).value.name
+                )
+              }
+              placeholderText="Select a network..."
+              menuAppendTo="parent"
+              maxHeight="40vh"
+            />
+          </FormGroup>
+        </Form>
+      </ResolvedQuery>
+    </Modal>
+  );
+};
