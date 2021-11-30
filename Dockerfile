@@ -1,12 +1,7 @@
 # Builder image
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . .
-USER root
-RUN npm cache clean -f \
-    && npm install -g n \
-    && npm update -g nodejs@16.3.0 \
-    && npm update -g npm@8.1.0 \
-    && npm install -ws --legacy-peer-deps && npm install && npm run build
+RUN npm install -ws --legacy-peer-deps && npm install && npm run build
 
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
