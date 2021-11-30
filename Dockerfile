@@ -1,6 +1,7 @@
 # Builder image
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . .
+USER root
 RUN npm install -ws --legacy-peer-deps && npm install && npm run build
 
 # Runner image
