@@ -73,13 +73,13 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
-export const planData: PlanData = {
+export const originalPlanData: PlanData = {
   name: 'testplan-separate-mapping-cold',
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: 'MTV_7.0',
-  vmwareSourceVmList: ['v2v-rhel7-2nic-2disk-igor'],
+  vmList: ['v2v-rhel7-2nic-2disk-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,
@@ -90,7 +90,29 @@ export const planData: PlanData = {
   postHook: postHookData,
 };
 
+export const duplicatePlanData: PlanData = {
+  name: 'copy-of-testplan-separate-mapping-cold',
+  sProvider: providerData.name,
+  tProvider: 'host',
+  namespace: 'openshift-mtv',
+  sourceClusterName: 'MTV_7.0',
+  vmList: ['v2v-rhel7-2nic-2disk-igor'],
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
+export const duplicateTestData: TestData = {
+  loginData: loginData,
+  planData: duplicatePlanData,
+};
+
 export const testData: TestData = {
   loginData: loginData,
-  planData: planData,
+  planData: originalPlanData,
 };

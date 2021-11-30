@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es5", "dom"],
+    "lib": ["es5", "dom", "ES2019"],
     "types": ["cypress", "@testing-library/cypress"],
     "skipLibCheck": true,
     "noEmit": true,

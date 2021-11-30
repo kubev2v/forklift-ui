@@ -72,7 +72,7 @@ export const planData: PlanData = {
   tProvider: 'mgn05',
   namespace: 'default',
   sourceClusterName: 'smicro-5037-08.cfme.lab.eng.rdu2.redhat.com',
-  vmwareSourceVmList: ['v2v-rhel7-igor'],
+  vmList: ['v2v-rhel7-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: sourceVmwareData,

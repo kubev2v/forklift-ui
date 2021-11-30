@@ -33,6 +33,8 @@ export const planCanceledMessage = 'Canceled';
 export const SEC = 1000;
 export const CreateNewNetworkMapping = 'Create a network mapping';
 export const CreateNewStorageMapping = 'Create a storage mapping';
+export const restartButton = 'Restart';
+export const duplicateButton = 'Duplicate';
 
 export enum hooks {
   image = 'Custom container image',

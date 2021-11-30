@@ -40,12 +40,35 @@ export function applyAction(itemName: string, action: string): void {
       click(kebab);
     });
   clickByText(kebabDropDownItem, action);
-  clickByText(button, action);
+  //Removed extra confirm button doesn't need for duplicate method
+  //Added in restart and delete Method
 }
 
 export function selectFromDroplist(selector: string, point: string): void {
   click(selector);
   clickByText(button, point);
+}
+
+//function to select checkboxes
+export function selectCheckBox(selector: string): void {
+  cy.get(selector).then(($checkbox) => {
+    if (!$checkbox.prop('checked')) {
+      click(selector);
+    }
+  });
+}
+
+export function unSelectCheckBox(selector: string): void {
+  cy.get(selector).then(($checkbox) => {
+    if ($checkbox.prop('checked')) {
+      click(selector);
+    }
+  });
+}
+
+//function to fiter array using two different config
+export function filterArray(originalArray: string[], duplicateArray: string[]): string[] {
+  return originalArray.filter((orig) => !duplicateArray.find((dup) => dup === orig));
 }
 
 export function next(): void {

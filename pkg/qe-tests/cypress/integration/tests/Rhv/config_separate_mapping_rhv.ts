@@ -48,10 +48,6 @@ export const storageMappingPeer: MappingPeer[] = [
     sProvider: 'v2v-fc',
     dProvider: storageType.nfs,
   },
-  {
-    sProvider: 'hosted_storage',
-    dProvider: storageType.nfs,
-  },
 ];
 
 export const networkMapping: MappingData = {
@@ -76,13 +72,13 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
-export const planData: PlanData = {
+export const originalPlanData: PlanData = {
   name: 'testplan-rhv-rhel8-separate-mapping-cold',
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: 'MTV',
-  vmwareSourceVmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
+  vmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,
@@ -93,7 +89,29 @@ export const planData: PlanData = {
   postHook: postHookData,
 };
 
+export const duplicatePlanData: PlanData = {
+  name: 'copy-of-testplan-rhv-rhel8-separate-mapping-cold',
+  sProvider: providerData.name,
+  tProvider: 'host',
+  namespace: 'openshift-mtv', //another namespace
+  sourceClusterName: 'MTV',
+  vmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
+export const duplicateTestData: TestData = {
+  loginData: loginData,
+  planData: duplicatePlanData,
+};
+
 export const testData: TestData = {
   loginData: loginData,
-  planData: planData,
+  planData: originalPlanData,
 };

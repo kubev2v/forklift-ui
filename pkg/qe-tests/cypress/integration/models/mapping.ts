@@ -108,5 +108,6 @@ export class Mapping {
   delete(mappingData: MappingData): void {
     const { name } = mappingData;
     applyAction(name, deleteButton);
+    clickByText(button, deleteButton); //Added confirm button
   }
 }

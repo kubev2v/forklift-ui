@@ -30,7 +30,7 @@ describe('Creating provider and deleting', () => {
     plan.create(testData.planData);
   });
 
-  it('Running plan created in a previous tests', () => {
+  it.skip('Running plan created in a previous tests', () => {
     plan.execute(testData.planData);
   });
 });
