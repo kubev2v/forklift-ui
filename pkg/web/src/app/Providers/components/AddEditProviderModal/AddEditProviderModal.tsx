@@ -299,14 +299,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
-                    inputProps={{
-                      onBlur: () => {
-                        fields.hostname?.setIsTouched(true);
-                      },
-                      onFocus: () => {
-                        fields.hostname?.setIsTouched(false);
-                      },
-                    }}
                   />
                 ) : null}
                 {fields?.username ? (
@@ -337,9 +329,9 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         id="certificate-confirm-button"
                         key="confirm"
                         variant="primary"
-                        isDisabled={!fields?.hostname?.isValid}
+                        isDisabled={!fields.hostname?.isValid}
                         onClick={() => {
-                          if (fields?.hostname?.isValid) {
+                          if (fields.hostname?.isValid) {
                             setHostname(fields.hostname.value);
                             setCertificateQueryEnabled(true);
                           }
@@ -393,14 +385,14 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                           isChecked={fields?.isCertificateValid?.value}
                           onChange={() => {
                             fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
-                            if (fields?.isCertificateValid?.value) {
+                            if (fields.isCertificateValid?.value !== true) {
                               if (certificate && fields?.fingerprint) {
                                 if (certificate.fingerprint !== '') {
-                                  fields?.fingerprint?.setValue(certificate.fingerprint);
+                                  fields.fingerprint?.setValue(certificate.fingerprint);
                                 }
                               }
                             } else {
-                              fields?.fingerprint?.setValue('');
+                              fields.fingerprint?.setValue('');
                             }
                           }}
                         />
