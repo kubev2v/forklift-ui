@@ -15,7 +15,7 @@
     "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock FORKLIFT_UI_GIT_COMMIT=$(git rev-parse --short HEAD) npm run build && npm run dr:surge",
-    "start": "node ./pkg/api/src/server.js",
+    "start": "npm run start -w pkg/api",
     "start:remote": "DATA_SOURCE=remote npm run start",
     "start:mock": "DATA_SOURCE=mock npm run start",
     "start:dev": "./pkg/api/scripts/start-dev.sh",
