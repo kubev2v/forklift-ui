@@ -24,7 +24,7 @@
     "format": "npm run format -ws --if-present",
     "lint": "npm run lint -ws --if-present",
     "lint:fix": "npm run lint:fix -ws --if-present",
-    "build:bundle-profile": "$(npm bin)webpack --config ./config/webpack.prod.js --profile --json > stats.json",
+    "build:bundle-profile": "$(npm bin)/webpack --config ./config/webpack.prod.js --profile --json > stats.json",
     "bundle-profile:analyze": "npm run build:bundle-profile && $(npm bin)/webpack-bundle-analyzer ./stats.json",
     "test": "npm run test -w pkg/web",
     "type-check": "npm run tsc -ws --if-present",
