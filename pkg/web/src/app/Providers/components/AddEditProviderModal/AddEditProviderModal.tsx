@@ -299,6 +299,13 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
+                    inputProps={{
+                      onFocus: (field) => {
+                        setCertificateQueryEnabled(false);
+                        fields.isCertificateValid?.setValue(false);
+                        field.setIsTouched(false);
+                      },
+                    }}
                   />
                 ) : null}
                 {fields?.username ? (
@@ -329,12 +336,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         id="certificate-confirm-button"
                         key="confirm"
                         variant="primary"
-                        isDisabled={!fields.hostname?.isValid}
+                        isDisabled={!fields.hostname?.isValid || false}
                         onClick={() => {
-                          if (fields.hostname?.isValid) {
-                            setHostname(fields.hostname.value);
-                            setCertificateQueryEnabled(true);
-                          }
+                          setHostname(fields.hostname?.value || '');
+                          setCertificateQueryEnabled(true);
                         }}
                       >
                         Verify certificate
