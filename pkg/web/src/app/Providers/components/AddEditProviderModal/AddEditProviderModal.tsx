@@ -206,9 +206,11 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     ? createProviderMutation
     : patchProviderMutation;
 
-  const [hostname, setHostname] = React.useState('');
   const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
-  const { status, error, certificate } = useCertificateQuery(hostname, isCertificateQueryEnabled);
+  const { status, error, certificate } = useCertificateQuery(
+    fields?.hostname?.value || '',
+    isCertificateQueryEnabled
+  );
 
   return (
     <Modal
@@ -300,10 +302,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     isRequired
                     fieldId="hostname"
                     inputProps={{
-                      onFocus: (field) => {
+                      onChange: (field: string) => {
                         setCertificateQueryEnabled(false);
                         fields.isCertificateValid?.setValue(false);
-                        field.setIsTouched(false);
+                        fields.hostname?.setValue(field);
                       },
                     }}
                   />
@@ -336,9 +338,8 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         id="certificate-confirm-button"
                         key="confirm"
                         variant="primary"
-                        isDisabled={!fields.hostname?.isValid || false}
+                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid}
                         onClick={() => {
-                          setHostname(fields.hostname?.value || '');
                           setCertificateQueryEnabled(true);
                         }}
                       >
