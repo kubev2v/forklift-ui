@@ -1,4 +1,4 @@
-export const ocpinstanceName = '#openshift-name';
+export const ocpinstanceName = '#name'; //replaced openshift-name to name
 export const instanceUrl = '#openshift-url';
 export const instanceToken = '#openshift-sa-token';
 export const addButtonModal = '#modal-confirm-button';

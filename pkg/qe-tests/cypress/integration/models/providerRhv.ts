@@ -10,7 +10,7 @@ import {
   addButtonModal,
 } from '../views/providerRhv.view';
 import { providerMenu } from '../views/provider.view';
-import { removeButton, rhv, SEC } from '../types/constants';
+import { removeButton, rhv, SEC, button } from '../types/constants';
 
 export class providerRhv extends Provider {
   protected runWizard(providerData: RhvProviderData): void {
@@ -53,9 +53,11 @@ export class providerRhv extends Provider {
     this.fillCaCert(cert);
     click(addButtonModal);
   }
+
   delete(providerData: RhvProviderData): void {
     const { name } = providerData;
     providerRhv.openList();
     applyAction(name, removeButton);
+    clickByText(button, removeButton); //Confirm Button
   }
 }

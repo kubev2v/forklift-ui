@@ -50,7 +50,7 @@ export type PlanData = {
   tProvider: string;
   namespace: string;
   sourceClusterName: string;
-  vmwareSourceVmList: string[];
+  vmList: string[];
   useExistingNetworkMapping: boolean;
   useExistingStorageMapping: boolean;
   providerData: ProviderData;

@@ -7,6 +7,9 @@ import {
   openSidebarMenu,
   selectFromDroplist,
   applyAction,
+  selectCheckBox,
+  unSelectCheckBox,
+  filterArray,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import {
@@ -22,6 +25,8 @@ import {
   planCanceledMessage,
   CreateNewNetworkMapping,
   hookType,
+  restartButton,
+  duplicateButton,
 } from '../types/constants';
 
 import {
@@ -83,29 +88,43 @@ export class Plan {
   protected filterVm(planData: PlanData): void {
     const { sourceClusterName } = planData;
     const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
-    click(selector);
+    selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
 
   protected selectVm(planData: PlanData): void {
-    const { vmwareSourceVmList } = planData;
+    const { vmList } = planData;
     const selector = `[aria-label="search button for search input"]`;
-    vmwareSourceVmList.forEach((name) => {
+    vmList.forEach((name) => {
       inputText(searchInput, name);
       click(selector);
       cy.get(tdTag)
         .contains(name)
         .closest(trTag)
         .within(() => {
-          click('input');
+          selectCheckBox('input');
+        });
+    });
+  }
+  //Method to unselect VMs those are not needed
+  protected unSelectVm(vmList: string[]): void {
+    const selector = `[aria-label="search button for search input"]`;
+    vmList.forEach((name) => {
+      inputText(searchInput, name);
+      click(selector);
+      cy.get(tdTag)
+        .contains(name)
+        .closest(trTag)
+        .within(() => {
+          unSelectCheckBox('input');
         });
     });
     next();
   }
-
-  protected vmSelectionStep(planData: PlanData): void {
+  protected vmSelectionStep(planData): void {
     this.filterVm(planData);
     this.selectVm(planData);
+    next();
   }
 
   protected networkMappingStep(planData: PlanData): void {
@@ -123,7 +142,6 @@ export class Plan {
         });
       }
     }
-
     next();
   }
 
@@ -134,6 +152,7 @@ export class Plan {
       selectFromDroplist(mappingDropdown, name);
     }
     next();
+    //TODO:storageMappingStep should be refactored to fix workaround for duplicate function only
   }
 
   protected addHook(hook: HookData): void {
@@ -234,7 +253,7 @@ export class Plan {
   }
 
   protected cancel(name: string): void {
-    this.plan_details(name);
+    //this.plan_details(name);  // Not Needed
     cy.get(`[aria-label="Select row 0"]`, { timeout: 20000 }).should('be.enabled').check();
     clickByText(button, 'Cancel');
     clickByText(button, 'Yes, cancel');
@@ -266,6 +285,7 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     applyAction(name, deleteButton);
+    clickByText(button, deleteButton); //Added Confirm Button
     cy.wait(2 * SEC);
   }
 
@@ -282,19 +302,17 @@ export class Plan {
   }
 
   restart(name: string): void {
-    cy.get(tdTag)
-      .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
-      .within(() => {
-        clickByText(button, 'Restart');
-      });
+    Plan.openList();
+    applyAction(name, restartButton);
+    clickByText(button, 'Restart'); //Added Confirm Button
   }
 
   cancel_and_restart(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
     this.run(name, 'Start');
+    click('#modal-confirm-button');
+    cy.wait(10000);
     this.cancel(name);
     this.waitForCanceled(name);
     this.restart(name);
@@ -302,5 +320,38 @@ export class Plan {
     openSidebarMenu();
     clickByText(navMenuPoint, migrationPLan);
     this.waitForSuccess(name);
+  }
+
+  cancel_plan(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    cy.wait(2000);
+    this.run(name, 'Start');
+    click('#modal-confirm-button');
+    cy.wait(10000);
+    this.cancel(name);
+    this.waitForCanceled(name);
+  }
+
+  duplicate(originalPlanData: PlanData, duplicatePlanData: PlanData): void {
+    const { name } = originalPlanData;
+    const vmListRemove = filterArray(originalPlanData.vmList, duplicatePlanData.vmList);
+    Plan.openList();
+    applyAction(name, duplicateButton);
+    if (originalPlanData === duplicatePlanData) {
+      cy.wait(2000);
+      clickByText(button, 'Review');
+      clickByText(button, finish);
+    } else {
+      this.generalStep(duplicatePlanData);
+      this.filterVm(duplicatePlanData);
+      this.selectVm(duplicatePlanData);
+      this.unSelectVm(vmListRemove);
+      this.networkMappingStep(duplicatePlanData);
+      next();
+      this.selectMigrationTypeStep(duplicatePlanData);
+      this.hooksStep(duplicatePlanData);
+      this.finalReviewStep(duplicatePlanData);
+    }
   }
 }
