@@ -33,6 +33,7 @@
     "@konveyor/lib-ui": "^5.0.0",
     "@patternfly/react-core": "^4.175.4",
     "@patternfly/react-icons": "^4.26.4",
+    "@patternfly/react-log-viewer": "^4.20.4",
     "@patternfly/react-styles": "^4.25.4",
     "@patternfly/react-table": "^4.44.4",
     "@patternfly/react-tokens": "^4.27.4",

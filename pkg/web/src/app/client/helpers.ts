@@ -41,6 +41,7 @@ export enum ForkliftResourceKind {
   Host = 'hosts',
   Provisioners = 'provisioners',
   Hook = 'hooks',
+  Pods = 'pods'
 }
 
 export const secretResource = new CoreNamespacedResource(
@@ -50,6 +51,7 @@ export const secretResource = new CoreNamespacedResource(
 );
 
 export const providerResource = new ForkliftResource(ForkliftResourceKind.Provider, META.namespace);
+export const podsResource = new ForkliftResource(ForkliftResourceKind.Pods, META.namespace);
 
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,
@@ -60,23 +62,23 @@ export function convertFormValuesToSecret(
   if (values.providerType === 'vsphere') {
     const vmwareValues = values as VMwareProviderFormValues;
     secretData = {
-      user: btoa(vmwareValues.username),
-      password: btoa(vmwareValues.password),
-      thumbprint: btoa(vmwareValues.fingerprint),
+      user: Buffer.from(vmwareValues.username).toString('base64'),
+      password: Buffer.from(vmwareValues.password).toString('base64'),
+      thumbprint: Buffer.from(vmwareValues.fingerprint).toString('base64'),
     };
   }
   if (values.providerType === 'ovirt') {
     const rhvValues = values as RHVProviderFormValues;
     secretData = {
-      user: btoa(rhvValues.username),
-      password: btoa(rhvValues.password),
-      cacert: btoa(rhvValues.caCert),
+      user: Buffer.from(rhvValues.username).toString('base64'),
+      password: Buffer.from(rhvValues.password).toString('base64'),
+      cacert: Buffer.from(rhvValues.caCert).toString('base64'),
     };
   }
   if (values.providerType === 'openshift') {
     const openshiftValues = values as OpenshiftProviderFormValues;
     secretData = {
-      token: btoa(openshiftValues.saToken),
+      token: Buffer.from(openshiftValues.saToken).toString('base64'),
     };
   }
   return {
