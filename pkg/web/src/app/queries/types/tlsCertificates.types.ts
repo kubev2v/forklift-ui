@@ -5,7 +5,7 @@ export interface ITLSCertificate {
   };
   issuer: {
     CN: string;
-    DC: string;
+    DC: string[];
     C: string;
     ST: string;
     O: string;

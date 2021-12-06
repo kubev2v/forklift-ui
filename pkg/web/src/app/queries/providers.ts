@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useQueryClient, UseQueryResult, UseMutationResult, useQuery } from 'react-query';
+import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
 import * as yup from 'yup';
 import Q from 'q';
 
@@ -14,6 +14,7 @@ import {
   sortIndexedDataByName,
 } from './helpers';
 import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
+import { MOCK_TLS_CERTIFICATE } from './mocks/tlsCertificates.mock';
 import {
   IProvidersByType,
   InventoryProvider,
@@ -395,14 +396,17 @@ const getCertificate = async (hostname: string) => {
   return certificate;
 };
 
-export const useCertificateQuery = (hostname: string, enabled: boolean) => {
-  const { status, error, data } = useQuery<ITLSCertificate, Error>(
-    ['certificate', hostname],
-    () => getCertificate(hostname || ''),
+export const useCertificateQuery = (
+  hostname: string,
+  enabled: boolean
+): UseQueryResult<ITLSCertificate> => {
+  const result = useMockableQuery<ITLSCertificate>(
     {
+      queryKey: ['certificate', hostname],
+      queryFn: () => getCertificate(hostname),
       enabled: enabled,
-    }
+    },
+    MOCK_TLS_CERTIFICATE
   );
-
-  return { status: status, error: error, certificate: data };
+  return result;
 };

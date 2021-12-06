@@ -207,7 +207,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     : patchProviderMutation;
 
   const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
-  const { status, error, certificate } = useCertificateQuery(
+  const { status, data } = useCertificateQuery(
     fields?.hostname?.value || '',
     isCertificateQueryEnabled
   );
@@ -362,7 +362,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Issuer</DescriptionListTerm>
                                   <DescriptionListDescription id="issuer">
-                                    {`${certificate?.issuer.O} - ${certificate?.issuer.OU}`}
+                                    {`${data?.issuer.O} - ${data?.issuer.OU}`}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
@@ -370,13 +370,13 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                     vCenter SHA-1 fingerprint
                                   </DescriptionListTerm>
                                   <DescriptionListDescription id="fingerprint">
-                                    {certificate?.fingerprint}
+                                    {data?.fingerprint}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Expiration date</DescriptionListTerm>
                                   <DescriptionListDescription id="expriry">
-                                    {certificate?.valid_to}
+                                    {data?.valid_to}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                               </DescriptionList>
@@ -392,9 +392,9 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                           onChange={() => {
                             fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
                             if (fields.isCertificateValid?.value !== true) {
-                              if (certificate && fields?.fingerprint) {
-                                if (certificate.fingerprint !== '') {
-                                  fields.fingerprint?.setValue(certificate.fingerprint);
+                              if (data && fields?.fingerprint) {
+                                if (data.fingerprint !== '') {
+                                  fields.fingerprint?.setValue(data.fingerprint);
                                 }
                               }
                             } else {
@@ -404,7 +404,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         />
                       </>
                     ) : (
-                      <Text>Cannot retrieve certificate: {error?.message} </Text>
+                      <Text>Error: Cannot retrieve certificate</Text>
                     )}
                   </>
                 ) : null}
