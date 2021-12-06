@@ -12,7 +12,7 @@
     "tsc": "tsc --project ./tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "@testing-library/cypress": "^7.0.6",
-    "cypress": "^7.5.0"
+    "@testing-library/cypress": "^8.0.2",
+    "cypress": "^9.1.1"
   }
 }
