@@ -5,7 +5,7 @@ const https = require('https');
 const fs = require('fs');
 const dayjs = require('dayjs');
 
-const helpers = require('../config/helpers');
+const helpers = require('./helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');

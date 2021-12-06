@@ -1,29 +1,13 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": ".",
-    "outDir": "dist",
-    "module": "esnext",
-    "target": "es5",
-    "lib": ["es6", "dom", "es2019"],
-    "sourceMap": true,
-    "jsx": "react",
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": false,
-    "allowJs": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@assets/*": ["node_modules/@patternfly/react-core/dist/styles/assets/*"]
-    },
-    "importHelpers": true,
-    "skipLibCheck": true
-  },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.jsx", "**/*.js"],
-  "exclude": ["node_modules", "qe-tests"]
+      "api": ["pkg/api/src"],
+      "qe-tests": ["pkg/qe-tests"],
+      "web": ["pkg/web/src"],
+    }
+  }
 }

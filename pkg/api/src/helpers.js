@@ -10,11 +10,13 @@ const sanitizeMeta = (meta) => {
 
 const localConfigFileName = 'meta.dev.json';
 
+const configDir = './config';
+
 const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
-  const configPath = path.join(__dirname, localConfigFileName);
+  const configPath = path.join(configDir, localConfigFileName);
   if (!fs.existsSync(configPath)) {
-    console.error('ERROR: config/meta.dev.json is missing');
+    console.error(`ERROR: ${configDir}/${localConfigFileName} is missing`);
     console.error(
       'Copy config/meta.dev.json.example to config/meta.dev.json' +
         ' and optionally configure your dev settings. A valid clusterUrl is ' +
