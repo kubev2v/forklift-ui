@@ -49,7 +49,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.getByLabelText(/provider type/i);
+    const typeButton = await screen.findByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const oVirtButton = await screen.findByRole('option', { name: /ovirt/i, hidden: true });
     userEvent.click(oVirtButton);
@@ -88,7 +88,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.getByLabelText(/provider type/i);
+    const typeButton = await screen.findByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
     userEvent.click(vsphereButton);
@@ -100,20 +100,23 @@ describe('<AddEditProviderModal />', () => {
       });
       const username = screen.getByRole('textbox', { name: /vCenter user name/i });
       const password = screen.getByLabelText(/^vCenter password/);
-      const certFingerprint = screen.getByRole('textbox', {
-        name: /vCenter sha-1 fingerprint/i,
-      });
 
       userEvent.type(name, 'providername');
       userEvent.type(hostname, 'host.example.com');
+      userEvent.click(username);
       userEvent.type(username, 'username');
       userEvent.type(password, 'password');
-      userEvent.type(
-        certFingerprint,
-        'AA:39:A3:EE:5E:6B:4B:0D:32:55:BF:EF:95:60:18:90:AF:D8:07:09'
-      );
     });
 
+    const verifyButton = await screen.findByLabelText(/verify certificate/i);
+    await waitFor(() => {
+      userEvent.click(verifyButton);
+    });
+
+    expect(
+      screen.getByText('39:5C:6A:2D:36:38:B2:52:2B:21:EA:74:11:59:89:5E:20:D5:D9:A2')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /validate certificate/i })).not.toBeChecked();
     const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
     expect(addButton).toBeEnabled();
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
@@ -131,7 +134,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.getByLabelText(/provider type/i);
+    const typeButton = await screen.findByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
     userEvent.click(vsphereButton);
@@ -143,18 +146,11 @@ describe('<AddEditProviderModal />', () => {
       });
       const username = screen.getByRole('textbox', { name: /vCenter user name/i });
       const password = screen.getByLabelText(/^vCenter password/);
-      const certFingerprint = screen.getByRole('textbox', {
-        name: /vCenter sha-1 fingerprint/i,
-      });
 
       userEvent.type(name, 'providername');
       userEvent.type(hostname, 'hostname');
       userEvent.type(username, 'username');
       userEvent.type(password, 'password');
-      userEvent.type(
-        certFingerprint,
-        'AA:39:A3:EE:5E:6B:4B:0D:32:55:BF:EF:95:60:18:90:AF:D8:07:09'
-      );
     });
 
     const addButton = await screen.findByRole('button', { name: /Add/ });
@@ -193,7 +189,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.getByLabelText(/provider type/i);
+    const typeButton = await screen.findByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);
@@ -225,7 +221,7 @@ describe('<AddEditProviderModal />', () => {
       </QueryClientProvider>
     );
 
-    const typeButton = await screen.getByLabelText(/provider type/i);
+    const typeButton = await screen.findByLabelText(/provider type/i);
     userEvent.click(typeButton);
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
     userEvent.click(openshiftButton);
