@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": ".",
+    "module": "commonjs",
+    "lib": ["ES2021"],
+    "target": "ES2021",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,  
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "files": true,
+  },
+  "files": ["src/server.ts"],
+  "include": ["src/**/*.ts",  "src/**/*.js"],
+}

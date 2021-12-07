@@ -1,21 +1,32 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const express = require('express');
-const https = require('https');
-const fs = require('fs');
-const dayjs = require('dayjs');
+import path from 'path';
+import express from 'express';
+import { createServer } from 'https';
+import { readFileSync } from 'fs';
+import dayjs from 'dayjs';
+import { renderFile } from 'ejs';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import sslCertificate from 'get-ssl-certificate';
+import { URLSearchParams } from 'url';
 
-const helpers = require('./helpers');
-const { getClusterAuth } = require('./oAuthHelpers');
+import * as helpers from './helpers';
+import { getClusterAuth } from './oAuthHelpers';
 
-const { createProxyMiddleware } = require('http-proxy-middleware');
+interface IProxyConfigObj {
+  target: string;
+  changeOrigin: boolean;
+  pathRewrite: {
+    [apiPart: string]: string;
+  };
+  logLevel: 'debug' | 'info';
+  secure?: boolean;
+}
 
 let metaStr;
 if (process.env['DATA_SOURCE'] === 'mock') {
   metaStr = '{ "oauth": {} }';
 } else {
   const metaFile = process.env['META_FILE'] || '/srv/meta.json';
-  metaStr = fs.readFileSync(metaFile, 'utf8');
+  metaStr = readFileSync(metaFile, 'utf8');
 }
 
 console.log('\nEnvironment at run time:\n');
@@ -30,7 +41,7 @@ const port =
   process.env['EXPRESS_PORT'] || (process.env['UI_TLS_ENABLED'] !== 'false' ? 8443 : 8080);
 const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
 
-app.engine('ejs', require('ejs').renderFile);
+app.engine('ejs', renderFile);
 app.use(express.static(staticDir));
 
 if (process.env['DATA_SOURCE'] !== 'mock') {
@@ -60,7 +71,8 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     };
     try {
       const clusterAuth = await getClusterAuth(meta);
-      const accessToken = await clusterAuth.getToken(options);
+      // TODO fix type
+      const accessToken = await clusterAuth.getToken(options.redirect_uri);
       const currentUnixTime = dayjs().unix();
       const user = {
         ...accessToken.token,
@@ -77,7 +89,6 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
   });
 
   app.get('/get-certificate', async (req, res) => {
-    const sslCertificate = require('get-ssl-certificate');
     sslCertificate
       .get(req.query.url, 250, 443, 'https:')
       .then((certificate) => {
@@ -93,31 +104,34 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
       });
   });
 
-  let clusterApiProxyOptions = {
+  let clusterApiProxyOptions: IProxyConfigObj = {
     target: meta.clusterApi,
     changeOrigin: true,
     pathRewrite: {
       '^/cluster-api/': '/',
     },
     logLevel: process.env.DEBUG ? 'debug' : 'info',
+    secure: true,
   };
 
-  let inventoryApiProxyOptions = {
+  let inventoryApiProxyOptions: IProxyConfigObj = {
     target: meta.inventoryApi,
     changeOrigin: true,
     pathRewrite: {
       '^/inventory-api/': '/',
     },
     logLevel: process.env.DEBUG ? 'debug' : 'info',
+    secure: true,
   };
 
-  let mustGatherApiProxyOptions = {
+  let mustGatherApiProxyOptions: IProxyConfigObj = {
     target: meta.mustGatherApi,
     changeOrigin: true,
     pathRewrite: {
       '^/must-gather-api/': '/',
     },
     logLevel: process.env.DEBUG ? 'debug' : 'info',
+    secure: true,
   };
 
   /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
@@ -187,14 +201,14 @@ if (
   process.env['DATA_SOURCE'] !== 'mock'
 ) {
   const options = {
-    key: fs.readFileSync(
+    key: readFileSync(
       process.env['UI_TLS_KEY'] || '/var/run/secrets/forklift-ui-serving-cert/tls.key'
     ),
-    cert: fs.readFileSync(
+    cert: readFileSync(
       process.env['UI_TLS_CERTIFICATE'] || '/var/run/secrets/forklift-ui-serving-cert/tls.crt'
     ),
   };
-  https.createServer(options, app).listen(port);
+  createServer(options, app).listen(port);
 } else {
   app.listen(port, () => console.log(`Listening on port ${port}`));
 }
