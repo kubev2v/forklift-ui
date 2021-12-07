@@ -89,6 +89,9 @@ export const getInventoryApiUrl = (relativePath: string): string =>
 export const getMustGatherApiUrl = (relativePath?: string): string =>
   `/must-gather-api/${relativePath || ''}`;
 
+export const getClusterApiUrl = (relativePath?: string): string =>
+  `/cluster-api/${relativePath || ''}`;
+
 export const getAggregateQueryStatus = (queryResults: UnknownResult[]): QueryStatus => {
   if (queryResults.some((result) => result.isError)) return 'error';
   if (queryResults.some((result) => result.isLoading)) return 'loading';

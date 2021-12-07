@@ -1,8 +1,25 @@
-import { useMockableMutation, getInventoryApiUrl } from './helpers';
+import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
+import { useMockableMutation, getInventoryApiUrl, getClusterApiUrl, useMockableQuery } from './helpers';
 import {
   authorizedFetch,
+  useAuthorizedK8sClient,
   useFetchContext,
 } from './fetchHelpers';
+import { IKubeList } from '@app/client/types';
+import { usePollingContext } from '@app/common/context';
+import { podsResource } from '@app/client/helpers';
+
+export const useClusterPodsQuery = (): UseQueryResult<IKubeList<any>> => {
+  const client = useAuthorizedK8sClient();
+  return useMockableQuery<any>(
+    {
+      queryKey: 'pod-logs',
+      queryFn: async () => (await client.list<IKubeList<any>>(podsResource)).data,
+      refetchInterval: usePollingContext().refetchInterval,
+    },
+    ''
+  );
+};
 
 export const usePodLogsQuery = (
   url?: string,
@@ -18,15 +35,20 @@ export const usePodLogsQuery = (
       return new Promise((res, rej) => {
         authorizedFetch<any>(
           // getInventoryApiUrl('/namespaces/${providerResource.namespace}/pods/forklift-controller-ddf5f5548-92b54/log'),
-          // '/namespaces/konveyor-forklift/pods/forklift-controller/log',
+          // 'healthz',
+          // 'api/v1/namespaces/konveyor-forklift/pods/forklift-controller/log',
           // getInventoryApiUrl('providers?detail=1'),
-          getInventoryApiUrl(
-            'namespaces/konveyor-forklift/pods/forklift-controller-ddf5f5548-92b54/log'
+          getClusterApiUrl(
+            // 'namespaces/konveyor-forklift/pods/forklift-controller-ddf5f5548-92b54/log'
+            'healthz'
+            // 'namespaces/konveyor-forklift/pods/forklift-ui/log'
+            // 'api/v1/namespaces/konveyor-forklift/pods/forklift-controller/log'
           ),
           fetchContext,
-          { 'Content-Type': 'application/json' },
+          { 'Content-Type': 'text/plain; charset=utf-8' },
+          // {},
           'get',
-          'json',
+          'text/plain',
           true,
           options
         )

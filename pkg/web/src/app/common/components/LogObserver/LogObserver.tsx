@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { PageSection, Title } from '@patternfly/react-core';
-import { LogViewer } from '@patternfly/react-log-viewer';
+import { PageSection, Title, Toolbar, ToolbarItem, ToolbarContent } from '@patternfly/react-core';
+import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
 import { usePodLogsQuery } from '@app/queries/logs';
 import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
@@ -16,7 +16,7 @@ export const LogObserver: React.FunctionComponent<ILogObserverProps> = () => {
     logs.mutate({});
   }, []);
 
-  console.log(logs.data);
+  logs.data && logs.data.text().then(result => console.log(result))
 
   return (
     <>
@@ -25,7 +25,19 @@ export const LogObserver: React.FunctionComponent<ILogObserverProps> = () => {
       </PageSection>
 
       <PageSection>
-        <LogViewer data={MOCK_LOGS[4]} height={300} theme="dark" />
+        <LogViewer
+              toolbar={
+                <Toolbar>
+                  <ToolbarContent>
+                    <ToolbarItem>
+                      <LogViewerSearch minSearchChars={3} placeholder="Search value" />
+                    </ToolbarItem>
+                  </ToolbarContent>
+                </Toolbar>
+              }
+          data={MOCK_LOGS[4]}
+          height={300}
+          theme="dark" />
       </PageSection>
     </>
   );
