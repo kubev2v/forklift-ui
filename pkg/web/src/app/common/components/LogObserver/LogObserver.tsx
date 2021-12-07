@@ -6,24 +6,17 @@ import { usePodLogsQuery } from '@app/queries/logs';
 import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
 
 interface ILogObserverProps {
-  // logStream?: any;
+
 }
 
-export const LogObserver: React.FunctionComponent<ILogObserverProps> = ({
-
-}) => {
-
+export const LogObserver: React.FunctionComponent<ILogObserverProps> = () => {
   const logs = usePodLogsQuery();
-
 
   React.useEffect(() => {
     logs.mutate({});
-
   }, []);
 
   console.log(logs.data);
-
-  const initialValue: string[] = [];
 
   return (
     <>
@@ -35,5 +28,5 @@ export const LogObserver: React.FunctionComponent<ILogObserverProps> = ({
         <LogViewer data={MOCK_LOGS[4]} height={300} theme="dark" />
       </PageSection>
     </>
-  )
-}
+  );
+};
