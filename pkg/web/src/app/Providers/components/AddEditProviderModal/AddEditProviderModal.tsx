@@ -339,9 +339,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         key="confirm"
                         aria-label="Verify Certificate"
                         variant="primary"
-                        // TODO following blocks tests restore when resolved
-                        // isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid}
-                        isDisabled={!fields.hostname?.isTouched}
+                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid}
                         onClick={() => {
                           setCertificateQueryEnabled(true);
                         }}
