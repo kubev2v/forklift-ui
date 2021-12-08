@@ -1,4 +1,3 @@
-import path from 'path';
 import { readFileSync, existsSync } from 'fs';
 
 const sanitizeMeta = (meta) => {
@@ -7,13 +6,11 @@ const sanitizeMeta = (meta) => {
   return { ...meta, oauth: oauthCopy };
 };
 
-const localConfigFileName = 'meta.dev.json';
-
 export const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
-  const configPath = path.join(__dirname, localConfigFileName);
+  const configPath = process.env['META_FILE'] || './meta.dev.json';
   if (!existsSync(configPath)) {
-    console.error('ERROR: config/meta.dev.json is missing');
+    console.error(`ERROR: ${configPath} is missing`);
     console.error(
       'Copy config/meta.dev.json.example to config/meta.dev.json' +
         ' and optionally configure your dev settings. A valid clusterUrl is ' +
@@ -21,8 +18,7 @@ export const getDevMeta = () => {
     );
     process.exit(1);
   }
-  // TODO revisit casting ?
-  return JSON.parse(readFileSync(configPath) as unknown as string);
+  return JSON.parse(readFileSync(configPath).toString());
 };
 
 export const sanitizeAndEncodeMeta = (meta) =>

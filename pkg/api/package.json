@@ -4,7 +4,6 @@
   "main": "./src/server.js",
   "license": "Apache-2.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "start": "node src/server.js",
