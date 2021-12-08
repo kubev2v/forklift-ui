@@ -2,23 +2,17 @@ import * as React from 'react';
 import { PageSection, Title, Toolbar, ToolbarItem, ToolbarContent } from '@patternfly/react-core';
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
-import {
-  usePodLogsQuery,
-  // useClusterPodsQuery,
-  useClusterPodLogsQuery
-} from '@app/queries/logs';
+import { usePodLogsQuery, useClusterPodsQuery, useClusterPodLogsQuery } from '@app/queries/pods';
 import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
 
-interface ILogObserverProps {
+// interface ILogObserverProps {}
 
-}
-
-export const LogObserver: React.FunctionComponent<ILogObserverProps> = () => {
+export const LogObserver: React.FunctionComponent = () => {
   const [logData, setLogData] = React.useState<string | undefined>(undefined);
 
-  // const podsQuery = useClusterPodsQuery();
+  const podsQuery = useClusterPodsQuery();
 
-  // console.log('Cluster pods:', podsQuery.data);
+  console.log('Cluster pods:', podsQuery.data);
   const podLogs = useClusterPodLogsQuery(); // standard query
   // const podLogs = usePodLogsQuery(); // mutate query
 
@@ -34,33 +28,24 @@ export const LogObserver: React.FunctionComponent<ILogObserverProps> = () => {
   // console.log('podLogs', podLogs.data);
 
   React.useEffect(() => {
-    podLogs.data && podLogs.data.text().then(result => setLogData(result))
+    podLogs.data && podLogs.data.text().then((result) => setLogData(result));
   }, [podLogs.data]);
 
-
   return (
-    <>
-      <PageSection variant="light">
-        <Title headingLevel="h1">Log Observer</Title>
-      </PageSection>
-
-      <PageSection>
-        <LogViewer
-              toolbar={
-                <Toolbar>
-                  <ToolbarContent>
-                    <ToolbarItem>
-                      <LogViewerSearch minSearchChars={3} placeholder="Search value" />
-                    </ToolbarItem>
-                  </ToolbarContent>
-                </Toolbar>
-              }
-          // data={MOCK_LOGS[4]}
-          data={logData}
-          scrollToRow={logData && logData.length || 0}
-          height={300}
-          theme="dark" />
-      </PageSection>
-    </>
+    <LogViewer
+      toolbar={
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarItem>
+              <LogViewerSearch minSearchChars={3} placeholder="Search value" />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+      }
+      data={logData}
+      scrollToRow={(logData && logData.length) || 0}
+      height={300}
+      theme="dark"
+    />
   );
 };

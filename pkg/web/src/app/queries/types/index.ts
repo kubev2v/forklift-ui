@@ -12,3 +12,4 @@ export * from './vms.types';
 export * from './secrets.types';
 export * from './provisioners.types';
 export * from './logs.types';
+export * from './pods.types';

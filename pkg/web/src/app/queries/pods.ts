@@ -1,16 +1,22 @@
 import { useQueryClient, UseQueryResult, UseMutationResult } from 'react-query';
-import { useMockableMutation, getInventoryApiUrl, getClusterApiUrl, useMockableQuery, mockKubeList } from './helpers';
+import {
+  useMockableMutation,
+  getInventoryApiUrl,
+  getClusterApiUrl,
+  useMockableQuery,
+  mockKubeList,
+} from '@app/queries/helpers';
 import {
   authorizedFetch,
   useAuthorizedFetch,
   useAuthorizedK8sClient,
   useFetchContext,
-} from './fetchHelpers';
+} from '@app/queries/fetchHelpers';
 import { IKubeList } from '@app/client/types';
 import { usePollingContext } from '@app/common/context';
 import { podsResource } from '@app/client/helpers';
-import { ILogObject } from '@app/queries/types';
-import { MOCK_LOGS } from './mocks/logs.mock';
+import { IPodObject } from '@app/queries/types';
+import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
 
 export const useClusterPodLogsQuery = (): UseQueryResult<any> => {
   const client = useAuthorizedK8sClient();
@@ -19,45 +25,54 @@ export const useClusterPodLogsQuery = (): UseQueryResult<any> => {
     {
       queryKey: 'pod-logs',
       // queryFn: useAuthorizedFetch(getClusterApiUrl('api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main')),
-      queryFn: () => new Promise((res, rej) => {
-        authorizedFetch<any>(
-          getClusterApiUrl(
-            'api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main'
-            // 'healthz'
-          ),
-          fetchContext,
-          {},
-          'get',
-          'text/plain',
-          true,
-          {}
-        ).then((logData) => {
-          res(logData);
-        })
-        .catch((error) => {
-          rej({
-            result: 'error',
-            error: error,
-          });
-        });
-      }),
-      refetchInterval: usePollingContext().refetchInterval,
+      queryFn: () =>
+        new Promise((res, rej) => {
+          authorizedFetch<any>(
+            getClusterApiUrl(
+              'api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main'
+              // 'healthz'
+            ),
+            fetchContext,
+            {},
+            'get',
+            'text/plain',
+            true,
+            {}
+          )
+            .then((logData) => {
+              res(logData);
+            })
+            .catch((error) => {
+              rej({
+                result: 'error',
+                error: error,
+              });
+            });
+        }),
+      // refetchInterval: usePollingContext().refetchInterval,
+      refetchInterval: 1250,
     },
     ''
   );
 };
 
-// export const useClusterPodsQuery = (): UseQueryResult<IKubeList<ILogObject>> => {
-//   const client = useAuthorizedK8sClient();
-//   return useMockableQuery<IKubeList<ILogObject>>(
-//     {
-//       queryKey: 'cluster-pods',
-//       queryFn: async () => (await client.list<IKubeList<ILogObject>>(podsResource)).data,
-//       refetchInterval: usePollingContext().refetchInterval,
-//     },
-//     mockKubeList([], 'Pods')
-//   );
-// };
+export const useClusterPodsQuery = (): UseQueryResult<IKubeList<IPodObject>> => {
+  const client = useAuthorizedK8sClient();
+  return useMockableQuery<IKubeList<IPodObject>>(
+    {
+      queryKey: 'cluster-pods-list',
+      queryFn: async () =>
+        (
+          await client.get<IKubeList<IPodObject>>(
+            podsResource,
+            'forklift-controller-64dddf5b45-9dpnm/log?container=main'
+          )
+        ).data,
+      refetchInterval: usePollingContext().refetchInterval,
+    },
+    mockKubeList([], 'Pods')
+  );
+};
 
 export const usePodLogsQuery = (
   url?: string,
