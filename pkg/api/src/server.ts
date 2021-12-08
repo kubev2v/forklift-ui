@@ -65,14 +65,13 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   app.get('/login/callback', async (req, res) => {
     const { code } = req.query;
-    const options = {
+    const options: any = {
       code,
       redirect_uri: meta.oauth.redirectUrl,
     };
     try {
       const clusterAuth = await getClusterAuth(meta);
-      // TODO fix type
-      const accessToken = await clusterAuth.getToken(options.redirect_uri);
+      const accessToken = await clusterAuth.getToken(options);
       const currentUnixTime = dayjs().unix();
       const user = {
         ...accessToken.token,
