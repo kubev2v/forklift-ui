@@ -1,5 +1,5 @@
-import * as child from 'child_process';
-import * as helpers from '../src/helpers';
+import child from 'child_process';
+import { getDevMeta } from '../src/helpers';
 
 try {
   child.execSync('hash oc');
@@ -19,7 +19,7 @@ try {
 // Helpers
 
 function setupOAuthClient() {
-  const meta = helpers.getDevMeta();
+  const meta = getDevMeta();
   const oauthRedirectUrl = `http://localhost:${meta.devServerPort}/login/callback`;
 
   const oauthClientName = meta.oauth.clientId;
