@@ -6,5 +6,4 @@ coverage
 .idea
 .env
 config/meta.dev.json
-pkg/api/**/*.js
-pkg/api/**/*.js.map
+pkg/api/dist

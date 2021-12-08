@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "module": "commonjs",
     "lib": ["ES2021"],
     "target": "ES2021",
