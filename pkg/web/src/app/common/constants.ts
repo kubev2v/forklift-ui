@@ -21,6 +21,7 @@ export const PRODUCT_DOCO_LINK = {
 
 export const PROVIDER_TYPES = ['vsphere', 'ovirt', 'openshift'] as const;
 export type ProviderType = typeof PROVIDER_TYPES[number];
+// export type LogType = any;
 export const SOURCE_PROVIDER_TYPES: ProviderType[] = ['vsphere', 'ovirt'];
 export const TARGET_PROVIDER_TYPES: ProviderType[] = ['openshift'];
 
