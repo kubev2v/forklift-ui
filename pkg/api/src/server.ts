@@ -10,6 +10,7 @@ import { URLSearchParams } from 'url';
 
 import * as helpers from './helpers';
 import { getClusterAuth } from './oAuthHelpers';
+import { AuthorizationTokenConfig } from 'simple-oauth2';
 
 interface IProxyConfigObj {
   target: string;
@@ -65,8 +66,9 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
 
   app.get('/login/callback', async (req, res) => {
     const { code } = req.query;
-    const options: any = {
-      code,
+    const scode = code as string;
+    const options: AuthorizationTokenConfig = {
+      code: scode,
       redirect_uri: meta.oauth.redirectUrl,
     };
     try {
