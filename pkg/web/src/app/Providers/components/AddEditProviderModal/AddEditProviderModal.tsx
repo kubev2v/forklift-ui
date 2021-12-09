@@ -379,7 +379,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                   <DescriptionListDescription id="fingerprint">
                                     {certificateQuery.data?.fingerprint}
                                     {providerBeingEdited &&
-                                    fields.fingerprint?.value !==
+                                    fields.fingerprint?.cleanValue !==
                                       certificateQuery.data.fingerprint ? (
                                       <Alert
                                         variant="warning"
