@@ -207,7 +207,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     : patchProviderMutation;
 
   const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
-  const { status, data } = useCertificateQuery(
+  const certificateQuery = useCertificateQuery(
     fields?.hostname?.value || '',
     isCertificateQueryEnabled
   );
@@ -346,12 +346,12 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       >
                         Verify certificate
                       </Button>
-                    ) : status === 'loading' ? (
+                    ) : certificateQuery.status === 'loading' ? (
                       <div className="pf-c-empty-state__icon">
                         <Spinner aria-labelledby="loadingPrefLabel" size="sm" />
                         &nbsp;Retrieving SHA-1 certificate fingerprint
                       </div>
-                    ) : status === 'success' ? (
+                    ) : certificateQuery.status === 'success' ? (
                       <>
                         <Panel variant="bordered">
                           <PanelMain>
@@ -363,7 +363,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Issuer</DescriptionListTerm>
                                   <DescriptionListDescription id="issuer">
-                                    {`${data?.issuer.O} - ${data?.issuer.OU}`}
+                                    {`${certificateQuery.data?.issuer.O} - ${certificateQuery.data?.issuer.OU}`}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
@@ -371,13 +371,13 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                     vCenter SHA-1 fingerprint
                                   </DescriptionListTerm>
                                   <DescriptionListDescription id="fingerprint">
-                                    {data?.fingerprint}
+                                    {certificateQuery.data?.fingerprint}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Expiration date</DescriptionListTerm>
                                   <DescriptionListDescription id="expriry">
-                                    {data?.valid_to}
+                                    {certificateQuery.data?.valid_to}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                               </DescriptionList>
@@ -391,16 +391,18 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                           name="certificateCheck"
                           isChecked={fields?.isCertificateValid?.value}
                           onChange={() => {
-                            fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
                             if (fields.isCertificateValid?.value !== true) {
-                              if (data && fields?.fingerprint) {
-                                if (data.fingerprint !== '') {
-                                  fields.fingerprint?.setValue(data.fingerprint);
-                                }
+                              if (
+                                fields?.fingerprint &&
+                                certificateQuery.data &&
+                                certificateQuery.data.fingerprint !== ''
+                              ) {
+                                fields.fingerprint?.setValue(certificateQuery.data.fingerprint);
                               }
                             } else {
                               fields.fingerprint?.setValue('');
                             }
+                            fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
                           }}
                         />
                       </>
