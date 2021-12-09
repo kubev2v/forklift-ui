@@ -213,6 +213,9 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     isCertificateQueryEnabled
   );
 
+  const scrollVerifyButtonIntoView = () =>
+    document.getElementById('certificate-confirm-button')?.scrollIntoView({ behavior: 'smooth' });
+
   return (
     <Modal
       className="AddEditProviderModal"
@@ -317,6 +320,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       placeholder: isVmWare(providerType)
                         ? 'Example, administrator@vsphere.local'
                         : undefined,
+                      onFocus: scrollVerifyButtonIntoView,
                     }}
                     field={fields.username}
                     label={getLabelName('username', brandPrefix(providerType))}
@@ -326,6 +330,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 ) : null}
                 {fields?.password ? (
                   <ValidatedPasswordInput
+                    inputProps={{ onFocus: scrollVerifyButtonIntoView }}
                     field={fields.password}
                     label={getLabelName('pwd', brandPrefix(providerType))}
                     isRequired
