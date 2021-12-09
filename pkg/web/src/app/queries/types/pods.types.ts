@@ -18,3 +18,10 @@ export interface IPodObject extends ICR {
     // conditions: IStatusCondition[];
   };
 }
+
+export type ContainerType = 'main' | 'controller' | 'inventory';
+// export enum PodContainerType {
+//   Main = 'main',
+//   Controller = 'controller',
+//   Inventory = 'inventory'
+// }

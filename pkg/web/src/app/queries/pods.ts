@@ -15,21 +15,23 @@ import {
 import { IKubeList } from '@app/client/types';
 import { usePollingContext } from '@app/common/context';
 import { podsResource } from '@app/client/helpers';
-import { IPodObject } from '@app/queries/types';
+import { ContainerType, IPodObject } from '@app/queries/types';
 import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
 
-export const useClusterPodLogsQuery = (): UseQueryResult<any> => {
+export const useClusterPodLogsQuery = (
+  containerType: ContainerType
+): UseQueryResult<any> => {
   const client = useAuthorizedK8sClient();
   const fetchContext = useFetchContext();
   return useMockableQuery<any>(
     {
       queryKey: 'pod-logs',
-      // queryFn: useAuthorizedFetch(getClusterApiUrl('api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main')),
+      // queryFn: useAuthorizedFetch(getClusterApiUrl(`api/v1/namespaces/openshift-mtv/pods/forklift-controller-7db68559b8-tsgh9/log?container=${containerType}`)),
       queryFn: () =>
         new Promise((res, rej) => {
           authorizedFetch<any>(
             getClusterApiUrl(
-              'api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main'
+              `api/v1/namespaces/openshift-mtv/pods/forklift-controller-7db68559b8-tsgh9/log?container=${containerType}`
               // 'healthz'
             ),
             fetchContext,
@@ -56,7 +58,9 @@ export const useClusterPodLogsQuery = (): UseQueryResult<any> => {
   );
 };
 
-export const useClusterPodsQuery = (): UseQueryResult<IKubeList<IPodObject>> => {
+export const useClusterPodsQuery = (
+  containerType: ContainerType
+): UseQueryResult<IKubeList<IPodObject>> => {
   const client = useAuthorizedK8sClient();
   return useMockableQuery<IKubeList<IPodObject>>(
     {
@@ -65,7 +69,7 @@ export const useClusterPodsQuery = (): UseQueryResult<IKubeList<IPodObject>> => 
         (
           await client.get<IKubeList<IPodObject>>(
             podsResource,
-            'forklift-controller-64dddf5b45-9dpnm/log?container=main'
+            `forklift-controller-7db68559b8-tsgh9/log?container=${containerType}`
           )
         ).data,
       refetchInterval: usePollingContext().refetchInterval,
@@ -75,7 +79,7 @@ export const useClusterPodsQuery = (): UseQueryResult<IKubeList<IPodObject>> => 
 };
 
 export const usePodLogsQuery = (
-  url?: string,
+  containerType: ContainerType,
   onSuccess?: (data: any) => void,
   onError?: (error: unknown) => void
   // ns: string,
@@ -88,7 +92,7 @@ export const usePodLogsQuery = (
       return new Promise((res, rej) => {
         authorizedFetch<any>(
           getClusterApiUrl(
-            'api/v1/namespaces/openshift-mtv/pods/forklift-controller-64dddf5b45-9dpnm/log?container=main'
+            `api/v1/namespaces/openshift-mtv/pods/forklift-controller-7db68559b8-tsgh9/log?container=${containerType}`
             // 'healthz'
           ),
           fetchContext,
