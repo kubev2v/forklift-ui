@@ -339,7 +339,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         key="confirm"
                         aria-label="Verify Certificate"
                         variant="primary"
-                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid}
+                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid} // TODO we should remove the isTouched case here once we resolve https://github.com/konveyor/lib-ui/issues/82
                         onClick={() => {
                           setCertificateQueryEnabled(true);
                         }}
