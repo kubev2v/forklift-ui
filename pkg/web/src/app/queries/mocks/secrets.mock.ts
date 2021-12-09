@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     data: {
       password: 'bW9jay1wYXNzd29yZA==',
       thumbprint:
-        'Mzk6NUQ6NkE6MkQ6MzY6Mzg6QjI6NTI6MkI6MjE6RUE6NzQ6MTE6NTk6ODk6NUU6MjA6RDU6RDk6QTU=',
+        'Mzk6NUQ6NkE6MkQ6MzY6Mzg6QjI6NTI6MkI6MjE6RUE6NzQ6MTE6NTk6ODk6NUU6MjA6RDU6RDk6QTU=', // Change this to something else base64-encoded like YnVsbHNoaXQ= to test "cannot verify" warning state
       user: 'bW9jay11c2Vy',
       token: 'bW9jay1zYS10b2tlbg==',
     },

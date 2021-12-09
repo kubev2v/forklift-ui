@@ -20,6 +20,7 @@ import {
   Panel,
   PanelMain,
   PanelMainBody,
+  Alert,
 } from '@patternfly/react-core';
 import {
   useFormState,
@@ -372,6 +373,19 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                   </DescriptionListTerm>
                                   <DescriptionListDescription id="fingerprint">
                                     {certificateQuery.data?.fingerprint}
+                                    {providerBeingEdited &&
+                                    fields.fingerprint?.value !==
+                                      certificateQuery.data.fingerprint ? (
+                                      <Alert
+                                        variant="warning"
+                                        isInline
+                                        title="The authenticity of this host cannot be established"
+                                      >
+                                        This certificate&apos;s fingerprint does not match the
+                                        previously known certificate. Manually validate the
+                                        fingerprint before proceeding.
+                                      </Alert>
+                                    ) : null}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
