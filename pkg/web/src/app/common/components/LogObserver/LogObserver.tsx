@@ -14,7 +14,7 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import { usePodLogsQuery, useClusterPodsQuery, useClusterPodLogsQuery } from '@app/queries/pods';
 import { MOCK_LOGS } from '@app/queries/mocks/logs.mock';
 import CaretDownIcon from '@patternfly/react-icons/dist/esm/icons/caret-down-icon';
-import { ContainerType } from '@app/queries/types';
+import { ContainerType, IPodObject } from '@app/queries/types';
 
 // interface ILogObserverProps {}
 
@@ -22,9 +22,15 @@ export const LogObserver: React.FunctionComponent = () => {
   const [containerType, setContainerType] = React.useState<ContainerType>('controller');
   const [logData, setLogData] = React.useState<string | undefined>(undefined);
 
-  // const podsQuery = useClusterPodsQuery(containerType);
+  const podsQuery = useClusterPodsQuery(containerType);
 
-  // console.log('Cluster pods:', podsQuery.data);
+  const [availablePods, setAvailablePods] = React.useState<IPodObject[] | undefined>();
+  React.useEffect(() => {
+    setAvailablePods(podsQuery.data?.items);
+  }, [podsQuery.data]);
+
+
+  // console.log('Cluster pods:', podsQuery.data?.items);
   const podLogs = useClusterPodLogsQuery(containerType); // standard query
   // const podLogs = usePodLogsQuery(containerType); // mutate query
 
@@ -53,8 +59,8 @@ export const LogObserver: React.FunctionComponent = () => {
 
   const onSelect = (event?: React.SyntheticEvent<HTMLDivElement>) => {
     toggleIsContainerTypeDropdownOpen();
-    console.log('event', event?.currentTarget.innerText);
-    setContainerType(event?.currentTarget.innerText as ContainerType);
+    // console.log('event', event?.currentTarget.innerText);
+    event?.currentTarget.innerText && setContainerType(event?.currentTarget.innerText);
     onFocus();
   }
 
@@ -71,7 +77,12 @@ export const LogObserver: React.FunctionComponent = () => {
     </DropdownItem>,
   ]
 
+  const controllerPodName = availablePods?.map(pod => pod.metadata.name).filter(pod => pod.includes('controller'))
+
   return (
+    <>
+    {/* <div>{availablePods?.map(el => el.metadata.name).join(', ')}</div> */}
+    <div>{controllerPodName}</div>
     <LogViewer
       toolbar={
         <Toolbar>
@@ -98,5 +109,6 @@ export const LogObserver: React.FunctionComponent = () => {
       height={300}
       theme="dark"
     />
+    </>
   );
 };

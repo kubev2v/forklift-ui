@@ -1,25 +1,30 @@
 import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '@app/queries/types';
 
-interface IPodMetadata extends IMetaObjectMeta {
-  annotations?: {
-    [key: string]: string | undefined;
-  };
-}
+// interface IPodListMetadata extends IMetaObjectMeta {
+//   annotations?: {
+//     [key: string]: string | undefined;
+//   };
+// }
 
 export interface IPodObject extends ICR {
-  metadata: IPodMetadata;
+  // metadata: IPodListMetadata;
   spec: {
-    [key: string]: string | undefined;
+    containers: {
+      name: string;
+      [key: string]: string | undefined;
+    }[];
     // type: PodType | null;
     // url?: string; // No url = host Pod
     // secret?: INameNamespaceRef;
   };
-  status?: {
-    // conditions: IStatusCondition[];
-  };
+  // status?: {
+  //   // conditions: IStatusCondition[];
+  // };
 }
 
-export type ContainerType = 'main' | 'controller' | 'inventory';
+// export type ContainerType = 'main' | 'controller' | 'inventory';
+export type ContainerType = string;
+
 // export enum PodContainerType {
 //   Main = 'main',
 //   Controller = 'controller',
