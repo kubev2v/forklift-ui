@@ -15,17 +15,12 @@ Clone and install dependencies:
 ```bash
 git clone https://github.com/konveyor/forklift-ui
 cd forklift-ui
-npm install -ws --legacy-peer-deps && npm install
+npm run install:ws # Installs all workspaces packages and the top level packages
 ```
 
 Create a meta.dev.json file in the config directory using [`config/meta.dev.example.json`](./config/meta.dev.example.json) as a template. Set the `inventoryApi` property to the root URL of your forklift-controller inventory API, and set the `clusterApi` property to the root URL of your host OpenShift cluster API. And also to be able to use VMware provider data to be analysed by Migration Analytics set the `inventoryPayloadApi` property to the root URL of your forklift-controller inventory Payload API.
 
-### Environment variables:
-
-To install all workspaces packages and the top level packages run:
-```sh
-$ npm install -ws --legacy-peer-deps && npm install
-```
+### Environment variables
 
 - `DATA_SOURCE` - either `mock` or `remote`
   (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
