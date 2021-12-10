@@ -11,7 +11,7 @@ export interface IPodObject extends ICR {
   spec: {
     containers: {
       name: string;
-      [key: string]: string | undefined;
+      // [key: string]: string | undefined;
     }[];
     // type: PodType | null;
     // url?: string; // No url = host Pod
