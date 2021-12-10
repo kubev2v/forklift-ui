@@ -2,7 +2,7 @@
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . .
 USER root
-RUN npm run install:ws && npm run build
+RUN npm config set unsafe-perm true && npm run install:ws && npm run build
 
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
