@@ -21,6 +21,8 @@ describe('<AddEditProviderModal />', () => {
     onClose: toggleModalAndResetEdit,
   };
 
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
   it('allows to cancel addition/edition of a provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
