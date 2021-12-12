@@ -247,14 +247,16 @@ export class Plan {
         cy.get(dataLabel.status).contains(planCanceledMessage, { timeout: 3600 * SEC });
       });
   }
-
-  protected plan_details(name: string): void {
-    cy.get(tdTag).contains(name).parent(tdTag).parent(trTag).click();
-  }
-
-  protected cancel(name: string): void {
-    //this.plan_details(name);  // Not Needed
-    cy.get(`[aria-label="Select row 0"]`, { timeout: 20000 }).should('be.enabled').check();
+  protected cancel(planData: PlanData): void {
+    const { vmList } = planData;
+    const rowAmount = vmList.length;
+    let i;
+    cy.wait(30 * SEC);
+    for (i = 0; i < rowAmount; i++) {
+      cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
+        .should('be.enabled')
+        .check();
+    }
     clickByText(button, 'Cancel');
     clickByText(button, 'Yes, cancel');
   }
@@ -296,15 +298,26 @@ export class Plan {
     click('#modal-confirm-button');
     if (warmMigration) {
       Plan.openList();
+      cy.wait(30 * SEC);
       this.run(name, 'Cutover');
+      click('#modal-confirm-button');
+      //TODO: Schedule cutover for later
     }
     this.waitForSuccess(name);
   }
 
-  restart(name: string): void {
+  restart(planData: PlanData): void {
+    const { name, warmMigration } = planData;
     Plan.openList();
     applyAction(name, restartButton);
     clickByText(button, 'Restart'); //Added Confirm Button
+    if (warmMigration) {
+      Plan.openList();
+      cy.wait(30 * SEC);
+      this.run(name, 'Cutover'); //Start Cutover now
+      click('#modal-confirm-button');
+      //TODO: Schedule cutover for later
+    }
   }
 
   cancel_and_restart(planData: PlanData): void {
@@ -313,9 +326,9 @@ export class Plan {
     this.run(name, 'Start');
     click('#modal-confirm-button');
     cy.wait(10000);
-    this.cancel(name);
+    this.cancel(planData);
     this.waitForCanceled(name);
-    this.restart(name);
+    this.restart(planData);
     cy.wait(10000);
     openSidebarMenu();
     clickByText(navMenuPoint, migrationPLan);
@@ -329,7 +342,7 @@ export class Plan {
     this.run(name, 'Start');
     click('#modal-confirm-button');
     cy.wait(10000);
-    this.cancel(name);
+    this.cancel(planData);
     this.waitForCanceled(name);
   }
 
