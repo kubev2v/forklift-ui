@@ -22,7 +22,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   fetchContext: IFetchContext,
   extraHeaders: RequestInit['headers'] = {},
   method: 'get' | 'post' = 'get',
-  returnMode: 'json' | 'blob' | 'text/plain' = 'json',
+  returnMode: 'json' | 'blob' = 'json',
   bypassRedirect = false,
   data?: TData
 ): Promise<TResponse> => {

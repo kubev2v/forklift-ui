@@ -41,7 +41,6 @@ export enum ForkliftResourceKind {
   Host = 'hosts',
   Provisioners = 'provisioners',
   Hook = 'hooks',
-  Pods = 'pods',
 }
 
 export const secretResource = new CoreNamespacedResource(
@@ -51,7 +50,6 @@ export const secretResource = new CoreNamespacedResource(
 );
 
 export const providerResource = new ForkliftResource(ForkliftResourceKind.Provider, META.namespace);
-export const podsResource = new ForkliftResource(ForkliftResourceKind.Pods, META.namespace);
 
 export function convertFormValuesToSecret(
   values: AddProviderFormValues,

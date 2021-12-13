@@ -9,7 +9,7 @@ import {
   DropdownItem,
   DropdownToggle,
 } from '@patternfly/react-core';
-import { useQueryClient } from 'react-query';
+
 import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 
 import { useClusterPodsQuery, useClusterPodLogsQuery } from '@app/queries/pods';
@@ -18,7 +18,6 @@ import CaretDownIcon from '@patternfly/react-icons/dist/esm/icons/caret-down-ico
 import { ContainerType, IPodObject } from '@app/queries/types';
 
 export const LogObserver: React.FunctionComponent = () => {
-  const queryClient = useQueryClient();
   const [containerTypeSelection, setContainerTypeSelection] = React.useState<ContainerType>();
 
   const [logData, setLogData] = React.useState<string | undefined>(undefined);
@@ -30,7 +29,7 @@ export const LogObserver: React.FunctionComponent = () => {
   const podDropDownItems = availablePods?.map((pod) => (
     <DropdownItem key={pod.metadata.name}>{pod.metadata.name}</DropdownItem>
   ));
-
+  [0];
   const [podSelection, setPodSelection] = React.useState<string | undefined>();
 
   React.useEffect(() => {
@@ -60,7 +59,11 @@ export const LogObserver: React.FunctionComponent = () => {
   const podLogs = useClusterPodLogsQuery(containerTypeSelection, podSelection);
 
   React.useEffect(() => {
-    podLogs.data && podLogs.data.text().then((result) => setLogData(result));
+    podLogs.data &&
+      podLogs.data.text &&
+      podLogs.data.text().then((result) => {
+        setLogData(result);
+      });
   }, [podLogs.data]);
 
   const [isContainerTypeDropdownOpen, toggleIsContainerTypeDropdownOpen] = React.useReducer(
