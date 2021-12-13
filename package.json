@@ -12,8 +12,8 @@
   "scripts": {
     "install:ws": "npm install -ws --legacy-peer-deps && npm install",
     "dr:surge": "node dr-surge.js",
-    "setup:dev:remote": "node ./pkg/api/scripts/remote-dev.js",
-    "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
+    "setup:dev:remote": "npm run build -w pkg/api && node ./pkg/api/dist/scripts/remote-dev.js",
+    "build": "npm run clean && npm run build -w pkg/api && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
     "build:remote": "DATA_SOURCE=remote npm run build",
     "build:mock": "DATA_SOURCE=mock FORKLIFT_UI_GIT_COMMIT=$(git rev-parse --short HEAD) npm run build && npm run dr:surge",
     "start": "npm run start -w pkg/api",
@@ -30,7 +30,7 @@
     "test": "npm run test -w pkg/web",
     "type-check": "npm run tsc -ws --if-present",
     "ci": "npm run type-check && npm run lint && npm run test",
-    "clean": "$(npm bin)/rimraf dist"
+    "clean": "$(npm bin)/rimraf dist pkg/api/dist"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",

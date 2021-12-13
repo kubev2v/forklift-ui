@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const fs = require('fs');
+import { readFileSync, existsSync } from 'fs';
 
 const sanitizeMeta = (meta) => {
   const oauthCopy = { ...meta.oauth };
@@ -8,15 +6,11 @@ const sanitizeMeta = (meta) => {
   return { ...meta, oauth: oauthCopy };
 };
 
-const localConfigFileName = 'meta.dev.json';
-
-const configDir = './config';
-
-const getDevMeta = () => {
+export const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
-  const configPath = path.join(configDir, localConfigFileName);
-  if (!fs.existsSync(configPath)) {
-    console.error(`ERROR: ${configDir}/${localConfigFileName} is missing`);
+  const configPath = process.env['META_FILE'] || './meta.dev.json';
+  if (!existsSync(configPath)) {
+    console.error(`ERROR: ${configPath} is missing`);
     console.error(
       'Copy config/meta.dev.json.example to config/meta.dev.json' +
         ' and optionally configure your dev settings. A valid clusterUrl is ' +
@@ -24,13 +18,13 @@ const getDevMeta = () => {
     );
     process.exit(1);
   }
-  return JSON.parse(fs.readFileSync(configPath));
+  return JSON.parse(readFileSync(configPath).toString());
 };
 
-const sanitizeAndEncodeMeta = (meta) =>
+export const sanitizeAndEncodeMeta = (meta) =>
   Buffer.from(JSON.stringify(sanitizeMeta(meta))).toString('base64');
 
-const getAppTitle = () =>
+export const getAppTitle = () =>
   process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
 const FORKLIFT_ENV = [
@@ -54,19 +48,9 @@ const FORKLIFT_SERVER_ONLY_ENV = [
   'UI_TLS_CERTIFICATE',
 ];
 
-const getEnv = (vars = FORKLIFT_ENV) =>
+export const getEnv = (vars = FORKLIFT_ENV) =>
   vars.reduce((newObj, varName) => ({ ...newObj, [varName]: process.env[varName] }), {});
-const getServerOnlyEnv = () => getEnv(FORKLIFT_SERVER_ONLY_ENV);
-const getBuildEnv = () => getEnv([...FORKLIFT_ENV, ...FORKLIFT_SERVER_ONLY_ENV]);
+export const getServerOnlyEnv = () => getEnv(FORKLIFT_SERVER_ONLY_ENV);
+export const getBuildEnv = () => getEnv([...FORKLIFT_ENV, ...FORKLIFT_SERVER_ONLY_ENV]);
 
-const getEncodedEnv = () => Buffer.from(JSON.stringify(getEnv())).toString('base64');
-
-module.exports = {
-  getDevMeta,
-  sanitizeAndEncodeMeta,
-  getAppTitle,
-  getEnv,
-  getServerOnlyEnv,
-  getBuildEnv,
-  getEncodedEnv,
-};
+export const getEncodedEnv = () => Buffer.from(JSON.stringify(getEnv())).toString('base64');

@@ -6,7 +6,7 @@ export STATIC_DIR="$_dir/../../../dist"
 mkdir -p "$STATIC_DIR"
 cd $_dir/../../..
 if [ "$1" == "--auto-reload" ]; then
-  node --trace-deprecation ./node_modules/nodemon/bin/nodemon.js --watch ./dist $_dir/../src/server.js
+  node --trace-deprecation ./node_modules/nodemon/bin/nodemon.js --watch ../../../dist $_dir/../dist/src/server.js
 else
-  node --trace-deprecation $_dir/../src/server.js
+  node --trace-deprecation $_dir/../dist/src/server.js
 fi
