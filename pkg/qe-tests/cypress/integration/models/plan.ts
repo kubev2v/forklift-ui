@@ -232,7 +232,9 @@ export class Plan {
       .contains(name)
       .closest(trTag)
       .within(() => {
-        cy.get(dataLabel.status).contains(planSuccessMessage, { timeout: 3600 * SEC });
+        cy.get(`div.pf-c-progress__description`).contains(planSuccessMessage, {
+          timeout: 3600 * SEC,
+        });
       });
   }
 
