@@ -10,6 +10,7 @@
   "main": "pkg/api/src/server.js",
   "private": true,
   "scripts": {
+    "install:ws": "npm install -ws --legacy-peer-deps && npm install",
     "dr:surge": "node dr-surge.js",
     "setup:dev:remote": "node ./pkg/api/scripts/remote-dev.js",
     "build": "npm run clean && NODE_ENV=production $(npm bin)/webpack --config ./config/webpack.prod.js",
