@@ -15,14 +15,20 @@ import { LogViewer, LogViewerSearch } from '@patternfly/react-log-viewer';
 import { useClusterPodsQuery, useClusterPodLogsQuery } from '@app/queries/pods';
 
 import CaretDownIcon from '@patternfly/react-icons/dist/esm/icons/caret-down-icon';
-import { ContainerType, IPodObject } from '@app/queries/types';
+import { ContainerType, IPlan, IPodObject } from '@app/queries/types';
 
-export const LogObserver: React.FunctionComponent = () => {
+interface ILogObserver {
+  plan: IPlan;
+  clusterWide?: boolean;
+}
+
+export const LogObserver: React.FunctionComponent<ILogObserver> = ({ plan, clusterWide }) => {
+  const queryNs = clusterWide ? undefined : plan.spec.targetNamespace;
   const [containerTypeSelection, setContainerTypeSelection] = React.useState<ContainerType>();
 
   const [logData, setLogData] = React.useState<string | undefined>(undefined);
 
-  const podsQuery = useClusterPodsQuery();
+  const podsQuery = useClusterPodsQuery(queryNs);
 
   const [availablePods, setAvailablePods] = React.useState<IPodObject[] | undefined>();
 
@@ -56,7 +62,7 @@ export const LogObserver: React.FunctionComponent = () => {
     setContainerTypeSelection(defaultContainerSelection);
   }, [podSelection, podsQuery.data?.items]);
 
-  const podLogs = useClusterPodLogsQuery(containerTypeSelection, podSelection);
+  const podLogs = useClusterPodLogsQuery(queryNs, containerTypeSelection, podSelection);
 
   React.useEffect(() => {
     podLogs.data &&
@@ -127,7 +133,7 @@ export const LogObserver: React.FunctionComponent = () => {
                       isOpen={isPodSelectionDropdownOpen}
                       toggle={
                         <DropdownToggle
-                          id="pod-toggle-id"
+                          id={`${queryNs}-pod-toggle-id`}
                           onToggle={toggleIsPodSelectionDropdownOpen}
                           toggleIndicator={CaretDownIcon}
                         >
@@ -144,7 +150,7 @@ export const LogObserver: React.FunctionComponent = () => {
                     isOpen={isContainerTypeDropdownOpen}
                     toggle={
                       <DropdownToggle
-                        id="container-type-toggle-id"
+                        id={`${queryNs}-container-type-toggle-id`}
                         onToggle={toggleIsContainerTypeDropdownOpen}
                         toggleIndicator={CaretDownIcon}
                       >

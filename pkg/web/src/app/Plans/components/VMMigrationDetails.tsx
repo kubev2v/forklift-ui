@@ -12,6 +12,7 @@ import {
   Button,
   List,
   ListItem,
+  CardFooter,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -29,6 +30,7 @@ import {
   textCenter,
   fitContent,
 } from '@patternfly/react-table';
+import { LogObserver } from '@app/common/components/LogObserver/LogObserver';
 import { centerCellTransform } from '@app/utils/utils';
 import { Link } from 'react-router-dom';
 import { useSelectionState } from '@konveyor/lib-ui';
@@ -62,6 +64,7 @@ import { LONG_LOADING_MESSAGE } from '@app/queries/constants';
 import '@app/Plans/components/VMMigrationDetails.css';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
+import { PipelineStatusTree } from '@app/Plans/components/PipelineStatusTree';
 
 export interface IPlanMatchParams {
   url: string;
@@ -332,7 +335,10 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
         cells: [
           {
             title: !isShowingPrecopyView ? (
-              <VMStatusPipelineTable status={vmStatus} isCanceled={isCanceled} />
+              <>
+                {plan && vm && <PipelineStatusTree plan={plan} vm={vm} vmStatus={vmStatus} />}
+                {plan && <LogObserver plan={plan} />}
+              </>
             ) : (
               <VMStatusPrecopyTable status={vmStatus} isCanceled={isCanceled} />
             ),
@@ -421,6 +427,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
                 variant="bottom"
               />
             </CardBody>
+            <CardFooter>{plan && <LogObserver clusterWide plan={plan} />}</CardFooter>
           </Card>
         </ResolvedQueries>
       </PageSection>

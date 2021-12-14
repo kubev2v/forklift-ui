@@ -24,6 +24,8 @@ export interface IVMwareVM extends IBaseSourceVM {
   disks: IVMwareVMDisk[];
   isTemplate: boolean;
   powerState?: 'poweredOff' | 'poweredOn';
+  path?: string;
+  host?: string;
 }
 
 export interface IRHVNIC {
@@ -41,6 +43,8 @@ export interface IRHVVM extends IBaseSourceVM {
   nics: IRHVNIC[];
   diskAttachments: IRHVDiskAttachment[];
   status?: 'up' | 'down';
+  path?: string;
+  host?: string;
 }
 
 export type SourceVM = IVMwareVM | IRHVVM;

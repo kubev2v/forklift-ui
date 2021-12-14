@@ -9,6 +9,7 @@ import { getMockLogsByPod } from '@app/queries/mocks/logs.mock';
 import { MOCK_PODS } from '@app/queries/mocks/pods.mock';
 
 export const useClusterPodLogsQuery = (
+  namespace: string | undefined,
   containerType: ContainerType | undefined,
   podName: string | undefined
 ): UseQueryResult<Blob> => {
@@ -16,12 +17,14 @@ export const useClusterPodLogsQuery = (
   return useMockableQuery<Blob>(
     {
       enabled: !!podName && !!containerType,
-      queryKey: ['pod-logs', podName],
+      queryKey: ['pod-logs', podName, namespace],
       queryFn: () =>
         new Promise((res, rej) => {
           authorizedFetch<Blob>(
             getClusterApiUrl(
-              `api/v1/namespaces/${META.namespace}/pods/${podName}/log?container=${containerType}`
+              `api/v1/namespaces/${
+                namespace || META.namespace
+              }/pods/${podName}/log?container=${containerType}`
             ),
             fetchContext,
             {},
@@ -46,11 +49,15 @@ export const useClusterPodLogsQuery = (
   );
 };
 
-export const useClusterPodsQuery = (): UseQueryResult<IKubeList<IPodObject>> => {
+export const useClusterPodsQuery = (
+  namespace: string | undefined
+): UseQueryResult<IKubeList<IPodObject>> => {
   return useMockableQuery<IKubeList<IPodObject>>(
     {
-      queryKey: 'cluster-pods-list',
-      queryFn: useAuthorizedFetch(getClusterApiUrl(`api/v1/namespaces/${META.namespace}/pods`)),
+      queryKey: ['cluster-pods-list', namespace],
+      queryFn: useAuthorizedFetch(
+        getClusterApiUrl(`api/v1/namespaces/${namespace || META.namespace}/pods`)
+      ),
       refetchInterval: usePollingContext().refetchInterval,
     },
     mockKubeList(MOCK_PODS, 'PodList')

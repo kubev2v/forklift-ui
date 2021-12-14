@@ -12,7 +12,6 @@ import { MappingsPage } from '@app/Mappings/MappingsPage';
 import { HostsPage } from './Providers/HostsPage';
 import { PlanWizard } from '@app/Plans/components/Wizard/PlanWizard';
 import { VMMigrationDetails } from '@app/Plans/components/VMMigrationDetails';
-import { LogObserver } from '@app/common/components/LogObserver/LogObserver';
 import { LoginHandlerComponent } from './common/LoginHandlerComponent';
 import { RedirectToLogin } from './common/RedirectToLogin';
 import { NotFound } from './NotFound';
@@ -122,14 +121,6 @@ export const routes: AppRouteConfig[] = [
     label: 'Mappings',
     path: '/mappings',
     title: `${APP_TITLE} | Network and Storage Mappings`,
-    isProtected: true,
-  },
-  {
-    component: LogObserver,
-    exact: true,
-    label: 'Log observer',
-    path: '/logs',
-    title: `${APP_TITLE} | Resources observer`,
     isProtected: true,
   },
 ];
