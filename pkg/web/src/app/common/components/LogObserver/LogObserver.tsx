@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Card,
-  PageSection,
   Toolbar,
   ToolbarItem,
   ToolbarContent,
@@ -19,23 +18,24 @@ import { ContainerType, IPlan, IPodObject } from '@app/queries/types';
 
 interface ILogObserver {
   plan: IPlan;
-  clusterWide?: boolean;
+  namespace: string;
 }
 
-export const LogObserver: React.FunctionComponent<ILogObserver> = ({ plan, clusterWide }) => {
-  const queryNs = clusterWide ? undefined : plan.spec.targetNamespace;
+export const LogObserver: React.FunctionComponent<ILogObserver> = ({ plan, namespace }) => {
   const [containerTypeSelection, setContainerTypeSelection] = React.useState<ContainerType>();
 
   const [logData, setLogData] = React.useState<string | undefined>(undefined);
 
-  const podsQuery = useClusterPodsQuery(queryNs);
+  const podsQuery = useClusterPodsQuery(namespace);
 
   const [availablePods, setAvailablePods] = React.useState<IPodObject[] | undefined>();
 
-  const podDropDownItems = availablePods?.map((pod) => (
-    <DropdownItem key={pod.metadata.name}>{pod.metadata.name}</DropdownItem>
-  ));
-  [0];
+  const podDropDownItems =
+    availablePods?.length &&
+    availablePods?.map((pod) => (
+      <DropdownItem key={pod.metadata.name}>{pod.metadata.name}</DropdownItem>
+    ));
+
   const [podSelection, setPodSelection] = React.useState<string | undefined>();
 
   React.useEffect(() => {
@@ -62,7 +62,7 @@ export const LogObserver: React.FunctionComponent<ILogObserver> = ({ plan, clust
     setContainerTypeSelection(defaultContainerSelection);
   }, [podSelection, podsQuery.data?.items]);
 
-  const podLogs = useClusterPodLogsQuery(queryNs, containerTypeSelection, podSelection);
+  const podLogs = useClusterPodLogsQuery(namespace, containerTypeSelection, podSelection);
 
   React.useEffect(() => {
     podLogs.data &&
@@ -111,67 +111,65 @@ export const LogObserver: React.FunctionComponent<ILogObserver> = ({ plan, clust
   };
 
   return (
-    <PageSection>
-      <Card>
-        <LogViewer
-          loadingContent={
-            podsQuery.isLoading ? (
-              <div>loading pods...</div>
-            ) : podLogs.isLoading ? (
-              <div>loading logs...</div>
-            ) : (
-              <div>loading...</div>
-            )
-          }
-          toolbar={
-            <Toolbar>
-              <ToolbarContent>
-                <ToolbarItem>
-                  {podDropDownItems && (
-                    <Dropdown
-                      onSelect={onPodSelect}
-                      isOpen={isPodSelectionDropdownOpen}
-                      toggle={
-                        <DropdownToggle
-                          id={`${queryNs}-pod-toggle-id`}
-                          onToggle={toggleIsPodSelectionDropdownOpen}
-                          toggleIndicator={CaretDownIcon}
-                        >
-                          {podSelection}
-                        </DropdownToggle>
-                      }
-                      dropdownItems={podDropDownItems}
-                    />
-                  )}
-                </ToolbarItem>
-                <ToolbarItem>
+    <Card>
+      <LogViewer
+        loadingContent={
+          podsQuery.isLoading ? (
+            <div>loading pods...</div>
+          ) : podLogs.isLoading ? (
+            <div>loading logs...</div>
+          ) : (
+            <div>loading...</div>
+          )
+        }
+        toolbar={
+          <Toolbar>
+            <ToolbarContent>
+              <ToolbarItem>
+                {podDropDownItems && (
                   <Dropdown
-                    onSelect={onContainerTypeSelect}
-                    isOpen={isContainerTypeDropdownOpen}
+                    onSelect={onPodSelect}
+                    isOpen={isPodSelectionDropdownOpen}
                     toggle={
                       <DropdownToggle
-                        id={`${queryNs}-container-type-toggle-id`}
-                        onToggle={toggleIsContainerTypeDropdownOpen}
+                        id={`${namespace}-pod-toggle-id`}
+                        onToggle={toggleIsPodSelectionDropdownOpen}
                         toggleIndicator={CaretDownIcon}
                       >
-                        {containerTypeSelection}
+                        {podSelection}
                       </DropdownToggle>
                     }
-                    dropdownItems={containerTypeDropDownItems}
+                    dropdownItems={podDropDownItems}
                   />
-                </ToolbarItem>
-                <ToolbarItem>
-                  <LogViewerSearch minSearchChars={3} placeholder="Search value" />
-                </ToolbarItem>
-              </ToolbarContent>
-            </Toolbar>
-          }
-          data={logData}
-          scrollToRow={(logData && logData.length) || 0}
-          height={300}
-          theme="dark"
-        />
-      </Card>
-    </PageSection>
+                )}
+              </ToolbarItem>
+              <ToolbarItem>
+                <Dropdown
+                  onSelect={onContainerTypeSelect}
+                  isOpen={isContainerTypeDropdownOpen}
+                  toggle={
+                    <DropdownToggle
+                      id={`${namespace}-container-type-toggle-id`}
+                      onToggle={toggleIsContainerTypeDropdownOpen}
+                      toggleIndicator={CaretDownIcon}
+                    >
+                      {containerTypeSelection}
+                    </DropdownToggle>
+                  }
+                  dropdownItems={containerTypeDropDownItems}
+                />
+              </ToolbarItem>
+              <ToolbarItem>
+                <LogViewerSearch minSearchChars={3} placeholder="Search value" />
+              </ToolbarItem>
+            </ToolbarContent>
+          </Toolbar>
+        }
+        data={logData}
+        scrollToRow={(logData && logData.length) || 0}
+        height={300}
+        theme="dark"
+      />
+    </Card>
   );
 };

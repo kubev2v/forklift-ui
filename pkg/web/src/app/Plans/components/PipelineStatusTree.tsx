@@ -7,7 +7,6 @@ import {
   DropdownItem,
 } from '@patternfly/react-core';
 import { IPlan, IVMStatus, SourceVM } from '@app/queries/types';
-import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 
 interface IPipelineStatusTree {
   plan: IPlan;
@@ -31,18 +30,15 @@ export const PipelineStatusTree: React.FunctionComponent<IPipelineStatusTree> = 
   const [isDropdownOpen, toggleDropdownOpen] = React.useReducer((isOpen) => !isOpen, false);
 
   const dropdownItems = [
-    <DropdownItem key="action" isDisabled component="button">
+    <DropdownItem key={`view-logs-${vm.id}`} isDisabled component="button">
       View logs
-    </DropdownItem>,
-    <DropdownItem isDisabled key="link">
-      Copy <code>oc logs</code> command
     </DropdownItem>,
   ];
 
   const options = [
     {
       name: `Plan: ${vm.host}/${plan.spec.targetNamespace}/${plan.metadata.name}`,
-      id: `${plan.spec.targetNamespace}-${plan.metadata.name}`,
+      id: `root-${plan.spec.targetNamespace}-${plan.metadata.name}-${vm.id}-${vmStatus.id}`,
       action: (
         <Dropdown
           onSelect={onNodeSelect}
@@ -57,7 +53,7 @@ export const PipelineStatusTree: React.FunctionComponent<IPipelineStatusTree> = 
           // name: 'Migration: host/openshift-migration/state-migration-0d126',
           // name: `Migration: ${vm.path}`,
           name: `Migration: ${vm.host}/${plan.spec.targetNamespace}/?`,
-          id: `${plan.spec.targetNamespace}-foo?`,
+          id: `${plan.spec.targetNamespace}-${vm.id}-${vmStatus.id}`,
           children: [
             {
               name: 'VMs',
@@ -65,7 +61,7 @@ export const PipelineStatusTree: React.FunctionComponent<IPipelineStatusTree> = 
               children: [
                 {
                   name: `${vm.name} (${vm.id}) - ${vmStatus.phase}`,
-                  id: `${vm.id}`,
+                  id: `${vm.id}-leaf`,
                 },
               ],
             },

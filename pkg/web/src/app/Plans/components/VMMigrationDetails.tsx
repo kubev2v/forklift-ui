@@ -65,6 +65,7 @@ import '@app/Plans/components/VMMigrationDetails.css';
 import { MustGatherBtn } from '@app/common/components/MustGatherBtn';
 import { VMNameWithPowerState } from '@app/common/components/VMNameWithPowerState';
 import { PipelineStatusTree } from '@app/Plans/components/PipelineStatusTree';
+import { META } from '@app/common/constants';
 
 export interface IPlanMatchParams {
   url: string;
@@ -337,7 +338,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
             title: !isShowingPrecopyView ? (
               <>
                 {plan && vm && <PipelineStatusTree plan={plan} vm={vm} vmStatus={vmStatus} />}
-                {plan && <LogObserver plan={plan} />}
+                {plan && <LogObserver namespace={plan.spec.targetNamespace} plan={plan} />}
               </>
             ) : (
               <VMStatusPrecopyTable status={vmStatus} isCanceled={isCanceled} />
@@ -427,7 +428,9 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
                 variant="bottom"
               />
             </CardBody>
-            <CardFooter>{plan && <LogObserver clusterWide plan={plan} />}</CardFooter>
+            <CardFooter>
+              {plan && <LogObserver namespace={META.namespace} plan={plan} />}
+            </CardFooter>
           </Card>
         </ResolvedQueries>
       </PageSection>

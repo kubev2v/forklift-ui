@@ -1,6 +1,11 @@
+import { META } from '@app/common/constants';
 import { IPodObject } from '@app/queries/types';
 
-export let MOCK_PODS: IPodObject[];
+export let MOCK_PODS: {
+  [mockClusterType: string]: IPodObject[];
+};
+export let MOCK_PLAN_PODS: IPodObject[];
+export let MOCK_CLUSTER_PODS: IPodObject[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   const pod1: IPodObject = {
@@ -86,5 +91,43 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
     },
   };
 
-  MOCK_PODS = [pod1, pod2, pod3, pod4, pod5];
+  const pod6: IPodObject = {
+    apiVersion: '00000',
+    kind: 'foo-kind',
+    metadata: {
+      namespace: META.namespace,
+      name: 'importer-mock-resource-01-vm-1630-xxxx',
+    },
+    spec: {
+      containers: [
+        {
+          name: 'forklift-validation',
+        },
+      ],
+    },
+  };
+
+  const pod7: IPodObject = {
+    apiVersion: '00000',
+    kind: 'foo-kind',
+    metadata: {
+      namespace: META.namespace,
+      name: 'importer-mock-resource-02-vm-2844-xxxx',
+    },
+    spec: {
+      containers: [
+        {
+          name: 'forklift-validation',
+        },
+      ],
+    },
+  };
+
+  MOCK_CLUSTER_PODS = [pod1, pod2, pod3, pod4, pod5];
+  MOCK_PLAN_PODS = [pod6, pod7];
+
+  MOCK_PODS = {
+    [`${META.namespace}`]: MOCK_CLUSTER_PODS,
+    'openshift-migration': MOCK_PLAN_PODS,
+  };
 }

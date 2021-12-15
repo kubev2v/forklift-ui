@@ -1,7 +1,6 @@
 import { UseQueryResult } from 'react-query';
 import { getClusterApiUrl, useMockableQuery, mockKubeList } from '@app/queries/helpers';
 import { authorizedFetch, useAuthorizedFetch, useFetchContext } from '@app/queries/fetchHelpers';
-import { META } from '@app/common/constants';
 import { IKubeList } from '@app/client/types';
 import { usePollingContext } from '@app/common/context';
 import { ContainerType, IPodObject } from '@app/queries/types';
@@ -9,7 +8,7 @@ import { getMockLogsByPod } from '@app/queries/mocks/logs.mock';
 import { MOCK_PODS } from '@app/queries/mocks/pods.mock';
 
 export const useClusterPodLogsQuery = (
-  namespace: string | undefined,
+  namespace: string,
   containerType: ContainerType | undefined,
   podName: string | undefined
 ): UseQueryResult<Blob> => {
@@ -22,9 +21,7 @@ export const useClusterPodLogsQuery = (
         new Promise((res, rej) => {
           authorizedFetch<Blob>(
             getClusterApiUrl(
-              `api/v1/namespaces/${
-                namespace || META.namespace
-              }/pods/${podName}/log?container=${containerType}`
+              `api/v1/namespaces/${namespace}/pods/${podName}/log?container=${containerType}`
             ),
             fetchContext,
             {},
@@ -49,17 +46,13 @@ export const useClusterPodLogsQuery = (
   );
 };
 
-export const useClusterPodsQuery = (
-  namespace: string | undefined
-): UseQueryResult<IKubeList<IPodObject>> => {
+export const useClusterPodsQuery = (namespace: string): UseQueryResult<IKubeList<IPodObject>> => {
   return useMockableQuery<IKubeList<IPodObject>>(
     {
       queryKey: ['cluster-pods-list', namespace],
-      queryFn: useAuthorizedFetch(
-        getClusterApiUrl(`api/v1/namespaces/${namespace || META.namespace}/pods`)
-      ),
+      queryFn: useAuthorizedFetch(getClusterApiUrl(`api/v1/namespaces/${namespace}/pods`)),
       refetchInterval: usePollingContext().refetchInterval,
     },
-    mockKubeList(MOCK_PODS, 'PodList')
+    mockKubeList(MOCK_PODS[namespace], 'PodList')
   );
 };
