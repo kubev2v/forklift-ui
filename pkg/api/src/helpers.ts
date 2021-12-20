@@ -8,7 +8,7 @@ const sanitizeMeta = (meta) => {
 
 export const getDevMeta = () => {
   if (process.env['DATA_SOURCE'] === 'mock') return { oauth: {} };
-  const configPath = process.env['META_FILE'] || './meta.dev.json';
+  const configPath = process.env['META_FILE'] || './config/meta.dev.json';
   if (!existsSync(configPath)) {
     console.error(`ERROR: ${configPath} is missing`);
     console.error(
