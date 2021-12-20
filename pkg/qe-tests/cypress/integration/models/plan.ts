@@ -228,11 +228,12 @@ export class Plan {
   }
 
   protected waitForSuccess(name: string): void {
+    Plan.openList();
     cy.get(tdTag)
       .contains(name)
       .closest(trTag)
       .within(() => {
-        cy.get(`div.pf-c-progress__description`).contains(planSuccessMessage, {
+        cy.get(dataLabel.status).contains(planSuccessMessage, {
           timeout: 3600 * SEC,
         });
       });
