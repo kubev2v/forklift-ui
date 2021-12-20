@@ -1,8 +1,15 @@
 import { LoginData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
-import { button, loginButton, nextButton, trTag } from '../integration/types/constants';
+import {
+  button,
+  finishButton,
+  loginButton,
+  nextButton,
+  trTag,
+} from '../integration/types/constants';
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
+import { confirmButton } from '../integration/views/plan.view';
 
 export function inputText(fieldId: string, text: string): void {
   cy.get(fieldId).last().clear().type(text);
@@ -71,6 +78,12 @@ export function filterArray(originalArray: string[], duplicateArray: string[]): 
   return originalArray.filter((orig) => !duplicateArray.find((dup) => dup === orig));
 }
 
+export function confirm(): void {
+  click(confirmButton);
+}
+export function finish(): void {
+  clickByText(button, finishButton);
+}
 export function next(): void {
   clickByText(button, nextButton);
 }
