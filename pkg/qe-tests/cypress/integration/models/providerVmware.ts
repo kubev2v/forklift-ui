@@ -56,6 +56,7 @@ export class ProviderVmware extends Provider {
     this.fillPassword(password);
     this.fillFingerprint(cert);
     click(addButtonModal);
+    cy.wait(2 * SEC);
   }
 
   protected populate(providerData: VmwareProviderData): void {

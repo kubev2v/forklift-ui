@@ -52,6 +52,7 @@ export class providerRhv extends Provider {
     this.fillPassword(password);
     this.fillCaCert(cert);
     click(addButtonModal);
+    cy.wait(2 * SEC);
   }
 
   delete(providerData: RhvProviderData): void {

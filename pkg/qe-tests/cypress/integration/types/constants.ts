@@ -27,15 +27,19 @@ export const addButton = 'Add';
 export const saveButton = 'Save';
 export const selectANetworkMapping = 'Select a network mapping';
 export const selectAStorageMapping = 'Select a storage mapping';
-export const finish = 'Finish';
 export const planSuccessMessage = 'Succeeded';
 export const planCanceledMessage = 'Canceled';
+export const planFailedMessage = 'Failed';
 export const SEC = 1000;
 export const CreateNewNetworkMapping = 'Create a network mapping';
 export const CreateNewStorageMapping = 'Create a storage mapping';
 export const restartButton = 'Restart';
 export const duplicateButton = 'Duplicate';
-
+export const archiveButton = 'Archive';
+export const finishButton = 'Finish';
+export const start = 'Start';
+export const review = 'Review';
+export const cutover = 'Cutover';
 export enum hooks {
   image = 'Custom container image',
   ansiblePlaybook = 'Ansible Playbook',

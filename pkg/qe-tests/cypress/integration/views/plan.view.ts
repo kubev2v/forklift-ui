@@ -16,6 +16,8 @@ export const reviewTargetNamespace = '#details-target-namespace';
 export const selectHooks = '#hook-step-select-toggle';
 export const ansibleId = '#playbook-yaml';
 export const imageId = '#image';
+export const showArchived = '#show-archived-checkbox';
+export const confirmButton = '#modal-confirm-button';
 export enum dataLabel {
   name = '[data-label=Name]',
   sourceProvider = '[data-label="Source provider"]',
