@@ -151,6 +151,7 @@ export const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           >
             <Select
               isInputValuePersisted
+              isInputFilterPersisted
               placeholderText="Select a namespace"
               isOpen={isNamespaceSelectOpen}
               onToggle={(isOpen) => {
