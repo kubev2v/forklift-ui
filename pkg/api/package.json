@@ -1,12 +1,13 @@
 {
   "name": "forklift-ui-api",
   "version": "0.0.1",
-  "main": "./src/server.js",
+  "main": "./src/dist/src/server.js",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
-    "start": "node src/server.js"
+    "start": "node src/dist/src/server.js",
+    "tsc": "tsc -p ./tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/ejs": "^3.0.6",
