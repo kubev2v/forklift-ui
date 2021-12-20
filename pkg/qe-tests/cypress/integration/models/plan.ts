@@ -10,13 +10,14 @@ import {
   selectCheckBox,
   unSelectCheckBox,
   filterArray,
+  finish,
+  confirm,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import {
   button,
   createPlan,
   deleteButton,
-  finish,
   migrationPLan,
   tdTag,
   trTag,
@@ -27,6 +28,11 @@ import {
   hookType,
   restartButton,
   duplicateButton,
+  start,
+  review,
+  planFailedMessage,
+  archiveButton,
+  cutover,
 } from '../types/constants';
 
 import {
@@ -46,6 +52,7 @@ import {
   selectHooks,
   ansibleId,
   imageId,
+  showArchived,
 } from '../views/plan.view';
 
 export class Plan {
@@ -164,7 +171,7 @@ export class Plan {
       hookString = hook.image;
       inputText(imageId, hookString);
     }
-    click('#modal-confirm-button');
+    confirm();
   }
 
   protected hooksStep(planData: PlanData): void {
@@ -215,7 +222,7 @@ export class Plan {
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);
     this.reviewHooks();
-    clickByText(button, finish);
+    finish();
   }
 
   protected run(name: string, action: string): void {
@@ -250,11 +257,21 @@ export class Plan {
         cy.get(dataLabel.status).contains(planCanceledMessage, { timeout: 3600 * SEC });
       });
   }
+  //wait for Failed plan status
+  protected waitForfailed(name: string): void {
+    Plan.openList();
+    cy.get(tdTag)
+      .contains(name)
+      .closest(trTag)
+      .within(() => {
+        cy.get(dataLabel.status).contains(planFailedMessage);
+      });
+  }
   protected cancel(planData: PlanData): void {
     const { vmList } = planData;
     const rowAmount = vmList.length;
     let i;
-    cy.wait(30 * SEC);
+    cy.wait(40 * SEC);
     for (i = 0; i < rowAmount; i++) {
       cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
         .should('be.enabled')
@@ -273,6 +290,39 @@ export class Plan {
     }
     next();
   }
+  //Code to Archive a Plan, show checkbox, Duplicate failed Archived plan and Delete Archived
+  protected validateArchive(name: string): void {
+    applyAction(name, archiveButton);
+    confirm();
+    selectCheckBox(showArchived);
+    cy.wait(2 * SEC);
+  }
+  archive(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    cy.wait(2 * SEC);
+    this.validateArchive(name);
+    applyAction(name, duplicateButton);
+    clickByText(button, review);
+    finish();
+  }
+  deleteArchive(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    selectCheckBox(showArchived);
+    cy.wait(2 * SEC);
+    applyAction(name, deleteButton);
+    confirm();
+    cy.wait(2 * SEC);
+  }
+  failed(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    this.run(name, start);
+    confirm();
+    cy.wait(10000);
+    this.waitForfailed(name);
+  }
 
   create(planData: PlanData): void {
     Plan.openList();
@@ -290,20 +340,20 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     applyAction(name, deleteButton);
-    clickByText(button, deleteButton); //Added Confirm Button
+    confirm(); //Added Confirm Button
     cy.wait(2 * SEC);
   }
 
   execute(planData: PlanData): void {
     const { name, warmMigration } = planData;
     Plan.openList();
-    this.run(name, 'Start');
-    click('#modal-confirm-button');
+    this.run(name, start);
+    confirm();
     if (warmMigration) {
       Plan.openList();
       cy.wait(30 * SEC);
-      this.run(name, 'Cutover');
-      click('#modal-confirm-button');
+      this.run(name, cutover);
+      confirm();
       //TODO: Schedule cutover for later
     }
     this.waitForSuccess(name);
@@ -313,12 +363,12 @@ export class Plan {
     const { name, warmMigration } = planData;
     Plan.openList();
     applyAction(name, restartButton);
-    clickByText(button, 'Restart'); //Added Confirm Button
+    confirm(); //Added Confirm Button
     if (warmMigration) {
       Plan.openList();
       cy.wait(30 * SEC);
-      this.run(name, 'Cutover'); //Start Cutover now
-      click('#modal-confirm-button');
+      this.run(name, cutover); //Start Cutover now
+      confirm();
       //TODO: Schedule cutover for later
     }
   }
@@ -326,8 +376,8 @@ export class Plan {
   cancel_and_restart(planData: PlanData): void {
     const { name } = planData;
     Plan.openList();
-    this.run(name, 'Start');
-    click('#modal-confirm-button');
+    this.run(name, start);
+    confirm();
     cy.wait(10000);
     this.cancel(planData);
     this.waitForCanceled(name);
@@ -342,8 +392,8 @@ export class Plan {
     const { name } = planData;
     Plan.openList();
     cy.wait(2000);
-    this.run(name, 'Start');
-    click('#modal-confirm-button');
+    this.run(name, start);
+    confirm();
     cy.wait(10000);
     this.cancel(planData);
     this.waitForCanceled(name);
@@ -356,8 +406,8 @@ export class Plan {
     applyAction(name, duplicateButton);
     if (originalPlanData === duplicatePlanData) {
       cy.wait(2000);
-      clickByText(button, 'Review');
-      clickByText(button, finish);
+      clickByText(button, review);
+      finish();
     } else {
       this.generalStep(duplicatePlanData);
       this.filterVm(duplicatePlanData);
