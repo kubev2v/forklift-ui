@@ -139,6 +139,7 @@ export const SelectOpenShiftNetworkModal: React.FunctionComponent<
             <SimpleSelect
               id="network"
               aria-label="Migration network"
+              toggleId="network-select-toggle"
               options={networkOptions}
               value={[selectedNetworkOption]}
               onChange={(selection) =>
