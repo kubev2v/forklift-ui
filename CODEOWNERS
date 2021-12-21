@@ -1,2 +1,2 @@
 * @konveyor/migration-engineering-ui-committers
-/qe-tests/ @konveyor/migration-engineering-qe-committers
+/pkg/qe-tests/ @konveyor/migration-engineering-qe-committers
