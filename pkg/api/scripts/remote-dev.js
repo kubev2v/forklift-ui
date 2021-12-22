@@ -1,15 +1,16 @@
-import child from 'child_process';
-import { getDevMeta } from '../src/helpers';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const execSync = require('child_process').execSync;
+const helpers = require('../src/helpers');
 
 try {
-  child.execSync('hash oc');
+  execSync('hash oc');
 } catch (error) {
   console.error(error.stdout.toString());
   process.exit(1);
 }
 
 try {
-  child.execSync('oc whoami');
+  execSync('oc whoami');
 } catch (error) {
   console.error('ERROR: A problem occurred while trying to log into openshift cluster:');
   console.error('This script uses the oc cli tool, are you logged in with oc login <cluster>?');
@@ -19,7 +20,7 @@ try {
 // Helpers
 
 function setupOAuthClient() {
-  const meta = getDevMeta();
+  const meta = helpers.getDevMeta();
   const oauthRedirectUrl = `http://localhost:${meta.devServerPort}/login/callback`;
 
   const oauthClientName = meta.oauth.clientId;
@@ -27,10 +28,10 @@ function setupOAuthClient() {
 
   try {
     console.log(`Checking to see if ${oauthClientName} oauthclient exists in cluster...`);
-    child.execSync(`oc get oauthclient ${oauthClientName} -o json`);
+    execSync(`oc get oauthclient ${oauthClientName} -o json`);
     console.log('Found existing OAuthClient object in cluster');
     console.log('Deleting existing OAuthClient so it can be reset');
-    child.execSync(`oc delete oauthclient ${oauthClientName}`);
+    execSync(`oc delete oauthclient ${oauthClientName}`);
   } catch (error) {
     // Some error other than the client not existing occurred
     if (!error.stderr.toString().includes('not found')) {
@@ -56,7 +57,7 @@ function setupOAuthClient() {
 
   // Configure OAuthClient in remote cluster
   try {
-    child.execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`);
+    execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`);
   } catch (error) {
     console.error('ERROR: Something went wrong trying to create a new OAuthClient:');
     console.error(error.stdout.toString());
