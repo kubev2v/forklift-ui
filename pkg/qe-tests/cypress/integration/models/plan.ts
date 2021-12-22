@@ -235,6 +235,12 @@ export class Plan {
   }
 
   protected waitForSuccess(name: string): void {
+    /* Method is:
+    1. Opening list of plans
+    2. Searching for the table that contains the row that includes plan name
+    3. Inside that row searches for the column `dataLabel` and waits until it will contain success message
+    or fail by timeout
+    */
     Plan.openList();
     cy.get(tdTag)
       .contains(name)
@@ -247,16 +253,21 @@ export class Plan {
   }
 
   protected waitForCanceled(name: string): void {
-    //Go to Migration plans list page
+    /* Method is:
+    1. Opening list of plans
+    2. Searching for the table that contains the row that includes plan name
+    3. Inside that row searches for the column `dataLabel` and waits until it will contain cancel message
+    or fail by timeout
+    */
     Plan.openList();
     cy.get(tdTag)
       .contains(name)
-      .parent(tdTag)
-      .parent(trTag)
+      .closest(trTag)
       .within(() => {
         cy.get(dataLabel.status).contains(planCanceledMessage, { timeout: 3600 * SEC });
       });
   }
+
   //wait for Failed plan status
   protected waitForfailed(name: string): void {
     Plan.openList();
@@ -267,11 +278,13 @@ export class Plan {
         cy.get(dataLabel.status).contains(planFailedMessage);
       });
   }
+
   protected cancel(planData: PlanData): void {
-    const { vmList } = planData;
-    const rowAmount = vmList.length;
+    const { vmList } = planData; // Getting list of VMs from plan Data
+    const rowAmount = vmList.length; // Getting size of VM list
     let i;
     cy.wait(40 * SEC);
+    // Iterating through the list of VMs to put a checkbox on each line
     for (i = 0; i < rowAmount; i++) {
       cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
         .should('be.enabled')
