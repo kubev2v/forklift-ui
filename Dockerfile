@@ -2,7 +2,7 @@
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . .
 USER root
-RUN npm config set unsafe-perm true && npm run install:ws && npm run build
+RUN npm run install:ws && npm run build
 
 # Runner image
 FROM registry.access.redhat.com/ubi8/nodejs-16-minimal
@@ -29,7 +29,7 @@ LABEL name="konveyor/forklift-ui" \
       io.openshift.min-memory="350Mi"
 
 COPY --from=builder /opt/app-root/src/config /opt/app-root/src/config
-COPY --from=builder /opt/app-root/src/pkg/api/dist/src /opt/app-root/src/pkg/api/dist/src
+COPY --from=builder /opt/app-root/src/pkg/api /opt/app-root/src/pkg/api
 COPY --from=builder /opt/app-root/src/dist /opt/app-root/src/dist
 COPY --from=builder /opt/app-root/src/dist/index.html.ejs /opt/app-root/src/views/index.html.ejs
 COPY --from=builder /opt/app-root/src/node_modules /opt/app-root/src/node_modules

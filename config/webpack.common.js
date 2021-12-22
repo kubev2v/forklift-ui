@@ -5,7 +5,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 const BG_IMAGES_DIRNAME = 'bgimages';
 
-const helpers = require('../pkg/api/dist/src/helpers');
+const helpers = require('../pkg/api/src/helpers');
 
 console.log('\nEnvironment at build time:');
 console.log(helpers.getBuildEnv());

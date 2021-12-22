@@ -7,4 +7,3 @@ coverage
 .idea
 .env
 config/meta.dev.json
-pkg/api/dist

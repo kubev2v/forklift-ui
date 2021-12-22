@@ -1,5 +1,6 @@
-import { AuthorizationCode } from 'simple-oauth2';
-import fetch from 'node-fetch';
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { AuthorizationCode } = require('simple-oauth2');
+const fetch = require('node-fetch');
 
 let cachedOAuthMeta = null;
 
@@ -13,7 +14,7 @@ const getOAuthMeta = async (meta) => {
   return cachedOAuthMeta;
 };
 
-export const getClusterAuth = async (meta) => {
+const getClusterAuth = async (meta) => {
   const oAuthMeta = await getOAuthMeta(meta);
   return new AuthorizationCode({
     client: {
@@ -25,4 +26,8 @@ export const getClusterAuth = async (meta) => {
       authorizePath: oAuthMeta.authorization_endpoint,
     },
   });
+};
+
+module.exports = {
+  getClusterAuth,
 };
