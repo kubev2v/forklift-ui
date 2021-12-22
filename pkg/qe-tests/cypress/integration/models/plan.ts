@@ -79,7 +79,8 @@ export class Plan {
   }
 
   protected selectNamespace(namespace: string): void {
-    selectFromDroplist(selectTargetNamespace, namespace);
+    inputText(selectTargetNamespace, namespace); //Select as well as Create new namespace
+    click(selectTargetNamespace);
   }
 
   protected generalStep(planData: PlanData): void {

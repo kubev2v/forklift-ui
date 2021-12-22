@@ -137,6 +137,7 @@ export const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProp
           >
             <SimpleSelect
               id="network"
+              toggleId="network-select-toggle"
               aria-label="Network"
               options={networkOptions}
               value={[
