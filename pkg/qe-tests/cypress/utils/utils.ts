@@ -15,10 +15,12 @@ export function inputText(fieldId: string, text: string): void {
   cy.get(fieldId).last().clear().type(text);
 }
 
+// Clicking on button with selection by text (when no other selector can be used)
 export function clickByText(fieldId: string, buttonText: string): void {
   cy.contains(fieldId, buttonText).click();
 }
 
+// Clicking on object selected by fieldId
 export function click(fieldId: string): void {
   cy.get(fieldId).click();
 }
@@ -41,14 +43,14 @@ export function openSidebarMenu(): void {
 }
 
 export function applyAction(itemName: string, action: string): void {
+  // itemName is text to be searched on the screen (like plan name, provider name, etc)
+  // Action is the name of the action to be applied
   cy.contains(itemName)
     .closest(trTag)
     .within(() => {
       click(kebab);
     });
   clickByText(kebabDropDownItem, action);
-  //Removed extra confirm button doesn't need for duplicate method
-  //Added in restart and delete Method
 }
 
 export function selectFromDroplist(selector: string, point: string): void {
@@ -78,12 +80,17 @@ export function filterArray(originalArray: string[], duplicateArray: string[]): 
   return originalArray.filter((orig) => !duplicateArray.find((dup) => dup === orig));
 }
 
+//Confirming action when required
 export function confirm(): void {
   click(confirmButton);
 }
+
+// Pressing Finish button when required
 export function finish(): void {
   clickByText(button, finishButton);
 }
+
+// Pressing Next button
 export function next(): void {
   clickByText(button, nextButton);
 }
