@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: 16
       - name: Install dependencies
-        run: npm run install:ws
+        run: npm install
       - name: Run tests
         run: npm run ci
