@@ -33,6 +33,8 @@ import {
   planFailedMessage,
   archiveButton,
   cutover,
+  getLogs,
+  downloadLogs,
 } from '../types/constants';
 
 import {
@@ -53,6 +55,7 @@ import {
   ansibleId,
   imageId,
   showArchived,
+  getlogsConfirmButton,
 } from '../views/plan.view';
 
 export class Plan {
@@ -276,7 +279,7 @@ export class Plan {
       .contains(name)
       .closest(trTag)
       .within(() => {
-        cy.get(dataLabel.status).contains(planFailedMessage);
+        cy.get(dataLabel.status).contains(planFailedMessage, { timeout: 3600 * SEC });
       });
   }
 
@@ -411,6 +414,15 @@ export class Plan {
     cy.wait(10000);
     this.cancel(planData);
     this.waitForCanceled(name);
+  }
+  //Method to click on Get Logs and Download logs
+  getLogs(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    this.run(name, getLogs);
+    clickByText(getlogsConfirmButton, getLogs);
+    cy.wait(20 * SEC);
+    this.run(name, downloadLogs);
   }
 
   duplicate(originalPlanData: PlanData, duplicatePlanData: PlanData): void {

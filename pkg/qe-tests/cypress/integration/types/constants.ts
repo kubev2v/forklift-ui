@@ -40,6 +40,8 @@ export const finishButton = 'Finish';
 export const start = 'Start';
 export const review = 'Review';
 export const cutover = 'Cutover';
+export const getLogs = 'Get logs';
+export const downloadLogs = 'Download logs';
 export enum hooks {
   image = 'Custom container image',
   ansiblePlaybook = 'Ansible Playbook',
