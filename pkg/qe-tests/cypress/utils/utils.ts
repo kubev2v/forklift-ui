@@ -6,10 +6,11 @@ import {
   loginButton,
   nextButton,
   trTag,
+  SEC,
 } from '../integration/types/constants';
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
 import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
-import { confirmButton } from '../integration/views/plan.view';
+import { confirmButton, arrowDropDown, dataLabel } from '../integration/views/plan.view';
 
 export function inputText(fieldId: string, text: string): void {
   cy.get(fieldId).last().clear().type(text);
@@ -93,4 +94,17 @@ export function finish(): void {
 // Pressing Next button
 export function next(): void {
   clickByText(button, nextButton);
+}
+
+// wait for the migration step to complete
+export function waitForState(planStep: string): void {
+  cy.get(arrowDropDown).click();
+  cy.get(dataLabel.step, { timeout: 20 * SEC })
+    .contains(planStep)
+    .closest(trTag)
+    .within(() => {
+      cy.get(dataLabel.elapsedTime, { timeout: 20 * SEC })
+        .should('not.be.empty')
+        .should('not.contain.text', '1');
+    });
 }
