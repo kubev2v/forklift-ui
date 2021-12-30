@@ -35,6 +35,7 @@ import {
   cutover,
   getLogs,
   downloadLogs,
+  CreateNewStorageMapping,
 } from '../types/constants';
 
 import {
@@ -149,7 +150,8 @@ export class Plan {
         selectFromDroplist(targetNetwork, mappingPeer[0].dProvider);
       } else {
         mappingPeer.forEach((peer) => {
-          selectFromDroplist(targetNetwork, peer.dProvider);
+          inputText(targetNetwork, peer.dProvider);
+          //selectFromDroplist(targetNetwork, peer.dProvider);// creates conflict for multiple selection of peer
         });
       }
     }
@@ -157,10 +159,21 @@ export class Plan {
   }
 
   protected storageMappingStep(planData: PlanData): void {
-    const { name } = planData.storageMappingData;
+    const { name, mappingPeer } = planData.storageMappingData;
     const { useExistingStorageMapping } = planData;
     if (useExistingStorageMapping) {
       selectFromDroplist(mappingDropdown, name);
+    } else {
+      //Added CreateNewStorage function method for Stprage Mapping
+      selectFromDroplist(mappingDropdown, CreateNewStorageMapping);
+      if (mappingPeer.length == 1) {
+        selectFromDroplist(targetNetwork, mappingPeer[0].dProvider);
+      } else {
+        mappingPeer.forEach((peer) => {
+          inputText(targetNetwork, peer.dProvider);
+          // selectFromDroplist(targetNetwork, peer.dProvider);
+        });
+      }
     }
     next();
     //TODO:storageMappingStep should be refactored to fix workaround for duplicate function only
