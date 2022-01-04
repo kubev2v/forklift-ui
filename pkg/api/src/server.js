@@ -28,7 +28,7 @@ console.log('\nValues from meta.json:', meta);
 const app = express();
 const port =
   process.env['EXPRESS_PORT'] || (process.env['UI_TLS_ENABLED'] !== 'false' ? 8443 : 8080);
-const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../dist');
+const staticDir = process.env['STATIC_DIR'] || path.join(__dirname, '../../../dist');
 
 app.engine('ejs', require('ejs').renderFile);
 app.use(express.static(staticDir));
