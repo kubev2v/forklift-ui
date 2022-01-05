@@ -71,3 +71,8 @@ export enum hookType {
   prehook = 'Pre-migration',
   posthook = 'Post-migration',
 }
+export enum planStep {
+  initMig = 'Initialize migration',
+  transferDisk = 'Transfer disks',
+  convtImage = 'Convert image to kubevirt',
+}
