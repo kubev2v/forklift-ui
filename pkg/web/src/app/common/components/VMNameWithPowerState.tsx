@@ -45,38 +45,35 @@ export const VMNameWithPowerState: React.FunctionComponent<IVMNameWithPowerState
   vm,
   vmStatus,
 }) => {
-  const renderPowerStateIcon = (providerType: ProviderType, vm?: SourceVM) => {
-    const powerStatus = getVMPowerState(providerType, vm);
+  const powerState = getVMPowerState(sourceProvider?.type, vm);
+  const tooltipText =
+    powerState === 'on'
+      ? 'Powered on'
+      : powerState === 'off'
+      ? 'Powered off'
+      : 'Unknown power state';
 
-    const tooltipTxt =
-      powerStatus === 'on'
-        ? 'Powered on'
-        : powerStatus === 'off'
-        ? 'Powered off'
-        : 'Unknown power state';
-
-    return (
-      <Tooltip content={tooltipTxt}>
-        {powerStatus === 'on' ? (
-          <SyncAltIcon className={spacing.mrSm} />
-        ) : powerStatus === 'off' ? (
-          <OffIcon className={spacing.mrSm} />
-        ) : (
-          <UnknownIcon className={spacing.mrSm} />
-        )}
-      </Tooltip>
-    );
-  };
+  const powerStateIcon = sourceProvider ? (
+    <Tooltip content={tooltipText}>
+      {powerState === 'on' ? (
+        <SyncAltIcon className={spacing.mrSm} />
+      ) : powerState === 'off' ? (
+        <OffIcon className={spacing.mrSm} />
+      ) : (
+        <UnknownIcon className={spacing.mrSm} />
+      )}
+    </Tooltip>
+  ) : null;
 
   const vmName =
     vm?.name || vmStatus?.name || (vmStatus?.id ? `VM not found (id: ${vmStatus?.id})` : '');
 
   return (
-    <>
-      {sourceProvider && renderPowerStateIcon(sourceProvider.type, vm)}
+    <span className="vm-name-with-power-state" aria-label={`${vmName} - ${tooltipText}`}>
+      {powerStateIcon}
       <Tooltip content={vmName}>
         <span tabIndex={0}>{vmName}</span>
       </Tooltip>
-    </>
+    </span>
   );
 };
