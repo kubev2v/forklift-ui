@@ -178,14 +178,11 @@ export class Plan {
   protected hooksStep(planData: PlanData): void {
     const { preHook, postHook } = planData;
     if (preHook.ansiblePlaybook || preHook.image) {
-      cy.log('Warning, prehook found');
       clickByText(button, 'Add');
-      cy.log(preHook.ansiblePlaybook);
       selectFromDroplist(selectHooks, hookType.prehook);
       this.addHook(preHook);
     }
     if (postHook.ansiblePlaybook || postHook.image) {
-      cy.log('Warning, posthook found');
       clickByText(button, 'Add');
       selectFromDroplist(selectHooks, hookType.posthook);
       this.addHook(postHook);
