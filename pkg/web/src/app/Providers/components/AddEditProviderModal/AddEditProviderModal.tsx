@@ -213,8 +213,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     isCertificateQueryEnabled
   );
 
+  const certificateConfirmButtonRef = React.useRef<HTMLElement>(null);
+
   const scrollVerifyButtonIntoView = () =>
-    document.getElementById('certificate-confirm-button')?.scrollIntoView({ behavior: 'smooth' });
+    certificateConfirmButtonRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <Modal
@@ -343,6 +345,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       <Button
                         id="certificate-confirm-button"
                         key="confirm"
+                        ref={certificateConfirmButtonRef}
                         aria-label="Verify Certificate"
                         variant="primary"
                         isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid} // TODO we should remove the isTouched case here once we resolve https://github.com/konveyor/lib-ui/issues/82
