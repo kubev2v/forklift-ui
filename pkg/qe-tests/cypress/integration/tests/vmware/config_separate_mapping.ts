@@ -15,8 +15,19 @@ const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
 const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
+const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
+const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
+const vmListArray = Cypress.env('vm_list');
+// const v2v_StorageClass = Cypress.env('v2v_storage_class');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+
+// const destStorageClass = null;
+// if (v2v_StorageClass === 'nfs') {
+//   const destStorageClass = storageType.nfs;
+// } else {
+//   const destStorageClass = storageType.cephRbd;
+// }
 
 export const loginData: LoginData = {
   username: user_login,
@@ -46,14 +57,14 @@ export const networkMappingPeer: MappingPeer[] = [
 
 export const storageMappingPeer: MappingPeer[] = [
   {
-    sProvider: 'v2v_general_porpuse_ISCSI_DC',
-    dProvider: storageType.nfs,
+    sProvider: sourceProviderStorage,
+    dProvider: storageType.cephRbd,
   },
 ];
 
 export const networkMapping: MappingData = {
   name: 'network-qe-vmware-mapping',
-  sProviderName: 'qe-vmware',
+  sProviderName: providerData.hostname,
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
@@ -78,8 +89,8 @@ export const originalPlanData: PlanData = {
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
-  sourceClusterName: 'MTV_7.0',
-  vmList: ['v2v-rhel7-2nic-2disk-igor'],
+  sourceClusterName: vmwareClusterName,
+  vmList: vmListArray,
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,
@@ -95,7 +106,7 @@ export const duplicatePlanData: PlanData = {
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'openshift-mtv',
-  sourceClusterName: 'MTV_7.0',
+  sourceClusterName: vmwareClusterName,
   vmList: ['v2v-rhel7-2nic-2disk-igor'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
