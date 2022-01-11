@@ -11,6 +11,8 @@ import { NetworkContextProvider } from '@app/common/context';
 import { AddEditProviderModal } from '../AddEditProviderModal';
 import { MOCK_CLUSTER_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
+beforeAll(() => (window.HTMLElement.prototype.scrollIntoView = jest.fn()));
+
 describe('<AddEditProviderModal />', () => {
   const toggleModalAndResetEdit = () => {
     return;
