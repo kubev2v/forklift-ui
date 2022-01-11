@@ -11,9 +11,9 @@ import { NetworkContextProvider } from '@app/common/context';
 import { AddEditProviderModal } from '../AddEditProviderModal';
 import { MOCK_CLUSTER_PROVIDERS } from '@app/queries/mocks/providers.mock';
 
-beforeAll(() => (window.HTMLElement.prototype.scrollIntoView = jest.fn()));
-
 describe('<AddEditProviderModal />', () => {
+  beforeAll(() => (window.HTMLElement.prototype.scrollIntoView = jest.fn()));
+
   const toggleModalAndResetEdit = () => {
     return;
   };
@@ -23,7 +23,7 @@ describe('<AddEditProviderModal />', () => {
     onClose: toggleModalAndResetEdit,
   };
 
-  it.skip('allows to cancel addition/edition of a provider', async () => {
+  it('allows to cancel addition/edition of a provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -52,14 +52,12 @@ describe('<AddEditProviderModal />', () => {
     );
 
     const typeButton = await screen.findByLabelText(/provider type/i);
-    userEvent.click(typeButton);
     await waitFor(() => {
-      null;
+      userEvent.click(typeButton);
     });
     const oVirtButton = await screen.findByRole('option', { name: /ovirt/i, hidden: true });
-    userEvent.click(oVirtButton);
     await waitFor(() => {
-      null;
+      userEvent.click(oVirtButton);
     });
     const caCertField = screen.getByLabelText(/^File upload/);
     const name = screen.getByRole('textbox', { name: /Name/ });
@@ -77,14 +75,14 @@ describe('<AddEditProviderModal />', () => {
     });
 
     const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
-    await waitFor(() => expect(addButton).toBeEnabled());
+    expect(addButton).toBeEnabled();
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
-    await waitFor(() => expect(cancelButton).toBeEnabled());
+    expect(cancelButton).toBeEnabled();
   });
 
   // Vsphere Provider
 
-  it.skip('allows adding a vsphere provider', async () => {
+  it('allows adding a vsphere provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -96,9 +94,14 @@ describe('<AddEditProviderModal />', () => {
     );
 
     const typeButton = await screen.findByLabelText(/provider type/i);
-    userEvent.click(typeButton);
+    await waitFor(() => {
+      userEvent.click(typeButton);
+    });
+
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
-    userEvent.click(vsphereButton);
+    await waitFor(() => {
+      userEvent.click(vsphereButton);
+    });
 
     const name = screen.getByRole('textbox', { name: /Name/ });
     const hostname = screen.getByRole('textbox', {
@@ -109,16 +112,18 @@ describe('<AddEditProviderModal />', () => {
 
     userEvent.type(name, 'providername');
     userEvent.type(hostname, 'host.example.com');
-    userEvent.click(username);
+    await waitFor(() => {
+      userEvent.click(username);
+    });
     userEvent.type(username, 'username');
     userEvent.type(password, 'password');
 
     const verifyButton = await screen.findByLabelText(/verify certificate/i);
     await waitFor(() => {
       userEvent.click(verifyButton);
+      expect(verifyButton).toBeEnabled();
     });
 
-    expect(verifyButton).toBeEnabled();
     expect(
       screen.getByText('39:5C:6A:2D:36:38:B2:52:2B:21:EA:74:11:59:89:5E:20:D5:D9:A2')
     ).toBeInTheDocument();
@@ -126,7 +131,9 @@ describe('<AddEditProviderModal />', () => {
       name: /validate certificate/i,
     });
 
-    userEvent.click(validateCertificationCheckbox);
+    await waitFor(() => {
+      userEvent.click(validateCertificationCheckbox);
+    });
 
     expect(validateCertificationCheckbox).toBeChecked();
     const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
@@ -135,7 +142,7 @@ describe('<AddEditProviderModal />', () => {
     expect(cancelButton).toBeEnabled();
   });
 
-  it.skip('fails to add a vsphere provider with wrong values', async () => {
+  it('fails to add a vsphere provider with wrong values', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -147,9 +154,14 @@ describe('<AddEditProviderModal />', () => {
     );
 
     const typeButton = await screen.findByLabelText(/provider type/i);
-    userEvent.click(typeButton);
+    await waitFor(() => {
+      userEvent.click(typeButton);
+    });
+
     const vsphereButton = await screen.findByRole('option', { name: /vmware/i, hidden: true });
-    userEvent.click(vsphereButton);
+    await waitFor(() => {
+      userEvent.click(vsphereButton);
+    });
 
     const name = screen.getByRole('textbox', { name: /Name/ });
     const hostname = screen.getByRole('textbox', {
@@ -158,10 +170,12 @@ describe('<AddEditProviderModal />', () => {
     const username = screen.getByRole('textbox', { name: /vCenter user name/i });
     const password = screen.getByLabelText(/^vCenter password/);
 
-    userEvent.type(name, 'providername');
-    userEvent.type(hostname, 'hostname');
-    userEvent.type(username, 'username');
-    userEvent.type(password, 'password');
+    await waitFor(() => {
+      userEvent.type(name, 'providername');
+      userEvent.type(hostname, 'hostname');
+      userEvent.type(username, 'username');
+      userEvent.type(password, 'password');
+    });
 
     const addButton = await screen.findByRole('button', { name: /Add/ });
     expect(addButton).toBeDisabled();
@@ -169,7 +183,7 @@ describe('<AddEditProviderModal />', () => {
     expect(cancelButton).toBeEnabled();
   });
 
-  it.skip('allows editing a vsphere provider', async () => {
+  it('allows editing a vsphere provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -188,7 +202,7 @@ describe('<AddEditProviderModal />', () => {
 
   // OpenShift Provider
 
-  it.skip('allows to add an openshift provider', async () => {
+  it('allows to add an openshift provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -200,17 +214,24 @@ describe('<AddEditProviderModal />', () => {
     );
 
     const typeButton = await screen.findByLabelText(/provider type/i);
-    userEvent.click(typeButton);
+    await waitFor(() => {
+      userEvent.click(typeButton);
+    });
+
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
-    userEvent.click(openshiftButton);
+    await waitFor(() => {
+      userEvent.click(openshiftButton);
+    });
 
     const name = screen.getByRole('textbox', { name: /name/i });
     const url = screen.getByRole('textbox', { name: /url/i });
     const saToken = screen.getByLabelText(/^Service account token/);
 
-    userEvent.type(name, 'providername');
-    userEvent.type(url, 'http://host.example.com');
-    userEvent.type(saToken, 'saToken');
+    await waitFor(() => {
+      userEvent.type(name, 'providername');
+      userEvent.type(url, 'http://host.example.com');
+      userEvent.type(saToken, 'saToken');
+    });
 
     const addButton = await screen.findByRole('dialog', { name: /Add provider/ });
     expect(addButton).toBeEnabled();
@@ -218,7 +239,7 @@ describe('<AddEditProviderModal />', () => {
     expect(cancelButton).toBeEnabled();
   });
 
-  it.skip('fails to add an openshift provider with wrong values', async () => {
+  it('fails to add an openshift provider with wrong values', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
@@ -230,25 +251,32 @@ describe('<AddEditProviderModal />', () => {
     );
 
     const typeButton = await screen.findByLabelText(/provider type/i);
-    userEvent.click(typeButton);
+    await waitFor(() => {
+      userEvent.click(typeButton);
+    });
+
     const openshiftButton = await screen.findByRole('option', { name: /kubevirt/i, hidden: true });
-    userEvent.click(openshiftButton);
+    await waitFor(() => {
+      userEvent.click(openshiftButton);
+    });
 
     const name = screen.getByRole('textbox', { name: /name/i });
     const url = screen.getByRole('textbox', { name: /url/i });
     const saToken = screen.getByLabelText(/^Service account token/);
 
-    userEvent.type(name, 'providername');
-    userEvent.type(url, 'host');
-    userEvent.type(saToken, 'saToken');
+    await waitFor(() => {
+      userEvent.type(name, 'providername');
+      userEvent.type(url, 'host');
+      userEvent.type(saToken, 'saToken');
+    });
 
-    const addButton = await screen.getByRole('button', { name: /Add/ });
+    const addButton = screen.getByRole('button', { name: /Add/ });
     expect(addButton).toBeDisabled();
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
     expect(cancelButton).toBeEnabled();
   });
 
-  it.skip('allows editing an openshift provider', async () => {
+  it('allows editing an openshift provider', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <NetworkContextProvider>
