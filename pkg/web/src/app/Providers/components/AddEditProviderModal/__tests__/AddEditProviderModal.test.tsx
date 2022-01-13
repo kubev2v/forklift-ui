@@ -112,16 +112,14 @@ describe('<AddEditProviderModal />', () => {
 
     userEvent.type(name, 'providername');
     userEvent.type(hostname, 'host.example.com');
-    await waitFor(() => {
-      userEvent.click(username);
-    });
     userEvent.type(username, 'username');
     userEvent.type(password, 'password');
 
     const verifyButton = await screen.findByLabelText(/verify certificate/i);
+    expect(verifyButton).toBeEnabled();
+
     await waitFor(() => {
       userEvent.click(verifyButton);
-      expect(verifyButton).toBeEnabled();
     });
 
     expect(
