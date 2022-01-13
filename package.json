@@ -39,9 +39,9 @@
   "devDependencies": {
     "@axe-core/react": "^4.2.1",
     "@testing-library/cypress": "^8.0.2",
-    "@testing-library/jest-dom": "^5.13.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^13.1.9",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
     "@types/ejs": "^3.0.6",
     "@types/express": "^4.17.12",
     "@types/file-saver": "^2.0.3",
