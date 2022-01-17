@@ -10,7 +10,6 @@ export interface IStorageClass {
   name: string;
   selfLink: string;
   object: {
-    provisioner?: string;
     metadata: {
       annotations?: {
         'storageclass.kubernetes.io/is-default-class'?: 'true' | 'false';
@@ -22,6 +21,5 @@ export interface IStorageClass {
 export interface IAnnotatedStorageClass extends IStorageClass {
   uiMeta: {
     isDefault: boolean;
-    hasProvisioner: boolean;
   };
 }
