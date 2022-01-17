@@ -6,6 +6,7 @@ import {
   TestData,
   VmwareProviderData,
   HookData,
+  esxiHostList,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
@@ -21,7 +22,10 @@ const vmListArray = Cypress.env('vm_list');
 // const v2v_StorageClass = Cypress.env('v2v_storage_class');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
-
+const target_network = Cypress.env('v2v_vmwareTargetNetwork');
+const hostListArray = Cypress.env('host_list');
+const esxi_username = Cypress.env('v2v_vmwareEsxiUsername');
+const esxi_password = Cypress.env('v2v_vmwareEsxiPassword');
 // const destStorageClass = null;
 // if (v2v_StorageClass === 'nfs') {
 //   const destStorageClass = storageType.nfs;
@@ -35,6 +39,13 @@ export const loginData: LoginData = {
   url: url,
 };
 
+//For ESXI HOST Credentials
+export const hostList: esxiHostList = {
+  hostnames: hostListArray,
+  targetNetwork: target_network,
+  esxiUsername: esxi_username,
+  esxiPassword: esxi_password,
+};
 export const providerData: VmwareProviderData = {
   type: providerType.vmware,
   name: 'qe-vmware',
@@ -42,6 +53,7 @@ export const providerData: VmwareProviderData = {
   username: v2v_vmware_username,
   password: v2v_vmware_password,
   cert: v2v_vmware_cert,
+  esxiHostList: hostList,
 };
 
 export const networkMappingPeer: MappingPeer[] = [

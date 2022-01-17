@@ -1,5 +1,13 @@
 import { Provider } from './provider';
-import { applyAction, clickByText, click, inputText } from '../../utils/utils';
+import {
+  applyAction,
+  clickByText,
+  click,
+  inputText,
+  confirm,
+  selectFromDroplist,
+  selectCheckBox,
+} from '../../utils/utils';
 import {
   editButton,
   removeButton,
@@ -8,6 +16,7 @@ import {
   trTag,
   vmware,
   button,
+  tdTag,
 } from '../types/constants';
 import {
   addButtonModal,
@@ -17,6 +26,8 @@ import {
   instancePassword,
   instanceUsername,
   dataLabel,
+  networkField,
+  SelectMigrationNetworkButton,
 } from '../views/providerVmware.view';
 import { providerMenu } from '../views/provider.view';
 import { VmwareProviderData } from '../types/types';
@@ -40,6 +51,33 @@ export class ProviderVmware extends Provider {
 
   protected fillFingerprint(cert: string): void {
     inputText(instanceFingerprint, cert);
+  }
+
+  protected selectTargetNetwork(targetNetwork: string): void {
+    selectFromDroplist(networkField.selectNetwork, targetNetwork);
+  }
+  protected fillEsxiUsername(esxiUsername: string): void {
+    inputText(networkField.adminusername, esxiUsername);
+  }
+  protected fillESxiPassword(esxiPassword: string): void {
+    inputText(networkField.adminpassword, esxiPassword);
+  }
+  //Click or select on each esxi host provided
+  protected selectHostEsxi(providerData: VmwareProviderData): void {
+    const { hostnames } = providerData.esxiHostList;
+    hostnames.forEach((name) => {
+      cy.get(tdTag)
+        .contains(name)
+        .closest(trTag)
+        .within(() => {
+          selectCheckBox('input');
+        });
+    });
+  }
+  //Click on the hosts for the given Vmware Provider
+  protected selectHosts(name: string): void {
+    const selector = `a[href="/providers/vsphere/${name}"]`;
+    click(selector);
   }
 
   protected static openList(): void {
@@ -105,5 +143,19 @@ export class ProviderVmware extends Provider {
     this.fillFingerprint(cert);
     clickByText(addButtonModal, saveButton);
     this.populate(providerData);
+  }
+
+  //Method to Select for Vmware non-default Migration Network
+  selectMigrationNetwork(providerData: VmwareProviderData): void {
+    ProviderVmware.openList();
+    const { name } = providerData;
+    const { targetNetwork, esxiUsername, esxiPassword } = providerData.esxiHostList;
+    this.selectHosts(name);
+    this.selectHostEsxi(providerData);
+    cy.get(SelectMigrationNetworkButton).click(); //clicks on Select Migration Network Button
+    this.selectTargetNetwork(targetNetwork);
+    this.fillEsxiUsername(esxiUsername);
+    this.fillESxiPassword(esxiPassword);
+    confirm();
   }
 }

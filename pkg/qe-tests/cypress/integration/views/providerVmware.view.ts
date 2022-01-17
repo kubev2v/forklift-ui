@@ -4,6 +4,7 @@ export const instanceUsername = '#username';
 export const instancePassword = '#password';
 export const instanceFingerprint = '#fingerprint';
 export const addButtonModal = '#modal-confirm-button';
+export const SelectMigrationNetworkButton = 'button.pf-c-button.pf-m-secondary';
 
 export enum dataLabel {
   name = '[data-label=Name]',
@@ -14,4 +15,10 @@ export enum dataLabel {
   networks = '[data-label=Networks]',
   datastors = '[data-label=Name]',
   status = '[data-label=Status]',
+}
+
+export enum networkField {
+  selectNetwork = '#network-select-toggle',
+  adminusername = '#admin-username',
+  adminpassword = '#admin-password',
 }
