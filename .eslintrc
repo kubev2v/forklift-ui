@@ -32,7 +32,7 @@
       "version": "^16.11.0"
     }
   },
-  "plugins": ["prettier", "@typescript-eslint", "react-hooks", "eslint-plugin-react-hooks"],
+  "plugins": ["prettier", "@typescript-eslint", "react-hooks", "eslint-plugin-react-hooks", "testing-library"],
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -48,7 +48,11 @@
         "singleQuote": true,
         "semi": true
       }
-    ]  
+    ],
+    "testing-library/await-async-query": "error",
+    "testing-library/no-await-sync-query": "error",
+    "testing-library/no-debugging-utils": "warn",
+    "testing-library/no-dom-import": "off"
   },
   "env": {
     "browser": true,
