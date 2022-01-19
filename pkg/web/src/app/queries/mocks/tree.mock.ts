@@ -119,18 +119,18 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             object: {
               id: 'domain-s8928',
               variant: 'ComputeResource',
-              name: '172.29.0.10',
+              name: 'fake-host',
               selfLink:
-                'providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928',
+                '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928',
             },
             children: [
               {
                 kind: 'Host',
                 object: {
                   id: 'host-8930',
-                  name: '172.29.0.10',
+                  name: 'fake-host',
                   selfLink:
-                    'providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930',
+                    '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930',
                 },
                 children: [
                   {

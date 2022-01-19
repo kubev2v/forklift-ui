@@ -68,7 +68,7 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
       : node.children?.flatMap((child: InventoryTree) => getDescendants(child, true)) || [];
     return includeSelf ? [node, ...descendants] : descendants;
   };
-  return {
+  const ret = {
     tree: sortedTree,
     flattenedNodes: walk(sortedTree),
     vmSelfLinks,
@@ -77,6 +77,8 @@ export const indexTree = <T extends InventoryTree>(tree: T): IndexedTree<T> => {
     vmDescendantsBySelfLink,
     getDescendants,
   };
+  console.log(ret);
+  return ret;
 };
 
 export const useInventoryTreeQuery = <T extends InventoryTree>(
