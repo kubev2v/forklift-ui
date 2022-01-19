@@ -14,7 +14,6 @@ const user_password = Cypress.env('pass');
 const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
-const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
 const vmListArray = Cypress.env('vm_list');
@@ -41,7 +40,6 @@ export const providerData: VmwareProviderData = {
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
-  cert: v2v_vmware_cert,
 };
 
 export const networkMappingPeer: MappingPeer[] = [
@@ -64,7 +62,7 @@ export const storageMappingPeer: MappingPeer[] = [
 
 export const networkMapping: MappingData = {
   name: 'network-qe-vmware-mapping',
-  sProviderName: providerData.hostname,
+  sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
