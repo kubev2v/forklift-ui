@@ -101,15 +101,6 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
                     },
                     children: null,
                   },
-                  {
-                    kind: 'VM',
-                    object: {
-                      id: 'vm-431',
-                      name: 'pemcg-iscsi-target',
-                      selfLink: '/providers/vsphere/test/vms/vm-431',
-                    },
-                    children: null,
-                  },
                 ],
               },
             ],
@@ -124,13 +115,36 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             children: null,
           },
           {
-            kind: 'Folder',
+            kind: 'Cluster',
             object: {
-              id: 'group-h2800',
-              name: 'jortel',
-              selfLink: '/providers/vsphere/test4/folders/group-h2800',
+              id: 'domain-s8928',
+              variant: 'ComputeResource',
+              name: '172.29.0.10',
+              selfLink:
+                'providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928',
             },
-            children: null,
+            children: [
+              {
+                kind: 'Host',
+                object: {
+                  id: 'host-8930',
+                  name: '172.29.0.10',
+                  selfLink:
+                    'providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930',
+                },
+                children: [
+                  {
+                    kind: 'VM',
+                    object: {
+                      id: 'vm-431',
+                      name: 'pemcg-iscsi-target',
+                      selfLink: '/providers/vsphere/test/vms/vm-431',
+                    },
+                    children: null,
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

@@ -13,6 +13,11 @@ const sortTreeItemsByName = <T extends InventoryTree>(tree: T): T => ({
     (tree.children as T[]).map(sortTreeItemsByName).sort((a?: T, b?: T) => {
       if (!a || !a.object) return -1;
       if (!b || !b.object) return 1;
+      // Put standalone hosts (variant = ComputeResource) after all siblings
+      if (a.object.variant === 'ComputeResource' && b.object.variant !== 'ComputeResource')
+        return 1;
+      if (a.object.variant !== 'ComputeResource' && b.object.variant === 'ComputeResource')
+        return -1;
       return a.object.name < b.object.name ? -1 : 1;
     }),
 });
