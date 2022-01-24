@@ -18,6 +18,7 @@ export const ansibleId = '#playbook-yaml';
 export const imageId = '#image';
 export const showArchived = '#show-archived-checkbox';
 export const confirmButton = '#modal-confirm-button';
+export const network = '#network-select-toggle';
 export enum dataLabel {
   name = '[data-label=Name]',
   sourceProvider = '[data-label="Source provider"]',

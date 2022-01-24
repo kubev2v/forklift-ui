@@ -39,6 +39,7 @@ export type OcpVirtData = {
   name: string;
   url?: string;
   saToken?: string;
+  migrationNetwork?: string;
 };
 
 export type ProviderData = VmwareProviderData | RhvProviderData | OcpVirtData;
@@ -60,6 +61,7 @@ export type PlanData = {
   warmMigration?: boolean;
   preHook?: HookData;
   postHook?: HookData;
+  ocpMigrationNetwork?: string;
 };
 export type HookData = {
   ansiblePlaybook?: string;
