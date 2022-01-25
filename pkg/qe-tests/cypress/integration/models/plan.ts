@@ -12,6 +12,7 @@ import {
   filterArray,
   finish,
   confirm,
+  clickOnCancel,
 } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import {
@@ -35,6 +36,7 @@ import {
   cutover,
   getLogsButton,
   downloadLogsButton,
+  planStep,
 } from '../types/constants';
 
 import {
@@ -56,6 +58,7 @@ import {
   imageId,
   showArchived,
   getlogsConfirmButton,
+  arrowDropDown,
 } from '../views/plan.view';
 
 export class Plan {
@@ -288,20 +291,28 @@ export class Plan {
         cy.get(dataLabel.status).contains(planFailedMessage, { timeout: 3600 * SEC });
       });
   }
-
+  //Method for different Migaration plan step
+  protected waitForState(planStep: string): void {
+    click(arrowDropDown); //click on dropdown arrow to see the plan steps box
+    cy.get(dataLabel.step, { timeout: 20 * SEC })
+      .contains(planStep)
+      .closest(trTag)
+      .within(() => {
+        cy.get(dataLabel.elapsedTime, { timeout: 20 * SEC })
+          .should('not.be.empty')
+          .should('not.contain.text', '1');
+      });
+  }
   protected cancel(planData: PlanData): void {
     const { vmList } = planData; // Getting list of VMs from plan Data
     const rowAmount = vmList.length; // Getting size of VM list
     let i;
-    cy.wait(40 * SEC);
     // Iterating through the list of VMs to put a checkbox on each line
     for (i = 0; i < rowAmount; i++) {
       cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
         .should('be.enabled')
         .check();
     }
-    clickByText(button, 'Cancel');
-    clickByText(button, 'Yes, cancel');
   }
 
   protected selectMigrationTypeStep(planData: PlanData): void {
@@ -403,6 +414,53 @@ export class Plan {
     confirm();
     cy.wait(10000);
     this.cancel(planData);
+    clickOnCancel();
+    this.waitForCanceled(name);
+    this.restart(planData);
+    cy.wait(10000);
+    openSidebarMenu();
+    clickByText(navMenuPoint, migrationPLan);
+    this.waitForSuccess(name);
+  }
+  cancelRestartAtTransferDisks(planData: PlanData): void {
+    const { name, warmMigration } = planData;
+    Plan.openList();
+    cy.wait(2000);
+    this.run(name, start);
+    confirm();
+    if (warmMigration) {
+      Plan.openList();
+      cy.wait(30 * SEC);
+      this.run(name, cutover);
+      confirm();
+      cy.get(tdTag).contains(name).click();
+    }
+    this.cancel(planData);
+    this.waitForState(planStep.transferDisk);
+    clickOnCancel();
+    this.waitForCanceled(name);
+    this.restart(planData);
+    cy.wait(10000);
+    openSidebarMenu();
+    clickByText(navMenuPoint, migrationPLan);
+    this.waitForSuccess(name);
+  }
+  cancelRestartAtKubevirt(planData: PlanData): void {
+    const { name, warmMigration } = planData;
+    Plan.openList();
+    cy.wait(2 * SEC);
+    this.run(name, start);
+    confirm();
+    if (warmMigration) {
+      Plan.openList();
+      cy.wait(30 * SEC);
+      this.run(name, cutover);
+      confirm();
+      cy.get(tdTag).contains(name).click();
+    }
+    this.cancel(planData);
+    this.waitForState(planStep.convtImage);
+    clickOnCancel();
     this.waitForCanceled(name);
     this.restart(planData);
     cy.wait(10000);
