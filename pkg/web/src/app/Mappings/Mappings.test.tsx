@@ -19,7 +19,7 @@ describe('Mappings', () => {
       </QueryClientProvider>
     );
 
-    const result = await screen.getByText('Loading...');
+    const result = screen.getByText('Loading...');
     expect(result).toBeDefined();
   });
 });

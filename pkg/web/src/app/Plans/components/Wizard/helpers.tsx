@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TreeViewDataItem } from '@patternfly/react-core';
+import { Tooltip, TreeViewDataItem } from '@patternfly/react-core';
 import {
   ICommonTreeObject,
   IHook,
@@ -18,8 +18,10 @@ import {
   IVMwareVM,
   IRHVVM,
 } from '@app/queries/types';
+import EnterpriseIcon from '@patternfly/react-icons/dist/esm/icons/enterprise-icon';
 import ClusterIcon from '@patternfly/react-icons/dist/esm/icons/cluster-icon';
 import FolderIcon from '@patternfly/react-icons/dist/esm/icons/folder-icon';
+import OutlinedHddIcon from '@patternfly/react-icons/dist/esm/icons/outlined-hdd-icon';
 import {
   getBuilderItemsFromMappingItems,
   getBuilderItemsWithMissingSources,
@@ -167,7 +169,25 @@ const convertInventoryTreeNode = (
       checked: isPartiallyChecked ? null : isFullyChecked,
     },
     icon:
-      node.kind === 'Cluster' ? <ClusterIcon /> : node.kind === 'Folder' ? <FolderIcon /> : null,
+      node.kind === 'DataCenter' || node.kind === 'Datacenter' ? (
+        <Tooltip content="Datacenter">
+          <EnterpriseIcon />
+        </Tooltip>
+      ) : node.kind === 'Cluster' ? (
+        node.object?.variant === 'ComputeResource' ? (
+          <Tooltip content="Standalone host">
+            <OutlinedHddIcon />
+          </Tooltip>
+        ) : (
+          <Tooltip content="Cluster">
+            <ClusterIcon />
+          </Tooltip>
+        )
+      ) : node.kind === 'Folder' ? (
+        <Tooltip content="Folder">
+          <FolderIcon />
+        </Tooltip>
+      ) : null,
     customBadgeContent: badge,
     hasBadge: !!badge,
     defaultExpanded: false,
