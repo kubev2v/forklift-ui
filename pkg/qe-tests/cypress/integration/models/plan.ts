@@ -34,6 +34,8 @@ import {
   planFailedMessage,
   archiveButton,
   cutover,
+  getLogsButton,
+  downloadLogsButton,
   planStep,
 } from '../types/constants';
 
@@ -55,6 +57,7 @@ import {
   ansibleId,
   imageId,
   showArchived,
+  getlogsConfirmButton,
   arrowDropDown,
 } from '../views/plan.view';
 
@@ -98,6 +101,13 @@ export class Plan {
 
   protected filterVm(planData: PlanData): void {
     const { sourceClusterName } = planData;
+    // TODO: Add validation for MTV version, block below is relevant for MTV 2.3+
+    // This is required to open the tree of clusters in VMWare env starting from MTV 2.3 version
+    cy.contains('label', 'Datacenter', { timeout: 60 * SEC })
+      .closest('.pf-c-tree-view__node-container')
+      .within(() => {
+        click(button);
+      });
     const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
@@ -180,13 +190,12 @@ export class Plan {
 
   protected hooksStep(planData: PlanData): void {
     const { preHook, postHook } = planData;
-    if (preHook) {
+    if (preHook.ansiblePlaybook || preHook.image) {
       clickByText(button, 'Add');
-      cy.log(preHook.ansiblePlaybook);
       selectFromDroplist(selectHooks, hookType.prehook);
       this.addHook(preHook);
     }
-    if (postHook) {
+    if (postHook.ansiblePlaybook || postHook.image) {
       clickByText(button, 'Add');
       selectFromDroplist(selectHooks, hookType.posthook);
       this.addHook(postHook);
@@ -279,7 +288,7 @@ export class Plan {
       .contains(name)
       .closest(trTag)
       .within(() => {
-        cy.get(dataLabel.status).contains(planFailedMessage);
+        cy.get(dataLabel.status).contains(planFailedMessage, { timeout: 3600 * SEC });
       });
   }
   //Method for different Migaration plan step
@@ -469,6 +478,15 @@ export class Plan {
     cy.wait(10000);
     this.cancel(planData);
     this.waitForCanceled(name);
+  }
+  //Method to click on Get Logs and Download logs
+  getLogs(planData: PlanData): void {
+    const { name } = planData;
+    Plan.openList();
+    this.run(name, getLogsButton);
+    clickByText(getlogsConfirmButton, getLogsButton);
+    cy.wait(20 * SEC);
+    this.run(name, downloadLogsButton);
   }
 
   duplicate(originalPlanData: PlanData, duplicatePlanData: PlanData): void {

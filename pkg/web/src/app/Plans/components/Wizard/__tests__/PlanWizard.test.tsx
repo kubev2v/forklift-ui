@@ -48,7 +48,10 @@ describe('<AddEditProviderModal />', () => {
     userEvent.type(name, 'planname');
     userEvent.type(description, 'plan description');
 
-    userEvent.click(providers[0]);
+    await waitFor(() => {
+      userEvent.click(providers[0]);
+    });
+
     await screen.findByRole('option', {
       name: /vcenter-1/i,
       hidden: true,
@@ -61,7 +64,11 @@ describe('<AddEditProviderModal />', () => {
     });
 
     expect(namespace).toHaveAttribute('disabled', '');
-    userEvent.click(namespace);
+
+    await waitFor(() => {
+      userEvent.click(namespace);
+    });
+
     userEvent.type(namespace, 'openshift-migration');
 
     const nextButton = await screen.findByRole('button', { name: /Next/ });
@@ -69,7 +76,9 @@ describe('<AddEditProviderModal />', () => {
     const cancelButton = await screen.findByRole('button', { name: /Cancel/ });
     expect(cancelButton).toBeEnabled();
 
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     // TODO: Continue to VMs selection
   });
@@ -107,20 +116,28 @@ describe('<AddEditProviderModal />', () => {
 
     const nextButton = await screen.findByRole('button', { name: /Next/ });
     expect(nextButton).toBeEnabled();
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(screen.getByRole('heading', { name: /Filter by VM location/ })).toBeInTheDocument();
     const v2vDC = await screen.findByRole('button', { name: /V2V-DC/ });
-    userEvent.click(v2vDC);
+    await waitFor(() => {
+      userEvent.click(v2vDC);
+    });
     expect(screen.getByRole('checkbox', { name: /Select Cluster V2V_Cluster/ })).toBeChecked();
     expect(nextButton).toBeEnabled();
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(screen.getByRole('heading', { name: /Select VMs/ })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByLabelText('VMware VMs table')).toBeInTheDocument());
     expect(screen.getByRole('checkbox', { name: /Select row 0/ })).toBeChecked();
     expect(nextButton).toBeEnabled();
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(screen.getByRole('heading', { name: /Network mapping/ })).toBeInTheDocument();
     expect(screen.getByText(/vmware-network-1/i)).toBeInTheDocument();
@@ -128,7 +145,9 @@ describe('<AddEditProviderModal />', () => {
     expect(networkTarget).toHaveValue('openshift-migration / ocp-network-1');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
     await waitFor(() => expect(nextButton).toBeEnabled());
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(screen.getByRole('heading', { name: /Storage mapping/ })).toBeInTheDocument();
     expect(screen.getByText(/vmware-datastore-1/i)).toBeInTheDocument();
@@ -136,18 +155,24 @@ describe('<AddEditProviderModal />', () => {
     expect(storageTarget).toHaveValue('large');
     expect(screen.getByRole('checkbox', { name: /save mapping checkbox/ })).not.toBeChecked();
     await waitFor(() => expect(nextButton).toBeEnabled());
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(screen.getByRole('heading', { name: /Migration type/ })).toBeInTheDocument();
     expect(screen.getByLabelText(/Cold migration/)).toHaveAttribute('checked');
     await waitFor(() => expect(nextButton).toBeEnabled());
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     expect(
       screen.getByRole('heading', { name: /Add hooks to the plan \(optional\)/ })
     ).toBeInTheDocument();
     await waitFor(() => expect(nextButton).toBeEnabled());
-    userEvent.click(nextButton);
+    await waitFor(() => {
+      userEvent.click(nextButton);
+    });
 
     // Review step
     expect(screen.getByRole('heading', { name: /Review the migration plan/ })).toBeInTheDocument();

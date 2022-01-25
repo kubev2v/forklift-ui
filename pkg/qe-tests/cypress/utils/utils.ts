@@ -5,6 +5,7 @@ import {
   finishButton,
   loginButton,
   nextButton,
+  SEC,
   trTag,
 } from '../integration/types/constants';
 import { nav_toggle, page_sidebar, sidebar_collapsed } from '../integration/views/menu.view';
@@ -22,7 +23,7 @@ export function clickByText(fieldId: string, buttonText: string): void {
 
 // Clicking on object selected by fieldId
 export function click(fieldId: string): void {
-  cy.get(fieldId).click();
+  cy.get(fieldId, { timeout: 30 * SEC }).click();
 }
 
 export function login(loginData: LoginData): void {
@@ -60,7 +61,7 @@ export function selectFromDroplist(selector: string, point: string): void {
 
 //function to select checkboxes
 export function selectCheckBox(selector: string): void {
-  cy.get(selector).then(($checkbox) => {
+  cy.get(selector, { timeout: 60 * SEC }).then(($checkbox) => {
     if (!$checkbox.prop('checked')) {
       click(selector);
     }

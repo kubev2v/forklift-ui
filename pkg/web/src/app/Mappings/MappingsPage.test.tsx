@@ -12,7 +12,7 @@ describe('MappingsPage', () => {
         <MappingsPage />
       </QueryClientProvider>
     );
-    const heading = await screen.getByText('Mappings');
+    const heading = screen.getByText('Mappings');
     expect(heading).toBeDefined();
 
     screen.getByRole('button', {

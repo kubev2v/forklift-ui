@@ -5,6 +5,7 @@ export enum InventoryTreeType {
 
 export interface ICommonTreeObject {
   id: string;
+  variant?: 'ComputeResource';
   name: string;
   selfLink: string;
 }

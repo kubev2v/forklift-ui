@@ -39,7 +39,6 @@ export enum ForkliftResourceKind {
   Plan = 'plans',
   Migration = 'migrations',
   Host = 'hosts',
-  Provisioners = 'provisioners',
   Hook = 'hooks',
 }
 
