@@ -42,14 +42,15 @@ describe('indexTree', () => {
       'V2V-DC',
       'Fake_Cluster',
       'V2V_Cluster',
-      'jortel',
+      'fake-host',
       'esx13.v2v.bos.redhat.com',
       'fdupont%2ftest',
       'fdupont-test-migration',
       'fdupont-test-migration-centos',
       'pemcg-discovery01',
-      'pemcg-iscsi-target',
       'vm-template-test',
+      'fake-host',
+      'pemcg-iscsi-target',
     ]);
   });
 
@@ -59,8 +60,8 @@ describe('indexTree', () => {
       '/providers/vsphere/test/vms/vm-1630',
       '/providers/vsphere/test/vms/vm-1008',
       '/providers/vsphere/test/vms/vm-2685',
-      '/providers/vsphere/test/vms/vm-431',
       '/providers/vsphere/test/vms/vm-template-test',
+      '/providers/vsphere/test/vms/vm-431',
     ]);
   });
 
@@ -70,14 +71,15 @@ describe('indexTree', () => {
       '/providers/vsphere/test4/datacenters/datacenter-21': walk([1]),
       '/providers/vsphere/test4/clusters/domain-c2758': walk([1, 0]),
       '/providers/vsphere/test4/clusters/domain-c26': walk([1, 1]),
-      '/providers/vsphere/test4/folders/group-h2800': walk([1, 2]),
       '/providers/vsphere/test4/hosts/host-29': walk([1, 1, 0]),
       '/providers/vsphere/test/vms/vm-2844': walk([1, 1, 0, 0]),
       '/providers/vsphere/test/vms/vm-1630': walk([1, 1, 0, 1]),
       '/providers/vsphere/test/vms/vm-1008': walk([1, 1, 0, 2]),
       '/providers/vsphere/test/vms/vm-2685': walk([1, 1, 0, 3]),
-      '/providers/vsphere/test/vms/vm-431': walk([1, 1, 0, 4]),
-      '/providers/vsphere/test/vms/vm-template-test': walk([1, 1, 0, 5]),
+      '/providers/vsphere/test/vms/vm-template-test': walk([1, 1, 0, 4]),
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928': walk([1, 2]),
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930': walk([1, 2, 0]),
+      '/providers/vsphere/test/vms/vm-431': walk([1, 2, 0, 0]),
     });
   });
 
@@ -94,7 +96,8 @@ describe('indexTree', () => {
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
+        find([1, 2, 0]),
+        find([1, 2, 0, 0]),
       ],
       '/providers/vsphere/test4/clusters/domain-c2758': [],
       '/providers/vsphere/test4/clusters/domain-c26': [
@@ -104,23 +107,27 @@ describe('indexTree', () => {
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
       ],
-      '/providers/vsphere/test4/folders/group-h2800': [],
       '/providers/vsphere/test4/hosts/host-29': [
         find([1, 1, 0, 0]),
         find([1, 1, 0, 1]),
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
       ],
       '/providers/vsphere/test/vms/vm-2844': [],
       '/providers/vsphere/test/vms/vm-1630': [],
       '/providers/vsphere/test/vms/vm-1008': [],
       '/providers/vsphere/test/vms/vm-2685': [],
-      '/providers/vsphere/test/vms/vm-431': [],
       '/providers/vsphere/test/vms/vm-template-test': [],
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928': [
+        find([1, 2, 0]),
+        find([1, 2, 0, 0]),
+      ],
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930': [
+        find([1, 2, 0, 0]),
+      ],
+      '/providers/vsphere/test/vms/vm-431': [],
     });
   });
 
@@ -133,7 +140,7 @@ describe('indexTree', () => {
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
+        find([1, 2, 0, 0]),
       ],
       '/providers/vsphere/test4/clusters/domain-c2758': [],
       '/providers/vsphere/test4/clusters/domain-c26': [
@@ -142,23 +149,26 @@ describe('indexTree', () => {
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
       ],
-      '/providers/vsphere/test4/folders/group-h2800': [],
       '/providers/vsphere/test4/hosts/host-29': [
         find([1, 1, 0, 0]),
         find([1, 1, 0, 1]),
         find([1, 1, 0, 2]),
         find([1, 1, 0, 3]),
         find([1, 1, 0, 4]),
-        find([1, 1, 0, 5]),
       ],
       '/providers/vsphere/test/vms/vm-2844': [],
       '/providers/vsphere/test/vms/vm-1630': [],
       '/providers/vsphere/test/vms/vm-1008': [],
       '/providers/vsphere/test/vms/vm-2685': [],
-      '/providers/vsphere/test/vms/vm-431': [],
       '/providers/vsphere/test/vms/vm-template-test': [],
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/clusters/domain-s8928': [
+        find([1, 2, 0, 0]),
+      ],
+      '/providers/vsphere/fa7df6b4-a5bf-4703-b078-1dc0dc4a4bfd/hosts/host-8930': [
+        find([1, 2, 0, 0]),
+      ],
+      '/providers/vsphere/test/vms/vm-431': [],
     });
   });
 
@@ -174,7 +184,8 @@ describe('indexTree', () => {
       find([1, 1, 0, 2]),
       find([1, 1, 0, 3]),
       find([1, 1, 0, 4]),
-      find([1, 1, 0, 5]),
+      find([1, 2, 0]),
+      find([1, 2, 0, 0]),
     ];
 
     expect(indexedTree.getDescendants(dc21)).toEqual([dc21, ...descendantsOfDC21]); // Defaults to true

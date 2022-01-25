@@ -14,6 +14,7 @@ import {
   sortIndexedDataByName,
 } from './helpers';
 import { MOCK_CLUSTER_PROVIDERS, MOCK_INVENTORY_PROVIDERS } from './mocks/providers.mock';
+import { MOCK_TLS_CERTIFICATE } from './mocks/tlsCertificates.mock';
 import {
   IProvidersByType,
   InventoryProvider,
@@ -25,6 +26,7 @@ import {
   IOpenShiftNetwork,
   POD_NETWORK,
   SourceInventoryProvider,
+  ITLSCertificate,
 } from './types';
 import { useAuthorizedFetch, useAuthorizedK8sClient } from './fetchHelpers';
 import {
@@ -377,3 +379,34 @@ export const getProviderNameSchema = (
     if (providers.find((provider) => provider.metadata.name === value)) return false;
     return true;
   });
+
+function assertIsCertificate(certificate: ITLSCertificate): asserts certificate is ITLSCertificate {
+  if (!('fingerprint' in certificate)) {
+    throw new Error('Not certificate');
+  }
+}
+const getCertificate = async (hostname: string) => {
+  const response = await fetch(`get-certificate?url=${hostname}`);
+  if (!response.ok) {
+    throw new Error('Problem fetching data');
+  }
+  const certificate = await response.json();
+  assertIsCertificate(certificate);
+
+  return certificate;
+};
+
+export const useCertificateQuery = (
+  hostname: string,
+  enabled: boolean
+): UseQueryResult<ITLSCertificate> => {
+  const result = useMockableQuery<ITLSCertificate>(
+    {
+      queryKey: ['certificate', hostname],
+      queryFn: () => getCertificate(hostname),
+      enabled: enabled,
+    },
+    MOCK_TLS_CERTIFICATE
+  );
+  return result;
+};

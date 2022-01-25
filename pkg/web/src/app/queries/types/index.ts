@@ -10,4 +10,4 @@ export * from './storages.types';
 export * from './tree.types';
 export * from './vms.types';
 export * from './secrets.types';
-export * from './provisioners.types';
+export * from './tlsCertificates.types';

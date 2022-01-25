@@ -9,6 +9,18 @@ import {
   Stack,
   Popover,
   FileUpload,
+  Spinner,
+  Text,
+  Checkbox,
+  DescriptionList,
+  DescriptionListTerm,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  Title,
+  Panel,
+  PanelMain,
+  PanelMainBody,
+  Alert,
 } from '@patternfly/react-core';
 import {
   useFormState,
@@ -21,7 +33,6 @@ import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSele
 import {
   fingerprintSchema,
   hostnameSchema,
-  PRODUCT_DOCO_LINK,
   ProviderType,
   PROVIDER_TYPES,
   PROVIDER_TYPE_NAMES,
@@ -34,10 +45,11 @@ import {
   useCreateProviderMutation,
   usePatchProviderMutation,
   useClusterProvidersQuery,
+  useCertificateQuery,
 } from '@app/queries';
 
-import { IProviderObject } from '@app/queries/types';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import { IProviderObject } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useEditProviderPrefillEffect } from './helpers';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
@@ -129,7 +141,7 @@ const useAddProviderFormState = (
     vsphere: useFormState({
       ...sourceProviderFields,
       fingerprint: useFormField('', fingerprintSchema.required()),
-      fingerprintFilename: useFormField('', yup.string()),
+      isCertificateValid: useFormField(false, yup.boolean()),
     }),
     ovirt: useFormState({
       ...sourceProviderFields,
@@ -194,6 +206,17 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
   const mutateProviderResult = !providerBeingEdited
     ? createProviderMutation
     : patchProviderMutation;
+
+  const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
+  const certificateQuery = useCertificateQuery(
+    fields?.hostname?.value || '',
+    isCertificateQueryEnabled
+  );
+
+  const certificateConfirmButtonRef = React.useRef<HTMLElement>(null);
+
+  const scrollVerifyButtonIntoView = () =>
+    certificateConfirmButtonRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <Modal
@@ -284,6 +307,13 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
+                    inputProps={{
+                      onChange: (field: string) => {
+                        setCertificateQueryEnabled(false);
+                        fields.isCertificateValid?.setValue(false);
+                        fields.hostname?.setValue(field);
+                      },
+                    }}
                   />
                 ) : null}
                 {fields?.username ? (
@@ -292,6 +322,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       placeholder: isVmWare(providerType)
                         ? 'Example, administrator@vsphere.local'
                         : undefined,
+                      onFocus: scrollVerifyButtonIntoView,
                     }}
                     field={fields.username}
                     label={getLabelName('username', brandPrefix(providerType))}
@@ -301,6 +332,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 ) : null}
                 {fields?.password ? (
                   <ValidatedPasswordInput
+                    inputProps={{ onFocus: scrollVerifyButtonIntoView }}
                     field={fields.password}
                     label={getLabelName('pwd', brandPrefix(providerType))}
                     isRequired
@@ -308,37 +340,98 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                   />
                 ) : null}
                 {fields?.fingerprint ? (
-                  <ValidatedTextInput
-                    field={fields.fingerprint}
-                    label="vCenter SHA-1 fingerprint"
-                    isRequired
-                    fieldId="fingerprint"
-                    formGroupProps={{
-                      labelIcon: (
-                        <Popover
-                          bodyContent={
-                            <div>
-                              See{' '}
-                              <a href={PRODUCT_DOCO_LINK.href} target="_blank" rel="noreferrer">
-                                {PRODUCT_DOCO_LINK.label}
-                              </a>{' '}
-                              for instructions on how to retrieve the fingerprint.
-                            </div>
-                          }
-                        >
-                          <Button
-                            variant="plain"
-                            aria-label="More info for SHA-1 fingerprint field"
-                            onClick={(e) => e.preventDefault()}
-                            aria-describedby="fingerprint"
-                            className="pf-c-form__group-label-help"
-                          >
-                            <HelpIcon noVerticalAlign />
-                          </Button>
-                        </Popover>
-                      ),
-                    }}
-                  />
+                  <>
+                    {!isCertificateQueryEnabled ? (
+                      <Button
+                        id="certificate-confirm-button"
+                        key="confirm"
+                        ref={certificateConfirmButtonRef}
+                        aria-label="Verify Certificate"
+                        variant="primary"
+                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid} // TODO we should remove the isTouched case here once we resolve https://github.com/konveyor/lib-ui/issues/82
+                        onClick={() => {
+                          setCertificateQueryEnabled(true);
+                        }}
+                      >
+                        Verify certificate
+                      </Button>
+                    ) : certificateQuery.status === 'loading' ? (
+                      <div className="pf-c-empty-state__icon">
+                        <Spinner aria-labelledby="loadingPrefLabel" size="sm" />
+                        &nbsp;Retrieving SHA-1 certificate fingerprint
+                      </div>
+                    ) : certificateQuery.status === 'success' ? (
+                      <>
+                        <Panel variant="bordered">
+                          <PanelMain>
+                            <PanelMainBody>
+                              <Title headingLevel="h4" size="md">
+                                Certificate information
+                              </Title>
+                              <DescriptionList isCompact>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>Issuer</DescriptionListTerm>
+                                  <DescriptionListDescription id="issuer">
+                                    {`${certificateQuery.data?.issuer.O} - ${certificateQuery.data?.issuer.OU}`}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>
+                                    vCenter SHA-1 fingerprint
+                                  </DescriptionListTerm>
+                                  <DescriptionListDescription id="fingerprint">
+                                    {certificateQuery.data?.fingerprint}
+                                    {providerBeingEdited &&
+                                    fields.fingerprint?.cleanValue !==
+                                      certificateQuery.data.fingerprint ? (
+                                      <Alert
+                                        variant="warning"
+                                        isInline
+                                        title="The authenticity of this host cannot be established"
+                                      >
+                                        This certificate&apos;s fingerprint does not match the
+                                        previously known certificate. Manually validate the
+                                        fingerprint before proceeding.
+                                      </Alert>
+                                    ) : null}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                                <DescriptionListGroup>
+                                  <DescriptionListTerm>Expiration date</DescriptionListTerm>
+                                  <DescriptionListDescription id="expriry">
+                                    {certificateQuery.data?.valid_to}
+                                  </DescriptionListDescription>
+                                </DescriptionListGroup>
+                              </DescriptionList>
+                            </PanelMainBody>
+                          </PanelMain>
+                        </Panel>
+                        <Checkbox
+                          label="I trust the authenticity of this certificate"
+                          aria-label="Validate Certificate"
+                          id="certificate-check"
+                          name="certificateCheck"
+                          isChecked={fields?.isCertificateValid?.value}
+                          onChange={() => {
+                            if (fields.isCertificateValid?.value !== true) {
+                              if (
+                                fields?.fingerprint &&
+                                certificateQuery.data &&
+                                certificateQuery.data.fingerprint !== ''
+                              ) {
+                                fields.fingerprint?.setValue(certificateQuery.data.fingerprint);
+                              }
+                            } else {
+                              fields.fingerprint?.setValue('');
+                            }
+                            fields.isCertificateValid?.setValue(!fields.isCertificateValid.value);
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <Text>Error: Cannot retrieve certificate</Text>
+                    )}
+                  </>
                 ) : null}
                 {fields?.caCert && fields?.caCertFilename ? (
                   <FormGroup

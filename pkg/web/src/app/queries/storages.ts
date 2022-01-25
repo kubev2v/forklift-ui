@@ -5,7 +5,6 @@ import {
   IAnnotatedStorageClass,
   IByProvider,
   IOpenShiftProvider,
-  IProvisioner,
   IStorageClass,
   MappingType,
   ISourceStorage,
@@ -14,7 +13,6 @@ import {
 import { MOCK_VMWARE_DATASTORES, MOCK_RHV_STORAGE_DOMAINS } from './mocks/storages.mock';
 import { MOCK_STORAGE_CLASSES_BY_PROVIDER } from './mocks/storages.mock';
 import { authorizedFetch, useAuthorizedFetch, useFetchContext } from './fetchHelpers';
-import { useProvisionersQuery } from '.';
 
 export const useSourceStoragesQuery = (
   provider: SourceInventoryProvider | null,
@@ -35,17 +33,11 @@ export const useSourceStoragesQuery = (
   return result;
 };
 
-const annotateStorageClasses = (
-  storageClasses: IStorageClass[],
-  provisioners: IProvisioner[]
-): IAnnotatedStorageClass[] =>
+const annotateStorageClasses = (storageClasses: IStorageClass[]): IAnnotatedStorageClass[] =>
   storageClasses
     .map((storageClass) => ({
       ...storageClass,
       uiMeta: {
-        hasProvisioner:
-          !!storageClass.object.provisioner &&
-          !!provisioners.find((prov) => prov.spec.name === storageClass.object.provisioner),
         isDefault:
           storageClass.object.metadata.annotations?.[
             'storageclass.kubernetes.io/is-default-class'
@@ -67,7 +59,6 @@ export const useStorageClassesQuery = (
   const definedProviders = providers
     ? (providers.filter((provider) => !!provider) as IOpenShiftProvider[])
     : [];
-  const provisionersQuery = useProvisionersQuery();
   const result = useMockableQuery<IByProvider<IAnnotatedStorageClass>>(
     {
       // Key by the provider names combined, so it refetches if the list of providers changes
@@ -85,19 +76,12 @@ export const useStorageClassesQuery = (
         return definedProviders.reduce(
           (newObj, provider, index) => ({
             ...newObj,
-            [provider.name]: annotateStorageClasses(
-              storageClassLists[index],
-              provisionersQuery.data?.items || []
-            ),
+            [provider.name]: annotateStorageClasses(storageClassLists[index]),
           }),
           {} as IByProvider<IAnnotatedStorageClass>
         );
       },
-      enabled:
-        !!providers &&
-        providers.length > 0 &&
-        mappingType === MappingType.Storage &&
-        !!provisionersQuery.data,
+      enabled: !!providers && providers.length > 0 && mappingType === MappingType.Storage,
       refetchInterval: usePollingContext().refetchInterval,
     },
     MOCK_STORAGE_CLASSES_BY_PROVIDER
