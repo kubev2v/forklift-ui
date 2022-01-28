@@ -28,7 +28,6 @@ export type VmwareProviderData = {
   hostname?: string;
   username?: string;
   password?: string;
-  cert?: string;
   esxiHostList?: esxiHostList;
 };
 

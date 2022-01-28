@@ -404,7 +404,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
                       toggleItemSelected(rowData.meta.vmStatus, isSelected);
                     }
                   }}
-                  canSelectAll={false}
+                  canSelectAll={cancelableVMs.length > 0}
                 >
                   <TableHeader />
                   <TableBody />

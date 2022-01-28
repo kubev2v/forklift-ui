@@ -4,9 +4,8 @@ import {
   clickByText,
   click,
   inputText,
-  confirm,
-  selectFromDroplist,
   selectCheckBox,
+  selectFromDroplist,
 } from '../../utils/utils';
 import {
   editButton,
@@ -21,11 +20,12 @@ import {
 import {
   addButtonModal,
   instanceName,
-  instanceFingerprint,
   instanceHostname,
   instancePassword,
   instanceUsername,
   dataLabel,
+  verifyCertificateButton,
+  certificateCheck,
   networkField,
   SelectMigrationNetworkButton,
 } from '../views/providerVmware.view';
@@ -49,8 +49,10 @@ export class ProviderVmware extends Provider {
     inputText(instancePassword, password);
   }
 
-  protected fillFingerprint(cert: string): void {
-    inputText(instanceFingerprint, cert);
+  //Now we have verify Certificate option in place of fingerprint
+  protected verifyCertificate(): void {
+    click(verifyCertificateButton);
+    selectCheckBox(certificateCheck);
   }
 
   protected selectTargetNetwork(targetNetwork: string): void {
@@ -86,13 +88,13 @@ export class ProviderVmware extends Provider {
   }
 
   protected runWizard(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password, cert } = providerData;
+    const { name, hostname, username, password } = providerData;
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
-    this.fillFingerprint(cert);
+    this.verifyCertificate();
     click(addButtonModal);
     cy.wait(2 * SEC);
   }
@@ -134,13 +136,13 @@ export class ProviderVmware extends Provider {
   }
 
   edit(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password, cert } = providerData;
+    const { name, hostname, username, password } = providerData;
     ProviderVmware.openList();
     applyAction(name, editButton);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
-    this.fillFingerprint(cert);
+    this.verifyCertificate();
     clickByText(addButtonModal, saveButton);
     this.populate(providerData);
   }
@@ -152,7 +154,7 @@ export class ProviderVmware extends Provider {
     const { targetNetwork, esxiUsername, esxiPassword } = providerData.esxiHostList;
     this.selectHosts(name);
     this.selectHostEsxi(providerData);
-    cy.get(SelectMigrationNetworkButton).click(); //clicks on Select Migration Network Button
+    click(SelectMigrationNetworkButton); //clicks on Select Migration Network Button
     this.selectTargetNetwork(targetNetwork);
     this.fillEsxiUsername(esxiUsername);
     this.fillESxiPassword(esxiPassword);
