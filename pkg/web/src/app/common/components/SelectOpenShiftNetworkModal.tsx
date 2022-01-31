@@ -133,7 +133,7 @@ export const SelectOpenShiftNetworkModal: React.FunctionComponent<
           <FormGroup
             isRequired
             fieldId="network"
-            validated={form.fields.selectedNetworkName.isValid ? 'default' : 'error'}
+            validated={form.fields.selectedNetworkName.shouldShowError ? 'error' : 'default'}
             {...getFormGroupProps(form.fields.selectedNetworkName)}
           >
             <SimpleSelect
