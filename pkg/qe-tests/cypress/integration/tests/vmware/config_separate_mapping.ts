@@ -11,6 +11,7 @@ import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
+const v2v_vmware_providername = Cypress.env('v2v_vmware_providername');
 const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
@@ -18,16 +19,8 @@ const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
 const vmListArray = Cypress.env('vm_list');
-// const v2v_StorageClass = Cypress.env('v2v_storage_class');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
-
-// const destStorageClass = null;
-// if (v2v_StorageClass === 'nfs') {
-//   const destStorageClass = storageType.nfs;
-// } else {
-//   const destStorageClass = storageType.cephRbd;
-// }
 
 export const loginData: LoginData = {
   username: user_login,
@@ -37,7 +30,7 @@ export const loginData: LoginData = {
 
 export const providerData: VmwareProviderData = {
   type: providerType.vmware,
-  name: 'qe-vmware',
+  name: v2v_vmware_providername,
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
@@ -64,7 +57,7 @@ export const storageMappingPeer: MappingPeer[] = [
 
 export const networkMapping: MappingData = {
   name: 'network-qe-vmware-mapping',
-  sProviderName: providerData.hostname,
+  sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
@@ -99,6 +92,7 @@ export const originalPlanData: PlanData = {
   warmMigration: false,
   preHook: preHookData,
   postHook: postHookData,
+  migrationOcpNetwork: 'OCP default network',
 };
 
 export const duplicatePlanData: PlanData = {

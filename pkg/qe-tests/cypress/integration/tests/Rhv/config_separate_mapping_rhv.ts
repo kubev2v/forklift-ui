@@ -11,9 +11,11 @@ import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
+const v2v_rhv_providername = Cypress.env('v2v_rhv_providername');
 const v2v_rhv_username = Cypress.env('v2v_rhv_username');
 const v2v_rhv_password = Cypress.env('v2v_rhv_password');
 const v2v_rhv_hostname = Cypress.env('v2v_rhv_hostname');
+const v2v_rhv_clustername = Cypress.env('v2v_rhv_clustername');
 const v2v_rhv_cert = Cypress.env('v2v_rhv_cert');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
@@ -26,7 +28,7 @@ export const loginData: LoginData = {
 
 export const providerData: RhvProviderData = {
   type: providerType.rhv,
-  name: 'qe-rhv',
+  name: v2v_rhv_providername,
   hostname: v2v_rhv_hostname,
   username: v2v_rhv_username,
   password: v2v_rhv_password,
@@ -46,7 +48,7 @@ export const networkMappingPeer: MappingPeer[] = [
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: 'v2v-fc',
-    dProvider: storageType.nfs,
+    dProvider: storageType.cephRbd,
   },
 ];
 
@@ -77,7 +79,7 @@ export const originalPlanData: PlanData = {
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
-  sourceClusterName: 'MTV',
+  sourceClusterName: v2v_rhv_clustername,
   vmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
