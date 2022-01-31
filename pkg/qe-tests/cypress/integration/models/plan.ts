@@ -34,14 +34,11 @@ import {
   planFailedMessage,
   archiveButton,
   cutover,
-<<<<<<< HEAD
-  differentNetwork,
-  podNetwork,
-=======
   getLogsButton,
   downloadLogsButton,
   planStep,
->>>>>>> cb077cba1e881ac5ffec7828fb28cbbf14af6e0a
+  differentNetwork,
+  podNetwork,
 } from '../types/constants';
 
 import {
@@ -62,12 +59,9 @@ import {
   ansibleId,
   imageId,
   showArchived,
-<<<<<<< HEAD
-  network,
-=======
   getlogsConfirmButton,
   arrowDropDown,
->>>>>>> cb077cba1e881ac5ffec7828fb28cbbf14af6e0a
+  network,
 } from '../views/plan.view';
 
 export class Plan {

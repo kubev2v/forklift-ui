@@ -13,8 +13,7 @@ const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
 const migration_network = Cypress.env('network');
-const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
-const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+const saToken = Cypress.env('token');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -26,7 +25,7 @@ export const providerData: OcpVirtData = {
   type: 'OpenShift Virtualization',
   name: 'mig04',
   url: 'https://api.mig04.cnv-qe.rhcloud.com:6443',
-  saToken: 'sha256~uDxw4ub5I6QvBtsvHatF1vit36YjexnRduc4pi-FVuc',
+  saToken: saToken,
   migrationNetwork: migration_network,
 };
 
@@ -58,14 +57,6 @@ export const storageMappingData: MappingData = {
   mappingPeer: storageMappingPeer,
 };
 
-export const preHookData: HookData = {
-  ansiblePlaybook: preAnsiblePlaybook,
-};
-
-export const postHookData: HookData = {
-  ansiblePlaybook: postAnsiblePlaybook,
-};
-
 export const planData: PlanData = {
   name: 'testplan',
   sProvider: 'qe-vmware',
@@ -78,8 +69,6 @@ export const planData: PlanData = {
   providerData: providerData,
   networkMappingData: networkMappingData,
   storageMappingData: storageMappingData,
-  preHook: preHookData,
-  postHook: postHookData,
   ocpMigrationNetwork: migration_network,
 };
 
