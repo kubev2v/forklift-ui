@@ -13,7 +13,6 @@ const user_password = Cypress.env('pass');
 const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
-const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -27,7 +26,6 @@ export const providerData: VmwareProviderData = {
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
-  cert: v2v_vmware_cert,
 };
 
 export const networkMappingPeer: MappingPeer[] = [

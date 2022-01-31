@@ -77,11 +77,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'standard',
       selfLink: '/foo/sc/1',
       uiMeta: {
-        hasProvisioner: true,
         isDefault: true,
       },
       object: {
-        provisioner: 'mock/prov-1',
         metadata: {
           annotations: {
             'storageclass.kubernetes.io/is-default-class': 'true',
@@ -94,11 +92,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'large',
       selfLink: '/foo/sc/2',
       uiMeta: {
-        hasProvisioner: false,
         isDefault: false,
       },
       object: {
-        provisioner: 'missing-prov!',
         metadata: {},
       },
     },
@@ -107,11 +103,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       name: 'small',
       selfLink: '/foo/sc/3',
       uiMeta: {
-        hasProvisioner: true,
         isDefault: false,
       },
       object: {
-        provisioner: 'mock/prov-2',
         metadata: {},
       },
     },

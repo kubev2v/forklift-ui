@@ -30,7 +30,6 @@ export type VmwareProviderData = {
   username?: string;
   password?: string;
   cert?: string;
-  esxiHostList?: esxiHostList;
 };
 
 export type RhvProviderData = {

@@ -1,5 +1,5 @@
 import { Provider } from './provider';
-import { applyAction, clickByText, click, inputText } from '../../utils/utils';
+import { applyAction, clickByText, click, inputText, selectCheckBox } from '../../utils/utils';
 import {
   editButton,
   removeButton,
@@ -12,11 +12,12 @@ import {
 import {
   addButtonModal,
   instanceName,
-  instanceFingerprint,
   instanceHostname,
   instancePassword,
   instanceUsername,
   dataLabel,
+  verifyCertificateButton,
+  certificateCheck,
 } from '../views/providerVmware.view';
 import { providerMenu } from '../views/provider.view';
 import { VmwareProviderData } from '../types/types';
@@ -38,8 +39,10 @@ export class ProviderVmware extends Provider {
     inputText(instancePassword, password);
   }
 
-  protected fillFingerprint(cert: string): void {
-    inputText(instanceFingerprint, cert);
+  //Now we have verify Certificate option in place of fingerprint
+  protected verifyCertificate(): void {
+    click(verifyCertificateButton);
+    selectCheckBox(certificateCheck);
   }
 
   protected static openList(): void {
@@ -48,13 +51,13 @@ export class ProviderVmware extends Provider {
   }
 
   protected runWizard(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password, cert } = providerData;
+    const { name, hostname, username, password } = providerData;
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
-    this.fillFingerprint(cert);
+    this.verifyCertificate();
     click(addButtonModal);
     cy.wait(2 * SEC);
   }
@@ -96,13 +99,13 @@ export class ProviderVmware extends Provider {
   }
 
   edit(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password, cert } = providerData;
+    const { name, hostname, username, password } = providerData;
     ProviderVmware.openList();
     applyAction(name, editButton);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
-    this.fillFingerprint(cert);
+    this.verifyCertificate();
     clickByText(addButtonModal, saveButton);
     this.populate(providerData);
   }
