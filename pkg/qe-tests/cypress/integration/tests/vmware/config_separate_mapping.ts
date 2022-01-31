@@ -92,7 +92,6 @@ export const originalPlanData: PlanData = {
   warmMigration: false,
   preHook: preHookData,
   postHook: postHookData,
-  migrationOcpNetwork: 'OCP default network',
 };
 
 export const duplicatePlanData: PlanData = {
