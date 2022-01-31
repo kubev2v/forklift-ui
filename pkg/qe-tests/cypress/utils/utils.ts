@@ -95,3 +95,8 @@ export function finish(): void {
 export function next(): void {
   clickByText(button, nextButton);
 }
+// Pressing Cancel button
+export function clickOnCancel(): void {
+  clickByText(button, 'Cancel');
+  clickByText(button, 'Yes, cancel');
+}

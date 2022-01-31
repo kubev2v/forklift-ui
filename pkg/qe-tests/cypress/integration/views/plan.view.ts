@@ -18,11 +18,18 @@ export const ansibleId = '#playbook-yaml';
 export const imageId = '#image';
 export const showArchived = '#show-archived-checkbox';
 export const confirmButton = '#modal-confirm-button';
+<<<<<<< HEAD
 export const network = '#network-select-toggle';
+=======
+export const getlogsConfirmButton = 'button.pf-m-primary';
+export const arrowDropDown = 'div.pf-c-table__toggle-icon';
+>>>>>>> cb077cba1e881ac5ffec7828fb28cbbf14af6e0a
 export enum dataLabel {
   name = '[data-label=Name]',
   sourceProvider = '[data-label="Source provider"]',
   targetProvider = '[data-label="Target provider"]',
   vms = '[data-label=VMs]',
   status = '[data-label="Plan status"]',
+  step = '[data-label="Step"]',
+  elapsedTime = '[data-label="Elapsed time"]',
 }

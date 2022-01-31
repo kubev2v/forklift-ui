@@ -5,33 +5,26 @@ import { Plan } from '../../models/plan';
 import { ProviderVmware } from '../../models/providerVmware';
 import { testData } from './config_separate_mapping';
 
-describe('Automate cancel and restart of cold migration test', () => {
+describe('Automate get logs Test for Failed Plan', () => {
   const source = new ProviderVmware();
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();
 
-  beforeEach(() => {
+  before(() => {
     login(testData.loginData);
     source.create(testData.planData.providerData);
     networkMapping.create(testData.planData.networkMappingData);
     storageMapping.create(testData.planData.storageMappingData);
     plan.create(testData.planData);
+    plan.failed(testData.planData);
   });
 
-  it('Cancel and restart migration', () => {
-    plan.cancel_and_restart(testData.planData);
+  it('get logs for failed plan', () => {
+    plan.getLogs(testData.planData);
   });
 
-  it.skip('cancel and Restart at Tranfer Disk Step', () => {
-    plan.cancelRestartAtTransferDisks(testData.planData);
-  });
-
-  it.skip('cancel and Restart at Convert to Image Step', () => {
-    plan.cancelRestartAtKubevirt(testData.planData);
-  });
-
-  afterEach(() => {
+  after(() => {
     plan.delete(testData.planData);
     networkMapping.delete(testData.planData.networkMappingData);
     storageMapping.delete(testData.planData.storageMappingData);

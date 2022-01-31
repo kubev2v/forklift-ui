@@ -40,9 +40,14 @@ export const finishButton = 'Finish';
 export const start = 'Start';
 export const review = 'Review';
 export const cutover = 'Cutover';
+<<<<<<< HEAD
 export const selectMigrationNetwork = 'Select migration network';
 export const podNetwork = 'Pod network';
 export const differentNetwork = 'Select a different network';
+=======
+export const getLogsButton = 'Get logs';
+export const downloadLogsButton = 'Download logs';
+>>>>>>> cb077cba1e881ac5ffec7828fb28cbbf14af6e0a
 export enum hooks {
   image = 'Custom container image',
   ansiblePlaybook = 'Ansible Playbook',
@@ -73,4 +78,9 @@ export enum summaryTitle {
 export enum hookType {
   prehook = 'Pre-migration',
   posthook = 'Post-migration',
+}
+export enum planStep {
+  initMig = 'Initialize migration',
+  transferDisk = 'Transfer disks',
+  convtImage = 'Convert image to kubevirt',
 }
