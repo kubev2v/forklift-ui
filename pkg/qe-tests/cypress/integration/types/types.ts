@@ -22,6 +22,13 @@ export type esxiHostList = {
   esxiPassword: string;
 };
 
+export type esxiHostList = {
+  hostnames: string[];
+  migrationNetwork: string;
+  esxiUsername: string;
+  esxiPassword: string;
+};
+
 export type VmwareProviderData = {
   type: string;
   name: string;
@@ -66,7 +73,9 @@ export type PlanData = {
   warmMigration?: boolean;
   preHook?: HookData;
   postHook?: HookData;
+  migrationOcpNetwork?: string;
 };
+
 export type HookData = {
   ansiblePlaybook?: string;
   image?: string;
