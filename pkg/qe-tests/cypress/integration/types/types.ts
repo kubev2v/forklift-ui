@@ -15,10 +15,9 @@ export type MappingData = {
   tProviderName: string;
   mappingPeer: MappingPeer[];
 };
-
 export type esxiHostList = {
   hostnames: string[];
-  migrationNetwork: string;
+  targetNetwork: string;
   esxiUsername: string;
   esxiPassword: string;
 };
@@ -29,7 +28,7 @@ export type VmwareProviderData = {
   hostname?: string;
   username?: string;
   password?: string;
-  cert?: string;
+  esxiHostList?: esxiHostList;
 };
 
 export type RhvProviderData = {
