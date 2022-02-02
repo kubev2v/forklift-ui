@@ -22,13 +22,6 @@ export type esxiHostList = {
   esxiPassword: string;
 };
 
-export type esxiHostList = {
-  hostnames: string[];
-  migrationNetwork: string;
-  esxiUsername: string;
-  esxiPassword: string;
-};
-
 export type VmwareProviderData = {
   type: string;
   name: string;
