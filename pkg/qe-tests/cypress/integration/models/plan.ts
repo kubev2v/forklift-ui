@@ -294,25 +294,20 @@ export class Plan {
   //Method for different Migaration plan step
   protected waitForState(planStep: string): void {
     click(arrowDropDown); //click on dropdown arrow to see the plan steps box
-    cy.get(dataLabel.step, { timeout: 20 * SEC })
+    cy.get(dataLabel.step, { timeout: 200 * SEC })
       .contains(planStep)
       .closest(trTag)
       .within(() => {
-        cy.get(dataLabel.elapsedTime, { timeout: 20 * SEC })
+        cy.get(dataLabel.elapsedTime, { timeout: 3600 * SEC })
           .should('not.be.empty')
           .should('not.contain.text', '1');
       });
   }
-  protected cancel(planData: PlanData): void {
-    const { vmList } = planData; // Getting list of VMs from plan Data
-    const rowAmount = vmList.length; // Getting size of VM list
-    let i;
-    // Iterating through the list of VMs to put a checkbox on each line
-    for (i = 0; i < rowAmount; i++) {
-      cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
-        .should('be.enabled')
-        .check();
-    }
+  protected cancel(): void {
+    //Checkbox to cancel all Vms which appears near a "Name" data-label only when expected
+    cy.get(`[aria-label="Select all rows"]`, { timeout: 300 * SEC })
+      .should('be.enabled')
+      .check();
   }
 
   protected selectMigrationTypeStep(planData: PlanData): void {
@@ -413,7 +408,7 @@ export class Plan {
     this.run(name, start);
     confirm();
     cy.wait(10000);
-    this.cancel(planData);
+    this.cancel();
     clickOnCancel();
     this.waitForCanceled(name);
     this.restart(planData);
@@ -435,7 +430,7 @@ export class Plan {
       confirm();
       cy.get(tdTag).contains(name).click();
     }
-    this.cancel(planData);
+    this.cancel();
     this.waitForState(planStep.transferDisk);
     clickOnCancel();
     this.waitForCanceled(name);
@@ -458,7 +453,7 @@ export class Plan {
       confirm();
       cy.get(tdTag).contains(name).click();
     }
-    this.cancel(planData);
+    this.cancel();
     this.waitForState(planStep.convtImage);
     clickOnCancel();
     this.waitForCanceled(name);
@@ -476,7 +471,7 @@ export class Plan {
     this.run(name, start);
     confirm();
     cy.wait(10000);
-    this.cancel(planData);
+    this.cancel();
     this.waitForCanceled(name);
   }
   //Method to click on Get Logs and Download logs
