@@ -67,7 +67,7 @@ export type PlanData = {
   warmMigration?: boolean;
   preHook?: HookData;
   postHook?: HookData;
-  migrationOcpNetwork?: string;
+  ocpMigrationNetwork?: string;
 };
 
 export type HookData = {
