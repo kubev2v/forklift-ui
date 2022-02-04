@@ -40,7 +40,6 @@ export const useEditProviderPrefillEffect = (
       if (providerType === 'vsphere') {
         const vmwareFields = forms.vsphere.fields;
         vmwareFields.hostname.prefill(vmwareUrlToHostname(providerBeingEdited.spec.url || ''));
-        vmwareFields.hostname.setIsTouched(true); // TODO this shouldn't be necessary once we resolve https://github.com/konveyor/lib-ui/issues/82
         vmwareFields.fingerprint.prefill(atob(secret?.data.thumbprint || ''));
       }
       if (providerType === 'ovirt') {

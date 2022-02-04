@@ -348,7 +348,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         ref={certificateConfirmButtonRef}
                         aria-label="Verify Certificate"
                         variant="primary"
-                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid} // TODO we should remove the isTouched case here once we resolve https://github.com/konveyor/lib-ui/issues/82
+                        isDisabled={!fields.hostname?.isValid}
                         onClick={() => {
                           setCertificateQueryEnabled(true);
                         }}
@@ -471,7 +471,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         fields.caCertFilename?.setValue(filename);
                       }}
                       onBlur={() => fields.caCert?.setIsTouched(true)}
-                      validated={fields.caCert?.isValid ? 'default' : 'error'}
+                      validated={fields.caCert?.shouldShowError ? 'error' : 'default'}
                     />
                   </FormGroup>
                 ) : null}

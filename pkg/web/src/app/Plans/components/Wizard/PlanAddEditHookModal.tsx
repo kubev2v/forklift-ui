@@ -262,7 +262,7 @@ export const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModal
                       setPlaybookFilename(filename);
                     }}
                     onBlur={() => instanceForm.fields.playbook.setIsTouched(true)}
-                    validated={instanceForm.fields.playbook.isValid ? 'default' : 'error'}
+                    validated={instanceForm.fields.playbook.shouldShowError ? 'error' : 'default'}
                   />
                 </FormGroup>
               </div>

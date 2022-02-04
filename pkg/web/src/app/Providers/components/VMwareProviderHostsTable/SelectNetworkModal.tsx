@@ -132,7 +132,7 @@ export const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProp
             label="Network"
             isRequired
             fieldId="network"
-            validated={form.fields.selectedNetworkAdapter.isValid ? 'default' : 'error'}
+            validated={form.fields.selectedNetworkAdapter.shouldShowError ? 'error' : 'default'}
             {...getFormGroupProps(form.fields.selectedNetworkAdapter)}
           >
             <SimpleSelect
