@@ -15,7 +15,7 @@ describe('Creating provider and deleting', () => {
     provider.create(providerData);
   });
 
-  it.skip('Login to MTV, find and delete provider', () => {
+  it('Login to MTV, find and delete provider', () => {
     provider.delete(providerData);
   });
 });
