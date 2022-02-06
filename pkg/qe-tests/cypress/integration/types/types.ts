@@ -47,6 +47,12 @@ export type OcpVirtData = {
   saToken?: string;
 };
 
+export type SourceVm = {
+  name: string;
+  powered?: boolean;
+  expected_validations?: string[];
+};
+
 export type ProviderData = VmwareProviderData | RhvProviderData | OcpVirtData;
 
 export type PlanData = {
@@ -56,7 +62,8 @@ export type PlanData = {
   tProvider: string;
   namespace: string;
   sourceClusterName: string;
-  vmList: string[];
+  // vmList: string[];
+  vmList: SourceVm[];
   useExistingNetworkMapping: boolean;
   useExistingStorageMapping: boolean;
   providerData: ProviderData;

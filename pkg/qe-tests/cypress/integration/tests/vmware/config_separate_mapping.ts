@@ -7,6 +7,7 @@ import {
   VmwareProviderData,
   HookData,
   esxiHostList,
+  SourceVm,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
@@ -88,46 +89,51 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
-export const originalPlanData: PlanData = {
+export const rhel7_2disk_2nic: SourceVm = {
+  name: 'v2v-rhel7-2nic-2disk-igor',
+  powered: false,
+  expected_validations: [],
+};
+
+export const e2ePlan: PlanData = {
   name: 'testplan-separate-mapping-cold',
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',
   sourceClusterName: vmwareClusterName,
-  vmList: vmListArray,
+  // vmList: vmListArray,
+  vmList: [rhel7_2disk_2nic],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,
   networkMappingData: networkMapping,
   storageMappingData: storageMapping,
   warmMigration: false,
-  preHook: preHookData,
-  postHook: postHookData,
 };
 
-export const duplicatePlanData: PlanData = {
-  name: 'copy-of-testplan-separate-mapping-cold',
-  sProvider: providerData.name,
-  tProvider: 'host',
-  namespace: 'openshift-mtv',
-  sourceClusterName: vmwareClusterName,
-  vmList: ['v2v-rhel7-2nic-2disk-igor'],
-  useExistingNetworkMapping: true,
-  useExistingStorageMapping: true,
-  providerData: providerData,
-  networkMappingData: networkMapping,
-  storageMappingData: storageMapping,
-  warmMigration: false,
-  preHook: preHookData,
-  postHook: postHookData,
-};
+// export const duplicatePlanData: PlanData = {
+//   name: 'copy-of-testplan-separate-mapping-cold',
+//   sProvider: providerData.name,
+//   tProvider: 'host',
+//   namespace: 'openshift-mtv',
+//   sourceClusterName: vmwareClusterName,
+//   vmList: ['v2v-rhel7-2nic-2disk-igor'],
+//   useExistingNetworkMapping: true,
+//   useExistingStorageMapping: true,
+//   providerData: providerData,
+//   networkMappingData: networkMapping,
+//   storageMappingData: storageMapping,
+//   warmMigration: false,
+//   preHook: preHookData,
+//   postHook: postHookData,
+// };
 
-export const duplicateTestData: TestData = {
-  loginData: loginData,
-  planData: duplicatePlanData,
-};
+// export const duplicateTestData: TestData = {
+//   loginData: loginData,
+//   planData: duplicatePlanData,
+// };
 
 export const testData: TestData = {
   loginData: loginData,
-  planData: originalPlanData,
+  planData: e2ePlan,
 };

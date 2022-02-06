@@ -1,4 +1,4 @@
-import { PlanData, HookData } from '../types/types';
+import { PlanData, HookData, SourceVm } from '../types/types';
 import {
   clickByText,
   click,
@@ -116,11 +116,11 @@ export class Plan {
   protected selectVm(planData: PlanData): void {
     const { vmList } = planData;
     const selector = `[aria-label="search button for search input"]`;
-    vmList.forEach((name) => {
-      inputText(searchInput, name);
+    vmList.forEach((vm) => {
+      inputText(searchInput, vm.name);
       click(selector);
       cy.get(tdTag)
-        .contains(name)
+        .contains(vm.name)
         .closest(trTag)
         .within(() => {
           selectCheckBox('input');
@@ -128,13 +128,13 @@ export class Plan {
     });
   }
   //Method to unselect VMs those are not needed
-  protected unSelectVm(vmList: string[]): void {
+  protected unSelectVm(vmList: SourceVm[]): void {
     const selector = `[aria-label="search button for search input"]`;
-    vmList.forEach((name) => {
-      inputText(searchInput, name);
+    vmList.forEach((vm) => {
+      inputText(searchInput, vm.name);
       click(selector);
       cy.get(tdTag)
-        .contains(name)
+        .contains(vm.name)
         .closest(trTag)
         .within(() => {
           unSelectCheckBox('input');

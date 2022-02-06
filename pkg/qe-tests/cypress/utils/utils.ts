@@ -1,4 +1,4 @@
-import { LoginData } from '../integration/types/types';
+import { LoginData, SourceVm } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
@@ -77,7 +77,7 @@ export function unSelectCheckBox(selector: string): void {
 }
 
 //function to fiter array using two different config
-export function filterArray(originalArray: string[], duplicateArray: string[]): string[] {
+export function filterArray(originalArray: SourceVm[], duplicateArray: SourceVm[]): SourceVm[] {
   return originalArray.filter((orig) => !duplicateArray.find((dup) => dup === orig));
 }
 
