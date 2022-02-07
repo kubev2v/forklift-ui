@@ -37,6 +37,7 @@ import {
   getLogsButton,
   downloadLogsButton,
   planStep,
+  providerType,
 } from '../types/constants';
 
 import {
@@ -100,10 +101,16 @@ export class Plan {
   }
 
   protected filterVm(planData: PlanData): void {
-    const { sourceClusterName } = planData;
+    const { sourceClusterName, providerData } = planData;
     // TODO: Add validation for MTV version, block below is relevant for MTV 2.3+
     // This is required to open the tree of clusters in VMWare env starting from MTV 2.3 version
-    cy.contains('label', 'Datacenter', { timeout: 60 * SEC })
+    let cluster;
+    if (providerData.type == providerType.vmware) {
+      cluster = 'Datacenter';
+    } else if (providerData.type == providerType.rhv) {
+      cluster = sourceClusterName;
+    }
+    cy.contains('label', cluster, { timeout: 60 * SEC })
       .closest('.pf-c-tree-view__node-container')
       .within(() => {
         click(button);

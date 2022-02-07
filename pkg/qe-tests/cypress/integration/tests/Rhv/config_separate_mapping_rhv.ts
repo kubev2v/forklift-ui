@@ -53,14 +53,14 @@ export const storageMappingPeer: MappingPeer[] = [
 ];
 
 export const networkMapping: MappingData = {
-  name: 'network-qe-rhv-mapping',
+  name: `network-${providerData.name}-mapping`,
   sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
 
 export const storageMapping: MappingData = {
-  name: 'storage-qe-rhv-mapping',
+  name: `storage-${providerData.name}-mapping`,
   sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: storageMappingPeer,
