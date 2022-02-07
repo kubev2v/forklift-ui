@@ -14,6 +14,9 @@ export interface IProviderObject extends ICR {
     type: ProviderType | null;
     url?: string; // No url = host provider
     secret?: INameNamespaceRef;
+    settings?: {
+      vddkInitImage?: string; // VMware only
+    };
   };
   status?: {
     conditions: IStatusCondition[];
