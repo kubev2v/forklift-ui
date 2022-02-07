@@ -97,6 +97,15 @@ export class ProviderVmware extends Provider {
     this.verifyCertificate();
     click(addButtonModal);
     cy.wait(2 * SEC);
+    // Temporary fix for VMWare provider VDDK init image
+    const vddkImage = 'cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com:5000/vddk-images/vddk:v702';
+    cy.exec(
+      `oc -nopenshift-mtv  patch provider/${name} --type json -p '[{ "op": "add", "path": "/spec/settings", "value": {} }]'`
+    );
+    cy.exec(
+      `oc -nopenshift-mtv patch provider/${name} --type json -p '[{ "op": "add", "path": "/spec/settings/vddkInitImage", "value": ${vddkImage} }]'`
+    );
+    // End of fix
   }
 
   protected populate(providerData: VmwareProviderData): void {
@@ -108,17 +117,28 @@ export class ProviderVmware extends Provider {
         // Validating that provider is in `Ready` state
         cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Ready');
         // Validating that endpoint is in proper format and contains proper URL
-        cy.get(dataLabel.endpoint).should('contain.text', `https://${hostname}/sdk`);
+        cy.get(dataLabel.endpoint, { timeout: 10 * SEC }).should(
+          'contain.text',
+          `https://${hostname}/sdk`
+        );
         // Validating that amount of clusters is not empty and is not 0
-        cy.get(dataLabel.clusters).should('not.be.empty').should('not.contain.text', '0');
+        cy.get(dataLabel.clusters, { timeout: 10 * SEC })
+          .should('not.be.empty')
+          .should('not.contain.text', '0');
         // Validating that amount of hosts is not empty and is not 0
-        cy.get(dataLabel.hosts).should('not.be.empty').should('not.contain.text', '0');
+        cy.get(dataLabel.hosts, { timeout: 10 * SEC })
+          .should('not.be.empty')
+          .should('not.contain.text', '0');
         // Validating that amount of VMs is not empty and is not 0
-        cy.get(dataLabel.vms).should('not.be.empty');
+        cy.get(dataLabel.vms, { timeout: 10 * SEC }).should('not.be.empty');
         // Validating that amount of networks is not empty and is not 0
-        cy.get(dataLabel.networks).should('not.be.empty').should('not.contain.text', '0');
+        cy.get(dataLabel.networks, { timeout: 10 * SEC })
+          .should('not.be.empty')
+          .should('not.contain.text', '0');
         // Validating that amount of datastores is not empty and is not 0
-        cy.get(dataLabel.datastors).should('not.be.empty').should('not.contain.text', '0');
+        cy.get(dataLabel.datastores, { timeout: 10 * SEC })
+          .should('not.be.empty')
+          .should('not.contain.text', '0');
       });
   }
 
