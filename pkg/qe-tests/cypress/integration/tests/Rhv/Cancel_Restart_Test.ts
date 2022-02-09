@@ -11,7 +11,7 @@ describe('Automate cancel and restart of cold migration test', () => {
   const storageMapping = new MappingStorage();
   const plan = new Plan();
 
-  before(() => {
+  beforeEach(() => {
     login(testData.loginData);
     source.create(testData.planData.providerData);
     networkMapping.create(testData.planData.networkMappingData);
@@ -23,7 +23,15 @@ describe('Automate cancel and restart of cold migration test', () => {
     plan.cancel_and_restart(testData.planData);
   });
 
-  after(() => {
+  it.skip('cancel and Restart at Transfer Disk Step', () => {
+    plan.cancelRestartAtTransferDisks(testData.planData);
+  });
+
+  it.skip('cancel and Restart at Convert to Image Step', () => {
+    plan.cancelRestartAtKubevirt(testData.planData);
+  });
+
+  afterEach(() => {
     plan.delete(testData.planData);
     networkMapping.delete(testData.planData.networkMappingData);
     storageMapping.delete(testData.planData.storageMappingData);
