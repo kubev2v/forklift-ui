@@ -20,6 +20,7 @@ export const showArchived = '#show-archived-checkbox';
 export const confirmButton = '#modal-confirm-button';
 export const getlogsConfirmButton = 'button.pf-m-primary';
 export const arrowDropDown = 'div.pf-c-table__toggle-icon';
+export const network = '#network-select-toggle';
 export enum dataLabel {
   name = '[data-label=Name]',
   sourceProvider = '[data-label="Source provider"]',
