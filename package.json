@@ -98,7 +98,7 @@
   },
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.1",
-    "@konveyor/lib-ui": "^5.0.0",
+    "@konveyor/lib-ui": "^6.0.0",
     "@patternfly/react-core": "^4.181.1",
     "@patternfly/react-icons": "^4.32.1",
     "@patternfly/react-styles": "^4.31.1",
@@ -115,7 +115,7 @@
     "http-proxy-middleware": "^2.0.0",
     "js-yaml": "^4.1.0",
     "netmask": "^2.0.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "q": "^1.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

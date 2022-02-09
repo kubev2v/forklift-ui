@@ -38,6 +38,9 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
           namespace: 'openshift-migration',
           name: 'boston',
         },
+        settings: {
+          vddkInitImage: 'quay.io/username/vddk',
+        },
       },
       status: {
         conditions: [
@@ -93,6 +96,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         ...vmwareProvider1.object.metadata,
         name: 'vcenter-2',
         uid: 'mock-uid-vcenter-2',
+        creationTimestamp: '2020-08-22T18:36:41.468Z',
       },
       status: {
         conditions: [
@@ -120,6 +124,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
         ...vmwareProvider1.object.metadata,
         name: 'vcenter-3',
         uid: 'mock-uid-vcenter-3',
+        creationTimestamp: '2020-08-23T18:36:41.468Z',
       },
       status: {
         conditions: [
