@@ -42,6 +42,9 @@ export const review = 'Review';
 export const cutover = 'Cutover';
 export const getLogsButton = 'Get logs';
 export const downloadLogsButton = 'Download logs';
+export const selectMigrationNetwork = 'Select migration network';
+export const podNetwork = 'Pod network';
+export const differentNetwork = 'Select a different network';
 export enum hooks {
   image = 'Custom container image',
   ansiblePlaybook = 'Ansible Playbook',

@@ -51,7 +51,7 @@ import {
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import { IProviderObject } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
-import { useEditProviderPrefillEffect } from './helpers';
+import { useAddEditProviderPrefillEffect } from './helpers';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 import { ValidatedPasswordInput } from '@app/common/components/ValidatedPasswordInput';
 
@@ -142,6 +142,7 @@ const useAddProviderFormState = (
       ...sourceProviderFields,
       fingerprint: useFormField('', fingerprintSchema.required()),
       isCertificateValid: useFormField(false, yup.boolean()),
+      vddkInitImage: useFormField('', yup.string().label('VDDK init image').required()),
     }),
     ovirt: useFormState({
       ...sourceProviderFields,
@@ -175,7 +176,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
 
   const forms = useAddProviderFormState(clusterProvidersQuery, providerBeingEdited);
 
-  const { isDonePrefilling } = useEditProviderPrefillEffect(forms, providerBeingEdited);
+  const { isDonePrefilling } = useAddEditProviderPrefillEffect(forms, providerBeingEdited);
 
   const providerTypeField = forms.vsphere.fields.providerType;
   const providerType = providerTypeField.value;
@@ -260,7 +261,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
       }
     >
       <ResolvedQuery result={clusterProvidersQuery} errorTitle="Cannot load providers">
-        {!isDonePrefilling ? (
+        {(providerBeingEdited && !isDonePrefilling) || clusterProvidersQuery.isLoading ? (
           <LoadingEmptyState />
         ) : (
           <Form>
@@ -339,6 +340,40 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     fieldId="password"
                   />
                 ) : null}
+                {fields?.vddkInitImage ? (
+                  <ValidatedTextInput
+                    field={fields.vddkInitImage}
+                    label="VDDK init image"
+                    isRequired
+                    fieldId="vddk-init-image"
+                    formGroupProps={{
+                      labelIcon: (
+                        <Popover
+                          bodyContent={
+                            <>
+                              Path of a VDDK image pushed to an image registry.
+                              <br />
+                              For example: <i>{'<registry_route_or_server_path>/vddk:<tag>'}</i>
+                              <br />
+                              See product documentation for more information.
+                            </>
+                          }
+                          hasAutoWidth
+                        >
+                          <Button
+                            variant="plain"
+                            aria-label="More info for VDDK init image field"
+                            onClick={(e) => e.preventDefault()}
+                            aria-describedby="vddk-init-image-info"
+                            className="pf-c-form__group-label-help"
+                          >
+                            <HelpIcon noVerticalAlign />
+                          </Button>
+                        </Popover>
+                      ),
+                    }}
+                  />
+                ) : null}
                 {fields?.fingerprint ? (
                   <>
                     {!isCertificateQueryEnabled ? (
@@ -348,7 +383,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         ref={certificateConfirmButtonRef}
                         aria-label="Verify Certificate"
                         variant="primary"
-                        isDisabled={!fields.hostname?.isTouched || !fields.hostname?.isValid} // TODO we should remove the isTouched case here once we resolve https://github.com/konveyor/lib-ui/issues/82
+                        isDisabled={!fields.hostname?.isValid}
                         onClick={() => {
                           setCertificateQueryEnabled(true);
                         }}
@@ -471,7 +506,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         fields.caCertFilename?.setValue(filename);
                       }}
                       onBlur={() => fields.caCert?.setIsTouched(true)}
-                      validated={fields.caCert?.isValid ? 'default' : 'error'}
+                      validated={fields.caCert?.shouldShowError ? 'error' : 'default'}
                     />
                   </FormGroup>
                 ) : null}
@@ -544,15 +579,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     }}
                   />
                 ) : null}
-                {/* TODO re-enable this when we have the API capability
-                providerType ? (
-                  <div>
-                    <Button variant="link" isInline icon={<ConnectedIcon />} onClick={() => alert('TODO')}>
-                      Check connection
-                    </Button>
-                  </div>
-                ) : null
-                */}
               </>
             ) : null}
           </Form>

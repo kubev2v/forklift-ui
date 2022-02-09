@@ -37,6 +37,9 @@ import {
   getLogsButton,
   downloadLogsButton,
   planStep,
+  differentNetwork,
+  podNetwork,
+  providerType,
 } from '../types/constants';
 
 import {
@@ -59,6 +62,7 @@ import {
   showArchived,
   getlogsConfirmButton,
   arrowDropDown,
+  network,
 } from '../views/plan.view';
 
 export class Plan {
@@ -90,20 +94,34 @@ export class Plan {
   }
 
   protected generalStep(planData: PlanData): void {
-    const { name, description, sProvider, tProvider, namespace } = planData;
+    const { name, description, sProvider, tProvider, namespace, ocpMigrationNetwork } = planData;
     this.fillName(name);
     this.fillDescription(description);
     this.selectSourceProvider(sProvider);
     this.selectTargetProvider(tProvider);
     this.selectNamespace(namespace);
+    if (ocpMigrationNetwork) {
+      //To select Openshift Virtualization Migration network in plan wizard
+      cy.wait(2 * SEC);
+      clickByText(button, differentNetwork);
+      cy.get(network).should('contain.text', ocpMigrationNetwork);
+      selectFromDroplist(network, podNetwork);
+      confirm();
+    }
     next();
   }
 
   protected filterVm(planData: PlanData): void {
-    const { sourceClusterName } = planData;
+    const { sourceClusterName, providerData } = planData;
     // TODO: Add validation for MTV version, block below is relevant for MTV 2.3+
     // This is required to open the tree of clusters in VMWare env starting from MTV 2.3 version
-    cy.contains('label', 'Datacenter', { timeout: 60 * SEC })
+    let cluster;
+    if (providerData.type == providerType.vmware) {
+      cluster = 'Datacenter';
+    } else if (providerData.type == providerType.rhv) {
+      cluster = sourceClusterName;
+    }
+    cy.contains('label', cluster, { timeout: 60 * SEC })
       .closest('.pf-c-tree-view__node-container')
       .within(() => {
         click(button);
