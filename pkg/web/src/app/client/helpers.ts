@@ -128,8 +128,10 @@ export const convertFormValuesToProvider = (
 ): IProviderObject => {
   const name = values.name;
   let url = '';
+  const specSettings: IProviderObject['spec']['settings'] = {};
   if (providerType === 'vsphere') {
     url = vmwareHostnameToUrl((values as VMwareProviderFormValues).hostname);
+    specSettings.vddkInitImage = (values as VMwareProviderFormValues).vddkInitImage;
   }
   if (providerType === 'ovirt') {
     url = ovirtHostnameToUrl((values as RHVProviderFormValues).hostname);
@@ -147,6 +149,7 @@ export const convertFormValuesToProvider = (
     spec: {
       type: values.providerType,
       url,
+      ...(Object.keys(specSettings).length > 0 ? { settings: specSettings } : {}),
     },
   };
 };

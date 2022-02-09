@@ -15,7 +15,7 @@ export enum dataLabel {
   hosts = '[data-label=Hosts]',
   vms = '[data-label=VMs]',
   networks = '[data-label=Networks]',
-  datastors = '[data-label=Name]',
+  datastores = '[data-label=Datastores]',
   status = '[data-label=Status]',
 }
 
