@@ -3,6 +3,7 @@ export const instanceUrl = '#openshift-url';
 export const instanceToken = '#openshift-sa-token';
 export const addButtonModal = '#modal-confirm-button';
 export const ocpVMenu = '.pf-c-tabs__link';
+export const network = '#network-select-toggle';
 export enum dataLabel {
   name = '[data-label=Name]',
   endpoint = '[data-label=Endpoint]',

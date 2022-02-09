@@ -37,6 +37,8 @@ import {
   getLogsButton,
   downloadLogsButton,
   planStep,
+  differentNetwork,
+  podNetwork,
   providerType,
 } from '../types/constants';
 
@@ -60,6 +62,7 @@ import {
   showArchived,
   getlogsConfirmButton,
   arrowDropDown,
+  network,
 } from '../views/plan.view';
 
 export class Plan {
@@ -91,12 +94,20 @@ export class Plan {
   }
 
   protected generalStep(planData: PlanData): void {
-    const { name, description, sProvider, tProvider, namespace } = planData;
+    const { name, description, sProvider, tProvider, namespace, ocpMigrationNetwork } = planData;
     this.fillName(name);
     this.fillDescription(description);
     this.selectSourceProvider(sProvider);
     this.selectTargetProvider(tProvider);
     this.selectNamespace(namespace);
+    if (ocpMigrationNetwork) {
+      //To select Openshift Virtualization Migration network in plan wizard
+      cy.wait(2 * SEC);
+      clickByText(button, differentNetwork);
+      cy.get(network).should('contain.text', ocpMigrationNetwork);
+      selectFromDroplist(network, podNetwork);
+      confirm();
+    }
     next();
   }
 
