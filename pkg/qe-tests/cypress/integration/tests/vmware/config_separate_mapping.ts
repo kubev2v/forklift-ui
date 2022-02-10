@@ -55,7 +55,7 @@ export const networkMappingPeer: MappingPeer[] = [
   },
   {
     sProvider: 'Mgmt Network',
-    dProvider: 'default / ovn-kubernetes1',
+    dProvider: 'default / mybridge',
   },
 ];
 
@@ -67,14 +67,14 @@ export const storageMappingPeer: MappingPeer[] = [
 ];
 
 export const networkMapping: MappingData = {
-  name: 'network-qe-vmware-mapping',
+  name: `network-${providerData.name}-mapping`,
   sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: networkMappingPeer,
 };
 
 export const storageMapping: MappingData = {
-  name: 'storage-qe-vmware-mapping',
+  name: `storage-${providerData.name}-mapping`,
   sProviderName: providerData.name,
   tProviderName: 'host',
   mappingPeer: storageMappingPeer,
@@ -89,7 +89,7 @@ export const postHookData: HookData = {
 };
 
 export const originalPlanData: PlanData = {
-  name: 'testplan-separate-mapping-cold',
+  name: `testplan-${providerData.name}separate-mapping-cold`,
   sProvider: providerData.name,
   tProvider: 'host',
   namespace: 'default',

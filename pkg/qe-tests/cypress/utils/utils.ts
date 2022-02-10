@@ -1,4 +1,4 @@
-import { LoginData } from '../integration/types/types';
+import { LoginData, TestData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
