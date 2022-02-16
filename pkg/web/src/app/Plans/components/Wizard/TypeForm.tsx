@@ -18,7 +18,7 @@ export const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
   const warmCriticalConcernsFound = warmCriticalConcerns.filter((label) =>
     someVMHasConcern(selectedVMs, label)
   );
-  const isAnalysingVms = selectedVMs.some((vm) => vm.revisionValidated !== vm.revision);
+  const isAnalyzingVms = selectedVMs.some((vm) => vm.revisionValidated !== vm.revision);
 
   return (
     <>
@@ -48,9 +48,9 @@ export const TypeForm: React.FunctionComponent<ITypeFormProps> = ({
                 copied, is run later.
               </ListItem>
             </List>
-            {isAnalysingVms ? (
+            {isAnalyzingVms ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
-                <StatusIcon status="Loading" label="Analysing warm migration compatibility" />
+                <StatusIcon status="Loading" label="Analyzing warm migration compatibility" />
               </div>
             ) : warmCriticalConcernsFound.length > 0 ? (
               <div className={`${spacing.mtMd} ${spacing.mlXs}`}>
