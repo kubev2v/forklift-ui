@@ -5,7 +5,6 @@ import {
   TestData,
   OcpVirtData,
   MappingPeer,
-  HookData,
 } from '../../types/types';
 import { storageType } from '../../types/constants';
 
