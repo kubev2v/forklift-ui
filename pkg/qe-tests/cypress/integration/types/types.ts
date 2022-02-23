@@ -28,6 +28,7 @@ export type VmwareProviderData = {
   hostname?: string;
   username?: string;
   password?: string;
+  image?: string;
   esxiHostList?: esxiHostList;
 };
 
@@ -68,6 +69,12 @@ export type PlanData = {
   preHook?: HookData;
   postHook?: HookData;
   ocpMigrationNetwork?: string;
+  scheduledCutover?: CutoverData;
+};
+
+export type CutoverData = {
+  date: string;
+  time: string;
 };
 
 export type HookData = {

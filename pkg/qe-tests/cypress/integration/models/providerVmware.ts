@@ -28,6 +28,7 @@ import {
   certificateCheck,
   networkField,
   SelectMigrationNetworkButton,
+  vddkImage,
 } from '../views/providerVmware.view';
 import { providerMenu } from '../views/provider.view';
 import { VmwareProviderData } from '../types/types';
@@ -47,6 +48,11 @@ export class ProviderVmware extends Provider {
 
   protected fillPassword(password: string): void {
     inputText(instancePassword, password);
+  }
+
+  //Fill the VDDK Image Field
+  protected fillVddkImage(image: string): void {
+    inputText(vddkImage, image);
   }
 
   //Now we have verify Certificate option in place of fingerprint
@@ -88,24 +94,16 @@ export class ProviderVmware extends Provider {
   }
 
   protected runWizard(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password } = providerData;
+    const { name, hostname, username, password, image } = providerData;
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
+    this.fillVddkImage(image);
     this.verifyCertificate();
     click(addButtonModal);
     cy.wait(2 * SEC);
-    // Temporary fix for VMWare provider VDDK init image
-    const vddkImage = 'cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com:5000/vddk-images/vddk:v702';
-    cy.exec(
-      `oc -nopenshift-mtv  patch provider/${name} --type json -p '[{ "op": "add", "path": "/spec/settings", "value": {} }]'`
-    );
-    cy.exec(
-      `oc -nopenshift-mtv patch provider/${name} --type json -p '[{ "op": "add", "path": "/spec/settings/vddkInitImage", "value": ${vddkImage} }]'`
-    );
-    // End of fix
   }
 
   protected populate(providerData: VmwareProviderData): void {
