@@ -63,6 +63,7 @@ import {
   getlogsConfirmButton,
   arrowDropDown,
   network,
+  scheduledCutoverButton,
 } from '../views/plan.view';
 
 export class Plan {
@@ -337,6 +338,35 @@ export class Plan {
     }
     next();
   }
+  //wait to complete incremental copy in Warm Migration
+  protected waitForIncrementalCopies(planData: PlanData): void {
+    const { vmList } = planData; // Getting list of VMs from plan Data
+    const rowAmount = vmList.length; // Getting size of VM list
+    let i;
+    // Iterating through the list of VMs
+    for (i = 0; i < rowAmount; i++) {
+      cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
+        .closest(trTag)
+        .within(() => {
+          cy.get('[data-label="Status"]', { timeout: 3600 * SEC }).should(
+            'contain.text',
+            'Idle - Next incremental copy will begin in less than 1 minute'
+          );
+        });
+    }
+  }
+  protected schedule_cutover(planData: PlanData): void {
+    const { name, scheduledCutover } = planData;
+    Plan.openList();
+    this.run(name, cutover); //cutover starts now
+    //for Scheduled cutover later-executes on when scheduled cutover date and time are provided
+    if (scheduledCutover.date || scheduledCutover.time) {
+      click(scheduledCutoverButton);
+      inputText(`[aria-label="Cutover scheduled date"]`, scheduledCutover.date);
+      inputText(`[aria-label="Cutover scheduled time"]`, scheduledCutover.time);
+    }
+    confirm();
+  }
   //Code to Archive a Plan, show checkbox, Duplicate failed Archived plan and Delete Archived
   protected validateArchive(name: string): void {
     applyAction(name, archiveButton);
@@ -397,11 +427,8 @@ export class Plan {
     this.run(name, start);
     confirm();
     if (warmMigration) {
-      Plan.openList();
-      cy.wait(30 * SEC);
-      this.run(name, cutover);
-      confirm();
-      //TODO: Schedule cutover for later
+      this.waitForIncrementalCopies(planData);
+      this.schedule_cutover(planData);
     }
     this.waitForSuccess(name);
   }
@@ -413,10 +440,8 @@ export class Plan {
     confirm(); //Added Confirm Button
     if (warmMigration) {
       Plan.openList();
-      cy.wait(30 * SEC);
-      this.run(name, cutover); //Start Cutover now
-      confirm();
-      //TODO: Schedule cutover for later
+      this.waitForIncrementalCopies(planData);
+      this.schedule_cutover(planData);
     }
   }
 
@@ -442,10 +467,8 @@ export class Plan {
     this.run(name, start);
     confirm();
     if (warmMigration) {
-      Plan.openList();
-      cy.wait(30 * SEC);
-      this.run(name, cutover);
-      confirm();
+      this.waitForIncrementalCopies(planData);
+      this.schedule_cutover(planData);
       cy.get(tdTag).contains(name).click();
     }
     this.cancel();
@@ -465,10 +488,8 @@ export class Plan {
     this.run(name, start);
     confirm();
     if (warmMigration) {
-      Plan.openList();
-      cy.wait(30 * SEC);
-      this.run(name, cutover);
-      confirm();
+      this.waitForIncrementalCopies(planData);
+      this.schedule_cutover(planData);
       cy.get(tdTag).contains(name).click();
     }
     this.cancel();
@@ -490,6 +511,7 @@ export class Plan {
     confirm();
     cy.wait(10000);
     this.cancel();
+    clickOnCancel();
     this.waitForCanceled(name);
   }
   //Method to click on Get Logs and Download logs
@@ -522,5 +544,28 @@ export class Plan {
       this.hooksStep(duplicatePlanData);
       this.finalReviewStep(duplicatePlanData);
     }
+  }
+  //Edit plan 1.Navigate to the Migration page 2.Click kebab menu of the plan to be edited.Click 'Edit'
+  //3.Update the plan.Click 'Finish' to save the plan.
+  edit(originalPlanData: PlanData, duplicatePlanData: PlanData): void {
+    const { name } = originalPlanData;
+    const { sProvider, tProvider, namespace } = duplicatePlanData;
+    const vmListRemove = filterArray(originalPlanData.vmList, duplicatePlanData.vmList);
+    Plan.openList();
+    applyAction(name, 'Edit');
+    this.selectSourceProvider(sProvider);
+    this.selectTargetProvider(tProvider);
+    this.selectNamespace(namespace);
+    next();
+    this.filterVm(duplicatePlanData);
+    this.selectVm(duplicatePlanData);
+    this.unSelectVm(vmListRemove);
+    this.networkMappingStep(duplicatePlanData);
+    next();
+    this.selectMigrationTypeStep(duplicatePlanData);
+    this.reviewSourceProvider(sProvider);
+    this.reviewTargetProvider(tProvider);
+    this.reviewTargetNamespace(namespace);
+    finish();
   }
 }
