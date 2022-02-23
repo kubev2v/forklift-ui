@@ -2,11 +2,11 @@ export const instanceName = '#name';
 export const instanceHostname = '#hostname';
 export const instanceUsername = '#username';
 export const instancePassword = '#password';
-export const instanceFingerprint = '#fingerprint';
 export const addButtonModal = '#modal-confirm-button';
 export const verifyCertificateButton = '#certificate-confirm-button';
 export const certificateCheck = '#certificate-check';
 export const SelectMigrationNetworkButton = 'button.pf-c-button.pf-m-secondary';
+export const vddkImage = '#vddk-init-image';
 
 export enum dataLabel {
   name = '[data-label=Name]',
