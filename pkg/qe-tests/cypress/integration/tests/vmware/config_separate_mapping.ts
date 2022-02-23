@@ -16,6 +16,7 @@ const v2v_vmware_providername = Cypress.env('v2v_vmware_providername');
 const v2v_vmware_username = Cypress.env('v2v_vmware_username');
 const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
+const v2v_vmware_vddkImage = Cypress.env('v2v_vmware_vddkImage');
 const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
 const vmListArray = Cypress.env('vm_list');
@@ -45,6 +46,7 @@ export const providerData: VmwareProviderData = {
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
+  image: v2v_vmware_vddkImage,
   esxiHostList: hostList,
 };
 
