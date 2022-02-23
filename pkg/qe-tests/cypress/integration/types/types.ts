@@ -69,6 +69,12 @@ export type PlanData = {
   preHook?: HookData;
   postHook?: HookData;
   ocpMigrationNetwork?: string;
+  scheduledCutover?: CutoverData;
+};
+
+export type CutoverData = {
+  date: string;
+  time: string;
 };
 
 export type HookData = {
