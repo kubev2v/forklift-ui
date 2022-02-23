@@ -411,6 +411,7 @@ export class Plan {
     this.selectMigrationTypeStep(planData);
     this.hooksStep(planData);
     this.finalReviewStep(planData);
+    cy.wait(2 * SEC);
   }
 
   delete(planData: PlanData): void {

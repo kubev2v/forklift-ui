@@ -13,6 +13,9 @@ describe('Automate archive migration plan test', () => {
 
   beforeEach(() => {
     login(testData.loginData);
+  });
+
+  it('Create a provider, mappings, plan and failed plan', () => {
     source.create(testData.planData.providerData);
     networkMapping.create(testData.planData.networkMappingData);
     storageMapping.create(testData.planData.storageMappingData);
@@ -23,6 +26,7 @@ describe('Automate archive migration plan test', () => {
   it('Archiving plan', () => {
     plan.archive(testData.planData);
   });
+
   it('Delete Duplicated Plan', () => {
     plan.delete(testData.planData);
   });
