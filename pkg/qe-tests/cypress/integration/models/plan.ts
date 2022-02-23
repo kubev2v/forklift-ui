@@ -545,4 +545,27 @@ export class Plan {
       this.finalReviewStep(duplicatePlanData);
     }
   }
+  //Edit plan 1.Navigate to the Migration page 2.Click kebab menu of the plan to be edited.Click 'Edit'
+  //3.Update the plan.Click 'Finish' to save the plan.
+  edit(originalPlanData: PlanData, duplicatePlanData: PlanData): void {
+    const { name } = originalPlanData;
+    const { sProvider, tProvider, namespace } = duplicatePlanData;
+    const vmListRemove = filterArray(originalPlanData.vmList, duplicatePlanData.vmList);
+    Plan.openList();
+    applyAction(name, 'Edit');
+    this.selectSourceProvider(sProvider);
+    this.selectTargetProvider(tProvider);
+    this.selectNamespace(namespace);
+    next();
+    this.filterVm(duplicatePlanData);
+    this.selectVm(duplicatePlanData);
+    this.unSelectVm(vmListRemove);
+    this.networkMappingStep(duplicatePlanData);
+    next();
+    this.selectMigrationTypeStep(duplicatePlanData);
+    this.reviewSourceProvider(sProvider);
+    this.reviewTargetProvider(tProvider);
+    this.reviewTargetNamespace(namespace);
+    finish();
+  }
 }
