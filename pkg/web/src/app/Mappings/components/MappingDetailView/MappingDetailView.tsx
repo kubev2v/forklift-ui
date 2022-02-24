@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, GridItem, Text } from '@patternfly/react-core';
+import { Grid, GridItem, Text, TextContent } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import text from '@patternfly/react-styles/css/utilities/Text/text';
 
@@ -51,33 +51,48 @@ export const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps>
               {getMappingSourceTitle(mappingType, sourceProviderType)}
             </Text>
           </GridItem>
-          <GridItem span={2}></GridItem>
+          <GridItem span={2} />
           <GridItem span={5} className={spacing.pbSm}>
             <Text className={text.fontWeightBold}>{getMappingTargetTitle(mappingType)}</Text>
           </GridItem>
         </Grid>
-        {mappingItemGroups.map((items, index) => {
+        {mappingItemGroups.map((items, itemGroupIndex) => {
           const targetName = getMappingItemTargetName(
             items[0],
             mappingType,
             mappingResourceQueries.availableTargets
           );
-          const isLastGroup = index === mappingItemGroups.length - 1;
+          const isLastGroup = itemGroupIndex === mappingItemGroups.length - 1;
           return (
             <Grid key={targetName} className={!isLastGroup ? spacing.mbLg : ''}>
               <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
                 <ul>
-                  {items.map((item) => {
+                  {items.map((item, itemIndex) => {
                     const source = getMappingSourceById(
                       mappingResourceQueries.availableSources,
                       item.source.id
                     );
                     const sourceName = source ? source.name : '';
                     return (
-                      <li key={sourceName}>
-                        <TruncatedText>
-                          {sourceName || <span className="missing-item">Not available</span>}
-                        </TruncatedText>
+                      <li
+                        key={`${sourceName}-${source?.path || ''}`}
+                        className={itemIndex !== items.length - 1 ? spacing.mbSm : ''}
+                      >
+                        <TextContent>
+                          <TruncatedText>
+                            {sourceName || <span className="missing-item">Not available</span>}
+                          </TruncatedText>
+                          {source?.path ? (
+                            <TruncatedText>
+                              <Text
+                                component="small"
+                                style={{ fontSize: 'var(--pf-global--FontSize--xs)' }}
+                              >
+                                {source.path}
+                              </Text>
+                            </TruncatedText>
+                          ) : null}
+                        </TextContent>
                       </li>
                     );
                   })}

@@ -181,6 +181,15 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
             type: 'multus',
           },
         },
+        {
+          source: {
+            id: MOCK_VMWARE_NETWORKS[2].id,
+          },
+          destination: {
+            ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[1]),
+            type: 'multus',
+          },
+        },
       ],
     },
   };
