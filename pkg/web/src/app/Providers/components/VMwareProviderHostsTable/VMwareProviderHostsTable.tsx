@@ -58,19 +58,33 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
                   <Popover
                     hasAutoWidth
                     bodyContent={
-                      <StatusIcon status="Ok" label="Not configured, using default network" />
+                      <div id={`host-status-popover-${host.name}`}>
+                        <StatusIcon status="Ok" label="Not configured, using default network" />
+                      </div>
                     }
                   >
-                    <Button variant="link" isInline>
+                    <Button
+                      variant="link"
+                      isInline
+                      id={`host-status-icon-${host.name}`}
+                      aria-label="Ok"
+                    >
                       <StatusIcon status="Ok" />
                     </Button>
                   </Popover>
                 ) : !hostConfig.status ? (
                   <Tooltip content="Configuring">
-                    <StatusIcon status="Loading" />
+                    <span id={`host-status-icon-${host.name}`} aria-label="Loading">
+                      <StatusIcon status="Loading" />
+                    </span>
                   </Tooltip>
                 ) : (
-                  <StatusCondition status={hostConfig.status} hideLabel />
+                  <StatusCondition
+                    status={hostConfig.status}
+                    hideLabel
+                    buttonId={`host-status-icon-${host.name}`}
+                    popoverBodyId={`host-status-popover-${host.name}`}
+                  />
                 )}
                 <span className={spacing.mlSm}>{formatHostNetworkAdapter(networkAdapter)}</span>
               </>

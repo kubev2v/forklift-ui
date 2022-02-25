@@ -9,12 +9,16 @@ interface IStatusConditionProps {
   status?: { conditions?: IStatusCondition[] };
   unknownFallback?: React.ReactNode;
   hideLabel?: boolean;
+  buttonId?: string;
+  popoverBodyId?: string;
 }
 
 export const StatusCondition: React.FunctionComponent<IStatusConditionProps> = ({
   status,
   unknownFallback = null,
   hideLabel = false,
+  buttonId,
+  popoverBodyId,
 }: IStatusConditionProps) => {
   if (!status) return <StatusIcon status="Loading" label="Validating" />;
 
@@ -56,7 +60,7 @@ export const StatusCondition: React.FunctionComponent<IStatusConditionProps> = (
     <Popover
       hasAutoWidth
       bodyContent={
-        <>
+        <div {...(popoverBodyId ? { id: popoverBodyId } : {})}>
           {conditions.map((condition) => {
             const severity = getMostSeriousCondition([condition]);
             return (
@@ -67,10 +71,10 @@ export const StatusCondition: React.FunctionComponent<IStatusConditionProps> = (
               />
             );
           })}
-        </>
+        </div>
       }
     >
-      <Button variant="link" isInline>
+      <Button variant="link" isInline {...(buttonId ? { id: buttonId } : {})} aria-label={label}>
         {icon}
       </Button>
     </Popover>
