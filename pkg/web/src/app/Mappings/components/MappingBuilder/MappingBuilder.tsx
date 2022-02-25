@@ -83,7 +83,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         <Text component="p">{instructionText}</Text>
       </TextContent>
       {builderItems.map((item, itemIndex) => {
-        const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
+        const key = item.source ? `${item.source.name}` : 'empty';
         return (
           <Grid key={key}>
             {itemIndex === 0 ? (
@@ -113,7 +113,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
                 </Bullseye>
               ) : (
                 <MappingSourceSelect
-                  id={`mapping-sources-for-${key}`}
+                  id={`mapping-source-for-${key}`}
                   builderItems={builderItems}
                   itemIndex={itemIndex}
                   setBuilderItems={setBuilderItems}
