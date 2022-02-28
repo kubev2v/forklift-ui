@@ -16,7 +16,6 @@ import { IHost, IVMwareProvider } from '@app/queries/types';
 import { SelectNetworkModal } from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
-import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { StatusCondition } from '@app/common/components/StatusCondition';
 import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
@@ -136,12 +135,13 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
     <ResolvedQuery result={hostConfigsQuery} errorTitle="Cannot load host configurations">
       <Level>
         <LevelItem>
-          <ConditionalTooltip
-            isTooltipEnabled={commonNetworkAdapters.length === 0}
+          <Tooltip
             content={
               selectedItems.length === 0
                 ? 'Select at least one host'
-                : 'Selected hosts have no networks in common'
+                : commonNetworkAdapters.length === 0
+                ? 'Selected hosts have no networks in common'
+                : 'Select a network for migration data transfer for the selected hosts'
             }
           >
             <div>
@@ -153,7 +153,7 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
                 Select migration network
               </Button>
             </div>
-          </ConditionalTooltip>
+          </Tooltip>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
