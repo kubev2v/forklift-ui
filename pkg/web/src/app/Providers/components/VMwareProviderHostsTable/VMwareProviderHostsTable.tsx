@@ -140,8 +140,8 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
               selectedItems.length === 0
                 ? 'Select at least one host'
                 : commonNetworkAdapters.length === 0
-                ? 'Selected hosts have no networks in common'
-                : 'Select a network for migration data transfer for the selected hosts'
+                ? 'Selected hosts have no network in common'
+                : 'Select a network for transferring migration data from the selected hosts'
             }
           >
             <div>
