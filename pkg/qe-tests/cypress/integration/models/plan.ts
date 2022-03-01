@@ -564,6 +564,7 @@ export class Plan {
     this.networkMappingStep(duplicatePlanData);
     next();
     this.selectMigrationTypeStep(duplicatePlanData);
+    next();
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);
