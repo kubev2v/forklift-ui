@@ -49,6 +49,15 @@ export const providerData: VmwareProviderData = {
   image: v2v_vmware_vddkImage,
   esxiHostList: hostList,
 };
+// edit vmware provider data
+export const incorrectProviderData: VmwareProviderData = {
+  type: providerType.vmware,
+  name: v2v_vmware_providername,
+  hostname: '10.8.58.136',
+  username: 'mtv@duplicate.local',
+  password: 'mtv@123!',
+  image: v2v_vmware_vddkImage,
+};
 
 export const networkMappingPeer: MappingPeer[] = [
   {

@@ -115,26 +115,26 @@ export class ProviderVmware extends Provider {
         // Validating that provider is in `Ready` state
         cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Ready');
         // Validating that endpoint is in proper format and contains proper URL
-        cy.get(dataLabel.endpoint, { timeout: 10 * SEC }).should(
+        cy.get(dataLabel.endpoint, { timeout: 30 * SEC }).should(
           'contain.text',
           `https://${hostname}/sdk`
         );
         // Validating that amount of clusters is not empty and is not 0
-        cy.get(dataLabel.clusters, { timeout: 10 * SEC })
+        cy.get(dataLabel.clusters, { timeout: 30 * SEC })
           .should('not.be.empty')
           .should('not.contain.text', '0');
         // Validating that amount of hosts is not empty and is not 0
-        cy.get(dataLabel.hosts, { timeout: 10 * SEC })
+        cy.get(dataLabel.hosts, { timeout: 30 * SEC })
           .should('not.be.empty')
           .should('not.contain.text', '0');
         // Validating that amount of VMs is not empty and is not 0
-        cy.get(dataLabel.vms, { timeout: 10 * SEC }).should('not.be.empty');
+        cy.get(dataLabel.vms, { timeout: 30 * SEC }).should('not.be.empty');
         // Validating that amount of networks is not empty and is not 0
-        cy.get(dataLabel.networks, { timeout: 10 * SEC })
+        cy.get(dataLabel.networks, { timeout: 30 * SEC })
           .should('not.be.empty')
           .should('not.contain.text', '0');
         // Validating that amount of datastores is not empty and is not 0
-        cy.get(dataLabel.datastores, { timeout: 10 * SEC })
+        cy.get(dataLabel.datastores, { timeout: 30 * SEC })
           .should('not.be.empty')
           .should('not.contain.text', '0');
       });
@@ -153,9 +153,16 @@ export class ProviderVmware extends Provider {
     this.populate(providerData);
   }
 
-  edit(providerData: VmwareProviderData): void {
+  edit(providerData: VmwareProviderData, incorrectProviderData: VmwareProviderData): void {
     const { name, hostname, username, password } = providerData;
     ProviderVmware.openList();
+    this.runWizard(incorrectProviderData);
+    cy.contains(name)
+      .closest(trTag)
+      .within(() => {
+        // Validating that provider is in `Critical` state
+        cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Critical');
+      });
     applyAction(name, editButton);
     this.fillHostname(hostname);
     this.fillUsername(username);

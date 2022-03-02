@@ -11,7 +11,7 @@ import {
   dataLabel,
 } from '../views/providerRhv.view';
 import { providerMenu } from '../views/provider.view';
-import { removeButton, rhv, SEC, button, trTag } from '../types/constants';
+import { removeButton, rhv, SEC, button, trTag, editButton, saveButton } from '../types/constants';
 
 export class providerRhv extends Provider {
   protected runWizard(providerData: RhvProviderData): void {
@@ -64,6 +64,25 @@ export class providerRhv extends Provider {
         // Validating that amount of storageDomains is not empty and is not 0
         cy.get(dataLabel.storageDomains).should('not.be.empty').should('not.contain.text', '0');
       });
+  }
+  //Edit method RHV
+  edit(providerData: RhvProviderData, incorrectProviderData: RhvProviderData): void {
+    const { name, hostname, username, password, cert } = providerData;
+    providerRhv.openList();
+    this.runWizard(incorrectProviderData);
+    cy.contains(name)
+      .closest(trTag)
+      .within(() => {
+        // Validating that provider is in `Critical` state
+        cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Critical');
+      });
+    applyAction(name, editButton);
+    this.fillHostname(hostname);
+    this.fillUsername(username);
+    this.fillPassword(password);
+    this.fillCaCert(cert);
+    clickByText(addButtonModal, saveButton);
+    this.populate(providerData);
   }
 
   create(providerData: RhvProviderData): void {

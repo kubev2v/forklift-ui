@@ -24,7 +24,7 @@ export type esxiHostList = {
 
 export type VmwareProviderData = {
   type: string;
-  name: string;
+  name?: string;
   hostname?: string;
   username?: string;
   password?: string;
@@ -34,7 +34,7 @@ export type VmwareProviderData = {
 
 export type RhvProviderData = {
   type: string;
-  name: string;
+  name?: string;
   hostname?: string;
   username?: string;
   password?: string;
@@ -43,7 +43,7 @@ export type RhvProviderData = {
 
 export type OcpVirtData = {
   type: string;
-  name: string;
+  name?: string;
   url?: string;
   saToken?: string;
   migrationNetwork?: string;

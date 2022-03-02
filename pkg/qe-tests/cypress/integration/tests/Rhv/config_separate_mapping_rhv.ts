@@ -34,6 +34,15 @@ export const providerData: RhvProviderData = {
   password: v2v_rhv_password,
   cert: v2v_rhv_cert,
 };
+// edit rhv provider data
+export const incorrectProviderData: RhvProviderData = {
+  type: providerType.rhv,
+  name: v2v_rhv_providername,
+  hostname: 'rhev-green-03.rdu2.scalelab.redhat.com',
+  username: 'mtv@duplicate',
+  password: 'mtv@123!',
+  cert: v2v_rhv_cert,
+};
 export const networkMappingPeer: MappingPeer[] = [
   {
     sProvider: 'ovirtmgmt',
