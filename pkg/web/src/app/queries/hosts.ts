@@ -9,6 +9,7 @@ import {
   nameAndNamespace,
   mockKubeList,
   sortByName,
+  truncateK8sString,
 } from './helpers';
 import { MOCK_HOSTS, MOCK_HOST_CONFIGS } from './mocks/hosts.mock';
 import { IHost, IHostConfig, INameNamespaceRef, ISecret, IVMwareProvider } from './types';
@@ -65,7 +66,7 @@ export const getExistingHostConfigs = (
   );
 
 const getHostConfigRef = (provider: IVMwareProvider, host: IHost) => ({
-  name: `${provider.name}-${host.id}-config`,
+  name: truncateK8sString(provider.name, `-${host.id}-config`),
   namespace: META.namespace,
 });
 
@@ -84,7 +85,7 @@ const generateSecret = (
   kind: 'Secret',
   metadata: {
     ...(secretBeingReusedRef || {
-      generateName: `${provider.name}-${host.id}-`,
+      generateName: truncateK8sString(provider.name, `-${host.id}-`, true),
       namespace: META.namespace,
     }),
     labels: {

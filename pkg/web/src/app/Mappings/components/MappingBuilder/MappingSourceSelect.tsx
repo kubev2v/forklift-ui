@@ -53,6 +53,7 @@ export const MappingSourceSelect: React.FunctionComponent<IMappingSourceSelectPr
   return (
     <SimpleSelect
       id={id}
+      toggleId={id}
       aria-label="Select source"
       className="mapping-item-select"
       variant="typeahead"

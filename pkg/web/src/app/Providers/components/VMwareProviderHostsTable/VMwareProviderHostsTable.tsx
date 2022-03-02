@@ -16,7 +16,6 @@ import { IHost, IVMwareProvider } from '@app/queries/types';
 import { SelectNetworkModal } from './SelectNetworkModal';
 import { useHostConfigsQuery } from '@app/queries';
 import { findHostConfig, findSelectedNetworkAdapter, formatHostNetworkAdapter } from './helpers';
-import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import { ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { StatusCondition } from '@app/common/components/StatusCondition';
 import '@app/Providers/components/VMwareProviderHostsTable/VMwareProviderHostsTable.css';
@@ -58,19 +57,33 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
                   <Popover
                     hasAutoWidth
                     bodyContent={
-                      <StatusIcon status="Ok" label="Not configured, using default network" />
+                      <div id={`host-status-popover-${host.name}`}>
+                        <StatusIcon status="Ok" label="Not configured, using default network" />
+                      </div>
                     }
                   >
-                    <Button variant="link" isInline>
+                    <Button
+                      variant="link"
+                      isInline
+                      id={`host-status-icon-${host.name}`}
+                      aria-label="Ok"
+                    >
                       <StatusIcon status="Ok" />
                     </Button>
                   </Popover>
                 ) : !hostConfig.status ? (
                   <Tooltip content="Configuring">
-                    <StatusIcon status="Loading" />
+                    <span id={`host-status-icon-${host.name}`} aria-label="Loading">
+                      <StatusIcon status="Loading" />
+                    </span>
                   </Tooltip>
                 ) : (
-                  <StatusCondition status={hostConfig.status} hideLabel />
+                  <StatusCondition
+                    status={hostConfig.status}
+                    hideLabel
+                    buttonId={`host-status-icon-${host.name}`}
+                    popoverBodyId={`host-status-popover-${host.name}`}
+                  />
                 )}
                 <span className={spacing.mlSm}>{formatHostNetworkAdapter(networkAdapter)}</span>
               </>
@@ -122,12 +135,13 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
     <ResolvedQuery result={hostConfigsQuery} errorTitle="Cannot load host configurations">
       <Level>
         <LevelItem>
-          <ConditionalTooltip
-            isTooltipEnabled={commonNetworkAdapters.length === 0}
+          <Tooltip
             content={
               selectedItems.length === 0
                 ? 'Select at least one host'
-                : 'Selected hosts have no networks in common'
+                : commonNetworkAdapters.length === 0
+                ? 'Selected hosts have no network in common'
+                : 'Select a network for transferring migration data from the selected hosts'
             }
           >
             <div>
@@ -139,7 +153,7 @@ export const VMwareProviderHostsTable: React.FunctionComponent<IVMwareProviderHo
                 Select migration network
               </Button>
             </div>
-          </ConditionalTooltip>
+          </Tooltip>
         </LevelItem>
         <LevelItem>
           <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />

@@ -168,3 +168,8 @@ export const areAssociatedProvidersReady = (
     );
   return areProvidersReady;
 };
+
+export const truncateK8sString = (prefix: string, suffix = '', generateName = false) => {
+  const targetPrefixLength = 63 - (generateName ? 5 : 0) - suffix.length;
+  return `${prefix.slice(0, targetPrefixLength)}${suffix}`;
+};
