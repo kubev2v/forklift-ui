@@ -14,10 +14,6 @@ import { providerMenu } from '../views/provider.view';
 import { removeButton, rhv, SEC, button, trTag } from '../types/constants';
 
 export class providerRhv extends Provider {
-  protected runWizard(providerData: RhvProviderData): void {
-    super.runWizard(providerData);
-  }
-
   protected fillName(name: string): void {
     inputText(instanceName, name);
   }
@@ -64,6 +60,17 @@ export class providerRhv extends Provider {
         // Validating that amount of storageDomains is not empty and is not 0
         cy.get(dataLabel.storageDomains).should('not.be.empty').should('not.contain.text', '0');
       });
+  }
+  protected runWizard(providerData: RhvProviderData): void {
+    const { name, hostname, username, password, cert } = providerData;
+    super.runWizard(providerData);
+    this.fillName(name);
+    this.fillHostname(hostname);
+    this.fillUsername(username);
+    this.fillPassword(password);
+    this.fillCaCert(cert);
+    click(addButtonModal);
+    cy.wait(2 * SEC);
   }
 
   create(providerData: RhvProviderData): void {
