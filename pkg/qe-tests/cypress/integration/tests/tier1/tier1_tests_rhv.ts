@@ -81,5 +81,25 @@ describe(
       plan.execute(rhvTier1TestNfsCold.planData);
       plan.getLogs(rhvTier1TestNfsCold.planData);
     });
+
+    after(() => {
+      plan.deleteArchive(rhvTier1TestNfsWarm.planData);
+      plan.delete(rhvTier1TestNfsWarm.planData);
+      plan.delete(rhvTier1TestNfsCold.planData);
+      plan.delete(rhvTier1TestCephWarm.planData);
+      plan.delete(rhvTier1TestCephCold.planData);
+      plan.delete(testData.planData);
+      plan.delete(duplicateTestData.planData);
+      networkMapping.delete(rhvTier1TestNfsWarm.planData.networkMappingData);
+      storageMapping.delete(testData.planData.storageMappingData);
+      storageMapping.delete(rhvTier1TestNfsCold.planData.storageMappingData);
+      storageMapping.delete(rhvTier1TestCephCold.planData.storageMappingData);
+      provider.delete(rhvTier1TestNfsWarm.planData.providerData);
+      const namespace = rhvTier1TestNfsWarm.planData.namespace;
+      const vm_list = rhvTier1TestNfsWarm.planData.vmList;
+      vm_list.forEach((vm) => {
+        cy.exec(`oc delete vm ${vm} -n${namespace}`);
+      });
+    });
   }
 );

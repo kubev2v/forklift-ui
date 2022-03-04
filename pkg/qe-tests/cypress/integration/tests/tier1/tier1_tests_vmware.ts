@@ -1,5 +1,6 @@
 import { ProviderVmware } from '../../models/providerVmware';
 import {
+  rhvTier1TestNfsWarm,
   vmwareTier1Plan_ceph_cold,
   vmwareTier1Plan_nfs_cold,
   vmwareTier1TestCephCold,
@@ -80,6 +81,26 @@ describe(
     it('get logs for successful plan', () => {
       plan.execute(vmwareTier1TestNfsCold.planData);
       plan.getLogs(vmwareTier1TestNfsCold.planData);
+    });
+
+    after(() => {
+      plan.deleteArchive(vmwareTier1TestNfsWarm.planData);
+      plan.delete(vmwareTier1TestNfsCold.planData);
+      plan.delete(vmwareTier1TestCephWarm.planData);
+      plan.delete(vmwareTier1TestCephCold.planData);
+      plan.delete(testData.planData);
+      plan.delete(duplicateTestData.planData);
+      plan.delete(vmwareTier1TestNfsWarm.planData);
+      networkMapping.delete(vmwareTier1TestNfsWarm.planData.networkMappingData);
+      storageMapping.delete(testData.planData.storageMappingData);
+      storageMapping.delete(vmwareTier1TestNfsCold.planData.storageMappingData);
+      storageMapping.delete(vmwareTier1TestCephCold.planData.storageMappingData);
+      provider.delete(vmwareTier1TestNfsWarm.planData.providerData);
+      const namespace = vmwareTier1TestNfsCold.planData.namespace;
+      const vm_list = vmwareTier1TestNfsCold.planData.vmList;
+      vm_list.forEach((vm) => {
+        cy.exec(`oc delete vm ${vm} -n${namespace}`);
+      });
     });
   }
 );
