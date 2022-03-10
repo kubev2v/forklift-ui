@@ -8,7 +8,7 @@ import {
   HookData,
   esxiHostList,
 } from '../../types/types';
-import { providerType, storageType } from '../../types/constants';
+import { incorrectVmwareHostname, providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -53,7 +53,7 @@ export const providerData: VmwareProviderData = {
 export const incorrectProviderData: VmwareProviderData = {
   type: providerType.vmware,
   name: v2v_vmware_providername,
-  hostname: '10.8.58.136',
+  hostname: incorrectVmwareHostname,
   username: 'mtv@duplicate.local',
   password: 'mtv@123!',
   image: v2v_vmware_vddkImage,

@@ -10,9 +10,12 @@ describe('Creating CRUD operation', () => {
   beforeEach(() => {
     login(testData.loginData);
   });
+  it('Create a vmware provider with incorrect credentials', () => {
+    provider.create(incorrectProviderData);
+  });
 
-  it('Create a RHV Provider and Edit the existing provider', () => {
-    provider.edit(providerData, incorrectProviderData);
+  it('Edit the existing provider and validate', () => {
+    provider.edit(providerData);
   });
 
   it('Login to MTV, find and delete provider', () => {

@@ -14,6 +14,7 @@ import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
 import './MappingBuilder.css';
 import { ProviderType } from '@app/common/constants';
 import { getStorageTitle } from '@app/common/helpers';
+import { TruncatedText } from '@app/common/components/TruncatedText';
 
 export interface IMappingBuilderItem {
   source: MappingSource | null;
@@ -83,7 +84,7 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
         <Text component="p">{instructionText}</Text>
       </TextContent>
       {builderItems.map((item, itemIndex) => {
-        const key = item.source ? `${item.source.id}` : `empty-${itemIndex}`;
+        const key = item.source ? item.source.path : 'empty';
         return (
           <Grid key={key}>
             {itemIndex === 0 ? (
@@ -109,11 +110,23 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
             <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
               {isWizardMode && item.source ? (
                 <Bullseye style={{ justifyContent: 'left' }} className={spacing.plSm}>
-                  {item.source.name}
+                  <TextContent>
+                    <TruncatedText>{item.source.name}</TruncatedText>
+                    {item.source.path ? (
+                      <TruncatedText>
+                        <Text
+                          component="small"
+                          style={{ fontSize: 'var(--pf-global--FontSize--xs)' }}
+                        >
+                          {item.source.path}
+                        </Text>
+                      </TruncatedText>
+                    ) : null}
+                  </TextContent>
                 </Bullseye>
               ) : (
                 <MappingSourceSelect
-                  id={`mapping-sources-for-${key}`}
+                  id={`mapping-source-for-${key}`}
                   builderItems={builderItems}
                   itemIndex={itemIndex}
                   setBuilderItems={setBuilderItems}
@@ -130,17 +143,19 @@ export const MappingBuilder: React.FunctionComponent<IMappingBuilderProps> = ({
               </Bullseye>
             </GridItem>
             <GridItem span={5} className={`mapping-builder-box ${spacing.pSm}`}>
-              <MappingTargetSelect
-                id={`mapping-target-for-${key}`}
-                builderItems={builderItems}
-                itemIndex={itemIndex}
-                setBuilderItems={setBuilderItems}
-                availableTargets={availableTargets}
-                mappingType={mappingType}
-                // Maybe use these instead of extraSelectMargin if we can get it to be dynamic to always fit the screen
-                //menuAppendTo="parent"
-                //maxHeight="200px"
-              />
+              <Bullseye style={{ justifyContent: 'left' }} className={spacing.plSm}>
+                <MappingTargetSelect
+                  id={`mapping-target-for-${key}`}
+                  builderItems={builderItems}
+                  itemIndex={itemIndex}
+                  setBuilderItems={setBuilderItems}
+                  availableTargets={availableTargets}
+                  mappingType={mappingType}
+                  // Maybe use these instead of extraSelectMargin if we can get it to be dynamic to always fit the screen
+                  //menuAppendTo="parent"
+                  //maxHeight="200px"
+                />
+              </Bullseye>
             </GridItem>
             {isWizardMode ? null : (
               <GridItem span={1}>

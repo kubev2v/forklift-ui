@@ -10,7 +10,7 @@ export const useSecretQuery = (secretName: string | null): UseQueryResult<ISecre
   const client = useAuthorizedK8sClient();
   return useMockableQuery<ISecret>(
     {
-      queryKey: ['secret', secretName],
+      queryKey: ['secrets', secretName],
       queryFn: async () => (await client.get<ISecret>(secretResource, secretName || '')).data,
       refetchInterval: usePollingContext().refetchInterval,
       enabled: !!secretName,

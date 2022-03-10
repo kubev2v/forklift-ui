@@ -12,7 +12,11 @@ describe('Creating CRUD operation', () => {
   });
 
   it('Create a RHV Provider and Edit existing provider', () => {
-    provider.edit(providerData, incorrectProviderData);
+    provider.create(incorrectProviderData);
+  });
+
+  it('Create a RHV Provider and Edit existing provider', () => {
+    provider.edit(providerData);
   });
 
   it('Login to MTV, find and delete provider', () => {

@@ -61,6 +61,7 @@ export const MustGatherModal: React.FunctionComponent = () => {
       }}
       actions={[
         <Button
+          id="modal-confirm-button"
           key="confirm"
           variant="primary"
           onClick={() => {
@@ -70,6 +71,7 @@ export const MustGatherModal: React.FunctionComponent = () => {
           Get logs
         </Button>,
         <Button
+          id="modal-cancel-button"
           key="cancel"
           variant="link"
           onClick={() => {

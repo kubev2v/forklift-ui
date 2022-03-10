@@ -45,6 +45,9 @@ export const downloadLogsButton = 'Download logs';
 export const selectMigrationNetwork = 'Select migration network';
 export const podNetwork = 'Pod network';
 export const differentNetwork = 'Select a different network';
+export const incorrectVmwareHostname = '10.8.58.136';
+export const incorrectRhvHostname = 'rhev-green-03.rdu2.scalelab.redhat.com';
+
 export enum hooks {
   image = 'Custom container image',
   ansiblePlaybook = 'Ansible Playbook',

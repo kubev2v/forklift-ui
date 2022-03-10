@@ -90,6 +90,7 @@ export const MappingTargetSelect: React.FunctionComponent<IMappingTargetSelectPr
   return (
     <SimpleSelect
       id={id}
+      toggleId={id}
       aria-label="Select target"
       className="mapping-item-select"
       variant="typeahead"

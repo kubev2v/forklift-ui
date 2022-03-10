@@ -515,6 +515,7 @@ export class Plan {
     clickOnCancel();
     this.waitForCanceled(name);
   }
+
   //Method to click on Get Logs and Download logs
   getLogs(planData: PlanData): void {
     const { name } = planData;
@@ -523,6 +524,26 @@ export class Plan {
     clickByText(getlogsConfirmButton, getLogsButton);
     cy.wait(20 * SEC);
     this.run(name, downloadLogsButton);
+    this.validateLogs(planData);
+  }
+
+  // This method calls external python program that will take the downloaded archive and parse it
+  protected validateLogs(planData: PlanData): void {
+    const { name, vmList } = planData;
+    let vms = '';
+    vmList.forEach((current_vm) => {
+      vms = vms + current_vm + ' ';
+    });
+    const command_line =
+      'python logInspector/main.py' +
+      ' -p ' +
+      name +
+      ' -v' +
+      vms +
+      '-f ~/Downloads/must-gather-plan ' +
+      name +
+      '.tar.gz';
+    cy.exec(command_line).its('stdout').should('contain', 'PASSED');
   }
 
   duplicate(originalPlanData: PlanData, duplicatePlanData: PlanData): void {
@@ -564,6 +585,7 @@ export class Plan {
     this.networkMappingStep(duplicatePlanData);
     next();
     this.selectMigrationTypeStep(duplicatePlanData);
+    next();
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);
