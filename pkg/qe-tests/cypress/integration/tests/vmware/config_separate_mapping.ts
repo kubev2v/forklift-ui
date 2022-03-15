@@ -7,6 +7,7 @@ import {
   VmwareProviderData,
   HookData,
   esxiHostList,
+  CutoverData,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
@@ -26,6 +27,8 @@ const target_network = Cypress.env('v2v_vmwareTargetNetwork');
 const hostListArray = Cypress.env('host_list');
 const esxi_username = Cypress.env('v2v_vmwareEsxiUsername');
 const esxi_password = Cypress.env('v2v_vmwareEsxiPassword');
+const scheduled_date = Cypress.env('scheduled_date');
+const scheduled_time = Cypress.env('scheduled_time');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -90,6 +93,11 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
+export const cutoverData: CutoverData = {
+  date: scheduled_date,
+  time: scheduled_time,
+};
+
 export const originalPlanData: PlanData = {
   name: `testplan-${providerData.name}separate-mapping-cold`,
   sProvider: providerData.name,
@@ -105,6 +113,7 @@ export const originalPlanData: PlanData = {
   warmMigration: false,
   preHook: preHookData,
   postHook: postHookData,
+  scheduledCutover: cutoverData,
 };
 
 export const duplicatePlanData: PlanData = {

@@ -6,6 +6,7 @@ import {
   TestData,
   RhvProviderData,
   HookData,
+  CutoverData,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
@@ -19,6 +20,8 @@ const v2v_rhv_clustername = Cypress.env('v2v_rhv_clustername');
 const v2v_rhv_cert = Cypress.env('v2v_rhv_cert');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+const scheduled_date = Cypress.env('scheduled_date');
+const scheduled_time = Cypress.env('scheduled_time');
 
 export const loginData: LoginData = {
   username: user_login,
@@ -72,6 +75,11 @@ export const preHookData: HookData = {
 
 export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
+};
+
+export const cutoverData: CutoverData = {
+  date: scheduled_date,
+  time: scheduled_time,
 };
 
 export const originalPlanData: PlanData = {

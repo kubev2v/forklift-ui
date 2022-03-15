@@ -348,7 +348,8 @@ export class Plan {
       cy.get(`[aria-label="Select row ${i}"]`, { timeout: 30 * SEC })
         .closest(trTag)
         .within(() => {
-          cy.get('[data-label="Status"]', { timeout: 3600 * SEC }).should(
+          //VM's completes the 1 precopy
+          cy.get('[data-label="Status"]', { timeout: 6000 * SEC }).should(
             'contain.text',
             'Idle - Next incremental copy will begin in less than 1 minute'
           );
@@ -440,7 +441,6 @@ export class Plan {
     applyAction(name, restartButton);
     confirm(); //Added Confirm Button
     if (warmMigration) {
-      Plan.openList();
       this.waitForIncrementalCopies(planData);
       this.schedule_cutover(planData);
     }
