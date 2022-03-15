@@ -9,7 +9,6 @@ export const selectProviderType = 'Select a provider type...';
 export const removeButton = 'Remove';
 export const deleteButton = 'Delete';
 export const editButton = 'Edit';
-export const selectProvider = 'Select a provider...';
 // export const tProvider = 'Select a provider...';
 export const selectSource = 'Select source...';
 export const selectTarget = 'Select target...';
