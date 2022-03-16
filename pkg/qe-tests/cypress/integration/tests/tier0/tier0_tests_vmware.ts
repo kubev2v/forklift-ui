@@ -64,7 +64,6 @@ describe('Automate cancel and restart of cold migration test', () => {
     networkMapping.create(testData.planData.networkMappingData);
     storageMapping.create(testData.planData.storageMappingData);
     plan.create(testData.planData);
-    plan.execute(testData.planData);
   });
 
   it('Cancel and restart migration', () => {

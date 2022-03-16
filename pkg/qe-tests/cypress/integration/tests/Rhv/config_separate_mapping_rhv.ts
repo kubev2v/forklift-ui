@@ -57,7 +57,7 @@ export const networkMappingPeer: MappingPeer[] = [
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: 'v2v-fc',
-    dProvider: storageType.cephRbd,
+    dProvider: storageType.nfs,
   },
 ];
 
@@ -81,6 +81,30 @@ export const preHookData: HookData = {
 
 export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
+};
+
+export const editNetworkMapping: MappingData = {
+  name: `network-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'vm',
+      dProvider: 'default /mybridge ',
+    },
+  ],
+};
+
+export const editStorageMapping: MappingData = {
+  name: `storage-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'v2v-iscsi',
+      dProvider: storageType.cephRbd,
+    },
+  ],
 };
 
 export const originalPlanData: PlanData = {
