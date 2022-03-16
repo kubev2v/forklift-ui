@@ -74,6 +74,30 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
+export const editNetworkMapping: MappingData = {
+  name: `network-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'vm',
+      dProvider: 'default /mybridge ',
+    },
+  ],
+};
+
+export const editStorageMapping: MappingData = {
+  name: `storage-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'v2v-iscsi',
+      dProvider: storageType.cephRbd,
+    },
+  ],
+};
+
 export const originalPlanData: PlanData = {
   name: 'testplan-rhv-rhel8-separate-mapping-cold',
   sProvider: providerData.name,
