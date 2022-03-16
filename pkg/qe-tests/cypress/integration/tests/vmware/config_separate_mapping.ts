@@ -64,7 +64,7 @@ export const networkMappingPeer: MappingPeer[] = [
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: sourceProviderStorage,
-    dProvider: storageType.cephRbd,
+    dProvider: storageType.nfs,
   },
 ];
 
