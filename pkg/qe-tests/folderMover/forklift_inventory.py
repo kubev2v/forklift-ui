@@ -11,7 +11,7 @@ class ForkliftInventoryClient:
     def get_lazy(self, link):
         return requests.get(link,
                             headers={"Authorization": f"{self.api_key}"},
-                            verify=Self.verify_certificate_authority).json()
+                            verify=self.verify_certificate_authority).json()
 
     def get(self, link):
         self_link = f"{self.base_url}/{self.get_lazy(link)['selfLink']}"
