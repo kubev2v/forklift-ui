@@ -64,7 +64,7 @@ export const networkMappingPeer: MappingPeer[] = [
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: sourceProviderStorage,
-    dProvider: storageType.cephRbd,
+    dProvider: storageType.nfs,
   },
 ];
 
@@ -88,6 +88,30 @@ export const preHookData: HookData = {
 
 export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
+};
+
+export const editNetworkMapping: MappingData = {
+  name: `network-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'Mgmt Network',
+      dProvider: 'default / ovn-kubernetes1',
+    },
+  ],
+};
+
+export const editStorageMapping: MappingData = {
+  name: `storage-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'v2v_general_porpuse_FC_DC',
+      dProvider: storageType.cephRbd,
+    },
+  ],
 };
 
 export const originalPlanData: PlanData = {
