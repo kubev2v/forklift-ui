@@ -16,6 +16,7 @@ import {
   vmware,
   button,
   tdTag,
+  incorrectVmwareHostname,
 } from '../types/constants';
 import {
   addButtonModal,
@@ -113,30 +114,34 @@ export class ProviderVmware extends Provider {
       .parent(trTag)
       .within(() => {
         // Validating that provider is in `Ready` state
-        cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Ready');
-        // Validating that endpoint is in proper format and contains proper URL
-        cy.get(dataLabel.endpoint, { timeout: 10 * SEC }).should(
-          'contain.text',
-          `https://${hostname}/sdk`
-        );
-        // Validating that amount of clusters is not empty and is not 0
-        cy.get(dataLabel.clusters, { timeout: 10 * SEC })
-          .should('not.be.empty')
-          .should('not.contain.text', '0');
-        // Validating that amount of hosts is not empty and is not 0
-        cy.get(dataLabel.hosts, { timeout: 10 * SEC })
-          .should('not.be.empty')
-          .should('not.contain.text', '0');
-        // Validating that amount of VMs is not empty and is not 0
-        cy.get(dataLabel.vms, { timeout: 10 * SEC }).should('not.be.empty');
-        // Validating that amount of networks is not empty and is not 0
-        cy.get(dataLabel.networks, { timeout: 10 * SEC })
-          .should('not.be.empty')
-          .should('not.contain.text', '0');
-        // Validating that amount of datastores is not empty and is not 0
-        cy.get(dataLabel.datastores, { timeout: 10 * SEC })
-          .should('not.be.empty')
-          .should('not.contain.text', '0');
+        if (hostname == incorrectVmwareHostname) {
+          cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Critical');
+        } else {
+          cy.get(dataLabel.status, { timeout: 600 * SEC }).should('have.text', 'Ready');
+          // Validating that endpoint is in proper format and contains proper URL
+          cy.get(dataLabel.endpoint, { timeout: 30 * SEC }).should(
+            'contain.text',
+            `https://${hostname}/sdk`
+          );
+          // Validating that amount of clusters is not empty and is not 0
+          cy.get(dataLabel.clusters, { timeout: 30 * SEC })
+            .should('not.be.empty')
+            .should('not.contain.text', '0');
+          // Validating that amount of hosts is not empty and is not 0
+          cy.get(dataLabel.hosts, { timeout: 30 * SEC })
+            .should('not.be.empty')
+            .should('not.contain.text', '0');
+          // Validating that amount of VMs is not empty and is not 0
+          cy.get(dataLabel.vms, { timeout: 30 * SEC }).should('not.be.empty');
+          // Validating that amount of networks is not empty and is not 0
+          cy.get(dataLabel.networks, { timeout: 30 * SEC })
+            .should('not.be.empty')
+            .should('not.contain.text', '0');
+          // Validating that amount of datastores is not empty and is not 0
+          cy.get(dataLabel.datastores, { timeout: 30 * SEC })
+            .should('not.be.empty')
+            .should('not.contain.text', '0');
+        }
       });
   }
 
