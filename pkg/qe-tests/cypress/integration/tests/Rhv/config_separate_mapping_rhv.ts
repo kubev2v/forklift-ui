@@ -7,7 +7,7 @@ import {
   RhvProviderData,
   HookData,
 } from '../../types/types';
-import { providerType, storageType } from '../../types/constants';
+import { incorrectRhvHostname, providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -32,6 +32,15 @@ export const providerData: RhvProviderData = {
   hostname: v2v_rhv_hostname,
   username: v2v_rhv_username,
   password: v2v_rhv_password,
+  cert: v2v_rhv_cert,
+};
+// edit rhv provider data
+export const incorrectProviderData: RhvProviderData = {
+  type: providerType.rhv,
+  name: v2v_rhv_providername,
+  hostname: incorrectRhvHostname,
+  username: 'mtv@duplicate',
+  password: 'mtv@123!',
   cert: v2v_rhv_cert,
 };
 export const networkMappingPeer: MappingPeer[] = [
