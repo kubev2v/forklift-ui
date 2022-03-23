@@ -529,9 +529,18 @@ export class Plan {
   protected validateLogs(planData: PlanData): void {
     const { name, vmList } = planData;
     let vms = '';
+    let hook_sufix = '';
     vmList.forEach((current_vm) => {
       vms = vms + current_vm + ' ';
     });
+    if (
+      planData.preHook.ansiblePlaybook ||
+      planData.postHook.ansiblePlaybook ||
+      planData.preHook.image ||
+      planData.postHook.image
+    ) {
+      hook_sufix = ' --hook true';
+    }
     const command_line =
       'python logInspector/main.py' +
       ' -p ' +
@@ -540,7 +549,8 @@ export class Plan {
       vms +
       '-f ~/Downloads/must-gather-plan ' +
       name +
-      '.tar.gz';
+      '.tar.gz' +
+      hook_sufix;
     cy.exec(command_line).its('stdout').should('contain', 'PASSED');
   }
 

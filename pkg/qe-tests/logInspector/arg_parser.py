@@ -13,11 +13,15 @@ def create_parser():
                             dest='filename',
                             nargs='+')
     cli_parser.add_argument('-p', '--plan',
-                            help='',
+                            help='Name of the plan to be inspected',
                             dest='planname',
                             nargs='+')
     cli_parser.add_argument('-v', '--vm',
-                            help='',
+                            help='List of VMs used in the plan or single VM if no plan to be inspected',
                             dest='vmname',
+                            nargs='+')
+    cli_parser.add_argument('--hook',
+                            help='This key should be used if hook usage is expected',
+                            dest='hook',
                             nargs='+')
     return cli_parser

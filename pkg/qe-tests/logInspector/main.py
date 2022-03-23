@@ -13,6 +13,7 @@ def main():
     test_passed = False
     parser = create_parser()
     args = parser.parse_args()
+    hook_enabled = False
     if args.url:
         f_name = download_file(args.url[0])
     elif args.filename:
@@ -25,10 +26,13 @@ def main():
 
     if args.vmname:
         if args.planname:
-            # validate_plan(plan_name=args.planname[0], cont=cont)
+            if args.hook:
+                hook_enabled = True
+                print('<<<---Looking for hook--->>>')
             plan = Plan(args.planname[0], cont)
+            plan.first_init()
             for current_vm in args.vmname:
-                plan.vm_list.append(Vm(current_vm, cont))
+                plan.vm_list.append(Vm(current_vm, cont, hook_enabled))
             assert len(plan.vm_list) == len(args.vmname)
             plan.validate()
             if not plan.error_state:
