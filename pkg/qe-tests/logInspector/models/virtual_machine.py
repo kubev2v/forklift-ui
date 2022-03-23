@@ -4,12 +4,16 @@ from utils import read_yaml
 
 
 class Vm:
-    def __init__(self, name, cont):
+    def __init__(self, name, cont, hook=False):
         self.name = name
         self.id = ""
         self.kind = 'VirtualMachine'
         self.cont = cont
+        self.hook = hook
         self.cr_filename = ""
+        self.hookcr_filename = ""
+        self.hook_yaml = None
+        self.hook_log = ""
         self.vm_yaml = None
         self.error_state = False
         self.error_message = ""
@@ -31,17 +35,29 @@ class Vm:
             exit(-1)
 
         # Getting log file for a VM
-        try:
-            self.log_filename = list(filter(lambda filename: 'current' in filename,
-                                            list(filter(lambda filename: self.id in filename, self.cont))))[0]
-        except IndexError:
+        for line in self.cont:
+            if 'current' in line and self.id in line and not 'hook' in line:
+                self.log_filename = line
+            if self.hook and 'current' in line and self.id in line and 'hook' in line:
+                self.hook_log = line
+        if self.log_filename == "":
             print("Error, archive doesn't contain VM log")
             self.error_state = True
-            # exit(-1)
+
+        if self.hook:
+            try:
+                self.hookcr_filename = list(filter(lambda filename: 'hook' in filename,
+                                                   list(filter(lambda filename: self.id in filename, self.cont))))[0]
+                self.hook_yaml = read_yaml(self.hookcr_filename)
+                pass
+            except IndexError:
+                print("Error, archive doesn't contain HOOK CR")
+                self.error_state = True
 
     def validate(self):
         # Validating that CR has proper 'kind' and VM name is expected
         if self.vm_yaml['kind'] != self.kind or self.vm_yaml['metadata']['name'] != self.name:
+            print("VM's CR validation failed, wrong `kind`")
             self.error_state = True
 
         # Iterating DVs that were found in VM CR and validating them
@@ -53,13 +69,25 @@ class Vm:
         # Validating that VM name was found in respective log and log length is not less than 20 lines
         total_found, length = file_parser(self.log_filename, self.name)
         if total_found < 1 or length < 20:
+            print("Log problem found")
+            print("VM name was found times: %i" % total_found)
+            print("Lines in log found: %i" % length)
             self.error_state = True
 
         print('VM CR filename:', self.cr_filename)
         print('VM log: ', self.log_filename)
+
+        if self.hook:
+            print('Hook CR filename:', self.hookcr_filename)
+            print('Hook log:', self.hook_log)
+            if self.hook_yaml['kind'] != 'Job' or self.hook_yaml['metadata']['labels']['vmID'] != self.id:
+                print('Job CR validation failed!')
+                self.error_state = True
 
         print(
             'VM %s validated' % self.name
             if not self.error_state
             else "VM %s validation failed" % self.name
         )
+
+        print("-" * 30)

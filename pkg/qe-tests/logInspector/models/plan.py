@@ -15,13 +15,13 @@ class Plan:
         self.error_state = False
         self.error_message = ""
         self.cont = cont
-        self.first_init(name)
+        self.first_init()
 
-    def first_init(self, plan_name):
-        print('Plan name', plan_name)
+    def first_init(self):
+        print('Plan name', self.name)
         # Getting CR filename for a plan
         try:
-            self.cr_filename = list(filter(lambda filename: plan_name in filename, self.cont))[0]
+            self.cr_filename = list(filter(lambda filename: self.name in filename, self.cont))[0]
         except IndexError:
             print("Error, archive doesn't contain plan CR")
             exit(-1)
