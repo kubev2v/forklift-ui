@@ -51,7 +51,7 @@ export const PlanDetailsModal: React.FunctionComponent<IPlanDetailsModalProps> =
     allProviders.find((provider) => isSameResource(provider, plan.spec.provider.source)) || null;
 
   const vmsQuery = useSourceVMsQuery(provider);
-  const selectedVMs = vmsQuery.data?.findVMsByIds(plan.spec.vms.map(({ id }) => id)) || [];
+  const selectedVMs = vmsQuery.data?.findVMsByRefs(plan.spec.vms) || [];
 
   const hooksQuery = useHooksQuery();
   const selectedHooks =
