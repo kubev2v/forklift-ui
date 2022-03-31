@@ -22,7 +22,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vm4 = {
-    id: 'vm-2685', // pemcg-discovery01
+    // id: 'vm-2685'
+    name: 'pemcg-discovery01',
   };
 
   const vmStatus1: IVMStatus = {
@@ -113,8 +114,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus4: IVMStatus = {
-    id: vm4.id,
-    name: 'pemcg-discovery01',
+    id: 'vm-2685',
+    name: vm4.name,
     pipeline: [
       {
         name: 'DiskTransfer',
