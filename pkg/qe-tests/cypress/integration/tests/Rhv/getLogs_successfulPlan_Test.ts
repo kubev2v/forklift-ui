@@ -3,7 +3,7 @@ import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 import { providerRhv } from '../../models/providerRhv';
-import { testData } from './config_separate_mapping_rhv';
+import { testrhel8Cold } from './config_separate_mapping_rhv';
 
 describe('Automate get logs Test for Succeeded Plan', () => {
   const source = new providerRhv();
@@ -12,22 +12,22 @@ describe('Automate get logs Test for Succeeded Plan', () => {
   const plan = new Plan();
 
   before(() => {
-    login(testData.loginData);
-    source.create(testData.planData.providerData);
-    networkMapping.create(testData.planData.networkMappingData);
-    storageMapping.create(testData.planData.storageMappingData);
-    plan.create(testData.planData);
-    plan.execute(testData.planData);
+    login(testrhel8Cold.loginData);
+    source.create(testrhel8Cold.planData.providerData);
+    networkMapping.create(testrhel8Cold.planData.networkMappingData);
+    storageMapping.create(testrhel8Cold.planData.storageMappingData);
+    plan.create(testrhel8Cold.planData);
+    plan.execute(testrhel8Cold.planData);
   });
 
   it('get logs for succeeded plan', () => {
-    plan.getLogs(testData.planData);
+    plan.getLogs(testrhel8Cold.planData);
   });
 
   after(() => {
-    plan.delete(testData.planData);
-    networkMapping.delete(testData.planData.networkMappingData);
-    storageMapping.delete(testData.planData.storageMappingData);
-    source.delete(testData.planData.providerData);
+    plan.delete(testrhel8Cold.planData);
+    networkMapping.delete(testrhel8Cold.planData.networkMappingData);
+    storageMapping.delete(testrhel8Cold.planData.storageMappingData);
+    source.delete(testrhel8Cold.planData.providerData);
   });
 });
