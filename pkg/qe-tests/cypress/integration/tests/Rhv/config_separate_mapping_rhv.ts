@@ -19,6 +19,7 @@ const v2v_rhv_clustername = Cypress.env('v2v_rhv_clustername');
 const v2v_rhv_cert = Cypress.env('v2v_rhv_cert');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+const targetNamespace = 'default';
 
 export const loginData: LoginData = {
   username: user_login,
@@ -50,14 +51,14 @@ export const networkMappingPeer: MappingPeer[] = [
   },
   {
     sProvider: 'vm',
-    dProvider: 'default / ovn-kubernetes1',
+    dProvider: 'default / mybridge',
   },
 ];
 
 export const storageMappingPeer: MappingPeer[] = [
   {
     sProvider: 'v2v-fc',
-    dProvider: storageType.nfs,
+    dProvider: storageType.cephRbd,
   },
 ];
 
@@ -90,7 +91,7 @@ export const editNetworkMapping: MappingData = {
   mappingPeer: [
     {
       sProvider: 'vm',
-      dProvider: 'default /mybridge ',
+      dProvider: `${targetNamespace} /mybridge`,
     },
   ],
 };
@@ -107,19 +108,36 @@ export const editStorageMapping: MappingData = {
   ],
 };
 
-export const originalPlanData: PlanData = {
+export const rhel8Cold: PlanData = {
   name: 'testplan-rhv-rhel8-separate-mapping-cold',
   sProvider: providerData.name,
   tProvider: 'host',
-  namespace: 'default',
+  namespace: targetNamespace,
   sourceClusterName: v2v_rhv_clustername,
-  vmList: ['v2v-karishma-rhel8-2disks2nics-vm'],
+  vmList: ['v2v-migration-rhel8-2disks2nics'],
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: providerData,
   networkMappingData: networkMapping,
   storageMappingData: storageMapping,
   warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
+export const rhel8Warm: PlanData = {
+  name: 'testplan-rhv-rhel8-separate-mapping-warm',
+  sProvider: providerData.name,
+  tProvider: 'host',
+  namespace: targetNamespace,
+  sourceClusterName: v2v_rhv_clustername,
+  vmList: ['mtv-rhel8-warm-2disks2nics'],
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: providerData,
+  networkMappingData: networkMapping,
+  storageMappingData: storageMapping,
+  warmMigration: true,
   preHook: preHookData,
   postHook: postHookData,
 };
@@ -146,7 +164,12 @@ export const duplicateTestData: TestData = {
   planData: duplicatePlanData,
 };
 
-export const testData: TestData = {
+export const testrhel8Cold: TestData = {
   loginData: loginData,
-  planData: originalPlanData,
+  planData: rhel8Cold,
+};
+
+export const testrhel8Warm: TestData = {
+  loginData: loginData,
+  planData: rhel8Warm,
 };

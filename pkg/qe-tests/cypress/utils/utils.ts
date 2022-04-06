@@ -13,7 +13,10 @@ import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 import { confirmButton } from '../integration/views/plan.view';
 
 export function inputText(fieldId: string, text: string): void {
-  cy.get(fieldId).last().clear().type(text);
+  cy.get(fieldId, { timeout: 30 * SEC })
+    .last()
+    .clear()
+    .type(text);
 }
 
 // Clicking on button with selection by text (when no other selector can be used)

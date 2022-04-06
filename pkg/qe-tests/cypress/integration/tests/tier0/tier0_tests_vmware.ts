@@ -6,38 +6,43 @@ import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 import { testData } from '../vmware/config_separate_mapping';
 
-describe(
-  'Tier0 tests, creating VMWare provider, network and storage(both ceph and nfs) mappings, ' +
-    'plan (both cold and warm), running plan and deleting at the end',
-  () => {
-    const provider = new ProviderVmware();
-    const networkMapping = new MappingNetwork();
-    const storageMapping = new MappingStorage();
-    const plan = new Plan();
-    vmwareTier0TestArray.forEach((currentTest) => {
+vmwareTier0TestArray.forEach((currentTest) => {
+  describe(
+    'Tier0 tests, creating VMWare provider, network and storage(both ceph and nfs) mappings, ' +
+      'plan (both cold and warm), running plan and deleting at the end',
+    () => {
+      const provider = new ProviderVmware();
+      const networkMapping = new MappingNetwork();
+      const storageMapping = new MappingStorage();
+      const plan = new Plan();
+      // vmwareTier0TestArray.forEach((currentTest) => {
       beforeEach(() => {
         login(currentTest.loginData);
       });
 
       it('Login to MTV and create provider', () => {
+        // login(currentTest.loginData);
         provider.create(currentTest.planData.providerData);
       });
 
       it('Create new network and storage mapping', () => {
+        // login(currentTest.loginData);
         networkMapping.create(currentTest.planData.networkMappingData);
         storageMapping.create(currentTest.planData.storageMappingData);
       });
 
       it('Creating plan with existing network and storage mapping', () => {
+        // login(currentTest.loginData);
         plan.create(currentTest.planData);
       });
 
       it('Running plan created in a previous tests', () => {
+        // login(currentTest.loginData);
         plan.execute(currentTest.planData);
       });
 
       after('Deleting VMs, plan, mappings and provider created in a previous tests', () => {
-        login(currentTest.loginData);
+        // login(currentTest.loginData);
         plan.delete(currentTest.planData);
         networkMapping.delete(currentTest.planData.networkMappingData);
         storageMapping.delete(currentTest.planData.storageMappingData);
@@ -48,9 +53,10 @@ describe(
           cy.exec(`oc delete vm ${vm} -n${namespace}`);
         });
       });
-    });
-  }
-);
+      // });
+    }
+  );
+});
 
 describe('Automate cancel and restart of cold migration test', () => {
   const sourceProvider = new ProviderVmware();

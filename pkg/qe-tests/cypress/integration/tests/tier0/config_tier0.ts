@@ -6,7 +6,7 @@ import {
   RhvProviderData,
   TestData,
   VmwareProviderData,
-  // HookData,
+  HookData,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 
@@ -25,7 +25,11 @@ const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
 const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
+const v2v_vmware_vddkImage = Cypress.env('v2v_vmware_vddkImage');
 const vmListArray = Cypress.env('vm_list');
+const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
+const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+const namespace = 'default';
 
 // Defining data required for login
 export const loginData: LoginData = {
@@ -41,6 +45,7 @@ export const vmwareProvider: VmwareProviderData = {
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
+  image: v2v_vmware_vddkImage,
 };
 
 //Defining vmware network mapping peers for 2 networks
@@ -51,7 +56,7 @@ export const vmwareNetworkMappingPeer_2x_network: MappingPeer[] = [
   },
   {
     sProvider: 'Mgmt Network',
-    dProvider: 'default / ovn-kubernetes1',
+    dProvider: 'default / mybridge',
   },
 ];
 
@@ -95,12 +100,20 @@ export const vmwareStorageMapping_ceph: MappingData = {
   mappingPeer: vmwareStorageMappingPeer_ceph,
 };
 
+export const preHookData: HookData = {
+  ansiblePlaybook: preAnsiblePlaybook,
+};
+
+export const postHookData: HookData = {
+  ansiblePlaybook: postAnsiblePlaybook,
+};
+
 //Defining vmware cold migration plan for NFS file system
 export const vmwareTier0Plan_nfs_cold: PlanData = {
   name: `vmware-tier0-nfs-${vmwareProvider.name}-cold`,
   sProvider: vmwareProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: namespace,
   sourceClusterName: vmwareClusterName,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -109,6 +122,8 @@ export const vmwareTier0Plan_nfs_cold: PlanData = {
   networkMappingData: vmwareNetworkMapping_2x_network,
   storageMappingData: vmwareStorageMapping_nfs,
   warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
 };
 
 //Defining vmware cold migration plan for ceph-rbd file system
@@ -116,7 +131,7 @@ export const vmwareTier0Plan_ceph_cold: PlanData = {
   name: `vmware-tier0-ceph-${vmwareProvider.name}-cold`,
   sProvider: vmwareProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: namespace,
   sourceClusterName: vmwareClusterName,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -125,6 +140,8 @@ export const vmwareTier0Plan_ceph_cold: PlanData = {
   networkMappingData: vmwareNetworkMapping_2x_network,
   storageMappingData: vmwareStorageMapping_ceph,
   warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
 };
 
 //Defining vmware warm migration plan for NFS file system
@@ -132,7 +149,7 @@ export const vmwareTier0Plan_nfs_warm: PlanData = {
   name: `vmware-tier0-nfs-${vmwareProvider.name}-warm`,
   sProvider: vmwareProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: namespace,
   sourceClusterName: vmwareClusterName,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -141,6 +158,8 @@ export const vmwareTier0Plan_nfs_warm: PlanData = {
   networkMappingData: vmwareNetworkMapping_2x_network,
   storageMappingData: vmwareStorageMapping_nfs,
   warmMigration: true,
+  preHook: preHookData,
+  postHook: postHookData,
 };
 
 //Defining vmware warm migration plan for ceph-rbd file system
@@ -148,7 +167,7 @@ export const vmwareTier0Plan_ceph_warm: PlanData = {
   name: `vmware-tier0-ceph-${vmwareProvider.name}-warm`,
   sProvider: vmwareProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: namespace,
   sourceClusterName: vmwareClusterName,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -157,6 +176,8 @@ export const vmwareTier0Plan_ceph_warm: PlanData = {
   networkMappingData: vmwareNetworkMapping_2x_network,
   storageMappingData: vmwareStorageMapping_ceph,
   warmMigration: true,
+  preHook: preHookData,
+  postHook: postHookData,
 };
 
 //Defining test for vmware cold migration with nfs file system
@@ -184,10 +205,10 @@ export const vmwareTier0TestCephWarm: TestData = {
 };
 
 export const vmwareTier0TestArray = [
-  vmwareTier0TestNfsCold,
   vmwareTier0TestCephCold,
-  vmwareTier0TestNfsWarm,
+  vmwareTier0TestNfsCold,
   vmwareTier0TestCephWarm,
+  vmwareTier0TestNfsWarm,
 ];
 
 /**
@@ -219,7 +240,7 @@ export const rhvNetworkMappingPeer_2x_network: MappingPeer[] = [
   },
   {
     sProvider: 'vm',
-    dProvider: 'default / ovn-kubernetes1',
+    dProvider: 'default / mybridge',
   },
 ];
 
