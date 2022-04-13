@@ -12,6 +12,7 @@ describe('Creating plan', () => {
   it('Editing an existing plan', () => {
     plan.create(testrhel8Cold.planData);
     plan.edit(testrhel8Cold.planData, duplicateTestData.planData);
+    plan.execute(duplicateTestData.planData);
   });
 
   it('Deleting plan', () => {
