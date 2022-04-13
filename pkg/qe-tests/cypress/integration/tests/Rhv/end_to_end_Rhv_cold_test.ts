@@ -1,5 +1,5 @@
 import { testrhel8Cold } from './config_separate_mapping_rhv';
-import { login } from '../../../utils/utils';
+import { cleanVms, login } from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { RhvProviderData } from '../../types/types';
 import { MappingNetwork } from '../../models/mappingNetwork';
@@ -32,5 +32,14 @@ describe('Creating provider and deleting', () => {
 
   it('Running plan created in a previous tests', () => {
     plan.execute(testrhel8Cold.planData);
+  });
+
+  after('Deleting plan, mappings and provider created in a previous tests', () => {
+    // login(currentTest.loginData);
+    plan.delete(testrhel8Cold.planData);
+    networkMapping.delete(testrhel8Cold.planData.networkMappingData);
+    storageMapping.delete(testrhel8Cold.planData.storageMappingData);
+    provider.delete(testrhel8Cold.planData.providerData);
+    cleanVms(testrhel8Cold.planData.vmList, testrhel8Cold.planData.namespace);
   });
 });

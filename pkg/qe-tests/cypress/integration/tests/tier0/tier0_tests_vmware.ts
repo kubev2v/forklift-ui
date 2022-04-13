@@ -1,5 +1,5 @@
 import { ProviderVmware } from '../../models/providerVmware';
-import { vmwareTier0TestArray } from './config_tier0';
+import { vmwareTier0TestArray } from './tier0_config_vmware';
 import { login } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
@@ -21,28 +21,23 @@ vmwareTier0TestArray.forEach((currentTest) => {
       });
 
       it('Login to MTV and create provider', () => {
-        // login(currentTest.loginData);
         provider.create(currentTest.planData.providerData);
       });
 
       it('Create new network and storage mapping', () => {
-        // login(currentTest.loginData);
         networkMapping.create(currentTest.planData.networkMappingData);
         storageMapping.create(currentTest.planData.storageMappingData);
       });
 
       it('Creating plan with existing network and storage mapping', () => {
-        // login(currentTest.loginData);
         plan.create(currentTest.planData);
       });
 
       it('Running plan created in a previous tests', () => {
-        // login(currentTest.loginData);
         plan.execute(currentTest.planData);
       });
 
       after('Deleting VMs, plan, mappings and provider created in a previous tests', () => {
-        // login(currentTest.loginData);
         plan.delete(currentTest.planData);
         networkMapping.delete(currentTest.planData.networkMappingData);
         storageMapping.delete(currentTest.planData.storageMappingData);
@@ -53,7 +48,6 @@ vmwareTier0TestArray.forEach((currentTest) => {
           cy.exec(`oc delete vm ${vm} -n${namespace}`);
         });
       });
-      // });
     }
   );
 });

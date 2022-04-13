@@ -183,4 +183,17 @@ export class ProviderVmware extends Provider {
     this.fillESxiPassword(esxiPassword);
     confirm();
   }
+
+  moveCluster(providerData: VmwareProviderData): void {
+    const { hostname } = providerData;
+    let cmd = 'oc delete pod/move-cluster-to-folder';
+    cmd += `; oc run --env FORKLIFT_NAMESPACE=openshift-mtv --env CLUSTER_NAME=MTV --env SERVER=${hostname}  --env USER=xxx --env PASSWORD=xxx --env IGNOR_CERT_CHECK=true --env K8_API_URL="\`oc status  |grep api|awk '{print $6}'\`" --env K8_API_KEY "\`oc whoami --show-token\`" move-cluster-to-folder  --it --image quay.io/mtvqe/moveclustertosubfolder`;
+    cy.exec(cmd).its('stdout').should('contain', 'Operation Completed Successfully');
+  }
+
+  recoverMoveCluster(providerData: VmwareProviderData): void {
+    const { hostname } = providerData;
+    const cmd = `oc run --env TEARDOWN=true --env CLUSTER_NAME --env DATACENTER_NAME --env SERVER=${hostname}  --env USER=xxx --env PASSWORD=xxx --env IGNOR_CERT_CHECK=true`;
+    cy.exec(cmd).its('stdout').should('contain', 'Operation Completed Successfully');
+  }
 }
