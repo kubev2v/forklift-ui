@@ -1,4 +1,4 @@
-import { testData } from './config_separate_mapping_rhv';
+import { testrhel8Cold } from './config_separate_mapping_rhv';
 import { Plan } from '../../models/plan';
 import { login } from '../../../utils/utils';
 
@@ -6,18 +6,18 @@ describe('Creating plan', () => {
   const plan = new Plan();
 
   beforeEach(() => {
-    login(testData.loginData);
+    login(testrhel8Cold.loginData);
   });
 
   it('Creating plan', () => {
-    plan.create(testData.planData);
+    plan.create(testrhel8Cold.planData);
   });
 
   it.skip('Running plan', () => {
-    plan.execute(testData.planData);
+    plan.execute(testrhel8Cold.planData);
   });
 
   it.skip('Deleting plan', () => {
-    plan.delete(testData.planData);
+    plan.delete(testrhel8Cold.planData);
   });
 });

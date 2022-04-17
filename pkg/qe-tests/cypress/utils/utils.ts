@@ -13,12 +13,15 @@ import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 import { confirmButton } from '../integration/views/plan.view';
 
 export function inputText(fieldId: string, text: string): void {
-  cy.get(fieldId).last().clear().type(text);
+  cy.get(fieldId, { timeout: 30 * SEC })
+    .last()
+    .clear()
+    .type(text);
 }
 
 // Clicking on button with selection by text (when no other selector can be used)
 export function clickByText(fieldId: string, buttonText: string): void {
-  cy.contains(fieldId, buttonText).click();
+  cy.contains(fieldId, buttonText, { timeout: 30 * SEC }).click();
 }
 
 // Clicking on object selected by fieldId
@@ -99,4 +102,10 @@ export function next(): void {
 export function clickOnCancel(): void {
   clickByText(button, 'Cancel');
   clickByText(button, 'Yes, cancel');
+}
+
+export function cleanVms(vm_list: string[], namespace: string): void {
+  vm_list.forEach((vm) => {
+    cy.exec(`oc delete vm ${vm} -n${namespace}`);
+  });
 }
