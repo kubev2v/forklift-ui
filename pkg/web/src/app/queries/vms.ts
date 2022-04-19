@@ -4,16 +4,16 @@ import { UseQueryResult } from 'react-query';
 import { useAuthorizedFetch } from './fetchHelpers';
 import { useMockableQuery, getInventoryApiUrl, sortByName } from './helpers';
 import { MOCK_RHV_VMS, MOCK_VMWARE_VMS } from './mocks/vms.mock';
-import { SourceInventoryProvider } from './types';
+import { IdOrNameRef, SourceInventoryProvider } from './types';
 import { SourceVM, IVMwareVM } from './types/vms.types';
 
 type SourceVMsRecord = Record<string, SourceVM | undefined>;
 
 export interface IndexedSourceVMs {
   vms: SourceVM[];
-  vmsById: SourceVMsRecord;
   vmsBySelfLink: SourceVMsRecord;
-  findVMsByIds: (ids: string[]) => SourceVM[];
+  findVMByRef: (ref: IdOrNameRef) => SourceVM | undefined;
+  findVMsByRefs: (refs: IdOrNameRef[]) => SourceVM[];
   findVMsBySelfLinks: (selfLinks: string[]) => SourceVM[];
 }
 
@@ -23,16 +23,26 @@ const findVMsInRecord = (record: SourceVMsRecord, keys: string[]) =>
 export const indexVMs = (vms: SourceVM[]): IndexedSourceVMs => {
   const sortedVMs = sortByName(vms.filter((vm) => !(vm as IVMwareVM).isTemplate));
   const vmsById: SourceVMsRecord = {};
+  const vmsByName: SourceVMsRecord = {};
   const vmsBySelfLink: SourceVMsRecord = {};
   sortedVMs.forEach((vm) => {
     vmsById[vm.id] = vm;
+    vmsByName[vm.name] = vm;
     vmsBySelfLink[vm.selfLink] = vm;
   });
+  const findVMByRef = (ref: IdOrNameRef): SourceVM | undefined => {
+    const record = ref.id ? vmsById : vmsByName;
+    return record[ref.id ? ref.id : ref.name || ''];
+  };
   return {
     vms: sortedVMs,
-    vmsById,
     vmsBySelfLink,
-    findVMsByIds: (ids) => findVMsInRecord(vmsById, ids),
+    findVMByRef,
+    findVMsByRefs: (refs) =>
+      refs.flatMap((ref) => {
+        const vm = findVMByRef(ref);
+        return (vm ? [vm] : []) as SourceVM[];
+      }),
     findVMsBySelfLinks: (selfLinks) => findVMsInRecord(vmsBySelfLink, selfLinks),
   };
 };

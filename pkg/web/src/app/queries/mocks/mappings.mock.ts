@@ -70,7 +70,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       map: [
         {
           source: {
-            id: MOCK_VMWARE_DATASTORES[1].id,
+            name: MOCK_VMWARE_DATASTORES[1].name,
           },
           destination: {
             storageClass: MOCK_STORAGE_CLASSES_BY_PROVIDER['ocpv-1'][1].name,
@@ -174,7 +174,7 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
       map: [
         {
           source: {
-            id: MOCK_VMWARE_NETWORKS[1].id,
+            name: MOCK_VMWARE_NETWORKS[1].name,
           },
           destination: {
             ...nameAndNamespace(MOCK_OPENSHIFT_NETWORKS[1]),
