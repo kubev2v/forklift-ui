@@ -95,7 +95,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
 
   const vmsQuery = useSourceVMsQuery(sourceProvider);
   const getVMName = (vmStatus: IVMStatus) => {
-    const nameFromInventory = vmsQuery.data?.vmsById[vmStatus.id]?.name || null;
+    const nameFromInventory = vmsQuery.data?.findVMByRef(vmStatus)?.name || null;
     return nameFromInventory || vmStatus.name;
   };
 
@@ -112,9 +112,9 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
 
   const vmStatuses: IVMStatus[] = planStarted
     ? plan?.status?.migration?.vms || []
-    : plan?.spec.vms.map(({ id }) => ({
-        id,
-        name: vmsQuery.data?.vmsById[id]?.name || '',
+    : plan?.spec.vms.map((vm) => ({
+        id: vmsQuery.data?.findVMByRef(vm)?.id || '',
+        name: vmsQuery.data?.findVMByRef(vm)?.name || '',
         pipeline: [],
         phase: '',
       })) || [];
@@ -280,7 +280,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
     const isExpanded = isVMExpanded(vmStatus);
     const ratio = getTotalCopiedRatio(vmStatus);
     const isCanceled = isVMCanceled(vmStatus);
-    const vm = vmsQuery.data?.vmsById[vmStatus.id];
+    const vm = vmsQuery.data?.findVMByRef(vmStatus);
     rows.push({
       meta: { vmStatus },
       selected: isItemSelected(vmStatus),
@@ -429,7 +429,7 @@ export const VMMigrationDetails: React.FunctionComponent = () => {
         isOpen={isCancelModalOpen}
         toggleOpen={toggleCancelModal}
         mutateFn={() => {
-          const vmsToCancel = vmsQuery.data?.findVMsByIds(selectedItems.map(({ id }) => id)) || [];
+          const vmsToCancel = vmsQuery.data?.findVMsByRefs(selectedItems) || [];
           cancelVMsMutation.mutate(vmsToCancel);
         }}
         mutateResult={cancelVMsMutation}
