@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { isSameResource } from '@app/queries/helpers';
 import {
-  IdOrNameRef,
   IMetaObjectMeta,
   INetworkMappingItem,
   IOpenShiftProvider,
@@ -21,11 +20,8 @@ import { getBuilderItemsFromMapping } from './MappingBuilder/helpers';
 import { ProviderType } from '@app/common/constants';
 import { getStorageTitle } from '@app/common/helpers';
 
-export const getMappingSourceByRef = (
-  sources: MappingSource[],
-  ref: IdOrNameRef
-): MappingSource | null =>
-  sources.find((source) => (ref.id ? source.id === ref.id : source.name === ref.name)) || null;
+export const getMappingSourceById = (sources: MappingSource[], id: string): MappingSource | null =>
+  sources.find((source) => source.id === id) || null;
 
 export const getMappingTargetByRef = (
   targets: MappingTarget[],

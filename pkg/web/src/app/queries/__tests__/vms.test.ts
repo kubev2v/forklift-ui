@@ -14,6 +14,15 @@ describe('indexVMs', () => {
     ]);
   });
 
+  it('indexes VMs by id', () => {
+    const { vmsById } = indexedVMs;
+    expect(vmsById['vm-1630']?.name).toEqual('fdupont-test-migration');
+    expect(vmsById['vm-2844']?.name).toEqual('fdupont-test');
+    expect(vmsById['vm-1008']?.name).toEqual('fdupont-test-migration-centos');
+    expect(vmsById['vm-2685']?.name).toEqual('pemcg-discovery01');
+    expect(vmsById['vm-431']?.name).toEqual('pemcg-iscsi-target');
+  });
+
   it('indexes VMs by selfLink', () => {
     const { vmsBySelfLink } = indexedVMs;
     expect(vmsBySelfLink['/providers/vsphere/test/vms/vm-1630']?.name).toEqual(
@@ -28,20 +37,7 @@ describe('indexVMs', () => {
   });
 
   it('finds multiple VMs by ids correctly, ignoring invalid ids', () => {
-    const foundVMs = indexedVMs.findVMsByRefs([
-      { id: 'vm-2844' },
-      { id: 'vm-something-invalid' },
-      { id: 'vm-1630' },
-    ]);
-    expect(foundVMs.map((vm) => vm.name)).toEqual(['fdupont-test', 'fdupont-test-migration']);
-  });
-
-  it('finds multiple VMs by names correctly, ignoring invalid names', () => {
-    const foundVMs = indexedVMs.findVMsByRefs([
-      { name: 'fdupont-test' },
-      { name: 'vm-something-invalid' },
-      { name: 'fdupont-test-migration' },
-    ]);
+    const foundVMs = indexedVMs.findVMsByIds(['vm-2844', 'vm-something-invalid', 'vm-1630']);
     expect(foundVMs.map((vm) => vm.name)).toEqual(['fdupont-test', 'fdupont-test-migration']);
   });
 
