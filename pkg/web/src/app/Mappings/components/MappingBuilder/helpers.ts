@@ -15,7 +15,7 @@ import {
   SourceInventoryProvider,
 } from '@app/queries/types';
 import { IMappingBuilderItem } from './MappingBuilder';
-import { getMappingSourceByRef, getMappingTargetByRef } from '../helpers';
+import { getMappingSourceById, getMappingTargetByRef } from '../helpers';
 import { CLUSTER_API_VERSION, META, ProviderType } from '@app/common/constants';
 import { nameAndNamespace } from '@app/queries/helpers';
 import { filterSourcesBySelectedVMs } from '@app/Plans/components/Wizard/helpers';
@@ -31,7 +31,7 @@ export const getBuilderItemsFromMappingItems = (
   items
     ? (items
         .map((item: MappingItem): IMappingBuilderItem | null => {
-          const source = getMappingSourceByRef(allSources, item.source);
+          const source = getMappingSourceById(allSources, item.source.id);
           const target = getMappingTargetByRef(allTargets, item.destination, mappingType);
           if (source) {
             return { source, target };

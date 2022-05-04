@@ -251,8 +251,7 @@ export const PlanWizard: React.FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutationStatus]);
 
-  const selectedVMs =
-    vmsQuery.data?.findVMsByRefs(forms.selectVMs.values.selectedVMIds.map((id) => ({ id }))) || [];
+  const selectedVMs = vmsQuery.data?.findVMsByIds(forms.selectVMs.values.selectedVMIds) || [];
 
   const clusterTreeQuery = useInventoryTreeQuery(
     forms.general.values.sourceProvider,
