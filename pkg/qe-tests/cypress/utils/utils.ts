@@ -109,3 +109,45 @@ export function cleanVms(vm_list: string[], namespace: string): void {
     cy.exec(`oc delete vm ${vm} -n${namespace}`);
   });
 }
+
+export function preservecookies(): void {
+  Cypress.Cookies.defaults({
+    preserve: /SESSION/,
+  });
+}
+
+export function ocApply(yaml, namespace: string): void {
+  cy.exec(`oc project ${namespace}; cat <<EOF | oc apply -f - \n ${yaml} \nEOF`);
+}
+
+export function provisionNetwork(namespace: string): void {
+  cy.exec(`oc project ${namespace}; sh second_network.sh`, { failOnNonZeroExit: false }).then(
+    (output) => {
+      cy.log(output.stdout);
+      console.log(output.stdout);
+    }
+  );
+}
+
+export function unprovisionNetwork(namespace: string): void {
+  cy.exec(`oc project ${namespace}; oc delete net-attach-def mybridge`, {
+    failOnNonZeroExit: false,
+  }).then((output) => {
+    cy.log(output.stdout);
+    console.log(output.stdout);
+  });
+}
+
+export function createNamespace(name: string): void {
+  cy.exec(`oc create namespace ${name}`, { failOnNonZeroExit: false }).then((output) => {
+    cy.log(output.stdout);
+    console.log(output.stdout);
+  });
+}
+
+export function deleteNamespace(name: string): void {
+  cy.exec(`oc delete namespace ${name}`, { failOnNonZeroExit: false }).then((output) => {
+    cy.log(output.stdout);
+    console.log(output.stdout);
+  });
+}

@@ -27,9 +27,10 @@ const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
 const v2v_vmware_vddkImage = Cypress.env('v2v_vmware_vddkImage');
 const vmListArray = Cypress.env('vm_list');
+const warmVmListArray = Cypress.env('warm_vm_list');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
-const namespace = 'default';
+const namespace = 'tier0';
 
 // Defining data required for login
 export const loginData: LoginData = {
@@ -56,7 +57,7 @@ export const vmwareNetworkMappingPeer_2x_network: MappingPeer[] = [
   },
   {
     sProvider: 'Mgmt Network',
-    dProvider: 'default / mybridge',
+    dProvider: `${namespace} / mybridge`,
   },
 ];
 
@@ -151,7 +152,7 @@ export const vmwareTier0Plan_nfs_warm: PlanData = {
   tProvider: 'host',
   namespace: namespace,
   sourceClusterName: vmwareClusterName,
-  vmList: vmListArray,
+  vmList: warmVmListArray,
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: vmwareProvider,
@@ -169,7 +170,7 @@ export const vmwareTier0Plan_ceph_warm: PlanData = {
   tProvider: 'host',
   namespace: namespace,
   sourceClusterName: vmwareClusterName,
-  vmList: vmListArray,
+  vmList: warmVmListArray,
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: vmwareProvider,
@@ -206,7 +207,7 @@ export const vmwareTier0TestCephWarm: TestData = {
 
 export const vmwareTier0TestArray = [
   vmwareTier0TestCephCold,
-  vmwareTier0TestNfsCold,
+  // vmwareTier0TestNfsCold,
   vmwareTier0TestCephWarm,
-  vmwareTier0TestNfsWarm,
+  // vmwareTier0TestNfsWarm,
 ];

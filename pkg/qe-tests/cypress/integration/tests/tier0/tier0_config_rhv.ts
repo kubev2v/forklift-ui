@@ -26,8 +26,10 @@ const v2v_rhv_hostname = Cypress.env('v2v_rhv_hostname');
 const v2v_rhv_clustername = Cypress.env('v2v_rhv_clustername');
 const v2v_rhv_cert = Cypress.env('v2v_rhv_cert');
 const vmListArray = Cypress.env('vm_list');
+const warmVmListArray = Cypress.env('warm_vm_list');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
+const targetNamespace = 'tier0';
 
 // Defining data required for login
 export const loginData: LoginData = {
@@ -54,7 +56,7 @@ export const rhvNetworkMappingPeer_2x_network: MappingPeer[] = [
   },
   {
     sProvider: 'vm',
-    dProvider: 'default / mybridge',
+    dProvider: `${targetNamespace} / mybridge`,
   },
 ];
 
@@ -111,7 +113,7 @@ export const rhvTier0Plan_ceph_cold: PlanData = {
   name: `rhv-tier0-ceph-${rhvProvider.name}`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: targetNamespace,
   sourceClusterName: v2v_rhv_clustername,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -129,7 +131,7 @@ export const rhvTier0Plan_nfs_cold: PlanData = {
   name: `rhv-tier0-nfs-${rhvProvider.name}`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: targetNamespace,
   sourceClusterName: v2v_rhv_clustername,
   vmList: vmListArray,
   useExistingNetworkMapping: true,
@@ -145,9 +147,9 @@ export const rhvTier0Plan_nfs_warm: PlanData = {
   name: `rhv-tier0-nfs-${rhvProvider.name}`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: targetNamespace,
   sourceClusterName: v2v_rhv_clustername,
-  vmList: vmListArray,
+  vmList: warmVmListArray,
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: rhvProvider,
@@ -161,9 +163,9 @@ export const rhvTier0Plan_ceph_warm: PlanData = {
   name: `rhv-tier0-ceph-${rhvProvider.name}`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
-  namespace: 'tier0',
+  namespace: targetNamespace,
   sourceClusterName: v2v_rhv_clustername,
-  vmList: vmListArray,
+  vmList: warmVmListArray,
   useExistingNetworkMapping: true,
   useExistingStorageMapping: true,
   providerData: rhvProvider,
@@ -198,7 +200,7 @@ export const rhvTier0TestNfsWarm: TestData = {
 
 export const rhvTier0TestArray = [
   rhvTier0TestCephCold,
-  rhvTier0TestNfsCold,
+  // rhvTier0TestNfsCold,
   rhvTiesr0TestCephWarm,
-  rhvTier0TestNfsWarm,
+  // rhvTier0TestNfsWarm,
 ];

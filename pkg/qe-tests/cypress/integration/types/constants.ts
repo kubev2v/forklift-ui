@@ -46,6 +46,17 @@ export const podNetwork = 'Pod network';
 export const differentNetwork = 'Select a different network';
 export const incorrectVmwareHostname = '10.8.58.136';
 export const incorrectRhvHostname = 'rhev-green-03.rdu2.scalelab.redhat.com';
+export const secondNetwork =
+  'apiVersion: "k8s.cni.cncf.io/v1"\n' +
+  'kind: NetworkAttachmentDefinition\n' +
+  'metadata:\n' +
+  '  name: mybridge\n' +
+  'spec:\n' +
+  "  config: '{\n" +
+  '  "cniVersion": "0.3.1",\n' +
+  '  "type": "cnv-bridge",\n' +
+  '  "bridge": "mybridge"\n' +
+  "  }'";
 
 export enum hooks {
   image = 'Custom container image',
