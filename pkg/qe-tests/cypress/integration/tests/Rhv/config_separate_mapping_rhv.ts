@@ -53,7 +53,7 @@ export const networkMappingPeer: MappingPeer[] = [
   },
   {
     sProvider: 'vm',
-    dProvider: 'default / mybridge',
+    dProvider: `${targetNamespace} / mybridge`,
   },
 ];
 
