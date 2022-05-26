@@ -1,4 +1,5 @@
 import {
+  CutoverData,
   HookData,
   LoginData,
   MappingData,
@@ -36,6 +37,11 @@ export const loginData: LoginData = {
   username: user_login,
   password: user_password,
   url: url,
+};
+
+export const cutoverTime: CutoverData = {
+  date: '',
+  time: '',
 };
 
 //Defining RHV provider
@@ -156,6 +162,7 @@ export const rhvTier0Plan_nfs_warm: PlanData = {
   networkMappingData: rhvNetworkMapping_2x_network,
   storageMappingData: rhvStorageMapping_nfs,
   warmMigration: true,
+  scheduledCutover: cutoverTime,
 };
 
 //Defining RHV warm migration plan for ceph-rbd file system
@@ -172,6 +179,7 @@ export const rhvTier0Plan_ceph_warm: PlanData = {
   networkMappingData: rhvNetworkMapping_2x_network,
   storageMappingData: rhvStorageMapping_ceph,
   warmMigration: true,
+  scheduledCutover: cutoverTime,
 };
 
 //Defining test for RHV cold migration with ceph-rbd file system

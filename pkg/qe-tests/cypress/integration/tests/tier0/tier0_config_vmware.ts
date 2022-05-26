@@ -3,10 +3,10 @@ import {
   MappingData,
   MappingPeer,
   PlanData,
-  RhvProviderData,
   TestData,
   VmwareProviderData,
   HookData,
+  CutoverData,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 
@@ -37,6 +37,13 @@ export const loginData: LoginData = {
   username: user_login,
   password: user_password,
   url: url,
+};
+
+export const cutoverTime: CutoverData = {
+  // date: '2022-05-26',
+  // time: '4:30 PM',
+  date: '',
+  time: '',
 };
 
 //Defining VMWare provider
@@ -161,6 +168,7 @@ export const vmwareTier0Plan_nfs_warm: PlanData = {
   warmMigration: true,
   preHook: preHookData,
   postHook: postHookData,
+  scheduledCutover: cutoverTime,
 };
 
 //Defining vmware warm migration plan for ceph-rbd file system
@@ -179,6 +187,7 @@ export const vmwareTier0Plan_ceph_warm: PlanData = {
   warmMigration: true,
   preHook: preHookData,
   postHook: postHookData,
+  scheduledCutover: cutoverTime,
 };
 
 //Defining test for vmware cold migration with nfs file system
@@ -207,7 +216,7 @@ export const vmwareTier0TestCephWarm: TestData = {
 
 export const vmwareTier0TestArray = [
   vmwareTier0TestCephCold,
-  // vmwareTier0TestNfsCold,
+  vmwareTier0TestNfsCold,
   vmwareTier0TestCephWarm,
-  // vmwareTier0TestNfsWarm,
+  vmwareTier0TestNfsWarm,
 ];
