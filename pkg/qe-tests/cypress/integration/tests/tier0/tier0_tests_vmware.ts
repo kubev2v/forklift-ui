@@ -5,8 +5,6 @@ import {
   createNamespace,
   deleteNamespace,
   login,
-  ocApply,
-  preservecookies,
   provisionNetwork,
   unprovisionNetwork,
 } from '../../../utils/utils';
@@ -18,8 +16,8 @@ import { secondNetwork } from '../../types/constants';
 
 vmwareTier0TestArray.forEach((currentTest) => {
   describe(
-    'Tier0 tests, creating VMWare provider, network and storage(both ceph and nfs) mappings, ' +
-      'plan (both cold and warm), running plan and deleting at the end',
+    `Tier0 test, creating VMWare provider, network and storage mappings, ` +
+      `plan (${currentTest.planData.name}), running plan and deleting at the end`,
     () => {
       const provider = new ProviderVmware();
       const networkMapping = new MappingNetwork();

@@ -65,12 +65,15 @@ import {
   network,
   scheduledCutoverButton,
 } from '../views/plan.view';
+import { Simulate } from 'react-dom/test-utils';
+import pause = Simulate.pause;
 
 export class Plan {
   protected static openList(): void {
     openSidebarMenu();
     clickByText(navMenuPoint, migrationPLan);
   }
+
   protected fillName(name: string): void {
     inputText(planNameInput, name);
   }
@@ -127,7 +130,7 @@ export class Plan {
       .within(() => {
         click(button);
       });
-    const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
+    const selector = `[aria-label="Select Folder ${sourceClusterName}"]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
@@ -349,7 +352,7 @@ export class Plan {
         .within(() => {
           cy.get('[data-label="Status"]', { timeout: 3600 * SEC }).should(
             'contain.text',
-            'Idle - Next incremental copy will begin in less than 1 minute'
+            'Idle - Next incremental copy will begin in'
           );
         });
     }
