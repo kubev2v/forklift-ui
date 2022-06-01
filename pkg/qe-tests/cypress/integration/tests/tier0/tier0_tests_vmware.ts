@@ -11,8 +11,6 @@ import {
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
-import { testData } from '../vmware/config_separate_mapping';
-import { secondNetwork } from '../../types/constants';
 
 vmwareTier0TestArray.forEach((currentTest) => {
   describe(

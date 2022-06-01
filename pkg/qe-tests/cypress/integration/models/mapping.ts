@@ -105,7 +105,7 @@ export class Mapping {
 
   protected validateReady(mappingData: MappingData): void {
     const { name } = mappingData;
-    cy.contains(name)
+    cy.contains(name, { timeout: 120 * SEC })
       .parent(trTag)
       .within(() => {
         cy.get(dataLabel.status, { timeout: 600 * SEC }).should('contain.text', 'OK');
