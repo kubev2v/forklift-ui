@@ -130,7 +130,7 @@ export class Plan {
       .within(() => {
         click(button);
       });
-    const selector = `[aria-label="Select Folder ${sourceClusterName}"]`;
+    const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
@@ -149,6 +149,7 @@ export class Plan {
         });
     });
   }
+
   //Method to unselect VMs those are not needed
   protected unSelectVm(vmList: string[]): void {
     const selector = `[aria-label="search button for search input"]`;

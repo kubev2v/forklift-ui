@@ -4,14 +4,13 @@ import {
   createNamespace,
   deleteNamespace,
   login,
-  ocApply,
   provisionNetwork,
+  unprovisionNetwork,
 } from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
-import { secondNetwork } from '../../types/constants';
 
 rhvTier0TestArray.forEach((currentTest) => {
   describe(
@@ -26,14 +25,13 @@ rhvTier0TestArray.forEach((currentTest) => {
       before(() => {
         createNamespace(currentTest.planData.namespace);
         provisionNetwork(currentTest.planData.namespace);
-        // ocApply(secondNetwork, currentTest.planData.namespace);
       });
 
       beforeEach(() => {
         login(currentTest.loginData);
       });
 
-      it('Login to MTV and create provider', () => {
+      it('Create new provider', () => {
         provider.create(currentTest.planData.providerData);
       });
 
@@ -56,6 +54,7 @@ rhvTier0TestArray.forEach((currentTest) => {
         storageMapping.delete(currentTest.planData.storageMappingData);
         provider.delete(currentTest.planData.providerData);
         cleanVms(currentTest.planData.vmList, currentTest.planData.namespace);
+        unprovisionNetwork(currentTest.planData.namespace);
         deleteNamespace(currentTest.planData.namespace);
       });
     }
