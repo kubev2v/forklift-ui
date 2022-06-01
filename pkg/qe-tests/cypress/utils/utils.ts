@@ -13,7 +13,7 @@ import { kebab, kebabDropDownItem } from '../integration/views/provider.view';
 import { confirmButton } from '../integration/views/plan.view';
 
 export function inputText(fieldId: string, text: string): void {
-  cy.get(fieldId, { timeout: 30 * SEC })
+  cy.get(fieldId, { timeout: 120 * SEC })
     .last()
     .clear()
     .type(text);
@@ -21,16 +21,16 @@ export function inputText(fieldId: string, text: string): void {
 
 // Clicking on button with selection by text (when no other selector can be used)
 export function clickByText(fieldId: string, buttonText: string): void {
-  cy.contains(fieldId, buttonText, { timeout: 30 * SEC }).click();
+  cy.contains(fieldId, buttonText, { timeout: 120 * SEC }).click();
 }
 
 // Clicking on object selected by fieldId
 export function click(fieldId: string): void {
-  cy.get(fieldId, { timeout: 30 * SEC }).click();
+  cy.get(fieldId, { timeout: 120 * SEC }).click();
 }
 
 export function login(loginData: LoginData): void {
-  cy.visit(loginData.url);
+  cy.visit(loginData.url, { timeout: 120 * SEC });
   inputText(loginView.userNameInput, loginData.username);
   inputText(loginView.userPasswordInput, loginData.password);
   clickByText(button, loginButton);
@@ -39,7 +39,7 @@ export function login(loginData: LoginData): void {
 
 export function openSidebarMenu(): void {
   // Checking if sidebar is collapsed and opening it if required
-  cy.get(page_sidebar).then(($sidebar) => {
+  cy.get(page_sidebar, { timeout: 120 * SEC }).then(($sidebar) => {
     if ($sidebar.hasClass(sidebar_collapsed)) {
       click(nav_toggle);
     }
@@ -49,7 +49,7 @@ export function openSidebarMenu(): void {
 export function applyAction(itemName: string, action: string): void {
   // itemName is text to be searched on the screen (like plan name, provider name, etc)
   // Action is the name of the action to be applied
-  cy.contains(itemName)
+  cy.contains(itemName, { timeout: 120 * SEC })
     .closest(trTag)
     .within(() => {
       click(kebab);
@@ -64,7 +64,7 @@ export function selectFromDroplist(selector: string, point: string): void {
 
 //function to select checkboxes
 export function selectCheckBox(selector: string): void {
-  cy.get(selector, { timeout: 60 * SEC }).then(($checkbox) => {
+  cy.get(selector, { timeout: 120 * SEC }).then(($checkbox) => {
     if (!$checkbox.prop('checked')) {
       click(selector);
     }
@@ -72,7 +72,7 @@ export function selectCheckBox(selector: string): void {
 }
 
 export function unSelectCheckBox(selector: string): void {
-  cy.get(selector).then(($checkbox) => {
+  cy.get(selector, { timeout: 120 * SEC }).then(($checkbox) => {
     if ($checkbox.prop('checked')) {
       click(selector);
     }
@@ -107,12 +107,6 @@ export function clickOnCancel(): void {
 export function cleanVms(vm_list: string[], namespace: string): void {
   vm_list.forEach((vm) => {
     cy.exec(`oc delete vm ${vm} -n${namespace}`);
-  });
-}
-
-export function preservecookies(): void {
-  Cypress.Cookies.defaults({
-    preserve: /SESSION/,
   });
 }
 

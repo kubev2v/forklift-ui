@@ -108,7 +108,7 @@ export class Plan {
       //To select Openshift Virtualization Migration network in plan wizard
       cy.wait(2 * SEC);
       clickByText(button, differentNetwork);
-      cy.get(network).should('contain.text', ocpMigrationNetwork);
+      cy.get(network, { timeout: 120 * SEC }).should('contain.text', ocpMigrationNetwork);
       selectFromDroplist(network, podNetwork);
       confirm();
     }
@@ -125,7 +125,7 @@ export class Plan {
     } else if (providerData.type == providerType.rhv) {
       cluster = sourceClusterName;
     }
-    cy.contains('label', cluster, { timeout: 60 * SEC })
+    cy.contains('label', cluster, { timeout: 120 * SEC })
       .closest('.pf-c-tree-view__node-container')
       .within(() => {
         click(button);
@@ -141,7 +141,7 @@ export class Plan {
     vmList.forEach((name) => {
       inputText(searchInput, name);
       click(selector);
-      cy.get(tdTag)
+      cy.get(tdTag, { timeout: 120 * SEC })
         .contains(name)
         .closest(trTag)
         .within(() => {
