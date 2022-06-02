@@ -69,20 +69,23 @@ export const vmwareNetworkMappingPeer_2x_network: MappingPeer[] = [
 ];
 
 //Defining vmware storage mapping peer for NFS
-export const vmwareStorageMappingPeer_nfs: MappingPeer[] = [
-  {
-    sProvider: sourceProviderStorage,
-    dProvider: storageType.nfs,
-  },
-];
+export const vmwareStorageMappingPeer_nfs: MappingPeer[] = [];
 
 //Defining vmware storage mapping peer for CEPH
-export const vmwareStorageMappingPeer_ceph: MappingPeer[] = [
-  {
-    sProvider: sourceProviderStorage,
+export const vmwareStorageMappingPeer_ceph: MappingPeer[] = [];
+
+sourceProviderStorage.forEach((currentStorage) => {
+  // Adding all peers defined in external config
+  vmwareStorageMappingPeer_nfs.push({
+    sProvider: currentStorage,
+    dProvider: storageType.nfs,
+  });
+
+  vmwareStorageMappingPeer_ceph.push({
+    sProvider: currentStorage,
     dProvider: storageType.cephRbd,
-  },
-];
+  });
+});
 
 //Defining vmware network mapping using 2 peers
 export const vmwareNetworkMapping_2x_network: MappingData = {
@@ -216,7 +219,7 @@ export const vmwareTier0TestCephWarm: TestData = {
 
 export const vmwareTier0TestArray = [
   vmwareTier0TestCephCold,
-  vmwareTier0TestNfsCold,
+  // vmwareTier0TestNfsCold,
   vmwareTier0TestCephWarm,
-  vmwareTier0TestNfsWarm,
+  // vmwareTier0TestNfsWarm,
 ];
