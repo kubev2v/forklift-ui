@@ -150,6 +150,7 @@ export class Plan {
         });
     });
   }
+
   //Method to unselect VMs those are not needed
   protected unSelectVm(vmList: string[]): void {
     const selector = `[aria-label="search button for search input"]`;
