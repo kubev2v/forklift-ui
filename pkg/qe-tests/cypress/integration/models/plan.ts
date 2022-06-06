@@ -130,7 +130,8 @@ export class Plan {
       .within(() => {
         click(button);
       });
-    const selector = `[aria-label="Select Folder ${sourceClusterName}"]`;
+    //As middle of text there is flaky I'm searching for `Select` and name of the cluster
+    const selector = `[aria-label^=Select][aria-label$=${sourceClusterName}]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
