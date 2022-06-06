@@ -65,8 +65,6 @@ import {
   network,
   scheduledCutoverButton,
 } from '../views/plan.view';
-import { Simulate } from 'react-dom/test-utils';
-import pause = Simulate.pause;
 
 export class Plan {
   protected static openList(): void {
@@ -130,7 +128,8 @@ export class Plan {
       .within(() => {
         click(button);
       });
-    const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
+    //As middle of text there is flaky I'm searching for `Select` and name of the cluster
+    const selector = `[aria-label^=Select][aria-label$=${sourceClusterName}]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
