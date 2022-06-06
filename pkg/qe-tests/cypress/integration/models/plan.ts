@@ -65,8 +65,6 @@ import {
   network,
   scheduledCutoverButton,
 } from '../views/plan.view';
-import { Simulate } from 'react-dom/test-utils';
-import pause = Simulate.pause;
 
 export class Plan {
   protected static openList(): void {
