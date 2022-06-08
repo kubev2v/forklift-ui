@@ -7,7 +7,6 @@ import {
   PlanData,
   RhvProviderData,
   TestData,
-  // HookData,
 } from '../../types/types';
 import { providerType, storageType } from '../../types/constants';
 
@@ -28,7 +27,6 @@ const v2v_rhv_clustername = Cypress.env('v2v_rhv_clustername');
 const sourceProviderStorage = Cypress.env('v2v_rhvStorageSource');
 const v2v_rhv_cert = Cypress.env('v2v_rhv_cert');
 const vmListArray = Cypress.env('vm_list');
-const warmVmListArray = Cypress.env('warm_vm_list');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
 const targetNamespace = 'tier0';
@@ -117,7 +115,7 @@ export const postHookData: HookData = {
 
 //Defining RHV cold migration plan for ceph-rbd file system
 export const rhvTier0Plan_ceph_cold: PlanData = {
-  name: `rhv-tier0-ceph-${rhvProvider.name}`,
+  name: `rhv-tier0-ceph-${rhvProvider.name}-cold`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
   namespace: targetNamespace,
@@ -135,7 +133,7 @@ export const rhvTier0Plan_ceph_cold: PlanData = {
 
 //Defining RHV cold migration plan for NFS file system
 export const rhvTier0Plan_nfs_cold: PlanData = {
-  name: `rhv-tier0-nfs-${rhvProvider.name}`,
+  name: `rhv-tier0-nfs-${rhvProvider.name}-cold`,
   sProvider: rhvProvider.name,
   tProvider: 'host',
   namespace: targetNamespace,
@@ -147,44 +145,6 @@ export const rhvTier0Plan_nfs_cold: PlanData = {
   networkMappingData: rhvNetworkMapping_2x_network,
   storageMappingData: rhvStorageMapping_nfs,
   warmMigration: false,
-  preHook: preHookData,
-  postHook: postHookData,
-};
-
-//Defining RHV warm migration plan for NFS file system
-export const rhvTier0Plan_nfs_warm: PlanData = {
-  name: `rhv-tier0-nfs-${rhvProvider.name}`,
-  sProvider: rhvProvider.name,
-  tProvider: 'host',
-  namespace: targetNamespace,
-  sourceClusterName: v2v_rhv_clustername,
-  vmList: warmVmListArray,
-  useExistingNetworkMapping: true,
-  useExistingStorageMapping: true,
-  providerData: rhvProvider,
-  networkMappingData: rhvNetworkMapping_2x_network,
-  storageMappingData: rhvStorageMapping_nfs,
-  warmMigration: true,
-  scheduledCutover: cutoverTime,
-  preHook: preHookData,
-  postHook: postHookData,
-};
-
-//Defining RHV warm migration plan for ceph-rbd file system
-export const rhvTier0Plan_ceph_warm: PlanData = {
-  name: `rhv-tier0-ceph-${rhvProvider.name}`,
-  sProvider: rhvProvider.name,
-  tProvider: 'host',
-  namespace: targetNamespace,
-  sourceClusterName: v2v_rhv_clustername,
-  vmList: warmVmListArray,
-  useExistingNetworkMapping: true,
-  useExistingStorageMapping: true,
-  providerData: rhvProvider,
-  networkMappingData: rhvNetworkMapping_2x_network,
-  storageMappingData: rhvStorageMapping_ceph,
-  warmMigration: true,
-  scheduledCutover: cutoverTime,
   preHook: preHookData,
   postHook: postHookData,
 };
@@ -201,21 +161,4 @@ export const rhvTier0TestNfsCold: TestData = {
   planData: rhvTier0Plan_nfs_cold,
 };
 
-//Defining test for RHV warm migration with ceph-rbd file system
-export const rhvTiesr0TestCephWarm: TestData = {
-  loginData: loginData,
-  planData: rhvTier0Plan_ceph_warm,
-};
-
-//Defining test for RHV warm migration with nfs file system
-export const rhvTier0TestNfsWarm: TestData = {
-  loginData: loginData,
-  planData: rhvTier0Plan_nfs_warm,
-};
-
-export const rhvTier0TestArray = [
-  rhvTier0TestCephCold,
-  rhvTier0TestNfsCold,
-  rhvTiesr0TestCephWarm,
-  rhvTier0TestNfsWarm,
-];
+export const rhvTier0TestArray = [rhvTier0TestCephCold, rhvTier0TestNfsCold];

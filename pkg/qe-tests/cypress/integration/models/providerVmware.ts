@@ -30,6 +30,7 @@ import {
   networkField,
   SelectMigrationNetworkButton,
   vddkImage,
+  instanceFingerprint,
 } from '../views/providerVmware.view';
 import { providerMenu } from '../views/provider.view';
 import { VmwareProviderData } from '../types/types';
@@ -51,9 +52,8 @@ export class ProviderVmware extends Provider {
     inputText(instancePassword, password);
   }
 
-  //Fill the VDDK Image Field
-  protected fillVddkImage(image: string): void {
-    inputText(vddkImage, image);
+  protected fillFingerprint(cert: string): void {
+    inputText(instanceFingerprint, cert);
   }
 
   //Now we have verify Certificate option in place of fingerprint
@@ -95,14 +95,13 @@ export class ProviderVmware extends Provider {
   }
 
   protected runWizard(providerData: VmwareProviderData): void {
-    const { name, hostname, username, password, image } = providerData;
+    const { name, hostname, username, password, cert } = providerData;
     super.runWizard(providerData);
     this.fillName(name);
     this.fillHostname(hostname);
     this.fillUsername(username);
     this.fillPassword(password);
-    this.fillVddkImage(image);
-    this.verifyCertificate();
+    this.fillFingerprint(cert);
     click(addButtonModal);
     cy.wait(2 * SEC);
   }

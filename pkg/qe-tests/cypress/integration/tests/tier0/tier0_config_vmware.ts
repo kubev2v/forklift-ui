@@ -25,7 +25,7 @@ const v2v_vmware_password = Cypress.env('v2v_vmware_password');
 const v2v_vmware_hostname = Cypress.env('v2v_vmware_hostname');
 const vmwareClusterName = Cypress.env('v2v_vmwareClusterName');
 const sourceProviderStorage = Cypress.env('v2v_vmwareStorageSource');
-const v2v_vmware_vddkImage = Cypress.env('v2v_vmware_vddkImage');
+const v2v_vmware_cert = Cypress.env('v2v_vmware_cert');
 const vmListArray = Cypress.env('vm_list');
 const warmVmListArray = Cypress.env('warm_vm_list');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
@@ -53,7 +53,7 @@ export const vmwareProvider: VmwareProviderData = {
   hostname: v2v_vmware_hostname,
   username: v2v_vmware_username,
   password: v2v_vmware_password,
-  image: v2v_vmware_vddkImage,
+  cert: v2v_vmware_cert,
 };
 
 //Defining vmware network mapping peers for 2 networks

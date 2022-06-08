@@ -115,21 +115,11 @@ export class Plan {
 
   protected filterVm(planData: PlanData): void {
     const { sourceClusterName, providerData } = planData;
-    // TODO: Add validation for MTV version, block below is relevant for MTV 2.3+
-    // This is required to open the tree of clusters in VMWare env starting from MTV 2.3 version
-    let cluster;
+    // This is required because selector depends on source provider type
+    let selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
     if (providerData.type == providerType.vmware) {
-      cluster = 'Datacenter';
-    } else if (providerData.type == providerType.rhv) {
-      cluster = sourceClusterName;
+      selector = `[aria-label="Select Folder ${sourceClusterName}"]`;
     }
-    cy.contains('label', cluster, { timeout: 120 * SEC })
-      .closest('.pf-c-tree-view__node-container')
-      .within(() => {
-        click(button);
-      });
-    //As middle of text there is flaky I'm searching for `Select` and name of the cluster
-    const selector = `[aria-label^=Select][aria-label$=${sourceClusterName}]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
@@ -335,9 +325,12 @@ export class Plan {
     const { warmMigration } = planData;
     if (!warmMigration) {
       click('[for="migration-type-cold"]');
+      cy.log('Cold migration');
     } else {
       click('[for="migration-type-warm"]');
+      cy.log('Warm migration');
     }
+    cy.pause();
     next();
   }
   //wait to complete incremental copy in Warm Migration

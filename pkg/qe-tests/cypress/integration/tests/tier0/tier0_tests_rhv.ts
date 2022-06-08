@@ -14,8 +14,8 @@ import { Plan } from '../../models/plan';
 
 rhvTier0TestArray.forEach((currentTest) => {
   describe(
-    'Tier0 tests, creating RHV provider, network and storage(both ceph and nfs) mappings, ' +
-      'plan (both cold and warm), running plan and deleting at the end',
+    `Tier0 test, creating RHV provider, network and storage mappings, ` +
+      `plan (${currentTest.planData.name}), running plan and deleting at the end`,
     () => {
       const provider = new providerRhv();
       const networkMapping = new MappingNetwork();
@@ -31,7 +31,7 @@ rhvTier0TestArray.forEach((currentTest) => {
         login(currentTest.loginData);
       });
 
-      it('Create new provider', () => {
+      it('Create new RHV provider', () => {
         provider.create(currentTest.planData.providerData);
       });
 

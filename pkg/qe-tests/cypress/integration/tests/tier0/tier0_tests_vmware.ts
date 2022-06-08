@@ -25,7 +25,6 @@ vmwareTier0TestArray.forEach((currentTest) => {
       before(() => {
         createNamespace(currentTest.planData.namespace);
         provisionNetwork(currentTest.planData.namespace);
-        // ocApply(secondNetwork, currentTest.planData.namespace);
       });
 
       beforeEach(() => {
