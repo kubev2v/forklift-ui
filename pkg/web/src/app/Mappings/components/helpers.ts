@@ -124,6 +124,9 @@ export const useEditingMappingPrefillEffect = (
   return { isDonePrefilling };
 };
 
+export const doesSourceExist = (availableSources: MappingSource[], mappingItem: MappingItem) =>
+  !!getMappingSourceByRef(availableSources, mappingItem.source);
+
 export const doesTargetExist = (
   mappingType: MappingType,
   availableTargets: MappingTarget[],
@@ -148,6 +151,6 @@ export const isMappingValid = (
 ): boolean =>
   (mapping.spec.map as MappingItem[]).every(
     (mappingItem) =>
-      availableSources.some((source) => source.id === mappingItem.source.id) &&
+      doesSourceExist(availableSources, mappingItem) &&
       doesTargetExist(mappingType, availableTargets, mappingItem)
   );
