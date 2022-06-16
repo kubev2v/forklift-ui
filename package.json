@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@axe-core/react": "^4.2.1",
+    "@hot-loader/react-dom": "^17.0.2",
     "@testing-library/cypress": "^8.0.2",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
@@ -102,7 +103,6 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@hot-loader/react-dom": "^17.0.1",
     "@konveyor/lib-ui": "^6.0.0",
     "@patternfly/react-core": "^4.181.1",
     "@patternfly/react-icons": "^4.32.1",
