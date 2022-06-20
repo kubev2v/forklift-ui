@@ -1,11 +1,12 @@
 import { rhvTier0TestArray } from './tier0_config_rhv';
 import {
-  cleanVms,
+  cleanUp,
+  // cleanVms,
   createNamespace,
-  deleteNamespace,
+  // deleteNamespace,
   login,
   provisionNetwork,
-  unprovisionNetwork,
+  // unprovisionNetwork,
 } from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
@@ -14,20 +15,20 @@ import { Plan } from '../../models/plan';
 
 rhvTier0TestArray.forEach((currentTest) => {
   describe(
-    'Tier0 tests, creating RHV provider, network and storage(both ceph and nfs) mappings, ' +
-      'plan (both cold and warm), running plan and deleting at the end',
+    `Tier0 test, creating RHV provider, network and storage mappings, ` +
+      `plan (${currentTest.planData.name}), running plan and deleting at the end`,
     () => {
       const provider = new providerRhv();
       const networkMapping = new MappingNetwork();
       const storageMapping = new MappingStorage();
       const plan = new Plan();
 
-      before(() => {
+      before('Creating namespace and provisioning NAD in it', () => {
         createNamespace(currentTest.planData.namespace);
         provisionNetwork(currentTest.planData.namespace);
       });
 
-      beforeEach(() => {
+      beforeEach('Login to MTV', () => {
         login(currentTest.loginData);
       });
 
@@ -49,13 +50,7 @@ rhvTier0TestArray.forEach((currentTest) => {
       });
 
       after('Deleting plan, mappings and provider created in a previous tests', () => {
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        cleanVms(currentTest.planData.vmList, currentTest.planData.namespace);
-        unprovisionNetwork(currentTest.planData.namespace);
-        deleteNamespace(currentTest.planData.namespace);
+        cleanUp(currentTest.planData);
       });
     }
   );
