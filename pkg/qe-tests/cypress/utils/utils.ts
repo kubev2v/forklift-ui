@@ -1,4 +1,4 @@
-import { LoginData } from '../integration/types/types';
+import { LoginData, PlanData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
@@ -79,7 +79,7 @@ export function unSelectCheckBox(selector: string): void {
   });
 }
 
-//function to fiter array using two different config
+//function to filter array using two different config
 export function filterArray(originalArray: string[], duplicateArray: string[]): string[] {
   return originalArray.filter((orig) => !duplicateArray.find((dup) => dup === orig));
 }
@@ -106,8 +106,32 @@ export function clickOnCancel(): void {
 
 export function cleanVms(vm_list: string[], namespace: string): void {
   vm_list.forEach((vm) => {
-    cy.exec(`oc delete vm ${vm} -n${namespace}`);
+    ocDelete(vm, 'vm', namespace);
   });
+}
+
+export function ocDelete(name, type, namespace?): void {
+  let command: string;
+  if (namespace) {
+    command = `oc delete ${type} ${name} -n${namespace}`;
+  } else {
+    command = `oc delete ${type} ${name}`;
+  }
+  cy.exec(command, { failOnNonZeroExit: false }).then((output) => {
+    cy.log(output.stdout);
+    console.log(output.stdout);
+  });
+}
+
+export function cleanUp(plan: PlanData): void {
+  const { name, storageMappingData, networkMappingData, providerData, vmList, namespace } = plan;
+  ocDelete(name, 'plan', 'openshift-mtv');
+  ocDelete(storageMappingData.name, 'storagemap', 'openshift-mtv');
+  ocDelete(networkMappingData.name, 'networkmap', 'openshift-mtv');
+  ocDelete(providerData.name, 'provider', 'openshift-mtv');
+  cleanVms(vmList, namespace);
+  unprovisionNetwork(namespace);
+  deleteNamespace(namespace);
 }
 
 export function ocApply(yaml, namespace: string): void {
@@ -124,12 +148,7 @@ export function provisionNetwork(namespace: string): void {
 }
 
 export function unprovisionNetwork(namespace: string): void {
-  cy.exec(`oc project ${namespace}; oc delete net-attach-def mybridge`, {
-    failOnNonZeroExit: false,
-  }).then((output) => {
-    cy.log(output.stdout);
-    console.log(output.stdout);
-  });
+  ocDelete('mybridge', 'net-attach-def', namespace);
 }
 
 export function createNamespace(name: string): void {
@@ -140,8 +159,5 @@ export function createNamespace(name: string): void {
 }
 
 export function deleteNamespace(name: string): void {
-  cy.exec(`oc delete namespace ${name}`, { failOnNonZeroExit: false }).then((output) => {
-    cy.log(output.stdout);
-    console.log(output.stdout);
-  });
+  ocDelete(name, 'namespace');
 }

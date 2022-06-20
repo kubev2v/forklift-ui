@@ -1,12 +1,13 @@
 import { ProviderVmware } from '../../models/providerVmware';
 import { vmwareTier0TestArray } from './tier0_config_vmware';
 import {
-  cleanVms,
+  cleanUp,
+  // cleanVms,
   createNamespace,
-  deleteNamespace,
+  // deleteNamespace,
   login,
   provisionNetwork,
-  unprovisionNetwork,
+  // unprovisionNetwork,
 } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
@@ -22,17 +23,16 @@ vmwareTier0TestArray.forEach((currentTest) => {
       const storageMapping = new MappingStorage();
       const plan = new Plan();
 
-      before(() => {
+      before('Creating namespace and provisioning NAD in it', () => {
         createNamespace(currentTest.planData.namespace);
         provisionNetwork(currentTest.planData.namespace);
-        // ocApply(secondNetwork, currentTest.planData.namespace);
       });
 
-      beforeEach(() => {
+      beforeEach('Login to MTV', () => {
         login(currentTest.loginData);
       });
 
-      it('Login to MTV and create provider', () => {
+      it('Create provider', () => {
         provider.create(currentTest.planData.providerData);
       });
 
@@ -50,14 +50,7 @@ vmwareTier0TestArray.forEach((currentTest) => {
       });
 
       after('Deleting VMs, plan, mappings and provider created in a previous tests', () => {
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        const namespace = currentTest.planData.namespace;
-        cleanVms(currentTest.planData.vmList, namespace);
-        unprovisionNetwork(namespace);
-        deleteNamespace(namespace);
+        cleanUp(currentTest.planData);
       });
     }
   );

@@ -251,7 +251,6 @@ export class Plan {
 
   protected finalReviewStep(planData: PlanData): void {
     const { name, sProvider, tProvider, namespace } = planData;
-    // const totalVmAmount = vmwareSourceVmList.length;
     this.reviewPlanName(name);
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
@@ -282,7 +281,6 @@ export class Plan {
       .closest(trTag)
       .within(() => {
         cy.get(dataLabel.status).contains(planSuccessMessage, { timeout: 3600 * SEC });
-        // cy.get('.pf-c-progress__description').contains(planSuccessMessage, { timeout: 3600 * SEC });
       });
   }
 
@@ -313,10 +311,10 @@ export class Plan {
       });
   }
   //Method for different Migaration plan step
-  protected waitForState(planStep: string): void {
+  protected waitForState(step: string): void {
     click(arrowDropDown); //click on dropdown arrow to see the plan steps box
     cy.get(dataLabel.step, { timeout: 200 * SEC })
-      .contains(planStep)
+      .contains(step)
       .closest(trTag)
       .within(() => {
         cy.get(dataLabel.elapsedTime, { timeout: 3600 * SEC })
