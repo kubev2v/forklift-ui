@@ -1,7 +1,12 @@
 import { ISourceNetwork, IOpenShiftNetwork } from './networks.types';
 import { ISourceStorage } from './storages.types';
 import { IAnnotatedStorageClass } from './storages.types';
-import { IMetaObjectGenerateName, IMetaObjectMeta, IMetaTypeMeta } from './common.types';
+import {
+  IdOrNameRef,
+  IMetaObjectGenerateName,
+  IMetaObjectMeta,
+  IMetaTypeMeta,
+} from './common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export enum MappingType {
@@ -10,9 +15,7 @@ export enum MappingType {
 }
 
 export interface INetworkMappingItem {
-  source: {
-    id: string;
-  };
+  source: IdOrNameRef;
   destination:
     | {
         name: string;
@@ -23,9 +26,7 @@ export interface INetworkMappingItem {
 }
 
 export interface IStorageMappingItem {
-  source: {
-    id: string;
-  };
+  source: IdOrNameRef;
   destination: {
     storageClass: string;
   };
