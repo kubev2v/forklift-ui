@@ -8,7 +8,7 @@ import { LineArrow } from '@app/common/components/LineArrow';
 import { useResourceQueriesForMapping } from '@app/queries';
 import { TruncatedText } from '@app/common/components/TruncatedText';
 import { ResolvedQueries } from '@app/common/components/ResolvedQuery';
-import { getMappingSourceById, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
+import { getMappingSourceByRef, getMappingSourceTitle, getMappingTargetTitle } from '../helpers';
 import { getMappingItemTargetName, groupMappingItemsByTarget } from './helpers';
 
 import './MappingDetailView.css';
@@ -68,9 +68,9 @@ export const MappingDetailView: React.FunctionComponent<IMappingDetailViewProps>
               <GridItem span={5} className={`mapping-view-box ${spacing.pSm}`}>
                 <ul>
                   {items.map((item, itemIndex) => {
-                    const source = getMappingSourceById(
+                    const source = getMappingSourceByRef(
                       mappingResourceQueries.availableSources,
-                      item.source.id
+                      item.source
                     );
                     const sourceName = source ? source.name : '';
                     return (

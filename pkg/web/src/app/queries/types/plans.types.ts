@@ -1,4 +1,10 @@
-import { ICR, IMetaObjectMeta, INameNamespaceRef, IStatusCondition } from '../types/common.types';
+import {
+  ICR,
+  IdOrNameRef,
+  IMetaObjectMeta,
+  INameNamespaceRef,
+  IStatusCondition,
+} from '../types/common.types';
 import { ISrcDestRefs } from './providers.types';
 
 export interface IProgress {
@@ -55,8 +61,7 @@ export interface IPlanVMHook {
   step: HookStep;
 }
 
-export interface IPlanVM {
-  id: string;
+export interface IPlanVM extends IdOrNameRef {
   hooks?: IPlanVMHook[];
 }
 

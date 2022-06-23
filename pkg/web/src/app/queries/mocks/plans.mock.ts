@@ -1,4 +1,4 @@
-import { IPlan, IPlanVM, IVMStatus } from '../types';
+import { IPlan, IVMStatus } from '../types';
 import { MOCK_INVENTORY_PROVIDERS } from '@app/queries/mocks/providers.mock';
 import { CLUSTER_API_VERSION, META } from '@app/common/constants';
 import { nameAndNamespace } from '../helpers';
@@ -9,20 +9,21 @@ import { MOCK_HOOKS } from './hooks.mock';
 export let MOCK_PLANS: IPlan[];
 
 if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
-  const vm1: IPlanVM = {
+  const vm1 = {
     id: 'vm-1630', // fdupont-test-migration
   };
 
-  const vm2: IPlanVM = {
+  const vm2 = {
     id: 'vm-2844', // fdupont-test
   };
 
-  const vm3: IPlanVM = {
+  const vm3 = {
     id: 'vm-1008', // fdupont-test-migration-centos
   };
 
-  const vm4: IPlanVM = {
-    id: 'vm-2685', // pemcg-discovery01
+  const vm4 = {
+    // id: 'vm-2685'
+    name: 'pemcg-discovery01',
   };
 
   const vmStatus1: IVMStatus = {
@@ -113,8 +114,8 @@ if (process.env.NODE_ENV === 'test' || process.env.DATA_SOURCE === 'mock') {
   };
 
   const vmStatus4: IVMStatus = {
-    id: vm4.id,
-    name: 'pemcg-discovery01',
+    id: 'vm-2685',
+    name: vm4.name,
     pipeline: [
       {
         name: 'DiskTransfer',
