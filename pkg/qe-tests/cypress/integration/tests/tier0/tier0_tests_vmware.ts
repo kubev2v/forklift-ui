@@ -2,16 +2,15 @@ import { ProviderVmware } from '../../models/providerVmware';
 import { vmwareTier0TestArray } from './tier0_config_vmware';
 import {
   cleanUp,
-  // cleanVms,
+  clickByText,
   createNamespace,
-  // deleteNamespace,
   login,
   provisionNetwork,
-  // unprovisionNetwork,
 } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
+import { button, SEC } from '../../types/constants';
 
 vmwareTier0TestArray.forEach((currentTest) => {
   describe(
@@ -24,12 +23,20 @@ vmwareTier0TestArray.forEach((currentTest) => {
       const plan = new Plan();
 
       before('Creating namespace and provisioning NAD in it', () => {
+        // Clearing all cookies in local storage if any
+        cy.clearLocalStorageSnapshot();
+        login(currentTest.loginData);
+        // Saving local storage state after login
+        cy.saveLocalStorage();
         createNamespace(currentTest.planData.namespace);
         provisionNetwork(currentTest.planData.namespace);
       });
 
       beforeEach('Login to MTV', () => {
-        login(currentTest.loginData);
+        // Restoring local storage and opening base MTV URL
+        cy.restoreLocalStorage();
+        cy.visit(currentTest.loginData.url, { timeout: 120 * SEC });
+        clickByText(button, 'Get started');
       });
 
       it('Create provider', () => {
