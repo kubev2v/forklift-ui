@@ -1,6 +1,6 @@
 import { login } from '../../../utils/utils';
 import { Plan } from '../../models/plan';
-import { testData } from './config_separate_mapping_rhv';
+import { testrhel8Cold } from './config_separate_mapping_rhv';
 import { providerRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
@@ -12,31 +12,31 @@ describe('Automate archive migration plan test', () => {
   const plan = new Plan();
 
   beforeEach(() => {
-    login(testData.loginData);
+    login(testrhel8Cold.loginData);
   });
 
   it('Create a provider, mappings, plan and succeeded plan', () => {
-    source.create(testData.planData.providerData);
-    networkMapping.create(testData.planData.networkMappingData);
-    storageMapping.create(testData.planData.storageMappingData);
-    plan.create(testData.planData);
-    plan.execute(testData.planData);
+    source.create(testrhel8Cold.planData.providerData);
+    networkMapping.create(testrhel8Cold.planData.networkMappingData);
+    storageMapping.create(testrhel8Cold.planData.storageMappingData);
+    plan.create(testrhel8Cold.planData);
+    plan.execute(testrhel8Cold.planData);
   });
 
   it('Archiving plan', () => {
-    plan.archive(testData.planData);
+    plan.archive(testrhel8Cold.planData);
   });
   it('Delete Duplicated Plan', () => {
-    plan.delete(testData.planData);
+    plan.delete(testrhel8Cold.planData);
   });
 
   it('Deleting Archived plan', () => {
-    plan.deleteArchive(testData.planData);
+    plan.deleteArchive(testrhel8Cold.planData);
   });
 
   after(() => {
-    networkMapping.delete(testData.planData.networkMappingData);
-    storageMapping.delete(testData.planData.storageMappingData);
-    source.delete(testData.planData.providerData);
+    networkMapping.delete(testrhel8Cold.planData.networkMappingData);
+    storageMapping.delete(testrhel8Cold.planData.storageMappingData);
+    source.delete(testrhel8Cold.planData.providerData);
   });
 });

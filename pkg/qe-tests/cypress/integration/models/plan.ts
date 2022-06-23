@@ -71,6 +71,7 @@ export class Plan {
     openSidebarMenu();
     clickByText(navMenuPoint, migrationPLan);
   }
+
   protected fillName(name: string): void {
     inputText(planNameInput, name);
   }
@@ -105,7 +106,7 @@ export class Plan {
       //To select Openshift Virtualization Migration network in plan wizard
       cy.wait(2 * SEC);
       clickByText(button, differentNetwork);
-      cy.get(network).should('contain.text', ocpMigrationNetwork);
+      cy.get(network, { timeout: 120 * SEC }).should('contain.text', ocpMigrationNetwork);
       selectFromDroplist(network, podNetwork);
       confirm();
     }
@@ -122,12 +123,13 @@ export class Plan {
     } else if (providerData.type == providerType.rhv) {
       cluster = sourceClusterName;
     }
-    cy.contains('label', cluster, { timeout: 60 * SEC })
+    cy.contains('label', cluster, { timeout: 120 * SEC })
       .closest('.pf-c-tree-view__node-container')
       .within(() => {
         click(button);
       });
-    const selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
+    //As middle of text there is flaky I'm searching for `Select` and name of the cluster
+    const selector = `[aria-label^=Select][aria-label$=${sourceClusterName}]`;
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
@@ -138,7 +140,7 @@ export class Plan {
     vmList.forEach((name) => {
       inputText(searchInput, name);
       click(selector);
-      cy.get(tdTag)
+      cy.get(tdTag, { timeout: 120 * SEC })
         .contains(name)
         .closest(trTag)
         .within(() => {
@@ -146,6 +148,7 @@ export class Plan {
         });
     });
   }
+
   //Method to unselect VMs those are not needed
   protected unSelectVm(vmList: string[]): void {
     const selector = `[aria-label="search button for search input"]`;
@@ -248,7 +251,6 @@ export class Plan {
 
   protected finalReviewStep(planData: PlanData): void {
     const { name, sProvider, tProvider, namespace } = planData;
-    // const totalVmAmount = vmwareSourceVmList.length;
     this.reviewPlanName(name);
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
@@ -278,9 +280,7 @@ export class Plan {
       .contains(name)
       .closest(trTag)
       .within(() => {
-        cy.get(dataLabel.status).contains(planSuccessMessage, {
-          timeout: 3600 * SEC,
-        });
+        cy.get(dataLabel.status).contains(planSuccessMessage, { timeout: 3600 * SEC });
       });
   }
 
@@ -311,10 +311,10 @@ export class Plan {
       });
   }
   //Method for different Migaration plan step
-  protected waitForState(planStep: string): void {
+  protected waitForState(step: string): void {
     click(arrowDropDown); //click on dropdown arrow to see the plan steps box
     cy.get(dataLabel.step, { timeout: 200 * SEC })
-      .contains(planStep)
+      .contains(step)
       .closest(trTag)
       .within(() => {
         cy.get(dataLabel.elapsedTime, { timeout: 3600 * SEC })
@@ -350,7 +350,7 @@ export class Plan {
         .within(() => {
           cy.get('[data-label="Status"]', { timeout: 3600 * SEC }).should(
             'contain.text',
-            'Idle - Next incremental copy will begin in less than 1 minute'
+            'Idle - Next incremental copy will begin in'
           );
         });
     }
@@ -515,6 +515,7 @@ export class Plan {
     clickOnCancel();
     this.waitForCanceled(name);
   }
+
   //Method to click on Get Logs and Download logs
   getLogs(planData: PlanData): void {
     const { name } = planData;
@@ -523,6 +524,36 @@ export class Plan {
     clickByText(getlogsConfirmButton, getLogsButton);
     cy.wait(20 * SEC);
     this.run(name, downloadLogsButton);
+    this.validateLogs(planData);
+  }
+
+  // This method calls external python program that will take the downloaded archive and parse it
+  protected validateLogs(planData: PlanData): void {
+    const { name, vmList } = planData;
+    let vms = '';
+    let hook_sufix = '';
+    vmList.forEach((current_vm) => {
+      vms = vms + current_vm + ' ';
+    });
+    if (
+      planData.preHook.ansiblePlaybook ||
+      planData.postHook.ansiblePlaybook ||
+      planData.preHook.image ||
+      planData.postHook.image
+    ) {
+      hook_sufix = ' --hook true';
+    }
+    const command_line =
+      'python logInspector/main.py' +
+      ' -p ' +
+      name +
+      ' -v' +
+      vms +
+      '-f ~/Downloads/must-gather-plan ' +
+      name +
+      '.tar.gz' +
+      hook_sufix;
+    cy.exec(command_line).its('stdout').should('contain', 'PASSED');
   }
 
   duplicate(originalPlanData: PlanData, duplicatePlanData: PlanData): void {
@@ -564,6 +595,7 @@ export class Plan {
     this.networkMappingStep(duplicatePlanData);
     next();
     this.selectMigrationTypeStep(duplicatePlanData);
+    next();
     this.reviewSourceProvider(sProvider);
     this.reviewTargetProvider(tProvider);
     this.reviewTargetNamespace(namespace);

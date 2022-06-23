@@ -8,7 +8,7 @@ import {
   HookData,
   esxiHostList,
 } from '../../types/types';
-import { providerType, storageType } from '../../types/constants';
+import { incorrectVmwareHostname, providerType, storageType } from '../../types/constants';
 const url = Cypress.env('url');
 const user_login = 'kubeadmin';
 const user_password = Cypress.env('pass');
@@ -49,6 +49,15 @@ export const providerData: VmwareProviderData = {
   image: v2v_vmware_vddkImage,
   esxiHostList: hostList,
 };
+// edit vmware provider data
+export const incorrectProviderData: VmwareProviderData = {
+  type: providerType.vmware,
+  name: v2v_vmware_providername,
+  hostname: incorrectVmwareHostname,
+  username: 'mtv@duplicate.local',
+  password: 'mtv@123!',
+  image: v2v_vmware_vddkImage,
+};
 
 export const networkMappingPeer: MappingPeer[] = [
   {
@@ -88,6 +97,30 @@ export const preHookData: HookData = {
 
 export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
+};
+
+export const editNetworkMapping: MappingData = {
+  name: `network-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'Mgmt Network',
+      dProvider: 'default / ovn-kubernetes1',
+    },
+  ],
+};
+
+export const editStorageMapping: MappingData = {
+  name: `storage-${providerData.name}-mapping`,
+  sProviderName: providerData.name,
+  tProviderName: 'host',
+  mappingPeer: [
+    {
+      sProvider: 'v2v_general_porpuse_FC_DC',
+      dProvider: storageType.cephRbd,
+    },
+  ],
 };
 
 export const originalPlanData: PlanData = {
