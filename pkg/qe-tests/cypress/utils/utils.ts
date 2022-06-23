@@ -34,7 +34,6 @@ export function login(loginData: LoginData): void {
   inputText(loginView.userNameInput, loginData.username);
   inputText(loginView.userPasswordInput, loginData.password);
   clickByText(button, loginButton);
-  clickByText(button, 'Get started');
 }
 
 export function openSidebarMenu(): void {
