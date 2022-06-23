@@ -1,11 +1,16 @@
 import { MappingData, MappingPeer } from '../types/types';
 import * as view from '../views/mapping.view';
-import { applyAction, clickByText, inputText, openSidebarMenu } from '../../utils/utils';
+import {
+  applyAction,
+  clickByText,
+  inputText,
+  openSidebarMenu,
+  selectFromDroplist,
+} from '../../utils/utils';
 import {
   button,
   selectSource,
   selectTarget,
-  selectProvider,
   create,
   mappings,
   createMapping,
@@ -16,20 +21,22 @@ import {
   SEC,
   addButton,
 } from '../types/constants';
-import { buttonNavLink, buttonModal, inputAttr, dataLabel } from '../views/mapping.view';
+import {
+  buttonNavLink,
+  buttonModal,
+  inputAttr,
+  dataLabel,
+  selectSourceProviderMenu,
+  selectTargetProviderMenu,
+} from '../views/mapping.view';
 
 export class Mapping {
-  protected selectProvider(providerName: string): void {
-    clickByText(button, selectProvider);
-    clickByText(button, providerName);
-  }
-
   protected selectSourceProvider(providerName: string): void {
-    this.selectProvider(providerName);
+    selectFromDroplist(selectSourceProviderMenu, providerName);
   }
 
   protected selectTargetProvider(providerName: string): void {
-    this.selectProvider(providerName);
+    selectFromDroplist(selectTargetProviderMenu, providerName);
   }
 
   protected selectInputByAttr(
@@ -98,7 +105,7 @@ export class Mapping {
 
   protected validateReady(mappingData: MappingData): void {
     const { name } = mappingData;
-    cy.contains(name)
+    cy.contains(name, { timeout: 120 * SEC })
       .parent(trTag)
       .within(() => {
         cy.get(dataLabel.status, { timeout: 600 * SEC }).should('contain.text', 'OK');

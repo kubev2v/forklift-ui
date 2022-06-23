@@ -1,25 +1,45 @@
 import { ProviderVmware } from '../../models/providerVmware';
-import { vmwareTier0TestArray } from './config_tier0';
-import { login } from '../../../utils/utils';
+import { vmwareTier0TestArray } from './tier0_config_vmware';
+import {
+  cleanUp,
+  clickByText,
+  createNamespace,
+  login,
+  provisionNetwork,
+} from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
-import { testData } from '../vmware/config_separate_mapping';
+import { button, SEC } from '../../types/constants';
 
-describe(
-  'Tier0 tests, creating VMWare provider, network and storage(both ceph and nfs) mappings, ' +
-    'plan (both cold and warm), running plan and deleting at the end',
-  () => {
-    const provider = new ProviderVmware();
-    const networkMapping = new MappingNetwork();
-    const storageMapping = new MappingStorage();
-    const plan = new Plan();
-    vmwareTier0TestArray.forEach((currentTest) => {
-      beforeEach(() => {
+vmwareTier0TestArray.forEach((currentTest) => {
+  describe(
+    `Tier0 test, creating VMWare provider, network and storage mappings, ` +
+      `plan (${currentTest.planData.name}), running plan and deleting at the end`,
+    () => {
+      const provider = new ProviderVmware();
+      const networkMapping = new MappingNetwork();
+      const storageMapping = new MappingStorage();
+      const plan = new Plan();
+
+      before('Creating namespace and provisioning NAD in it', () => {
+        // Clearing all cookies in local storage if any
+        cy.clearLocalStorageSnapshot();
         login(currentTest.loginData);
+        // Saving local storage state after login
+        cy.saveLocalStorage();
+        createNamespace(currentTest.planData.namespace);
+        provisionNetwork(currentTest.planData.namespace);
       });
 
-      it('Login to MTV and create provider', () => {
+      beforeEach('Login to MTV', () => {
+        // Restoring local storage and opening base MTV URL
+        cy.restoreLocalStorage();
+        cy.visit(currentTest.loginData.url, { timeout: 120 * SEC });
+        clickByText(button, 'Get started');
+      });
+
+      it('Create provider', () => {
         provider.create(currentTest.planData.providerData);
       });
 
@@ -37,49 +57,8 @@ describe(
       });
 
       after('Deleting VMs, plan, mappings and provider created in a previous tests', () => {
-        login(currentTest.loginData);
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        const namespace = currentTest.planData.namespace;
-        const vm_list = currentTest.planData.vmList;
-        vm_list.forEach((vm) => {
-          cy.exec(`oc delete vm ${vm} -n${namespace}`);
-        });
+        cleanUp(currentTest.planData);
       });
-    });
-  }
-);
-
-describe('Automate cancel and restart of cold migration test', () => {
-  const sourceProvider = new ProviderVmware();
-  const networkMapping = new MappingNetwork();
-  const storageMapping = new MappingStorage();
-  const plan = new Plan();
-
-  beforeEach(() => {
-    login(testData.loginData);
-    sourceProvider.create(testData.planData.providerData);
-    networkMapping.create(testData.planData.networkMappingData);
-    storageMapping.create(testData.planData.storageMappingData);
-    plan.create(testData.planData);
-    plan.execute(testData.planData);
-  });
-
-  it('Cancel and restart migration', () => {
-    plan.cancel_and_restart(testData.planData);
-  });
-
-  afterEach(() => {
-    plan.delete(testData.planData);
-    networkMapping.delete(testData.planData.networkMappingData);
-    storageMapping.delete(testData.planData.storageMappingData);
-    sourceProvider.delete(testData.planData.providerData);
-    const namespace = testData.planData.namespace;
-    const vm_list = testData.planData.vmList;
-    vm_list.forEach((vm) => {
-      cy.exec(`oc delete vm ${vm} -n${namespace}`);
-    });
-  });
+    }
+  );
 });

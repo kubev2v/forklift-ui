@@ -1,4 +1,4 @@
-import { testData } from './config_separate_mapping_rhv';
+import { testrhel8Warm } from './config_separate_mapping_rhv';
 import { login } from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { RhvProviderData } from '../../types/types';
@@ -11,10 +11,10 @@ describe('Creating provider and deleting', () => {
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();
-  const providerData: RhvProviderData = testData.planData.providerData;
+  const providerData: RhvProviderData = testrhel8Warm.planData.providerData;
 
   beforeEach(() => {
-    login(testData.loginData);
+    login(testrhel8Warm.loginData);
   });
 
   it('Login to MTV and create provider', () => {
@@ -22,15 +22,15 @@ describe('Creating provider and deleting', () => {
   });
 
   it('Create new network and storage mapping', () => {
-    networkMapping.create(testData.planData.networkMappingData);
-    storageMapping.create(testData.planData.storageMappingData);
+    networkMapping.create(testrhel8Warm.planData.networkMappingData);
+    storageMapping.create(testrhel8Warm.planData.storageMappingData);
   });
 
   it('Creating plan with existing network and storage mapping', () => {
-    plan.create(testData.planData);
+    plan.create(testrhel8Warm.planData);
   });
 
-  it.skip('Running plan created in a previous tests', () => {
-    plan.execute(testData.planData);
+  it('Running plan created in a previous tests', () => {
+    plan.execute(testrhel8Warm.planData);
   });
 });

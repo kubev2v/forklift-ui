@@ -1,25 +1,45 @@
-import { rhvTier0TestArray } from './config_tier0';
-import { login } from '../../../utils/utils';
+import { rhvTier0TestArray } from './tier0_config_rhv';
+import {
+  cleanUp,
+  clickByText,
+  createNamespace,
+  login,
+  provisionNetwork,
+} from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
+import { button, SEC } from '../../types/constants';
 
-describe(
-  'Tier0 tests, creating RHV provider, network and storage(both ceph and nfs) mappings, ' +
-    'plan (both cold and warm), running plan and deleting at the end',
-  () => {
-    const provider = new providerRhv();
-    const networkMapping = new MappingNetwork();
-    const storageMapping = new MappingStorage();
-    const plan = new Plan();
+rhvTier0TestArray.forEach((currentTest) => {
+  describe(
+    `Tier0 test, creating RHV provider, network and storage mappings, ` +
+      `plan (${currentTest.planData.name}), running plan and deleting at the end`,
+    () => {
+      const provider = new providerRhv();
+      const networkMapping = new MappingNetwork();
+      const storageMapping = new MappingStorage();
+      const plan = new Plan();
 
-    rhvTier0TestArray.forEach((currentTest) => {
-      beforeEach(() => {
+      before('Creating namespace and provisioning NAD in it', () => {
+        // Clearing all cookies in local storage if any
+        cy.clearLocalStorageSnapshot();
         login(currentTest.loginData);
+        // Saving local storage state after login
+        cy.saveLocalStorage();
+        createNamespace(currentTest.planData.namespace);
+        provisionNetwork(currentTest.planData.namespace);
       });
 
-      it('Login to MTV and create provider', () => {
+      beforeEach('Login to MTV', () => {
+        // Restoring local storage and opening base MTV URL
+        cy.restoreLocalStorage();
+        cy.visit(currentTest.loginData.url, { timeout: 120 * SEC });
+        clickByText(button, 'Get started');
+      });
+
+      it('Create new provider', () => {
         provider.create(currentTest.planData.providerData);
       });
 
@@ -37,17 +57,8 @@ describe(
       });
 
       after('Deleting plan, mappings and provider created in a previous tests', () => {
-        login(currentTest.loginData);
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        const namespace = currentTest.planData.namespace;
-        const vm_list = currentTest.planData.vmList;
-        vm_list.forEach((vm) => {
-          cy.exec(`oc delete vm ${vm} -n${namespace}`);
-        });
+        cleanUp(currentTest.planData);
       });
-    });
-  }
-);
+    }
+  );
+});
