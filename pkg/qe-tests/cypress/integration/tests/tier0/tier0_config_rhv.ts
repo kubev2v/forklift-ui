@@ -215,7 +215,7 @@ export const rhvTier0TestNfsWarm: TestData = {
 
 export const rhvTier0TestArray = [
   rhvTier0TestCephCold,
-  rhvTier0TestNfsCold,
+  // rhvTier0TestNfsCold,
   rhvTiesr0TestCephWarm,
-  rhvTier0TestNfsWarm,
+  // rhvTier0TestNfsWarm,
 ];
