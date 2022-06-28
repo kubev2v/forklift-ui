@@ -167,6 +167,7 @@ module.exports = (env) => {
         DATA_SOURCE: 'remote',
         BRAND_TYPE: 'Konveyor',
         NODE_ENV: 'production',
+        NO_AUTH: 'false',
       }),
     ],
     resolve: {

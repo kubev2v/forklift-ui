@@ -15,6 +15,9 @@ import { VMMigrationDetails } from '@app/Plans/components/VMMigrationDetails';
 import { LoginHandlerComponent } from './common/LoginHandlerComponent';
 import { RedirectToLogin } from './common/RedirectToLogin';
 import { NotFound } from './NotFound';
+import { IEnvVars } from './common/types';
+
+export const ENV: IEnvVars = window['_env'] || {};
 
 let routeFocusTimer: number;
 
@@ -152,7 +155,7 @@ const RouteWithTitleUpdates = ({
   useDocumentTitle(title);
 
   function routeWithTitle(routeProps: RouteComponentProps) {
-    if (isProtected) {
+    if (isProtected && ENV.NO_AUTH !== 'true') {
       return isLoggedIn ? <Component {...rest} {...routeProps} /> : <RedirectToLogin />;
     } else {
       return <Component {...rest} {...routeProps} />;
@@ -184,7 +187,7 @@ export const AppRoutes = (): React.ReactElement => {
         {flattenedRoutes.map(({ path, exact, component, title, isAsync, isProtected }, idx) => (
           <RouteWithTitleUpdates
             isProtected={isProtected}
-            isLoggedIn={!!currentUser || process.env['DATA_SOURCE'] === 'mock'}
+            isLoggedIn={!!currentUser || ENV.DATA_SOURCE === 'mock'}
             path={path}
             exact={exact}
             component={component}
