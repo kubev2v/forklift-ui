@@ -129,7 +129,10 @@ export class Plan {
         click(button);
       });
     //As middle of text there is flaky I'm searching for `Select` and name of the cluster
-    const selector = `[aria-label^=Select][aria-label$=${sourceClusterName}]`;
+    let selector = `[aria-label="Select Cluster ${sourceClusterName}"]`;
+    if (providerData.type == providerType.vmware) {
+      selector = `[aria-label="Select Folder ${sourceClusterName}"]`;
+    }
     selectCheckBox(selector); //Added selectCheckBox function
     next();
   }
