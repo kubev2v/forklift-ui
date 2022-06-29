@@ -5,6 +5,7 @@ import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
 import { KubeResource } from '@konveyor/lib-ui';
 import { IKubeResponse, IKubeStatus } from '@app/client/types';
+import { ENV } from '@app/common/constants';
 
 interface IFetchContext {
   history: History<LocationState>;
@@ -27,14 +28,14 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
   data?: TData
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
-  const headersObj = {
-    Authorization: `Bearer ${fetchContext.currentUser.access_token}`,
-    ...extraHeaders,
-  };
+
+  if (ENV.NO_AUTH !== 'true') {
+    extraHeaders['Authorization'] = `Bearer ${fetchContext.currentUser.access_token}`;
+  }
 
   try {
     const response = await fetch(url, {
-      headers: headersObj,
+      headers: extraHeaders,
       method,
       ...(data &&
         method !== 'get' && {

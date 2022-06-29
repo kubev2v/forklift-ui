@@ -15,9 +15,7 @@ import { VMMigrationDetails } from '@app/Plans/components/VMMigrationDetails';
 import { LoginHandlerComponent } from './common/LoginHandlerComponent';
 import { RedirectToLogin } from './common/RedirectToLogin';
 import { NotFound } from './NotFound';
-import { IEnvVars } from './common/types';
-
-export const ENV: IEnvVars = window['_env'] || {};
+import { ENV } from '@app/common/constants';
 
 let routeFocusTimer: number;
 

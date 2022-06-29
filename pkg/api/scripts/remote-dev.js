@@ -3,7 +3,7 @@ const execSync = require('child_process').execSync;
 const helpers = require('../src/helpers');
 
 try {
-  if(process.env['NO_AUTH'] === 'true'){
+  if (process.env['NO_AUTH'] === 'true') {
     process.exit(0);
   }
   execSync('hash oc');
