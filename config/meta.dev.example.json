@@ -8,6 +8,7 @@
     "userScope": "user:full",
     "clientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
   },
+  "mustGatherApi": "http://localhost:9200/",
   "namespace": "openshift-migration",
   "configNamespace": "openshift-config"
 }
