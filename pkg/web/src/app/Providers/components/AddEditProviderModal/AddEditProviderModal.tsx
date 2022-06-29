@@ -193,6 +193,12 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
       >)
     : null;
 
+  const usernamePlaceholder = {
+    vsphere: 'Example, administrator@vsphere.local',
+    ovirt: 'Example, admin@internal',
+    openshift: undefined,
+  }[providerType || ''];
+
   const createProviderMutation = useCreateProviderMutation(providerType, onClose);
 
   const patchProviderMutation = usePatchProviderMutation(
@@ -320,9 +326,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.username ? (
                   <ValidatedTextInput
                     inputProps={{
-                      placeholder: isVmWare(providerType)
-                        ? 'Example, administrator@vsphere.local'
-                        : undefined,
+                      placeholder: usernamePlaceholder,
                       onFocus: scrollVerifyButtonIntoView,
                     }}
                     field={fields.username}
