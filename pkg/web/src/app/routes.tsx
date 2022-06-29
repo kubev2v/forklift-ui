@@ -4,7 +4,7 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { useLocalStorageContext, LocalStorageKey } from './common/context/LocalStorageContext';
-import { APP_TITLE } from '@app/common/constants';
+import { APP_TITLE, ENV } from '@app/common/constants';
 import { WelcomePage } from '@app/Welcome/WelcomePage';
 import { ProvidersPage } from '@app/Providers/ProvidersPage';
 import { PlansPage } from '@app/Plans/PlansPage';
@@ -15,7 +15,6 @@ import { VMMigrationDetails } from '@app/Plans/components/VMMigrationDetails';
 import { LoginHandlerComponent } from './common/LoginHandlerComponent';
 import { RedirectToLogin } from './common/RedirectToLogin';
 import { NotFound } from './NotFound';
-import { ENV } from '@app/common/constants';
 
 let routeFocusTimer: number;
 
