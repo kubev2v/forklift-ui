@@ -1,4 +1,4 @@
-import { LoginData } from '../integration/types/types';
+import { LoginData, PlanData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
@@ -108,6 +108,30 @@ export function cleanVms(vm_list: string[], namespace: string): void {
   vm_list.forEach((vm) => {
     cy.exec(`oc delete vm ${vm} -n${namespace}`);
   });
+}
+
+export function ocDelete(name, type, namespace?): void {
+  let command: string;
+  if (namespace) {
+    command = `oc delete ${type} ${name} -n${namespace}`;
+  } else {
+    command = `oc delete ${type} ${name}`;
+  }
+  cy.exec(command, { failOnNonZeroExit: false }).then((output) => {
+    cy.log(output.stdout);
+    console.log(output.stdout);
+  });
+}
+
+export function cleanUp(plan: PlanData): void {
+  const { name, storageMappingData, networkMappingData, providerData, vmList, namespace } = plan;
+  ocDelete(name, 'plan', 'openshift-mtv');
+  ocDelete(storageMappingData.name, 'storagemap', 'openshift-mtv');
+  ocDelete(networkMappingData.name, 'networkmap', 'openshift-mtv');
+  ocDelete(providerData.name, 'provider', 'openshift-mtv');
+  cleanVms(vmList, namespace);
+  unprovisionNetwork(namespace);
+  deleteNamespace(namespace);
 }
 
 export function ocApply(yaml, namespace: string): void {

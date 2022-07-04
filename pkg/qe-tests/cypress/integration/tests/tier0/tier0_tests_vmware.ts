@@ -1,13 +1,6 @@
 import { ProviderVmware } from '../../models/providerVmware';
 import { vmwareTier0TestArray } from './tier0_config_vmware';
-import {
-  cleanVms,
-  createNamespace,
-  deleteNamespace,
-  login,
-  provisionNetwork,
-  unprovisionNetwork,
-} from '../../../utils/utils';
+import { cleanUp, createNamespace, login, provisionNetwork } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
@@ -49,14 +42,7 @@ vmwareTier0TestArray.forEach((currentTest) => {
       });
 
       after('Deleting VMs, plan, mappings and provider created in a previous tests', () => {
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        const namespace = currentTest.planData.namespace;
-        cleanVms(currentTest.planData.vmList, namespace);
-        unprovisionNetwork(namespace);
-        deleteNamespace(namespace);
+        cleanUp(currentTest.planData);
       });
     }
   );

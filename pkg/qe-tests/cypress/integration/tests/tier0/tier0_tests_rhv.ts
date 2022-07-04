@@ -1,12 +1,5 @@
 import { rhvTier0TestArray } from './tier0_config_rhv';
-import {
-  cleanVms,
-  createNamespace,
-  deleteNamespace,
-  login,
-  provisionNetwork,
-  unprovisionNetwork,
-} from '../../../utils/utils';
+import { cleanUp, createNamespace, login, provisionNetwork } from '../../../utils/utils';
 import { providerRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
@@ -49,13 +42,7 @@ rhvTier0TestArray.forEach((currentTest) => {
       });
 
       after('Deleting plan, mappings and provider created in a previous tests', () => {
-        plan.delete(currentTest.planData);
-        networkMapping.delete(currentTest.planData.networkMappingData);
-        storageMapping.delete(currentTest.planData.storageMappingData);
-        provider.delete(currentTest.planData.providerData);
-        cleanVms(currentTest.planData.vmList, currentTest.planData.namespace);
-        unprovisionNetwork(currentTest.planData.namespace);
-        deleteNamespace(currentTest.planData.namespace);
+        cleanUp(currentTest.planData);
       });
     }
   );
