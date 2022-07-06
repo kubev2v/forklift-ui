@@ -29,7 +29,7 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
 
-  if (ENV.NO_AUTH !== 'true') {
+  if (ENV.AUTH_REQUIRED !== 'false') {
     extraHeaders['Authorization'] = `Bearer ${fetchContext.currentUser.access_token}`;
   }
 

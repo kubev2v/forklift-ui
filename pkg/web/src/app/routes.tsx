@@ -152,7 +152,7 @@ const RouteWithTitleUpdates = ({
   useDocumentTitle(title);
 
   function routeWithTitle(routeProps: RouteComponentProps) {
-    if (isProtected && ENV.NO_AUTH !== 'true') {
+    if (isProtected && ENV.AUTH_REQUIRED !== 'false') {
       return isLoggedIn ? <Component {...rest} {...routeProps} /> : <RedirectToLogin />;
     } else {
       return <Component {...rest} {...routeProps} />;
