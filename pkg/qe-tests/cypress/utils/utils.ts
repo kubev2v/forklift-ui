@@ -1,4 +1,4 @@
-import { LoginData, PlanData } from '../integration/types/types';
+import { LoginData, PlanData, ProviderData, VmwareProviderData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
@@ -159,4 +159,30 @@ export function createNamespace(name: string): void {
 
 export function deleteNamespace(name: string): void {
   ocDelete(name, 'namespace');
+}
+
+export function moveVmwareFolder(
+  provider: VmwareProviderData,
+  clusterName,
+  folderName: string
+): void {
+  //Taking data from provider
+  const { hostname, username, password } = provider;
+
+  //Defining command to move cluster to another folder
+  const move_command = `oc run
+  --env CLUSTER_NAME=${clusterName}
+  --env FOLDER_NAME=${folderName}
+  --env SERVER=${hostname}
+  --env USER=${username}
+  --env PASSWORD=${password}
+  move-cluster-to-folder
+  --image quay.io/amastbau/vmware-gateway`;
+  cy.exec(move_command);
+
+  //Waiting for several minutes as command above works slowly
+  cy.wait(300 * SEC);
+
+  //Command to delete POD move-cluster-to-folder
+  ocDelete('move-cluster-to-folder', 'pod');
 }
