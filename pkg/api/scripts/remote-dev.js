@@ -3,6 +3,9 @@ const execSync = require('child_process').execSync;
 const helpers = require('../src/helpers');
 
 try {
+  if (process.env['AUTH_REQUIRED'] === 'false') {
+    process.exit(0);
+  }
   execSync('hash oc');
 } catch (error) {
   console.error(error.stdout.toString());

@@ -4,7 +4,7 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { useLocalStorageContext, LocalStorageKey } from './common/context/LocalStorageContext';
-import { APP_TITLE } from '@app/common/constants';
+import { APP_TITLE, ENV } from '@app/common/constants';
 import { WelcomePage } from '@app/Welcome/WelcomePage';
 import { ProvidersPage } from '@app/Providers/ProvidersPage';
 import { PlansPage } from '@app/Plans/PlansPage';
@@ -152,7 +152,7 @@ const RouteWithTitleUpdates = ({
   useDocumentTitle(title);
 
   function routeWithTitle(routeProps: RouteComponentProps) {
-    if (isProtected) {
+    if (isProtected && ENV.AUTH_REQUIRED !== 'false') {
       return isLoggedIn ? <Component {...rest} {...routeProps} /> : <RedirectToLogin />;
     } else {
       return <Component {...rest} {...routeProps} />;
@@ -184,7 +184,7 @@ export const AppRoutes = (): React.ReactElement => {
         {flattenedRoutes.map(({ path, exact, component, title, isAsync, isProtected }, idx) => (
           <RouteWithTitleUpdates
             isProtected={isProtected}
-            isLoggedIn={!!currentUser || process.env['DATA_SOURCE'] === 'mock'}
+            isLoggedIn={!!currentUser || ENV.DATA_SOURCE === 'mock'}
             path={path}
             exact={exact}
             component={component}

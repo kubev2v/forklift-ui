@@ -34,6 +34,7 @@ const getAppTitle = () =>
   process.env['BRAND_TYPE'] === 'RedHat' ? 'Migration Toolkit for Virtualization' : 'Forklift';
 
 const FORKLIFT_ENV = [
+  'AUTH_REQUIRED',
   'NODE_ENV',
   'DATA_SOURCE',
   'BRAND_TYPE',

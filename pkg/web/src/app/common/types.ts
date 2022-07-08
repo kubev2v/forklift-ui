@@ -17,6 +17,7 @@ export interface IMetaVars {
 }
 
 export interface IEnvVars {
+  AUTH_REQUIRED: string;
   NODE_ENV: string;
   DATA_SOURCE: string;
   BRAND_TYPE: BrandType;
