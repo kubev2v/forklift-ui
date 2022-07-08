@@ -480,7 +480,7 @@ export class Plan {
     clickOnCancel();
     this.waitForCanceled(name);
     this.restart(planData);
-    cy.wait(10000);
+    cy.wait(10 * SEC);
     openSidebarMenu();
     clickByText(navMenuPoint, migrationPLan);
     this.waitForSuccess(name);
