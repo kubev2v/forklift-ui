@@ -103,6 +103,12 @@ export function clickOnCancel(): void {
   clickByText(button, 'Yes, cancel');
 }
 
+export function cancel(): void {
+  cy.wait(SEC);
+  click('#modal-cancel-button');
+  click('#modal-cancel-button');
+}
+
 export function cleanVms(vm_list: string[], namespace: string): void {
   vm_list.forEach((vm) => {
     ocDelete(vm, 'vm', namespace);
@@ -185,4 +191,8 @@ export function moveVmwareFolder(
 
   //Command to delete POD move-cluster-to-folder
   ocDelete('move-cluster-to-folder', 'pod');
+}
+
+export function expectError(selector, message: string): void {
+  cy.get(selector, { timeout: 120 * SEC }).should('have.text', message);
 }

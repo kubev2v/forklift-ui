@@ -78,7 +78,7 @@ export class ProviderocpV extends Provider {
 
   create(providerData: OcpVirtData): void {
     const { migrationNetwork } = providerData;
-    this.openMenu();
+    ProviderocpV.openMenu();
     this.runWizard(providerData);
     this.populate(providerData);
     if (migrationNetwork) {

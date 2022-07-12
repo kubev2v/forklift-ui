@@ -6,6 +6,8 @@ import {
   inputText,
   selectCheckBox,
   selectFromDroplist,
+  expectError,
+  cancel,
 } from '../../utils/utils';
 import {
   editButton,
@@ -56,7 +58,7 @@ export class ProviderVmware extends Provider {
     inputText(vddkImage, image);
   }
 
-  //Now we have verify Certificate option in place of fingerprint
+  //Now we have to verify Certificate option in place of fingerprint
   protected verifyCertificate(): void {
     click(verifyCertificateButton);
     selectCheckBox(certificateCheck);
@@ -153,7 +155,7 @@ export class ProviderVmware extends Provider {
   }
 
   create(providerData: VmwareProviderData): void {
-    super.openMenu();
+    Provider.openMenu();
     this.runWizard(providerData);
     this.populate(providerData);
   }
@@ -168,6 +170,16 @@ export class ProviderVmware extends Provider {
     this.verifyCertificate();
     clickByText(addButtonModal, saveButton);
     this.populate(providerData);
+  }
+
+  createDuplicate(providerData: VmwareProviderData): void {
+    const { name } = providerData;
+    ProviderVmware.openList();
+    super.runWizard(providerData);
+    this.fillName(name);
+    click(instanceHostname);
+    expectError('#name-helper', 'A provider with this name already exists');
+    cancel();
   }
 
   //Method to Select for Vmware non-default Migration Network

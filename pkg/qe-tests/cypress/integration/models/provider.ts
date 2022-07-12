@@ -1,4 +1,4 @@
-import { addProvider, button, selectProviderType } from '../types/constants';
+import { addProvider, button, SEC, selectProviderType } from '../types/constants';
 import { clickByText, openSidebarMenu } from '../../utils/utils';
 import { navMenuPoint } from '../views/menu.view';
 import { ProviderData } from '../types/types';
@@ -10,14 +10,15 @@ export class Provider {
     clickByText(navMenuPoint, 'Providers');
   }
 
-  protected openMenu(): void {
+  protected static openMenu(): void {
     //TODO: replace hardcoded timeout by expecting button to become clickable
-    cy.wait(2000);
+    // cy.wait(2000);
     Provider.openList();
   }
 
   protected runWizard(providerData: ProviderData): void {
     const { type } = providerData;
+    cy.wait(SEC);
     clickByText(button, addProvider);
     clickByText(button, selectProviderType);
     clickByText(selectProvider, type);
