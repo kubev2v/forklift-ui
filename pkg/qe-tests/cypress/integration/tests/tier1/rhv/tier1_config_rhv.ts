@@ -8,8 +8,8 @@ import {
   RhvProviderData,
   TestData,
   // HookData,
-} from '../../types/types';
-import { providerType, storageType } from '../../types/constants';
+} from '../../../types/types';
+import { providerType, storageType } from '../../../types/constants';
 
 //Defining URL and credentials for target cluster
 const url = Cypress.env('url');
