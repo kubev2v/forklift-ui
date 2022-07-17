@@ -2,7 +2,10 @@ import { MappingData, MappingPeer } from '../types/types';
 import * as view from '../views/mapping.view';
 import {
   applyAction,
+  cancel,
+  click,
   clickByText,
+  expectError,
   inputText,
   openSidebarMenu,
   selectFromDroplist,
@@ -86,6 +89,16 @@ export class Mapping {
     clickByText(buttonModal, saveButton);
   }
 
+  createDuplicate(mappingData: MappingData): void {
+    const { name } = mappingData;
+    cy.wait(2 * SEC);
+    clickByText(button, createMapping);
+    this.inputName(name);
+    click(selectTargetProviderMenu);
+    expectError('#mapping-name-helper', 'A mapping with this name already exists');
+    cancel();
+  }
+
   protected inputName(name: string): void {
     inputText(view.mappingName, name);
   }
@@ -98,7 +111,6 @@ export class Mapping {
     this.selectSourceProvider(sProviderName);
     this.selectTargetProvider(tProviderName);
     this.createMappingPeer(mappingPeer);
-    // cy.wait(2000);
     clickByText(buttonModal, create);
     this.validateReady(mappingData);
   }

@@ -179,6 +179,7 @@ export class ProviderVmware extends Provider {
     this.fillName(name);
     click(instanceHostname);
     expectError('#name-helper', 'A provider with this name already exists');
+    click('#modal-cancel-button');
     cancel();
   }
 
