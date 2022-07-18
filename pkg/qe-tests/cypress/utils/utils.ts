@@ -1,4 +1,4 @@
-import { LoginData, PlanData, ProviderData, VmwareProviderData } from '../integration/types/types';
+import { LoginData, PlanData, VmwareProviderData } from '../integration/types/types';
 import * as loginView from '../integration/views/login.view';
 import {
   button,
@@ -34,6 +34,10 @@ export function login(loginData: LoginData): void {
   inputText(loginView.userNameInput, loginData.username);
   inputText(loginView.userPasswordInput, loginData.password);
   clickByText(button, loginButton);
+}
+
+export function getStarted(): void {
+  clickByText(button, 'Get started');
 }
 
 export function openSidebarMenu(): void {
@@ -105,7 +109,6 @@ export function clickOnCancel(): void {
 
 export function cancel(): void {
   cy.wait(SEC);
-  click('#modal-cancel-button');
   click('#modal-cancel-button');
 }
 

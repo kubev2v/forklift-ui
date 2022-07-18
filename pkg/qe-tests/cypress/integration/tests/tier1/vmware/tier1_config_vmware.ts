@@ -32,7 +32,7 @@ const vmListArray = Cypress.env('vm_list');
 const warmVmListArray = Cypress.env('warm_vm_list');
 const preAnsiblePlaybook = Cypress.env('preAnsiblePlaybook');
 const postAnsiblePlaybook = Cypress.env('postAnsiblePlaybook');
-const namespace = 'tier0';
+const namespace = 'tier1';
 
 // Defining data required for login
 export const loginData: LoginData = {
@@ -67,104 +67,121 @@ export const vmwareProviderUser: VmwareProviderData = {
   image: v2v_vmware_vddkImage,
 };
 
-// //Defining vmware network mapping peers for 2 networks
-// export const vmwareNetworkMappingPeer_2x_network: MappingPeer[] = [
-//   {
-//     sProvider: 'VM Network',
-//     dProvider: 'Pod network',
-//   },
-//   {
-//     sProvider: 'Mgmt Network',
-//     dProvider: `${namespace} / mybridge`,
-//   },
-// ];
-//
-// //Defining vmware storage mapping peer for NFS
-// export const vmwareStorageMappingPeer_nfs: MappingPeer[] = [];
-//
-// //Defining vmware storage mapping peer for CEPH
-// export const vmwareStorageMappingPeer_ceph: MappingPeer[] = [];
-//
-// sourceProviderStorage.forEach((currentStorage) => {
-//   // Adding all peers defined in external config
-//   vmwareStorageMappingPeer_nfs.push({
-//     sProvider: currentStorage,
-//     dProvider: storageType.nfs,
-//   });
-//
-//   vmwareStorageMappingPeer_ceph.push({
-//     sProvider: currentStorage,
-//     dProvider: storageType.cephRbd,
-//   });
-// });
-//
-// //Defining vmware network mapping using 2 peers
-// export const vmwareNetworkMapping_2x_network: MappingData = {
-//   name: `network-${vmwareProvider.name}-mapping`,
-//   sProviderName: vmwareProvider.name,
-//   tProviderName: 'host',
-//   mappingPeer: vmwareNetworkMappingPeer_2x_network,
-// };
-//
-// //Defining vmware storage mapping for NFS file system
-// export const vmwareStorageMapping_nfs: MappingData = {
-//   name: `storage-nfs-${vmwareProvider.name}-mapping`,
-//   sProviderName: vmwareProvider.name,
-//   tProviderName: 'host',
-//   mappingPeer: vmwareStorageMappingPeer_nfs,
-// };
-//
-// //Defining vmware storage mapping for ceph-rbd file system
-// export const vmwareStorageMapping_ceph: MappingData = {
-//   name: `storage-ceph-${vmwareProvider.name}-mapping`,
-//   sProviderName: vmwareProvider.name,
-//   tProviderName: 'host',
-//   mappingPeer: vmwareStorageMappingPeer_ceph,
-// };
-//
-// export const preHookData: HookData = {
-//   ansiblePlaybook: preAnsiblePlaybook,
-// };
-//
-// export const postHookData: HookData = {
-//   ansiblePlaybook: postAnsiblePlaybook,
-// };
-//
-// //Defining vmware cold migration plan for NFS file system
-// export const vmwareTier0Plan_nfs_cold: PlanData = {
-//   name: `vmware-tier0-nfs-${vmwareProvider.name}-cold`,
-//   sProvider: vmwareProvider.name,
-//   tProvider: 'host',
-//   namespace: namespace,
-//   sourceClusterName: vmwareClusterName,
-//   vmList: vmListArray,
-//   useExistingNetworkMapping: true,
-//   useExistingStorageMapping: true,
-//   providerData: vmwareProvider,
-//   networkMappingData: vmwareNetworkMapping_2x_network,
-//   storageMappingData: vmwareStorageMapping_nfs,
-//   warmMigration: false,
-//   preHook: preHookData,
-//   postHook: postHookData,
-// };
-//
-// //Defining vmware cold migration plan for ceph-rbd file system
-// export const vmwareTier0Plan_ceph_cold: PlanData = {
-//   name: `vmware-tier0-ceph-${vmwareProvider.name}-cold`,
-//   sProvider: vmwareProvider.name,
-//   tProvider: 'host',
-//   namespace: namespace,
-//   sourceClusterName: vmwareClusterName,
-//   vmList: vmListArray,
-//   useExistingNetworkMapping: true,
-//   useExistingStorageMapping: true,
-//   providerData: vmwareProvider,
-//   networkMappingData: vmwareNetworkMapping_2x_network,
-//   storageMappingData: vmwareStorageMapping_ceph,
-//   warmMigration: false,
-//   preHook: preHookData,
-//   postHook: postHookData,
-// };
+//Defining vmware network mapping peer of single network
+export const vmwareNetworkMappingPeerSingle: MappingPeer[] = [
+  {
+    sProvider: 'VM Network',
+    dProvider: 'Pod network',
+  },
+];
+
+//Defining vmware network mapping peers for 2 networks
+export const vmwareNetworkMappingPeer_2x_network: MappingPeer[] = [
+  {
+    sProvider: 'VM Network',
+    dProvider: 'Pod network',
+  },
+  {
+    sProvider: 'Mgmt Network',
+    dProvider: `${namespace} / mybridge`,
+  },
+];
+
+//Defining vmware storage mapping peer for NFS
+export const vmwareStorageMappingPeer_nfs: MappingPeer[] = [];
+
+//Defining vmware storage mapping peer for CEPH
+export const vmwareStorageMappingPeer_ceph: MappingPeer[] = [];
+
+sourceProviderStorage.forEach((currentStorage) => {
+  // Adding all peers defined in external config
+  vmwareStorageMappingPeer_nfs.push({
+    sProvider: currentStorage,
+    dProvider: storageType.nfs,
+  });
+
+  vmwareStorageMappingPeer_ceph.push({
+    sProvider: currentStorage,
+    dProvider: storageType.cephRbd,
+  });
+});
+
+//Defining vmware network mapping using 2 peers
+export const vmwareNetworkMapping_2x_network: MappingData = {
+  name: `network-${vmwareProviderUser.name}-mapping`,
+  sProviderName: vmwareProviderUser.name,
+  tProviderName: 'host',
+  mappingPeer: vmwareNetworkMappingPeer_2x_network,
+};
+
+//Defining vmware network mapping using 2 peers
+export const vmwareNetworkMappingSingle: MappingData = {
+  name: `network-${vmwareProviderUser.name}-mapping`,
+  sProviderName: vmwareProviderUser.name,
+  tProviderName: 'host',
+  mappingPeer: vmwareNetworkMappingPeerSingle,
+};
+
+//Defining vmware storage mapping for NFS file system
+export const vmwareStorageMapping_nfs: MappingData = {
+  name: `storage-nfs-${vmwareProviderUser.name}-mapping`,
+  sProviderName: vmwareProviderUser.name,
+  tProviderName: 'host',
+  mappingPeer: vmwareStorageMappingPeer_nfs,
+};
+
+//Defining vmware storage mapping for ceph-rbd file system
+export const vmwareStorageMapping_ceph: MappingData = {
+  name: `storage-ceph-${vmwareProviderUser.name}-mapping`,
+  sProviderName: vmwareProviderUser.name,
+  tProviderName: 'host',
+  mappingPeer: vmwareStorageMappingPeer_ceph,
+};
+
+export const preHookData: HookData = {
+  ansiblePlaybook: preAnsiblePlaybook,
+};
+
+export const postHookData: HookData = {
+  ansiblePlaybook: postAnsiblePlaybook,
+};
+
+//Defining vmware cold migration plan for NFS file system
+export const vmwareTier0Plan_nfs_cold: PlanData = {
+  name: `vmware-tier0-nfs-${vmwareProviderUser.name}-cold`,
+  sProvider: vmwareProviderUser.name,
+  tProvider: 'host',
+  namespace: namespace,
+  sourceClusterName: vmwareClusterName,
+  vmList: vmListArray,
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: vmwareProviderUser,
+  networkMappingData: vmwareNetworkMapping_2x_network,
+  storageMappingData: vmwareStorageMapping_nfs,
+  warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
+//Defining vmware cold migration plan for ceph-rbd file system
+export const vmwareTier1Plan_ceph_cold: PlanData = {
+  name: `vmware-tier0-ceph-${vmwareProviderUser.name}-cold`,
+  sProvider: vmwareProviderUser.name,
+  tProvider: 'host',
+  namespace: namespace,
+  sourceClusterName: vmwareClusterName,
+  vmList: vmListArray,
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: vmwareProviderUser,
+  networkMappingData: vmwareNetworkMapping_2x_network,
+  storageMappingData: vmwareStorageMapping_ceph,
+  warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
 //
 // //Defining vmware warm migration plan for NFS file system
 // export const vmwareTier0Plan_nfs_warm: PlanData = {
@@ -210,11 +227,11 @@ export const vmwareProviderUser: VmwareProviderData = {
 //   planData: vmwareTier0Plan_nfs_cold,
 // };
 //
-// //Defining test for vmware cold migration with ceph-rbd file system
-// export const vmwareTier0TestCephCold: TestData = {
-//   loginData: loginData,
-//   planData: vmwareTier0Plan_ceph_cold,
-// };
+//Defining test for vmware cold migration with ceph-rbd file system
+export const vmwareTier1TestCephCold: TestData = {
+  loginData: loginData,
+  planData: vmwareTier1Plan_ceph_cold,
+};
 //
 // //Defining test for vmware cold migration with nfs file system
 // export const vmwareTier0TestNfsWarm: TestData = {
