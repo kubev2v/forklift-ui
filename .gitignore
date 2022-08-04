@@ -11,3 +11,4 @@ config/meta.dev.json
 **/RHV*.json
 **/screenshots/*
 **/reports/*
+/.vscode
