@@ -49,6 +49,7 @@ import {
 } from '@app/queries';
 
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
+import ExternalLinkSquareAltIcon from '@patternfly/react-icons/dist/esm/icons/external-link-square-alt-icon';
 import { IProviderObject } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useAddEditProviderPrefillEffect } from './helpers';
@@ -214,13 +215,16 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
     ? createProviderMutation
     : patchProviderMutation;
 
-  const [isCertificateQueryEnabled, setCertificateQueryEnabled] = React.useState(false);
-  const certificateQuery = useCertificateQuery(
+  const [isFingerprintQueryEnabled, setFingerprintQueryEnabled] = React.useState(false);
+  const fingerprintQuery = useCertificateQuery(
+    providerType,
     fields?.hostname?.value || '',
-    isCertificateQueryEnabled
+    isFingerprintQueryEnabled
   );
 
   const certificateConfirmButtonRef = React.useRef<HTMLElement>(null);
+
+  const caCertQuery = useCertificateQuery(providerType, fields?.hostname?.value || '', false);
 
   const scrollVerifyButtonIntoView = () =>
     certificateConfirmButtonRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -316,7 +320,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                     fieldId="hostname"
                     inputProps={{
                       onChange: (field: string) => {
-                        setCertificateQueryEnabled(false);
+                        setFingerprintQueryEnabled(false);
                         fields.isCertificateValid?.setValue(false);
                         fields.hostname?.setValue(field);
                       },
@@ -380,7 +384,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 ) : null}
                 {fields?.fingerprint ? (
                   <>
-                    {!isCertificateQueryEnabled ? (
+                    {!isFingerprintQueryEnabled ? (
                       <Button
                         id="certificate-confirm-button"
                         key="confirm"
@@ -389,17 +393,17 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                         variant="primary"
                         isDisabled={!fields.hostname?.isValid}
                         onClick={() => {
-                          setCertificateQueryEnabled(true);
+                          setFingerprintQueryEnabled(true);
                         }}
                       >
                         Verify certificate
                       </Button>
-                    ) : certificateQuery.status === 'loading' ? (
+                    ) : fingerprintQuery.status === 'loading' ? (
                       <div className="pf-c-empty-state__icon">
                         <Spinner aria-labelledby="loadingPrefLabel" size="sm" />
                         &nbsp;Retrieving SHA-1 certificate fingerprint
                       </div>
-                    ) : certificateQuery.status === 'success' ? (
+                    ) : fingerprintQuery.status === 'success' ? (
                       <>
                         <Panel variant="bordered">
                           <PanelMain>
@@ -411,7 +415,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Issuer</DescriptionListTerm>
                                   <DescriptionListDescription id="issuer">
-                                    {`${certificateQuery.data?.issuer.O} - ${certificateQuery.data?.issuer.OU}`}
+                                    {`${fingerprintQuery.data?.issuer.O} - ${fingerprintQuery.data?.issuer.OU}`}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                                 <DescriptionListGroup>
@@ -419,10 +423,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                     vCenter SHA-1 fingerprint
                                   </DescriptionListTerm>
                                   <DescriptionListDescription id="fingerprint">
-                                    {certificateQuery.data?.fingerprint}
+                                    {fingerprintQuery.data?.fingerprint}
                                     {providerBeingEdited &&
                                     fields.fingerprint?.cleanValue !==
-                                      certificateQuery.data.fingerprint ? (
+                                      fingerprintQuery.data.fingerprint ? (
                                       <Alert
                                         variant="warning"
                                         isInline
@@ -438,7 +442,7 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                                 <DescriptionListGroup>
                                   <DescriptionListTerm>Expiration date</DescriptionListTerm>
                                   <DescriptionListDescription id="expriry">
-                                    {certificateQuery.data?.valid_to}
+                                    {fingerprintQuery.data?.valid_to}
                                   </DescriptionListDescription>
                                 </DescriptionListGroup>
                               </DescriptionList>
@@ -455,10 +459,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                             if (fields.isCertificateValid?.value !== true) {
                               if (
                                 fields?.fingerprint &&
-                                certificateQuery.data &&
-                                certificateQuery.data.fingerprint !== ''
+                                fingerprintQuery.data &&
+                                fingerprintQuery.data.fingerprint !== ''
                               ) {
-                                fields.fingerprint?.setValue(certificateQuery.data.fingerprint);
+                                fields.fingerprint?.setValue(fingerprintQuery.data.fingerprint);
                               }
                             } else {
                               fields.fingerprint?.setValue('');
@@ -479,9 +483,10 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       <Popover
                         bodyContent={
                           <div>
-                            The CA certificate is the{' '}
-                            <code>/etc/pki/ovirt-engine/apache-ca.pem</code> file on the Manager
-                            machine.
+                            Once a valid hostname has been entered, the CA certificate may be
+                            fetched automatically using the link to the right. You can manually
+                            accessed on the Manager machine. It will be locate in the file
+                            <code>/etc/pki/ovirt-engine/apache-ca.pem</code>.
                           </div>
                         }
                       >
@@ -495,6 +500,32 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                           <HelpIcon noVerticalAlign />
                         </Button>
                       </Popover>
+                    }
+                    labelInfo={
+                      <Button
+                        isInline
+                        icon={<ExternalLinkSquareAltIcon />}
+                        iconPosition="right"
+                        variant="link"
+                        isDisabled={!fields.hostname?.isValid}
+                        onClick={async () => {
+                          const { data } = await caCertQuery.refetch();
+                          if (data) {
+                            fields.caCert?.setValue(data.pemEncoded);
+                            fields.caCert?.setIsTouched(true);
+                            fields.caCertFilename?.setValue('pki-resource');
+                          }
+                        }}
+                      >
+                        {
+                          {
+                            idle: 'fetch the engine CA certificate',
+                            loading: 'fetching the engine CA certificate',
+                            error: 'error fetching the engine CA certificate',
+                            success: 'refetch the engine CA certificate',
+                          }[caCertQuery.status || 'idle']
+                        }
+                      </Button>
                     }
                     fieldId="caCert"
                     {...getFormGroupProps(fields.caCert)}

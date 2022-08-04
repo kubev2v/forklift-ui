@@ -386,8 +386,17 @@ function assertIsCertificate(certificate: ITLSCertificate): asserts certificate 
     throw new Error('Not certificate');
   }
 }
-const getCertificate = async (hostname: string) => {
-  const response = await fetch(`get-certificate?url=${hostname}`);
+const getCertificate = async (providerType: ProviderType | null, hostname: string) => {
+  const params = {
+    providerType,
+    hostname,
+  };
+  const response = await fetch(
+    `get-certificate?` +
+      Object.entries(params)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value ?? '')}`)
+        .join('&')
+  );
   if (!response.ok) {
     throw new Error('Problem fetching data');
   }
@@ -398,13 +407,14 @@ const getCertificate = async (hostname: string) => {
 };
 
 export const useCertificateQuery = (
+  providerType: ProviderType | null,
   hostname: string,
   enabled: boolean
 ): UseQueryResult<ITLSCertificate> => {
   const result = useMockableQuery<ITLSCertificate>(
     {
       queryKey: ['certificate', hostname],
-      queryFn: () => getCertificate(hostname),
+      queryFn: () => getCertificate(providerType, hostname),
       enabled: enabled,
     },
     MOCK_TLS_CERTIFICATE

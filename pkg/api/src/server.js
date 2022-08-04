@@ -7,6 +7,7 @@ const dayjs = require('dayjs');
 
 const helpers = require('./helpers');
 const { getClusterAuth } = require('./oAuthHelpers');
+const serverRoutes = require('./server-routes');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
@@ -76,22 +77,7 @@ if (process.env['DATA_SOURCE'] !== 'mock') {
     }
   });
 
-  app.get('/get-certificate', async (req, res) => {
-    const sslCertificate = require('get-ssl-certificate');
-    sslCertificate
-      .get(req.query.url, 250, 443, 'https:')
-      .then((certificate) => {
-        console.info(`Fetched certificate: ${req.query.url}`);
-        return res.status(200).json(certificate);
-      })
-      .catch((error) => {
-        console.error(`Error: Fetch certificate`, error.message);
-        if (error.code === 'ENOTFOUND') {
-          return res.status(404).json('URL not found');
-        }
-        return res.status(500).json('Fetch certificate failed');
-      });
-  });
+  serverRoutes.apply(app);
 
   let clusterApiProxyOptions = {
     target: meta.clusterApi,
