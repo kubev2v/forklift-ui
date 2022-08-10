@@ -282,6 +282,7 @@ export const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModal
             {instanceForm.values.type === 'image' ? (
               <ValidatedTextInput
                 field={instanceForm.fields.image}
+                label={null}
                 isRequired
                 fieldId="image"
                 formGroupProps={{
