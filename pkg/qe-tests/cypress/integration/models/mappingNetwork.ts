@@ -19,6 +19,14 @@ export class MappingNetwork extends Mapping {
     this.createDialog(mappingData);
   }
 
+  createDuplicate(mappingData: MappingData): void {
+    //Navigating to the sidebar menu
+    this.openMenu();
+
+    //Creating new mapping instance
+    super.createDuplicate(mappingData);
+  }
+
   delete(mappingData: MappingData): void {
     //Navigating to the sidebar menu
     this.openMenu();
