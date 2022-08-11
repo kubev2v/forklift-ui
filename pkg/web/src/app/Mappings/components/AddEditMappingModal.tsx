@@ -60,7 +60,7 @@ const useMappingFormState = (
   useFormState({
     name: useFormField(
       '',
-      getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
+      getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Name').required()
     ),
     sourceProvider: useFormField<SourceInventoryProvider | null>(
       null,
@@ -216,7 +216,6 @@ export const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalPr
                 <GridItem md={6} className={spacing.mbMd}>
                   <ValidatedTextInput
                     field={form.fields.name}
-                    label="Name"
                     isRequired
                     fieldId="mapping-name"
                     inputProps={{

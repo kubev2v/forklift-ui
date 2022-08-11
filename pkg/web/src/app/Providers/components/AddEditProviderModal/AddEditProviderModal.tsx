@@ -27,6 +27,7 @@ import {
   useFormField,
   getFormGroupProps,
   ValidatedTextInput,
+  ValidatedPasswordInput,
 } from '@konveyor/lib-ui';
 
 import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
@@ -53,7 +54,6 @@ import { IProviderObject } from '@app/queries/types';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { useAddEditProviderPrefillEffect } from './helpers';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
-import { ValidatedPasswordInput } from '@app/common/components/ValidatedPasswordInput';
 
 interface IAddEditProviderModalProps {
   onClose: (navToProviderType?: ProviderType | null) => void;
@@ -297,7 +297,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.name ? (
                   <ValidatedTextInput
                     field={forms[providerType].fields.name}
-                    label={'Name'}
                     isRequired
                     fieldId="name"
                     inputProps={{
@@ -311,7 +310,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.hostname ? (
                   <ValidatedTextInput
                     field={fields.hostname}
-                    label={getLabelName('hostname', brandPrefix(providerType))}
                     isRequired
                     fieldId="hostname"
                     inputProps={{
@@ -330,7 +328,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                       onFocus: scrollVerifyButtonIntoView,
                     }}
                     field={fields.username}
-                    label={getLabelName('username', brandPrefix(providerType))}
                     isRequired
                     fieldId="username"
                   />
@@ -339,7 +336,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                   <ValidatedPasswordInput
                     inputProps={{ onFocus: scrollVerifyButtonIntoView }}
                     field={fields.password}
-                    label={getLabelName('pwd', brandPrefix(providerType))}
                     isRequired
                     fieldId="password"
                   />
@@ -347,7 +343,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.vddkInitImage ? (
                   <ValidatedTextInput
                     field={fields.vddkInitImage}
-                    label="VDDK init image"
                     isRequired
                     fieldId="vddk-init-image"
                     formGroupProps={{
@@ -517,7 +512,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.url ? (
                   <ValidatedTextInput
                     field={fields.url}
-                    label="URL"
                     isRequired
                     fieldId="openshift-url"
                     formGroupProps={{
@@ -548,7 +542,6 @@ export const AddEditProviderModal: React.FunctionComponent<IAddEditProviderModal
                 {fields?.saToken ? (
                   <ValidatedPasswordInput
                     field={fields.saToken}
-                    label="Service account token"
                     isRequired
                     fieldId="openshift-sa-token"
                     formGroupProps={{

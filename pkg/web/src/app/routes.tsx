@@ -3,9 +3,8 @@ import { Route, RouteComponentProps, Switch, Redirect } from 'react-router-dom';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { useLocalStorageContext, LocalStorageKey } from './common/context/LocalStorageContext';
 import { APP_TITLE, ENV } from '@app/common/constants';
-import { WelcomePage } from '@app/Welcome/WelcomePage';
+import { WelcomePage, useIsWelcomePageHiddenStorage } from '@app/Welcome/WelcomePage';
 import { ProvidersPage } from '@app/Providers/ProvidersPage';
 import { PlansPage } from '@app/Plans/PlansPage';
 import { MappingsPage } from '@app/Mappings/MappingsPage';
@@ -15,6 +14,7 @@ import { VMMigrationDetails } from '@app/Plans/components/VMMigrationDetails';
 import { LoginHandlerComponent } from './common/LoginHandlerComponent';
 import { RedirectToLogin } from './common/RedirectToLogin';
 import { NotFound } from './NotFound';
+import { useNetworkContext } from './common/context';
 
 let routeFocusTimer: number;
 
@@ -173,8 +173,8 @@ const flattenedRoutes: IAppRoute[] = routes.reduce(
 );
 
 export const AppRoutes = (): React.ReactElement => {
-  const [isWelcomePageHidden] = useLocalStorageContext(LocalStorageKey.isWelcomePageHidden);
-  const [currentUser] = useLocalStorageContext(LocalStorageKey.currentUser);
+  const [isWelcomePageHidden] = useIsWelcomePageHiddenStorage();
+  const { currentUser } = useNetworkContext();
   return (
     <LastLocationProvider>
       <Switch>

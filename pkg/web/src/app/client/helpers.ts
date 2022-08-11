@@ -203,8 +203,8 @@ export const checkIfResourceExists = async (
 export const useClientInstance = (): KubeClient.ClusterClient => {
   const { currentUser } = useNetworkContext();
   const user = {
-    access_token: currentUser.access_token || '',
-    expiry_time: currentUser.expiry_time || 0,
+    access_token: currentUser?.access_token || '',
+    expiry_time: currentUser?.expiry_time || 0,
   };
   return ClientFactory.cluster(user, '/cluster-api');
 };

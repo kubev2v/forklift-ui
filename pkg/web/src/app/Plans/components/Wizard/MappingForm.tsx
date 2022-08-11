@@ -310,7 +310,6 @@ export const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                       <GridItem sm={12} md={5} className={spacing.mbMd}>
                         <ValidatedTextInput
                           field={form.fields.newMappingName}
-                          label="Name"
                           fieldId="new-mapping-name"
                           isRequired
                         />

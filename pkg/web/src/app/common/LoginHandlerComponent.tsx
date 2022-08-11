@@ -2,7 +2,7 @@ import { Alert, AlertActionLink } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import React, { useEffect } from 'react';
 import { useLocation, Redirect, useHistory } from 'react-router-dom';
-import { useNetworkContext } from './context/NetworkContext';
+import { ICurrentUser, useNetworkContext } from './context/NetworkContext';
 
 interface ILoginError {
   message?: string;
@@ -17,10 +17,10 @@ export const LoginHandlerComponent: React.FunctionComponent = () => {
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
-  let user: string | null;
+  let user: ICurrentUser | null;
   let loginError: ILoginError | null;
   try {
-    user = userStr && JSON.parse(userStr);
+    user = userStr ? (JSON.parse(userStr) as ICurrentUser | null) : null;
     loginError = errorStr && JSON.parse(errorStr);
   } catch (error) {
     user = null;
