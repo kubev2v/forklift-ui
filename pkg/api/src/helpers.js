@@ -35,6 +35,7 @@ const getAppTitle = () =>
 
 const FORKLIFT_ENV = [
   'AUTH_REQUIRED',
+  'K8S_AUTH_BEARER_TOKEN',
   'NODE_ENV',
   'DATA_SOURCE',
   'BRAND_TYPE',
