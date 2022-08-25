@@ -16,7 +16,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
-import { useLocalStorage } from '@konveyor/lib-ui';
+import { useLocalStorage } from '@migtools/lib-ui';
 import logoMA from './logoMA.svg';
 import { APP_TITLE, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
