@@ -26,6 +26,8 @@ Create a meta.dev.json file in the config directory using [`config/meta.dev.exam
   (unnecessary if you use `npm run [start:dev|build]:[mock|remote]` scripts)
 - `META_FILE` path (for running in prod mode with `npm run start`)
 - `BRAND_TYPE` - either `Konveyor` (default) or `RedHat`
+- `AUTH_REQUIRED` - either `true` (default) or `false`, when false logging in using OAuth is disabled, can be used when running on k8s server that does not support OAuth loggin
+- `K8S_AUTH_BEARER_TOKEN` - string, can be used together with `AUTH_REQUIRED=false` to specify the k8s api server authentication bearer token
 
 Run the UI with webpack-dev-server at [localhost:9000](http://localhost:9000):
 
