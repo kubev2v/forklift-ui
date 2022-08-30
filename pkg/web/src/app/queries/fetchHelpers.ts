@@ -33,6 +33,10 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
     extraHeaders['Authorization'] = `Bearer ${fetchContext.currentUser.access_token}`;
   }
 
+  if (ENV.AUTH_REQUIRED === 'false' && ENV.K8S_AUTH_BEARER_TOKEN) {
+    extraHeaders['Authorization'] = `Bearer ${ENV.K8S_AUTH_BEARER_TOKEN}`;
+  }
+
   try {
     const response = await fetch(url, {
       headers: extraHeaders,
