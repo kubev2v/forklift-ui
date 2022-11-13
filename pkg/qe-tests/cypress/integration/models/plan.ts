@@ -155,16 +155,18 @@ export class Plan {
   //Method to unselect VMs those are not needed
   protected unSelectVm(vmList: string[]): void {
     const selector = `[aria-label="search button for search input"]`;
-    vmList.forEach((name) => {
-      inputText(searchInput, name);
-      click(selector);
-      cy.get(tdTag)
-        .contains(name)
-        .closest(trTag)
-        .within(() => {
-          unSelectCheckBox('input');
-        });
-    });
+    if (vmList.length > 0) {
+      vmList.forEach((name) => {
+        inputText(searchInput, name);
+        click(selector);
+        cy.get(tdTag)
+          .contains(name)
+          .closest(trTag)
+          .within(() => {
+            unSelectCheckBox('input');
+          });
+      });
+    }
     next();
   }
   protected vmSelectionStep(planData): void {
@@ -573,7 +575,7 @@ export class Plan {
       this.filterVm(duplicatePlanData);
       this.selectVm(duplicatePlanData);
       this.unSelectVm(vmListRemove);
-      this.networkMappingStep(duplicatePlanData);
+      next();
       next();
       this.selectMigrationTypeStep(duplicatePlanData);
       this.hooksStep(duplicatePlanData);
