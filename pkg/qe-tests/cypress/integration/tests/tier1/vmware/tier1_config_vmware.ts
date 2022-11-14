@@ -146,27 +146,9 @@ export const postHookData: HookData = {
   ansiblePlaybook: postAnsiblePlaybook,
 };
 
-//Defining vmware cold migration plan for NFS file system
-export const vmwareTier0Plan_nfs_cold: PlanData = {
-  name: `vmware-tier0-nfs-${vmwareProviderUser.name}-cold`,
-  sProvider: vmwareProviderUser.name,
-  tProvider: 'host',
-  namespace: namespace,
-  sourceClusterName: vmwareClusterName,
-  vmList: vmListArray,
-  useExistingNetworkMapping: true,
-  useExistingStorageMapping: true,
-  providerData: vmwareProviderUser,
-  networkMappingData: vmwareNetworkMapping_2x_network,
-  storageMappingData: vmwareStorageMapping_nfs,
-  warmMigration: false,
-  preHook: preHookData,
-  postHook: postHookData,
-};
-
 //Defining vmware cold migration plan for ceph-rbd file system
 export const vmwareTier1Plan_ceph_cold: PlanData = {
-  name: `vmware-tier0-ceph-${vmwareProviderUser.name}-cold`,
+  name: `a-vmware-tier0-ceph-${vmwareProviderUser.name}-cold`,
   sProvider: vmwareProviderUser.name,
   tProvider: 'host',
   namespace: namespace,
@@ -182,72 +164,54 @@ export const vmwareTier1Plan_ceph_cold: PlanData = {
   postHook: postHookData,
 };
 
-//
-// //Defining vmware warm migration plan for NFS file system
-// export const vmwareTier0Plan_nfs_warm: PlanData = {
-//   name: `vmware-tier0-nfs-${vmwareProvider.name}-warm`,
-//   sProvider: vmwareProvider.name,
-//   tProvider: 'host',
-//   namespace: namespace,
-//   sourceClusterName: vmwareClusterName,
-//   vmList: warmVmListArray,
-//   useExistingNetworkMapping: true,
-//   useExistingStorageMapping: true,
-//   providerData: vmwareProvider,
-//   networkMappingData: vmwareNetworkMapping_2x_network,
-//   storageMappingData: vmwareStorageMapping_nfs,
-//   warmMigration: true,
-//   preHook: preHookData,
-//   postHook: postHookData,
-//   scheduledCutover: cutoverTime,
-// };
-//
-// //Defining vmware warm migration plan for ceph-rbd file system
-// export const vmwareTier0Plan_ceph_warm: PlanData = {
-//   name: `vmware-tier0-ceph-${vmwareProvider.name}-warm`,
-//   sProvider: vmwareProvider.name,
-//   tProvider: 'host',
-//   namespace: namespace,
-//   sourceClusterName: vmwareClusterName,
-//   vmList: warmVmListArray,
-//   useExistingNetworkMapping: true,
-//   useExistingStorageMapping: true,
-//   providerData: vmwareProvider,
-//   networkMappingData: vmwareNetworkMapping_2x_network,
-//   storageMappingData: vmwareStorageMapping_ceph,
-//   warmMigration: true,
-//   preHook: preHookData,
-//   postHook: postHookData,
-//   scheduledCutover: cutoverTime,
-// };
-//
-// //Defining test for vmware cold migration with nfs file system
-// export const vmwareTier0TestNfsCold: TestData = {
-//   loginData: loginData,
-//   planData: vmwareTier0Plan_nfs_cold,
-// };
-//
+export const vmwareTier1Plan_ceph_cold_duplicate: PlanData = {
+  name: `a-vmware-tier1-ceph-${vmwareProviderUser.name}-cold-duplicate`,
+  sProvider: vmwareProviderUser.name,
+  tProvider: 'host',
+  namespace: namespace,
+  sourceClusterName: vmwareClusterName,
+  vmList: vmListArray,
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: vmwareProviderUser,
+  networkMappingData: vmwareNetworkMapping_2x_network,
+  storageMappingData: vmwareStorageMapping_ceph,
+  warmMigration: false,
+  preHook: preHookData,
+  postHook: postHookData,
+};
+
+//Defining vmware warm migration plan for ceph-rbd file system
+export const vmwareTier0Plan_ceph_warm: PlanData = {
+  name: `a-vmware-tier0-ceph-${vmwareProviderUser.name}-warm`,
+  sProvider: vmwareProviderUser.name,
+  tProvider: 'host',
+  namespace: namespace,
+  sourceClusterName: vmwareClusterName,
+  vmList: warmVmListArray,
+  useExistingNetworkMapping: true,
+  useExistingStorageMapping: true,
+  providerData: vmwareProviderUser,
+  networkMappingData: vmwareNetworkMapping_2x_network,
+  storageMappingData: vmwareStorageMapping_ceph,
+  warmMigration: true,
+  preHook: preHookData,
+  postHook: postHookData,
+  scheduledCutover: cutoverTime,
+};
+
 //Defining test for vmware cold migration with ceph-rbd file system
 export const vmwareTier1TestCephCold: TestData = {
   loginData: loginData,
   planData: vmwareTier1Plan_ceph_cold,
 };
-//
-// //Defining test for vmware cold migration with nfs file system
-// export const vmwareTier0TestNfsWarm: TestData = {
-//   loginData: loginData,
-//   planData: vmwareTier0Plan_nfs_warm,
-// };
-//
-// //Defining test for vmware cold migration with ceph-rbd file system
-// export const vmwareTier0TestCephWarm: TestData = {
-//   loginData: loginData,
-//   planData: vmwareTier0Plan_ceph_warm,
-// };
-//
-// export const vmwareTier0TestArray = [
-//   vmwareTier0TestCephCold,
-//   // vmwareTier0TestNfsCold,
-//   vmwareTier0TestCephWarm,
-//   // vmwareTier0TestNfsWarm,
-// ];
+
+export const vmwareTier1TestCephColdDuplicate: TestData = {
+  loginData: loginData,
+  planData: vmwareTier1Plan_ceph_cold_duplicate,
+};
+
+export const vmwareTier1TestCephWarm: TestData = {
+  loginData: loginData,
+  planData: vmwareTier0Plan_ceph_warm,
+};
