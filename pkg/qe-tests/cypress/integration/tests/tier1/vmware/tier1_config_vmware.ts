@@ -165,7 +165,7 @@ export const vmwareTier1Plan_ceph_cold: PlanData = {
 };
 
 export const vmwareTier1Plan_ceph_cold_duplicate: PlanData = {
-  name: `a-vmware-tier0-ceph-${vmwareProviderUser.name}-cold-duplicate`,
+  name: `a-vmware-tier1-ceph-${vmwareProviderUser.name}-cold-duplicate`,
   sProvider: vmwareProviderUser.name,
   tProvider: 'host',
   namespace: namespace,
