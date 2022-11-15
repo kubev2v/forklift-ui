@@ -6,7 +6,8 @@ import {
   useFormField,
   getFormGroupProps,
   ValidatedTextInput,
-} from '@konveyor/lib-ui';
+  ValidatedPasswordInput,
+} from '@migtools/lib-ui';
 
 import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import { IHost, IHostConfig, IHostNetworkAdapter, IVMwareProvider } from '@app/queries/types';
@@ -20,7 +21,6 @@ import { useConfigureHostsMutation } from '@app/queries';
 import { QuerySpinnerMode, ResolvedQuery } from '@app/common/components/ResolvedQuery';
 import { LoadingEmptyState } from '@app/common/components/LoadingEmptyState';
 import { ConditionalTooltip } from '@app/common/components/ConditionalTooltip';
-import { ValidatedPasswordInput } from '@app/common/components/ValidatedPasswordInput';
 
 interface ISelectNetworkModalProps {
   selectedHosts: IHost[];
@@ -162,7 +162,6 @@ export const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProp
           >
             <ValidatedTextInput
               field={form.fields.adminUsername}
-              label="ESXi host admin username"
               isRequired
               fieldId="admin-username"
               inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}
@@ -175,7 +174,6 @@ export const SelectNetworkModal: React.FunctionComponent<ISelectNetworkModalProp
           >
             <ValidatedPasswordInput
               field={form.fields.adminPassword}
-              label="ESXi host admin password"
               isRequired
               fieldId="admin-password"
               inputProps={isMgmtSelected ? { isDisabled: true, value: '' } : {}}

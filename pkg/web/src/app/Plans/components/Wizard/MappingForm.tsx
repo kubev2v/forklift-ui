@@ -16,7 +16,7 @@ import {
   Divider,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { ValidatedTextInput } from '@konveyor/lib-ui';
+import { ValidatedTextInput } from '@migtools/lib-ui';
 import { OptionWithValue } from '@app/common/components/SimpleSelect';
 import {
   MappingType,
@@ -310,7 +310,6 @@ export const MappingForm: React.FunctionComponent<IMappingFormProps> = ({
                       <GridItem sm={12} md={5} className={spacing.mbMd}>
                         <ValidatedTextInput
                           field={form.fields.newMappingName}
-                          label="Name"
                           fieldId="new-mapping-name"
                           isRequired
                         />

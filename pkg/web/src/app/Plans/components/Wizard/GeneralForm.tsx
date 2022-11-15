@@ -13,7 +13,7 @@ import {
   Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { getFormGroupProps, ValidatedTextInput } from '@konveyor/lib-ui';
+import { getFormGroupProps, ValidatedTextInput } from '@migtools/lib-ui';
 
 import { POD_NETWORK } from '@app/queries/types';
 import {
@@ -112,7 +112,6 @@ export const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </Title>
         <ValidatedTextInput
           field={form.fields.planName}
-          label="Plan name"
           isRequired
           fieldId="plan-name"
           inputProps={{ isDisabled: wizardMode === 'edit' }}
@@ -120,7 +119,6 @@ export const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         <ValidatedTextInput
           component={TextArea}
           field={form.fields.planDescription}
-          label="Plan description"
           fieldId="plan-description"
         />
         <Title headingLevel="h3" size="md">

@@ -10,7 +10,6 @@ import {
   NotificationContextProvider,
   MustGatherContextProvider,
   PollingContextProvider,
-  LocalStorageContextProvider,
   NetworkContextProvider,
   AppLayoutContextProvider,
 } from '@app/common/context';
@@ -30,21 +29,19 @@ const queryClient = new QueryClient({
 const App: React.FunctionComponent = () => (
   <QueryClientProvider client={queryClient}>
     <PollingContextProvider>
-      <LocalStorageContextProvider>
-        <NetworkContextProvider>
-          <NotificationContextProvider>
-            <MustGatherContextProvider>
-              <Router getUserConfirmation={noop}>
-                <AppLayoutContextProvider>
-                  <AppLayout>
-                    <AppRoutes />
-                  </AppLayout>
-                </AppLayoutContextProvider>
-              </Router>
-            </MustGatherContextProvider>
-          </NotificationContextProvider>
-        </NetworkContextProvider>
-      </LocalStorageContextProvider>
+      <NetworkContextProvider>
+        <NotificationContextProvider>
+          <MustGatherContextProvider>
+            <Router getUserConfirmation={noop}>
+              <AppLayoutContextProvider>
+                <AppLayout>
+                  <AppRoutes />
+                </AppLayout>
+              </AppLayoutContextProvider>
+            </Router>
+          </MustGatherContextProvider>
+        </NotificationContextProvider>
+      </NetworkContextProvider>
     </PollingContextProvider>
     {process.env.NODE_ENV !== 'test' ? <ReactQueryDevtools /> : null}
   </QueryClientProvider>

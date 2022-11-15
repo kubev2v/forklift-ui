@@ -19,7 +19,7 @@ describe('MappingsPage', () => {
       name: /Create network mapping/i,
     });
 
-    const storageTabBtn = screen.getByRole('button', {
+    const storageTabBtn = screen.getByRole('tab', {
       name: /Storage/i,
     });
     storageTabBtn.click();

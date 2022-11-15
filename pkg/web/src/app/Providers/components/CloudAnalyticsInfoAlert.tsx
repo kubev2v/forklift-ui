@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { Alert, AlertActionCloseButton, Text } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useLocalStorageContext, LocalStorageKey } from '@app/common/context/LocalStorageContext';
+import { useLocalStorage } from '@migtools/lib-ui';
 import { CLOUD_MA_LINK, PROVIDER_TYPE_NAMES } from '@app/common/constants';
 
 export const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
-  const [isAlertHidden, setIsAlertHidden] = useLocalStorageContext(
-    LocalStorageKey.isProvidersPageMAAlertHidden
-  );
+  const [isAlertHidden, setIsAlertHidden] = useLocalStorage('isProvidersPageMAAlertHidden', false);
 
   const link = (
     <a href={CLOUD_MA_LINK.href} target="_blank" rel="noreferrer">
@@ -29,7 +27,7 @@ export const CloudAnalyticsInfoAlert: React.FunctionComponent = () => {
     <Alert
       variant="info"
       title="Analyze provider data"
-      actionClose={<AlertActionCloseButton onClose={() => setIsAlertHidden('true')} />}
+      actionClose={<AlertActionCloseButton onClose={() => setIsAlertHidden(true)} />}
       className={spacing.mtMd}
     >
       {alertMessage}

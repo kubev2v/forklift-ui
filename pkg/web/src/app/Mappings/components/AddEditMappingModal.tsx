@@ -11,7 +11,7 @@ import {
   FormGroup,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useFormField, useFormState, ValidatedTextInput } from '@konveyor/lib-ui';
+import { useFormField, useFormState, ValidatedTextInput } from '@migtools/lib-ui';
 import { SimpleSelect, OptionWithValue } from '@app/common/components/SimpleSelect';
 import { MappingBuilder, IMappingBuilderItem, mappingBuilderItemsSchema } from './MappingBuilder';
 import { getMappingFromBuilderItems } from './MappingBuilder/helpers';
@@ -60,7 +60,7 @@ const useMappingFormState = (
   useFormState({
     name: useFormField(
       '',
-      getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Mapping name').required()
+      getMappingNameSchema(mappingsQuery, mappingBeingEdited).label('Name').required()
     ),
     sourceProvider: useFormField<SourceInventoryProvider | null>(
       null,
@@ -216,7 +216,6 @@ export const AddEditMappingModal: React.FunctionComponent<IAddEditMappingModalPr
                 <GridItem md={6} className={spacing.mbMd}>
                   <ValidatedTextInput
                     field={form.fields.name}
-                    label="Name"
                     isRequired
                     fieldId="mapping-name"
                     inputProps={{

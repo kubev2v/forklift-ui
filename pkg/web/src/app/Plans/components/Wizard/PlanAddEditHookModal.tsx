@@ -7,7 +7,7 @@ import {
   useFormField,
   useFormState,
   ValidatedTextInput,
-} from '@konveyor/lib-ui';
+} from '@migtools/lib-ui';
 import {
   Modal,
   Stack,
@@ -282,6 +282,7 @@ export const PlanAddEditHookModal: React.FunctionComponent<IPlanAddEditHookModal
             {instanceForm.values.type === 'image' ? (
               <ValidatedTextInput
                 field={instanceForm.fields.image}
+                label={null}
                 isRequired
                 fieldId="image"
                 formGroupProps={{

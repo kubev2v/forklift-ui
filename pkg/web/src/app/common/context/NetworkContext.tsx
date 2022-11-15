@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { LocalStorageKey, useLocalStorageContext } from './LocalStorageContext';
 import { AxiosError } from 'axios';
 import { History } from 'history';
+import { useLocalStorage } from '@migtools/lib-ui';
 
 export interface ICurrentUser {
   access_token?: string;
@@ -9,8 +9,8 @@ export interface ICurrentUser {
 }
 
 export interface INetworkContext {
-  saveLoginToken: (user: string, history: History) => void;
-  currentUser: ICurrentUser;
+  saveLoginToken: (user: ICurrentUser | null, history: History) => void;
+  currentUser: ICurrentUser | null;
   checkExpiry: (error: Response | AxiosError<unknown> | unknown, history: History) => void;
 }
 
@@ -31,23 +31,20 @@ interface INetworkContextProviderProps {
 export const NetworkContextProvider: React.FunctionComponent<INetworkContextProviderProps> = ({
   children,
 }: INetworkContextProviderProps) => {
-  const [currentUserStr, setCurrentUserStr] = useLocalStorageContext(LocalStorageKey.currentUser);
+  const [currentUser, setCurrentUser] = useLocalStorage<ICurrentUser | null>('currentUser', null);
 
-  const saveLoginToken = (user: string | null, history: History) => {
-    setCurrentUserStr(JSON.stringify(user));
+  const saveLoginToken = (user: ICurrentUser | null, history: History) => {
+    setCurrentUser(user);
     history.replace('/');
   };
 
   const checkExpiry = (error: Response | AxiosError<unknown> | unknown, history: History) => {
     const status = (error as Response).status || (error as AxiosError<unknown>).response?.status;
     if (status === 401) {
-      setCurrentUserStr('');
+      setCurrentUser(null);
       history.replace('/');
     }
   };
-
-  const currentUser: ICurrentUser =
-    currentUserStr !== null ? JSON.parse(currentUserStr || '{}') : {};
 
   return (
     <NetworkContext.Provider

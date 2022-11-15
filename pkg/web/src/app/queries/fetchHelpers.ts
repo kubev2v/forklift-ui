@@ -3,7 +3,7 @@ import { QueryFunction } from 'react-query/types/core/types';
 import { useHistory } from 'react-router-dom';
 import { History, LocationState } from 'history';
 import { useClientInstance } from '@app/client/helpers';
-import { KubeResource } from '@konveyor/lib-ui';
+import { KubeResource } from '@migtools/lib-ui';
 import { IKubeResponse, IKubeStatus } from '@app/client/types';
 import { ENV } from '@app/common/constants';
 
@@ -29,8 +29,12 @@ export const authorizedFetch = async <TResponse, TData = unknown>(
 ): Promise<TResponse> => {
   const { history, checkExpiry } = fetchContext;
 
-  if (ENV.AUTH_REQUIRED !== 'false') {
+  if (ENV.AUTH_REQUIRED !== 'false' && fetchContext.currentUser?.access_token) {
     extraHeaders['Authorization'] = `Bearer ${fetchContext.currentUser.access_token}`;
+  }
+
+  if (ENV.AUTH_REQUIRED === 'false' && ENV.K8S_AUTH_BEARER_TOKEN) {
+    extraHeaders['Authorization'] = `Bearer ${ENV.K8S_AUTH_BEARER_TOKEN}`;
   }
 
   try {

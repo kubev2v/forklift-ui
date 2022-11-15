@@ -58,7 +58,7 @@ export const MustGatherContextProvider: React.FunctionComponent<IMustGatherConte
 
   const mustGathersQuery = useMustGathersQuery(
     'must-gather',
-    !!currentUser.access_token,
+    !!currentUser?.access_token,
     (data) => {
       const updatedMgList: mustGatherListType = data?.map((mg): MustGatherObjType => {
         return {

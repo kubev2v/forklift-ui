@@ -31,7 +31,7 @@ import {
 } from '@patternfly/react-table';
 import { centerCellTransform } from '@app/utils/utils';
 import { Link } from 'react-router-dom';
-import { useSelectionState } from '@konveyor/lib-ui';
+import { useSelectionState } from '@migtools/lib-ui';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 
