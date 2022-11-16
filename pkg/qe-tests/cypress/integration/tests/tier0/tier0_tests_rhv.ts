@@ -6,7 +6,7 @@ import {
   login,
   provisionNetwork,
 } from '../../../utils/utils';
-import { providerRhv } from '../../models/providerRhv';
+import { ProviderRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
@@ -17,7 +17,7 @@ rhvTier0TestArray.forEach((currentTest) => {
     `Tier0 test, creating RHV provider, network and storage mappings, ` +
       `plan (${currentTest.planData.name}), running plan and deleting at the end`,
     () => {
-      const provider = new providerRhv();
+      const provider = new ProviderRhv();
       const networkMapping = new MappingNetwork();
       const storageMapping = new MappingStorage();
       const plan = new Plan();

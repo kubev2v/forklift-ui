@@ -1,13 +1,13 @@
 import { testrhel8Cold } from './config_separate_mapping_rhv';
 import { cleanVms, login } from '../../../utils/utils';
-import { providerRhv } from '../../models/providerRhv';
+import { ProviderRhv } from '../../models/providerRhv';
 import { RhvProviderData } from '../../types/types';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 
 describe('Creating provider and deleting', () => {
-  const provider = new providerRhv();
+  const provider = new ProviderRhv();
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();

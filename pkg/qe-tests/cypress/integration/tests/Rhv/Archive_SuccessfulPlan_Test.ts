@@ -1,12 +1,12 @@
 import { login } from '../../../utils/utils';
 import { Plan } from '../../models/plan';
 import { testrhel8Cold } from './config_separate_mapping_rhv';
-import { providerRhv } from '../../models/providerRhv';
+import { ProviderRhv } from '../../models/providerRhv';
 import { MappingNetwork } from '../../models/mappingNetwork';
 import { MappingStorage } from '../../models/mappingStorage';
 
 describe('Automate archive migration plan test', () => {
-  const source = new providerRhv();
+  const source = new ProviderRhv();
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();

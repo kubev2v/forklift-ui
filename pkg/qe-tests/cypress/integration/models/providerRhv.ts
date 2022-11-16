@@ -22,7 +22,7 @@ import {
   incorrectRhvHostname,
 } from '../types/constants';
 
-export class providerRhv extends Provider {
+export class ProviderRhv extends Provider {
   protected fillName(name: string): void {
     inputText(instanceName, name);
   }
@@ -49,7 +49,7 @@ export class providerRhv extends Provider {
   }
 
   protected populate(providerData: RhvProviderData): void {
-    providerRhv.openList();
+    ProviderRhv.openList();
     const { name, hostname } = providerData;
     cy.contains(name)
       .parent(trTag)
@@ -88,7 +88,7 @@ export class providerRhv extends Provider {
   //Edit method RHV
   edit(providerData: RhvProviderData): void {
     const { name, hostname, username, password, cert } = providerData;
-    providerRhv.openList();
+    ProviderRhv.openList();
     applyAction(name, editButton);
     this.fillHostname(hostname);
     this.fillUsername(username);
@@ -113,7 +113,7 @@ export class providerRhv extends Provider {
 
   delete(providerData: RhvProviderData): void {
     const { name } = providerData;
-    providerRhv.openList();
+    ProviderRhv.openList();
     applyAction(name, removeButton);
     clickByText(button, removeButton); //Confirm Button
   }
