@@ -4,8 +4,8 @@ import KubeClient, {
   NamespacedResource,
   CoreNamespacedResourceKind,
   CoreNamespacedResource,
-} from '@konveyor/lib-ui';
-import { META, ProviderType, CLUSTER_API_VERSION } from '@app/common/constants';
+} from '@migtools/lib-ui';
+import { META, ProviderType, CLUSTER_API_VERSION, ENV } from '@app/common/constants';
 import { IProviderObject, ISecret } from '@app/queries/types';
 import { useNetworkContext } from '@app/common/context';
 import {
@@ -207,7 +207,7 @@ export const checkIfResourceExists = async (
 export const useClientInstance = (): KubeClient.ClusterClient => {
   const { currentUser } = useNetworkContext();
   const user = {
-    access_token: currentUser?.access_token || '',
+    access_token: currentUser?.access_token || ENV.K8S_AUTH_BEARER_TOKEN || '',
     expiry_time: currentUser?.expiry_time || 0,
   };
   return ClientFactory.cluster(user, '/cluster-api');

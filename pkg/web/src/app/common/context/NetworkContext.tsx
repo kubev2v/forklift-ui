@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AxiosError } from 'axios';
 import { History } from 'history';
-import { useLocalStorage } from '@konveyor/lib-ui';
+import { useLocalStorage } from '@migtools/lib-ui';
 
 export interface ICurrentUser {
   access_token?: string;

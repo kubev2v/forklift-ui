@@ -18,6 +18,7 @@ export interface IMetaVars {
 
 export interface IEnvVars {
   AUTH_REQUIRED: string;
+  K8S_AUTH_BEARER_TOKEN: string;
   NODE_ENV: string;
   DATA_SOURCE: string;
   BRAND_TYPE: BrandType;

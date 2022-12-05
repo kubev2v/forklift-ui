@@ -1,4 +1,4 @@
-import { providerRhv } from '../../models/providerRhv';
+import { ProviderRhv } from '../../models/providerRhv';
 import { testrhel8Cold } from './config_separate_mapping_rhv';
 import { login } from '../../../utils/utils';
 import { MappingNetwork } from '../../models/mappingNetwork';
@@ -6,7 +6,7 @@ import { MappingStorage } from '../../models/mappingStorage';
 import { Plan } from '../../models/plan';
 
 describe('Deleting plan, mappings and provider', () => {
-  const provider = new providerRhv();
+  const provider = new ProviderRhv();
   const networkMapping = new MappingNetwork();
   const storageMapping = new MappingStorage();
   const plan = new Plan();
